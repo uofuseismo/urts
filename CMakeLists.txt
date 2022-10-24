@@ -25,13 +25,41 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(SOCI REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GTest REQUIRED)
+# Optional
+set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/cmake)
+set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/cmake)
+find_package(FindEarthworm)
+if (${FindEarthworm_FOUND})
+   find_package(FindMiniSEED)
+endif()
+
+set(BUILD_EW FALSE)
+set(BUILD_MSEED FALSE)
+if (${FindEarthworm_FOUND})
+   message("Will compile Earthworm")
+   set(BUILD_EW TRUE)
+   if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
+      set(EARTHWORM_TRACEBUF2_SIZE 4096)
+   endif()
+   message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
+   if (${FindMiniSEED_FOUND})
+      message("Will compile earthworm modules with MiniSEED")
+      set(BUILD_MSEED TRUE)
+      add_compile_definitions(WITH_MSEED)
+   endif()
+endif()
 
 set(VERSION_SRC
     src/version.cpp)
 set(GENERIC_SRC
     src/generic/messageFormats/dataPacket.cpp)
+if (${BUILD_EW})
+   set(EARTHWORM_SRC
+       src/earthworm/traceBuf2.cpp
+       src/earthworm/waveRing.cpp)
+endif()
 
-add_library(urts ${VERSION_SRC} ${GENERIC_SRC})
+add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${EARTHWORM_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
@@ -42,6 +70,15 @@ target_include_directories(urts
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 target_link_libraries(urts
                       PRIVATE ${UMPS_LIBRARY} Threads::Threads)
+if (${BUILD_EW})
+    target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
+    target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+    target_compile_definitions(urts PRIVATE WITH_EARTHWORM=1)
+    if (${BUILD_MSEED})
+       target_include_directories(urts PRIVATE ${MINISEED_INCLUDE_DIR})
+       target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
+    endif()
+endif()
 
 ##########################################################################################
 #                                         Unit Tests                                     #
@@ -51,6 +88,9 @@ set(TEST_SRC
     testing/main.cpp
     testing/generic/messageFormats.cpp
     )
+if (${BUILD_EW})
+   set(TEST_SRC ${TEST_SRC} testing/earthworm/earthworm.cpp)
+endif()
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20

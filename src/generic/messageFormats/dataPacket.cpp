@@ -426,3 +426,10 @@ template void URTS::Generic::MessageFormats::DataPacket::setData(const std::vect
 template void URTS::Generic::MessageFormats::DataPacket::setData(const std::vector<float> &) noexcept;
 template void URTS::Generic::MessageFormats::DataPacket::setData(const std::vector<int> &) noexcept;
 template void URTS::Generic::MessageFormats::DataPacket::setData(const std::vector<int64_t> &) noexcept;
+template void URTS::Generic::MessageFormats::DataPacket::setData(const std::vector<int16_t> &) noexcept;
+
+template void URTS::Generic::MessageFormats::DataPacket::setData(const int, const double *);
+template void URTS::Generic::MessageFormats::DataPacket::setData(const int, const float *);
+template void URTS::Generic::MessageFormats::DataPacket::setData(const int, const int *);
+template void URTS::Generic::MessageFormats::DataPacket::setData(const int, const int64_t *);
+template void URTS::Generic::MessageFormats::DataPacket::setData(const int, const int16_t *);
