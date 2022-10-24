@@ -1,12 +1,12 @@
-#ifndef URTS_GENERIC_MESSAGE_FORMATS_DATA_PACKET_HPP
-#define URTS_GENERIC_MESSAGE_FORMATS_DATA_PACKET_HPP
+#ifndef URTS_MESSAGE_FORMATS_DATA_PACKET_HPP
+#define URTS_MESSAGE_FORMATS_DATA_PACKET_HPP
 #include <vector>
 #include <chrono>
 #include <memory>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Generic::MessageFormats
+namespace URTS::MessageFormats
 {
-/// @class DataPacket "dataPacket.hpp" "urts/generic/messageFormats/dataPacket.hpp"
+/// @class DataPacket "dataPacket.hpp" "urts/messageFormats/dataPacket.hpp"
 /// @brief Defines a seismic data packet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @ingroup Messages_MessageFormats

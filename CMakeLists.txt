@@ -52,7 +52,11 @@ endif()
 set(VERSION_SRC
     src/version.cpp)
 set(GENERIC_SRC
-    src/generic/messageFormats/dataPacket.cpp)
+    src/messageFormats/dataPacket.cpp
+    src/proxyBroadcasts/dataPacket/publisher.cpp
+    src/proxyBroadcasts/dataPacket/publisherOptions.cpp
+    src/proxyBroadcasts/dataPacket/subscriber.cpp
+    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC
        src/earthworm/traceBuf2.cpp
@@ -86,7 +90,7 @@ endif()
 #file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
-    testing/generic/messageFormats.cpp
+    testing/messageFormats/messageFormats.cpp
     )
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/earthworm/earthworm.cpp)
@@ -105,6 +109,23 @@ target_include_directories(unitTests
 add_test(NAME unitTests
          COMMAND unitTests)
 
+##########################################################################################
+#                                            Modules                                     #
+##########################################################################################
+if (${BUILD_EW})
+   add_executable(broadcastWaveRing src/modules/proxyBroadcasts/broadcastWaveRing.cpp)
+   set_target_properties(broadcastWaveRing PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   target_include_directories(broadcastWaveRing
+                              PRIVATE ${CMAKE_SOURCE_DIR}/include
+                                      ${UMPS_INCLUDE_DIR}
+                                      Boost::program_options)
+   target_link_libraries(broadcastWaveRing
+                         PRIVATE urts ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+endif()
 
 ##########################################################################################
 #                                         Installation                                   #

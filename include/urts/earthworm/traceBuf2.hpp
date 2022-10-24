@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "umps/messageFormats/message.hpp"
-namespace URTS::Generic::MessageFormats
+namespace URTS::MessageFormats
 {
  class DataPacket;
 }
@@ -210,7 +210,7 @@ public:
     /// @name Conversions
     /// @{
     /// @result This class expressed as a datapacket.
-    [[nodiscard]] URTS::Generic::MessageFormats::DataPacket toDataPacket() const;
+    [[nodiscard]] URTS::MessageFormats::DataPacket toDataPacket() const;
     /// @}
 
     /// @name Message Abstract Base Class Properties

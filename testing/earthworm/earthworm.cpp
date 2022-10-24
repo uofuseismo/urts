@@ -3,7 +3,7 @@
 #include <vector>
 #include <limits>
 #include "urts/earthworm/traceBuf2.hpp"
-#include "urts/generic/messageFormats/dataPacket.hpp"
+#include "urts/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
