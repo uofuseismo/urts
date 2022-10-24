@@ -4,6 +4,7 @@ enable_testing()
 
 include(CheckCXXCompilerFlag)
 
+set(BUILD_SHARED_LIBS YES)
 set(ORGANIZATION "UUSS" CACHE STRING "Name of your organization.")
 set(HOME_PATH $ENV{HOME})
 set(DATA_PATH   ${HOME_PATH}/.local/share/${ORGANIZATION}/urts CACHE STRING "Default data path.")
@@ -17,6 +18,54 @@ configure_file(${CMAKE_SOURCE_DIR}/include/private/paths.hpp.in
 configure_file(${CMAKE_SOURCE_DIR}/include/private/organization.hpp.in
                ${CMAKE_SOURCE_DIR}/include/private/organization.hpp)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+include(CheckCXXCompilerFlag)
+find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+find_package(SOCI REQUIRED)
+find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
+
+set(VERSION_SRC
+    src/version.cpp)
+set(GENERIC_SRC
+    src/generic/messageFormats/dataPacket.cpp)
+
+add_library(urts ${VERSION_SRC} ${GENERIC_SRC})
+set_target_properties(urts PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES 
+                      CXX_EXTENSIONS NO)
+target_include_directories(urts
+                           PUBLIC ${UMPS_INCLUDE_DIR}
+                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+target_link_libraries(urts
+                      PRIVATE ${UMPS_LIBRARY} Threads::Threads)
+
+##########################################################################################
+#                                         Unit Tests                                     #
+##########################################################################################
+#file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
+set(TEST_SRC
+    testing/main.cpp
+    testing/generic/messageFormats.cpp
+    )
+add_executable(unitTests ${TEST_SRC})
+set_target_properties(unitTests PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES})
+target_include_directories(unitTests
+                           PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+
+# Add the tests
+add_test(NAME unitTests
+         COMMAND unitTests)
+
+
 ##########################################################################################
 #                                         Installation                                   #
 ##########################################################################################
@@ -29,16 +78,16 @@ write_basic_package_version_file(
 )
 if (WRAP_PYTHON)
    install(TARGETS urts pyurts
-           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else()
-   #install(TARGETS urts
-   #        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-   #        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   #        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   #        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+   install(TARGETS urts
+           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
+           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/urts
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
