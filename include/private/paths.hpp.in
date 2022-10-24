@@ -1,0 +1,7 @@
+#ifndef PRIVATE_PATHS_HPP
+#define PRIVATE_PATHS_HPP
+#define DATA_PATH "@DATA_PATH@"
+#define CACHE_PATH "@CACHE_PATH@"
+#define CONFIG_PATH "@CONFIG_PATH@"
+#define DATABASE_PATH "@DATA_PATH@/tables/"
+#endif

@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Config shell scripts and some includes
+config.sh
+organization.hpp
+version.hpp
+paths.hpp
