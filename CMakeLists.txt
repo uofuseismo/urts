@@ -128,6 +128,33 @@ if (${BUILD_EW})
 endif()
 
 ##########################################################################################
+#                                      Python Wrapping                                   #
+##########################################################################################
+if (WRAP_PYTHON)
+   message("Will build Python bindings")
+   find_package(pybind11 REQUIRED)
+   add_library(urtspy MODULE
+               python/urtspy.cpp
+               python/messageFormats.cpp
+               python/proxyBroadcasts.cpp)
+   set_target_properties(urtspy PROPERTIES
+                         PREFIX ""
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   target_include_directories(urtspy
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
+                                      $<BUILD_INTERFACE:${UMPS_INCLUDE_DIR}>
+                                      $<BUILD_INTERFACE:${UMPS_INCLUDE_DIR}/../>
+                                      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+   target_link_libraries(urtspy
+                         PRIVATE pybind11::module pybind11::pybind11 pybind11::lto
+                                 urts ${UMPS_PYTHON_LIBRARY} ${UMPS_LIBRARY})
+
+endif()
+
+
+##########################################################################################
 #                                         Installation                                   #
 ##########################################################################################
 include(GNUInstallDirs)
@@ -138,7 +165,7 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 if (WRAP_PYTHON)
-   install(TARGETS urts pyurts
+   install(TARGETS urts urtspy
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
