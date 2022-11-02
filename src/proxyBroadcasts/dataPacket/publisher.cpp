@@ -4,7 +4,7 @@
 #endif
 #include <umps/messaging/xPublisherXSubscriber/publisherOptions.hpp>
 #include <umps/messaging/xPublisherXSubscriber/publisher.hpp>
-#include <umps/logging/stdout.hpp>
+#include <umps/logging/log.hpp>
 #include "urts/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "urts/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "urts/messageFormats/dataPacket.hpp"

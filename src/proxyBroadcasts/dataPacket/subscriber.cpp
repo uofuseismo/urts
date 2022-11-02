@@ -1,7 +1,7 @@
 #include <iostream>
 #include <umps/messaging/publisherSubscriber/subscriber.hpp>
 #include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
-#include <umps/logging/stdout.hpp>
+#include <umps/logging/log.hpp>
 #include "urts/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "urts/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "urts/messageFormats/dataPacket.hpp"

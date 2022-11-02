@@ -140,7 +140,7 @@ TYPED_TEST(EarthwormTraceBuf2Test, TraceBuf2)
     }
 }
 
-TEST(EArthwormTraceBuf2Test, FromEarthworm)
+TEST(EarthwormTraceBuf2Test, FromEarthworm)
 {
 #define TRACE2_STA_LEN    7    /* SEED: 5 chars plus terminating NULL */
 #define TRACE2_NET_LEN    9    /* SEED: 2 chars plus terminating NULL */

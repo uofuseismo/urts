@@ -17,10 +17,9 @@ extern "C"
 #include <trace_buf.h>
 }
 #endif
-#include <umps/logging/stdout.hpp>
+#include <umps/logging/standardOut.hpp>
 #include "urts/earthworm/waveRing.hpp"
 #include "urts/earthworm/traceBuf2.hpp"
-#include "umps/logging/log.hpp"
 
 using namespace URTS::Earthworm;
 
@@ -49,7 +48,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }  
     }
     /// Earthworm messages
@@ -93,7 +92,7 @@ public:
 /// C'tor
 WaveRing::WaveRing() :
     pImpl(std::make_unique<WaveRingImpl>
-          (std::make_shared<UMPS::Logging::StdOut> ()))
+          (std::make_shared<UMPS::Logging::StandardOut> ()))
 {
 }
 
