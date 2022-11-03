@@ -7,7 +7,7 @@
 #include <bit>
 #include <nlohmann/json.hpp>
 #include "urts/earthworm/traceBuf2.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 #ifdef WITH_EARTHWORM
    #include "trace_buf.h"
    #define MAX_TRACE_SIZE (MAX_TRACEBUF_SIZ - 64)
@@ -528,9 +528,9 @@ TraceBuf2<T> &TraceBuf2<T>::operator=(TraceBuf2<T> &&traceBuf2) noexcept
 
 /// To datapacket
 template<class T>
-URTS::MessageFormats::DataPacket TraceBuf2<T>::toDataPacket() const
+URTS::ProxyBroadcasts::DataPacket::DataPacket TraceBuf2<T>::toDataPacket() const
 {
-    URTS::MessageFormats::DataPacket dataPacket;
+    URTS::ProxyBroadcasts::DataPacket::DataPacket dataPacket;
     dataPacket.setNetwork(getNetwork());
     dataPacket.setStation(getStation());
     dataPacket.setChannel(getChannel());

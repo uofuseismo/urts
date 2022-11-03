@@ -4,7 +4,7 @@
 #include <umps/logging/log.hpp>
 #include "urts/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "urts/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace URTS::ProxyBroadcasts::DataPacket;
@@ -79,10 +79,10 @@ bool Subscriber::isInitialized() const noexcept
 Subscriber::~Subscriber() = default;
 
 /// Receive
-std::unique_ptr<URTS::MessageFormats::DataPacket> Subscriber::receive() const
+std::unique_ptr<DataPacket> Subscriber::receive() const
 {
     auto dataPacket
-        = static_unique_pointer_cast<URTS::MessageFormats::DataPacket>
+        = static_unique_pointer_cast<DataPacket>
           (pImpl->mSubscriber->receive());
     return dataPacket;
 }

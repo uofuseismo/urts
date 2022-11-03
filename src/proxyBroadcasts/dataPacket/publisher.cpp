@@ -7,7 +7,7 @@
 #include <umps/logging/log.hpp>
 #include "urts/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "urts/proxyBroadcasts/dataPacket/publisherOptions.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 
 using namespace URTS::ProxyBroadcasts::DataPacket;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -87,7 +87,7 @@ bool Publisher::isInitialized() const noexcept
 Publisher::~Publisher() = default;
 
 /// Send
-void Publisher::send(const URTS::MessageFormats::DataPacket &message)
+void Publisher::send(const DataPacket &message)
 {
     pImpl->mPublisher->send(message); 
 }

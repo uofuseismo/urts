@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "umps/messageFormats/message.hpp"
-namespace URTS::MessageFormats
+namespace URTS::ProxyBroadcasts::DataPacket
 {
  class DataPacket;
 }
@@ -13,6 +13,7 @@ namespace URTS::Earthworm
 /// @name TraceBuf2 "tracebuf2.hpp" "urts/earthworm/tracebuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_Broadcasts_Import
 template<class T = double>
 class TraceBuf2 : public UMPS::MessageFormats::IMessage
 {
@@ -210,7 +211,7 @@ public:
     /// @name Conversions
     /// @{
     /// @result This class expressed as a datapacket.
-    [[nodiscard]] URTS::MessageFormats::DataPacket toDataPacket() const;
+    [[nodiscard]] URTS::ProxyBroadcasts::DataPacket::DataPacket toDataPacket() const;
     /// @}
 
     /// @name Message Abstract Base Class Properties

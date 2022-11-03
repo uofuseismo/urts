@@ -5,12 +5,9 @@
 #include <umps/messaging/context.hpp>
 namespace URTS
 {
- namespace MessageFormats
- {
-  class DataPacket;
- }
  namespace ProxyBroadcasts::DataPacket
  {
+  class DataPacket;
   class SubscriberOptions;
  }
 }
@@ -66,7 +63,7 @@ public:
     /// @brief Receives a data packet message.
     /// @throws std::invalid_argument if the message cannot be serialized.
     /// @throws std::runtime_error if \c isIinitialized() is false.
-    [[nodiscard]] std::unique_ptr<URTS::MessageFormats::DataPacket> receive() const;
+    [[nodiscard]] std::unique_ptr<DataPacket> receive() const;
 
     /// @brief Destructor. 
     ~Subscriber();

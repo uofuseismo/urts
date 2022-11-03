@@ -4,16 +4,16 @@
 #include <vector>
 #include <chrono>
 #include <limits>
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-using namespace URTS::MessageFormats;
+using namespace URTS::ProxyBroadcasts::DataPacket;
 
-TEST(MessageFormats, DataPacket)
+TEST(ProxyBroadcastsDataPacket, DataPacket)
 {
-    const std::string messageType{"URTS::MessageFormats::DataPacket"};
+    const std::string messageType{"URTS::ProxyBroadcasts::DataPacket::DataPacket"};
     const std::string network{"UU"};
     const std::string station{"FORK"};
     const std::string channel{"HHZ"};

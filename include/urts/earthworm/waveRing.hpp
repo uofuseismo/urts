@@ -16,8 +16,9 @@ namespace URTS::Earthworm
 namespace URTS::Earthworm
 {
 /// @class WaveRing "waveRing.hpp" "urts/earthworm/waveRing.hpp"
-/// @brief A utility for reading traceBufs from from an Earthworm wave ring.
+/// @brief A utility for reading traceBuf2 messages from an Earthworm wave ring.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_Broadcasts_Import
 class WaveRing
 {
 public:

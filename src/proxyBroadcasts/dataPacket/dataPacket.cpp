@@ -4,13 +4,13 @@
 #include <chrono>
 #include <cmath>
 #include <nlohmann/json.hpp>
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::MessageFormats::DataPacket"
+#define MESSAGE_TYPE "URTS::ProxyBroadcasts::DataPacket::DataPacket"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::MessageFormats;
+using namespace URTS::ProxyBroadcasts::DataPacket;
 
 namespace
 {
@@ -422,14 +422,14 @@ std::string DataPacket::getMessageVersion() const noexcept
 ///--------------------------------------------------------------------------///
 ///                               Template Instantiation                     ///
 ///--------------------------------------------------------------------------///
-template void URTS::MessageFormats::DataPacket::setData(const std::vector<double> &) noexcept;
-template void URTS::MessageFormats::DataPacket::setData(const std::vector<float> &) noexcept;
-template void URTS::MessageFormats::DataPacket::setData(const std::vector<int> &) noexcept;
-template void URTS::MessageFormats::DataPacket::setData(const std::vector<int64_t> &) noexcept;
-template void URTS::MessageFormats::DataPacket::setData(const std::vector<int16_t> &) noexcept;
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const std::vector<double> &) noexcept;
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const std::vector<float> &) noexcept;
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const std::vector<int> &) noexcept;
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const std::vector<int64_t> &) noexcept;
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const std::vector<int16_t> &) noexcept;
 
-template void URTS::MessageFormats::DataPacket::setData(const int, const double *);
-template void URTS::MessageFormats::DataPacket::setData(const int, const float *);
-template void URTS::MessageFormats::DataPacket::setData(const int, const int *);
-template void URTS::MessageFormats::DataPacket::setData(const int, const int64_t *);
-template void URTS::MessageFormats::DataPacket::setData(const int, const int16_t *);
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const int, const double *);
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const int, const float *);
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const int, const int *);
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const int, const int64_t *);
+template void URTS::ProxyBroadcasts::DataPacket::DataPacket::setData(const int, const int16_t *);

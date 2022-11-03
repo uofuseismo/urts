@@ -45,7 +45,7 @@
 #include "urts/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "urts/earthworm/traceBuf2.hpp"
 #include "urts/earthworm/waveRing.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 #include "private/isEmpty.hpp"
 
  

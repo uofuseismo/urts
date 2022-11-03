@@ -36,3 +36,7 @@ config.sh
 organization.hpp
 version.hpp
 paths.hpp
+
+documents
+docs/Makefile
+Doxyfile.out

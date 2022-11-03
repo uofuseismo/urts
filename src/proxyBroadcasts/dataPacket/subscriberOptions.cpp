@@ -3,7 +3,7 @@
 #include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include "urts/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 
 using namespace URTS::ProxyBroadcasts::DataPacket; 
 namespace UAuth = UMPS::Authentication;
@@ -17,7 +17,7 @@ public:
         mOptions.setTimeOut(std::chrono::milliseconds{10});
         UMPS::MessageFormats::Messages messageTypes;
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataPacketMessageType
-            = std::make_unique<URTS::MessageFormats::DataPacket> (); 
+            = std::make_unique<DataPacket> (); 
         messageTypes.add(dataPacketMessageType);
         mOptions.setMessageTypes(messageTypes);
     }

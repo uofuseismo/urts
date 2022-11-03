@@ -6,12 +6,9 @@
 // Forward declarations
 namespace URTS
 {
- namespace MessageFormats
- {
-  class DataPacket;
- }
  namespace ProxyBroadcasts::DataPacket
  {
+  class DataPacket;
   class PublisherOptions;
  }
 }
@@ -70,7 +67,7 @@ public:
     /// @param[in] message  The message to send.
     /// @throws std::runtime_error if the class is not initialized.
     /// @throws std::invalid_argument if the message cannot be serialized.
-    void send(const MessageFormats::DataPacket &message);
+    void send(const DataPacket &message);
 
     /// @name Destructors
     /// @{

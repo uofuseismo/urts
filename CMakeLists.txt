@@ -52,7 +52,7 @@ endif()
 set(VERSION_SRC
     src/version.cpp)
 set(GENERIC_SRC
-    src/messageFormats/dataPacket.cpp
+    src/proxyBroadcasts/dataPacket/dataPacket.cpp
     src/proxyBroadcasts/dataPacket/publisher.cpp
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
@@ -135,7 +135,6 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(urtspy MODULE
                python/urtspy.cpp
-               python/messageFormats.cpp
                python/proxyBroadcasts.cpp)
    set_target_properties(urtspy PROPERTIES
                          PREFIX ""

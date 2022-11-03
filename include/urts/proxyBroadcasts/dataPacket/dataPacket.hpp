@@ -1,12 +1,12 @@
-#ifndef URTS_MESSAGE_FORMATS_DATA_PACKET_HPP
-#define URTS_MESSAGE_FORMATS_DATA_PACKET_HPP
+#ifndef URTS_PROXY_BROADCASTS_DATA_PACKET_DATA_PACKET_HPP
+#define URTS_PROXY_BROADCASTS_DATA_PACKET_DATA_PACKET_HPP
 #include <vector>
 #include <chrono>
 #include <memory>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::MessageFormats
+namespace URTS::ProxyBroadcasts::DataPacket
 {
-/// @class DataPacket "dataPacket.hpp" "urts/messageFormats/dataPacket.hpp"
+/// @class DataPacket "dataPacket.hpp" "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
 /// @brief Defines a seismic data packet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @ingroup Messages_MessageFormats
