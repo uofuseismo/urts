@@ -56,7 +56,8 @@ set(GENERIC_SRC
     src/proxyBroadcasts/dataPacket/publisher.cpp
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
-    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp)
+    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
+    src/services/standalone/incrementer/counter.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC
        src/earthworm/traceBuf2.cpp
@@ -90,7 +91,8 @@ endif()
 #file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
-    testing/messageFormats/messageFormats.cpp
+    testing/proxyBroadcasts/dataPacket.cpp
+    testing/services/standalone/incrementer.cpp
     )
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/earthworm/earthworm.cpp)
@@ -135,7 +137,8 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(urtspy MODULE
                python/urtspy.cpp
-               python/proxyBroadcasts.cpp)
+               python/proxyBroadcasts.cpp
+               python/proxyBroadcasts/dataPacket.cpp)
    set_target_properties(urtspy PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
