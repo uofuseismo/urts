@@ -57,7 +57,15 @@ set(GENERIC_SRC
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
     src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
-    src/services/standalone/incrementer/counter.cpp)
+    src/services/standalone/incrementer/counter.cpp
+    src/services/standalone/incrementer/incrementRequest.cpp
+    src/services/standalone/incrementer/incrementResponse.cpp
+    src/services/standalone/incrementer/itemsRequest.cpp
+    src/services/standalone/incrementer/itemsResponse.cpp
+    src/services/standalone/incrementer/serviceOptions.cpp
+    src/services/standalone/incrementer/requestor.cpp
+    src/services/standalone/incrementer/requestorOptions.cpp
+    )
 if (${BUILD_EW})
    set(EARTHWORM_SRC
        src/earthworm/traceBuf2.cpp
@@ -78,7 +86,7 @@ target_link_libraries(urts
 if (${BUILD_EW})
     target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
     target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
-    target_compile_definitions(urts PRIVATE WITH_EARTHWORM=1)
+    target_compile_definitions(urts PRIVATE WITH_EARTHWORM)
     if (${BUILD_MSEED})
        target_include_directories(urts PRIVATE ${MINISEED_INCLUDE_DIR})
        target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})

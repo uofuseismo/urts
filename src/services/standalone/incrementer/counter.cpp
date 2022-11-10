@@ -269,7 +269,7 @@ public:
         closeCounterTable();
     }
     /// Have item?
-    bool haveItem(const std::string &item) const
+    [[nodiscard]] bool haveItem(const std::string &item) const
     {
         return ::haveItem(mCounterTable, item);
     }
@@ -413,8 +413,9 @@ public:
         mCounterTable = nullptr;
         mHaveCounterTable = false;
     }
+///private:
     sqlite3 *mCounterTable{nullptr};
-    bool mHaveCounterTable = false;
+    bool mHaveCounterTable{false};
 };
 
 /// C'tor

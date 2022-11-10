@@ -8,5 +8,5 @@ PYBIND11_MODULE(urtspy, m)
     m.attr("__name__") = "umpspy";
     m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Real-Time Seismology library.";
 
-    //URTS::Python::MessageFormats::initialize(m);
+    URTS::Python::ProxyBroadcasts::initialize(m);
 }
