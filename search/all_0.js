@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['authenticator_0',['Authenticator',['../group___authentication___authenticator.html',1,'']]],
-  ['authentication_1',['Authentication',['../group___authentication__chapter.html',1,'']]],
-  ['authentication_20service_2',['Authentication Service',['../group___authentication___service.html',1,'']]],
-  ['abstract_20message_20base_20class_3',['Abstract Message Base Class',['../group___messages___base_class.html',1,'']]]
+  ['additem_0',['addItem',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html#a2820d019eaeaf21e75337536fe1e32f9',1,'URTS::Services::Standalone::Incrementer::Counter']]],
+  ['algorithmfailure_1',['AlgorithmFailure',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_response.html#a92f4c35133bdb480ae4a216280ccb98ca5b15558175bc32c9d3c50d5857ca611f',1,'URTS::Services::Standalone::Incrementer::IncrementResponse::AlgorithmFailure()'],['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_response.html#aee61a3dd9b0a549325abb20bb04dd037a0cdead3fe0974782b6481e047b3e2182',1,'URTS::Services::Standalone::Incrementer::ItemsResponse::AlgorithmFailure()']]],
+  ['amplitude_2',['Amplitude',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html#ab17199e05a9cbfc17ccbb44acb9b2306a5c4ed3df98b5c11fbe51dbbfae832fca',1,'URTS::Services::Standalone::Incrementer::IncrementRequest']]]
 ];

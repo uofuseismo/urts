@@ -1,0 +1,4 @@
+<map id="Scalable Services" name="Scalable Services">
+<area shape="rect" id="node1" title="Scalable services are services which can have multiple instances. The intermediate proxy will distrib..." alt="" coords="131,5,267,31"/>
+<area shape="rect" id="node2" href="$group___modules___services.html" title="Services are request&#45;reply messaging patterns. In this case there are client(s) that make a request a..." alt="" coords="5,5,83,31"/>
+</map>

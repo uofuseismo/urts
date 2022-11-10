@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['cerficates_212',['Cerficates',['../group___authentication___certificate.html',1,'']]],
-  ['context_213',['Context',['../group___messaging_patterns___context.html',1,'']]]
+  ['import_20broadcasts_339',['Import Broadcasts',['../group___modules___broadcasts___import.html',1,'']]]
 ];

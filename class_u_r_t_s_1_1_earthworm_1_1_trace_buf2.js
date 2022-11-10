@@ -49,7 +49,7 @@ var class_u_r_t_s_1_1_earthworm_1_1_trace_buf2 =
     [ "setStartTime", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#ab01893a75dfa0d50bcb01c7919fc302a", null ],
     [ "setStation", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#a30ced70465e87fcbe64bdaa955473cde", null ],
     [ "toCBOR", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#a74d4227fcc21626ce93702498e062516", null ],
-    [ "toDataPacket", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#a7cb014b004de38aeea1118369e81e4b1", null ],
+    [ "toDataPacket", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#a51f757ee5b7cb63b982c8e5e649f2922", null ],
     [ "toJSON", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#ae0e07e6522979d87801a94a35351aeec", null ],
     [ "toMessage", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#ab2d46a93e33888689e2e6fae0dd36324", null ],
     [ "swap", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html#a961c3b42a0188538b974043c486c184c", null ],

@@ -1,8 +1,5 @@
 var modules =
 [
-    [ "Messages", "group___messages__chapter.html", "group___messages__chapter" ],
-    [ "Messaging Patterns", "group___messaging_patterns__chapter.html", "group___messaging_patterns__chapter" ],
-    [ "Authentication", "group___authentication__chapter.html", "group___authentication__chapter" ],
-    [ "Logging", "group___logging__chapter.html", "group___logging__chapter" ],
-    [ "Modules", "group___modules__chapter.html", "group___modules__chapter" ]
+    [ "Modules", "group___modules__chapter.html", "group___modules__chapter" ],
+    [ "Services", "group___modules___services.html", "group___modules___services" ]
 ];

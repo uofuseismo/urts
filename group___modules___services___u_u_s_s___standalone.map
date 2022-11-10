@@ -1,0 +1,4 @@
+<map id="UUSS Standalone Services" name="UUSS Standalone Services">
+<area shape="rect" id="node1" title="These are standalone services that are specific to UUSS operations." alt="" coords="131,5,325,31"/>
+<area shape="rect" id="node2" href="$group___modules___services.html" title="Services are request&#45;reply messaging patterns. In this case there are client(s) that make a request a..." alt="" coords="5,5,83,31"/>
+</map>

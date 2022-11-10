@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['logging_20base_20class_215',['Logging Base Class',['../group___logging___base_class.html',1,'']]],
-  ['logging_216',['Logging',['../group___logging__chapter.html',1,'']]]
+  ['services_341',['Services',['../group___modules___services.html',1,'']]],
+  ['scalable_20services_342',['Scalable Services',['../group___modules___services___scalable.html',1,'']]],
+  ['standalone_20services_343',['Standalone Services',['../group___modules___services___standalone.html',1,'']]]
 ];
