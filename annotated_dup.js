@@ -18,7 +18,9 @@ var annotated_dup =
         [ "Scalable", null, [
           [ "PacketCache", null, [
             [ "BulkDataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request" ],
-            [ "DataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request" ]
+            [ "DataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request" ],
+            [ "SensorRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_request" ],
+            [ "SensorResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response" ]
           ] ]
         ] ],
         [ "Standalone", null, [
