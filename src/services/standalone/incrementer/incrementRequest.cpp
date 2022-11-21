@@ -1,5 +1,5 @@
-#include <iostream>
 #include <string>
+#include <map>
 #ifndef NDEBUG
 #include <cassert>
 #endif
@@ -112,40 +112,35 @@ void IncrementRequest::setItem(const std::string &item)
     pImpl->mItem = item;
 }
 
+/// Maps stock items to string
+std::string IncrementRequest::itemToString(const Item item)
+{
+   
+    const std::map<Item, const std::string> itemMap
+    {   
+        {Item::Amplitude,    "Amplitude"},
+        {Item::Event,        "Event"},
+        {Item::Magnitude,    "Magnitude"},
+        {Item::Origin,       "Origin"},
+        {Item::PhaseArrival, "PhaseArrival"},
+        {Item::PhasePick,    "PhasePick"}
+    };
+    auto index = itemMap.find(item);
+    if (index == itemMap.end()){throw std::runtime_error("Invalid item");}
+    return index->second;
+} 
+
+std::set<IncrementRequest::Item> IncrementRequest::getItemSet() noexcept
+{
+    std::set<Item> result{Amplitude, Event, Magnitude,
+                          Origin, PhaseArrival, PhasePick};
+    return result;
+} 
+
+
 void IncrementRequest::setItem(const Item item) noexcept
 {
-   if (item == Item::Amplitude)
-   {
-       setItem("Amplitude");
-   }
-   else if (item == Item::Event)
-   {
-       setItem("Event");
-   }
-   else if (item == Item::Magnitude)
-   {
-       setItem("Magnitude");
-   }
-   else if (item == Item::Origin)
-   {
-       setItem("Origin");
-   }
-   else if (item == Item::PhasePick)
-   {
-       setItem("PhasePick");
-   }
-   else if (item == Item::PhaseArrival)
-   {
-       setItem("PhaseArrival");
-   }
-   else
-   {
-#ifndef NDEBUG
-       assert(false);
-#else
-       throw std::runtime_error("Unhandled item");
-#endif
-   }
+   setItem(itemToString(item));
 }
 
 std::string IncrementRequest::getItem() const

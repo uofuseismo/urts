@@ -6,13 +6,18 @@
 #include <cassert>
 #endif
 #include <umps/logging/standardOut.hpp>
+#include <umps/messaging/routerDealer/reply.hpp>
+#include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <umps/messaging/context.hpp>
-#include <ummps/authentication/zapOptions.hpp>
+#include <umps/messageFormats/failure.hpp>
+#include <umps/authentication/zapOptions.hpp>
 #include "urts/services/standalone/incrementer/service.hpp"
 #include "urts/services/standalone/incrementer/serviceOptions.hpp"
 #include "urts/services/standalone/incrementer/counter.hpp"
-#include "urts/services/standalone/incrementer/options.hpp"
-#include "urts/services/standalone/incrementer/counter.hpp"
+#include "urts/services/standalone/incrementer/incrementRequest.hpp"
+#include "urts/services/standalone/incrementer/incrementResponse.hpp"
+#include "urts/services/standalone/incrementer/itemsRequest.hpp"
+#include "urts/services/standalone/incrementer/itemsResponse.hpp"
 
 using namespace URTS::Services::Standalone::Incrementer;
 
@@ -34,14 +39,16 @@ public:
         }
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {
             mLogger = logger;
         }
-        mIncrementerReplier = std::make_unique<Replier> (mContext, mLogger);
-        mCounter = std::make_shared<Counter> ();
+        mIncrementerReplier
+            = std::make_unique<UMPS::Messaging::RouterDealer::Reply>
+              (mContext, mLogger);
+        mCounter = std::make_unique<Counter> ();
     }
     /// Stops the proxy and authenticator and joins threads
     void stop()
@@ -62,7 +69,7 @@ public:
 #ifndef NDEBUG
         assert(mIncrementerReplier->isInitialized());
 #endif
-        mLogger->debug("Starting the replier...");
+        mLogger->debug("Starting the incrementer replier...");
         mIncrementerReplier->start();
 #ifndef NDEBUG
         assert(mIncrementerReplier->isRunning());
@@ -86,7 +93,6 @@ public:
         stop();
     }
     /// Callback function
-    // Respond to data requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
@@ -165,7 +171,8 @@ public:
             {
                 mLogger->error("Incrementer getItems failed with: "
                              + std::string(e.what()));
-                response->setReturnCode(Items::ReturnCode::AlgorithmFailure);
+                response->setReturnCode(
+                    ItemsResponse::ReturnCode::AlgorithmFailure);
             }
             return response;
         }
@@ -188,10 +195,10 @@ public:
     std::unique_ptr<UMPS::Messaging::RouterDealer::Reply>
         mIncrementerReplier{nullptr};
     std::unique_ptr<Counter> mCounter{nullptr};
-    Options mOptions;
-    std::string mName = "Incrementer";
-    bool mKeepRunning = true;
-    bool mInitialized = false;
+    ServiceOptions mOptions;
+    const std::string mName{"Incrementer"};
+    bool mKeepRunning{true};
+    bool mInitialized{false};
 };
 
 /// C'tor
@@ -226,38 +233,39 @@ bool Service::isRunning() const noexcept
 }
 
 /// Initialize
-void Service::initialize(const Options &options)
+void Service::initialize(const ServiceOptions &options)
 {
     stop(); // Ensure the service is stopped
-    if (!options.haveBackendAddress())
-    {
-        throw std::runtime_error("Backend address not set");
-    }
-    // Counter
+    if (!options.haveAddress()){throw std::runtime_error("Address not set");}
+    // Setup counter
     auto sqlite3File = options.getSqlite3FileName();
     auto deleteIfExists = options.deleteSqlite3FileIfExists();
     pImpl->mCounter->initialize(sqlite3File, deleteIfExists);
-    int64_t initialValue = options.getInitialValue();
-    int increment = options.getIncrement();
-    std::set<std::string> defaultItems{"Amplitude",
-                                       "Event",
-                                       "Magnitude",
-                                       "Origin",
-                                       "PhasePick",
-                                       "PhaseArrival"};
-    for (const auto &item : defaultItems)
+    // Make sure default items are in table
+    auto initialValue = options.getInitialValue();
+    auto increment = options.getIncrement();
+    for (auto item : IncrementRequest::getItemSet())
     {
-        if (!pImpl->mCounter->haveItem(item))
+        auto itemString = IncrementRequest::itemToString(item);
+        if (!pImpl->mCounter->haveItem(itemString))
         {
-            pImpl->mCounter->addItem(item, initialValue, increment);
+            pImpl->mCounter->addItem(itemString, initialValue, increment);
         }
     }
     // Replier options
-    ReplierOptions replierOptions;
-    replierOptions.setAddress(options.getBackendAddress());
-    replierOptions.setZAPOptions(options.getZAPOptions());
-    pImpl->mIncrementerReplier->initialize(replierOptions,
-                                           pImpl->mCounter);
+    UMPS::Messaging::RouterDealer::ReplyOptions replyOptions;
+    replyOptions.setAddress(options.getAddress());
+    replyOptions.setZAPOptions(options.getZAPOptions());
+    replyOptions.setSendHighWaterMark(options.getSendHighWaterMark());
+    replyOptions.setReceiveHighWaterMark(options.getReceiveHighWaterMark());
+    replyOptions.setPollingTimeOut(replyOptions.getPollingTimeOut());
+    replyOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                       &*this->pImpl,
+                                       std::placeholders::_1,
+                                       std::placeholders::_2,
+                                       std::placeholders::_3));
+    pImpl->mIncrementerReplier->initialize(replyOptions);
+    pImpl->mOptions = options;
     pImpl->mInitialized = pImpl->mIncrementerReplier->isInitialized();
 }
 

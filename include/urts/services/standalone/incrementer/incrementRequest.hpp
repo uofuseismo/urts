@@ -1,6 +1,7 @@
 #ifndef URTS_SERVICES_STANDALONE_INCREMENTER_INCREMENT_REQUEST_HPP
 #define URTS_SERVICES_STANDALONE_INCREMENTER_INCREMENT_REQUEST_HPP
 #include <memory>
+#include <set>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Standalone::Incrementer
 {
@@ -19,13 +20,13 @@ public:
     /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
     enum Item
     {
-        Amplitude,     /*!< An amplitude.  This is used in computing a magnitude. */
-        Event,         /*!< An event identifier. */
-        Magnitude,     /*!< A magnitude. */
-        Origin,        /*!< An event can have multiple origins as the location
-                            is refined. */
-        PhaseArrival,  /*!< An arrival item (this is an associated pick). */
-        PhasePick      /*!< A pick item (this is an unassociated arrival). */ 
+        Amplitude = 0,     /*!< An amplitude.  This is used in computing a magnitude. */
+        Event = 1,         /*!< An event identifier. */
+        Magnitude = 2,     /*!< A magnitude. */
+        Origin = 3,        /*!< An event can have multiple origins as the location
+                                is refined. */
+        PhaseArrival = 4,  /*!< An arrival item (this is an associated pick). */
+        PhasePick = 5      /*!< A pick item (this is an unassociated arrival). */ 
     };
 public:
     /// @name Constructors
@@ -149,7 +150,11 @@ public:
     /// @throws std::runtime_error if the required information is not set. 
     [[nodiscard]] std::string toCBOR() const;
     /// @}
- 
+
+    /// @result Maps an item to a string representation.
+    [[nodiscard]] static std::string itemToString(Item item);
+    /// @result The items.
+    [[nodiscard]] static std::set<IncrementRequest::Item> getItemSet() noexcept;
     /// @name Destructors
     /// @{
 

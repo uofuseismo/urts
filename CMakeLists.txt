@@ -62,9 +62,13 @@ set(GENERIC_SRC
     src/services/standalone/incrementer/incrementResponse.cpp
     src/services/standalone/incrementer/itemsRequest.cpp
     src/services/standalone/incrementer/itemsResponse.cpp
+    src/services/standalone/incrementer/service.cpp
     src/services/standalone/incrementer/serviceOptions.cpp
     src/services/standalone/incrementer/requestor.cpp
     src/services/standalone/incrementer/requestorOptions.cpp
+    src/services/scalable/packetCache/bulkDataRequest.cpp
+    src/services/scalable/packetCache/dataRequest.cpp
+    src/services/scalable/packetCache/dataResponse.cpp
     )
 if (${BUILD_EW})
    set(EARTHWORM_SRC
@@ -101,6 +105,7 @@ set(TEST_SRC
     testing/main.cpp
     testing/proxyBroadcasts/dataPacket.cpp
     testing/services/standalone/incrementer.cpp
+    testing/services/scalable/packetCache.cpp
     )
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/earthworm/earthworm.cpp)
@@ -110,7 +115,7 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES})
 target_include_directories(unitTests
                            PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)

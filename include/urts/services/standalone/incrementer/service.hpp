@@ -14,7 +14,10 @@ namespace UMPS
 }
 namespace URTS::Services::Standalone::Incrementer
 {
-class Options;
+ class ServiceOptions;
+}
+namespace URTS::Services::Standalone::Incrementer
+{
 /// @class Service service.hpp "urts/services/standalone/incrementer/service.hpp"
 /// @brief Implements the incrementer service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
@@ -36,7 +39,7 @@ public:
     /// @}
      
     /// @brief Initializes the service.
-    void initialize(const Options &options);
+    void initialize(const ServiceOptions &options);
     /// @result True indicates that the service is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @brief Gets the name of the item being incremented.
