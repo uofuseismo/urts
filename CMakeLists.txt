@@ -69,6 +69,8 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/bulkDataRequest.cpp
     src/services/scalable/packetCache/dataRequest.cpp
     src/services/scalable/packetCache/dataResponse.cpp
+    src/services/scalable/packetCache/sensorRequest.cpp
+    src/services/scalable/packetCache/sensorResponse.cpp
     )
 if (${BUILD_EW})
    set(EARTHWORM_SRC
