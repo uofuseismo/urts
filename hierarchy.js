@@ -4,6 +4,8 @@ var hierarchy =
     [ "IMessage", null, [
       [ "URTS::Earthworm::TraceBuf2< T >", "class_u_r_t_s_1_1_earthworm_1_1_trace_buf2.html", null ],
       [ "URTS::ProxyBroadcasts::DataPacket::DataPacket", "class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html", null ],
+      [ "URTS::Services::Scalable::PacketCache::BulkDataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html", null ],
+      [ "URTS::Services::Scalable::PacketCache::DataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html", null ],
       [ "URTS::Services::Standalone::Incrementer::IncrementRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html", null ],
       [ "URTS::Services::Standalone::Incrementer::IncrementResponse", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_response.html", null ],
       [ "URTS::Services::Standalone::Incrementer::ItemsRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_request.html", null ],
