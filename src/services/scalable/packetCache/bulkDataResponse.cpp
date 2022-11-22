@@ -6,13 +6,13 @@
 #include <nlohmann/json.hpp>
 #include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
-#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::PacketCache::BulkDataResponse"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::PacketCache;
-namespace UDP = URTS::ProxyBroadcasts::DataPacket;
+namespace UDP = URTS::Broadcasts::Internal::DataPacket;
 
 namespace
 {

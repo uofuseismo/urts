@@ -1,6 +1,6 @@
 #include <urts/version.hpp>
 #include <pybind11/pybind11.h>
-#include "proxyBroadcasts.hpp"
+#include "broadcasts.hpp"
 
 PYBIND11_MODULE(urtspy, m)
 {
@@ -8,5 +8,5 @@ PYBIND11_MODULE(urtspy, m)
     m.attr("__name__") = "umpspy";
     m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Real-Time Seismology library.";
 
-    URTS::Python::ProxyBroadcasts::initialize(m);
+    URTS::Python::Broadcasts::initialize(m);
 }

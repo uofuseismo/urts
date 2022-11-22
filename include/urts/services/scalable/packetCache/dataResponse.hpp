@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::ProxyBroadcasts::DataPacket
+namespace URTS::Broadcasts::Internal::DataPacket
 {
  class DataPacket;
 }
@@ -64,22 +64,22 @@ public:
     /// @param[in] packets  The data packets corresponding to the request.
     /// @throws std::invalid_argument if any packet's network, station, channel,
     ///         location code, or sampling rate is not set.
-    void setPackets(const std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> &packets);
+    void setPackets(const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &packets);
     /// @brief Sets the data packets.
     /// @param[in,out] packets  On input these are the data packets to set.
     ///                         On exit, packets's behavior is undefined.
     /// @throws std::invalid_argument if any packet's network, station, channel,
     ///         location code, or sampling rate is not set.
-    void setPackets(std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> &&packets);
+    void setPackets(std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &&packets);
     /// @result The number of packets.
     [[nodiscard]] int getNumberOfPackets() const noexcept;
     /// @result A pointer to the data packets.  This is an array with dimensions
     ///         [\c getNumberOfPackets()].
-    [[nodiscard]] const URTS::ProxyBroadcasts::DataPacket::DataPacket *getPacketsPointer() const noexcept;
+    [[nodiscard]] const URTS::Broadcasts::Internal::DataPacket::DataPacket *getPacketsPointer() const noexcept;
     /// @result The data packets corresponding to the data request. 
     /// @note If result.empty() then a problem was likely detected and you
     ///       should check the return code.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> getPackets() const noexcept;
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets() const noexcept;
     /// @}
 
     /// @name Additional Information

@@ -11,9 +11,15 @@ namespace URTS {
 /** \defgroup Modules_Broadcasts Broadcasts 
     \brief Broadcasts are publisher-subscriber messaging patterns.  In this case there are producer(s) that create content and subscriber(s) that consume content.
     \ingroup Modules_chapter */
-/** \defgroup Modules_Broadcasts_Import Import Broadcasts
-    \brief These are modules for importing data from other utilities and broadcasting these products to a URTS broadcast.
-    \ingroup Modules_Broadcasts  */
+/** \defgroup Modules_Broadcasts_Internal Internal Broadcasts
+    \brief These are modules for broadcasting common data types used by URTS.
+    \ingroup Modules_Broadcasts */
+/** \defgroup Modules_Broadcasts_External External Broadcasts
+    \brief These are modules for importing and exporting data streams by other utilities like Earthworm.
+    \ingroup Modules_Broadcasts */
+/** \defgroup Modules_Broadcasts_External_Earthworm Earthworm Broadcasts
+    \brief These are modules for wrangling common Earthworm data types.
+    \ingroup MOdules_Broadcasts_External */
 
 /** \defgroup Modules_Services Services
     \brief Services are request-reply messaging patterns.  In this case there are client(s) that make a request and server(s) that process those requests. */

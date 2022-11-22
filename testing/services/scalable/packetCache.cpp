@@ -6,14 +6,14 @@
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
-#include "urts/proxyBroadcasts/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
 using namespace URTS::Services::Scalable::PacketCache;
-namespace UDP = URTS::ProxyBroadcasts::DataPacket;
+namespace UDP = URTS::Broadcasts::Internal::DataPacket;
 
 bool operator==(const UDP::DataPacket &lhs, const UDP::DataPacket &rhs)
 {

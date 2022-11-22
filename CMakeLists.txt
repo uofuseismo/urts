@@ -52,11 +52,11 @@ endif()
 set(VERSION_SRC
     src/version.cpp)
 set(GENERIC_SRC
-    src/proxyBroadcasts/dataPacket/dataPacket.cpp
-    src/proxyBroadcasts/dataPacket/publisher.cpp
-    src/proxyBroadcasts/dataPacket/publisherOptions.cpp
-    src/proxyBroadcasts/dataPacket/subscriber.cpp
-    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
+    src/broadcasts/internal/dataPacket/dataPacket.cpp
+    src/broadcasts/internal/dataPacket/publisher.cpp
+    src/broadcasts/internal/dataPacket/publisherOptions.cpp
+    src/broadcasts/internal/dataPacket/subscriber.cpp
+    src/broadcasts/internal/dataPacket/subscriberOptions.cpp
     src/services/standalone/incrementer/counter.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
     src/services/standalone/incrementer/incrementResponse.cpp
@@ -75,8 +75,8 @@ set(GENERIC_SRC
     )
 if (${BUILD_EW})
    set(EARTHWORM_SRC
-       src/earthworm/traceBuf2.cpp
-       src/earthworm/waveRing.cpp)
+       src/broadcasts/external/earthworm/traceBuf2.cpp
+       src/broadcasts/external/earthworm/waveRing.cpp)
 endif()
 
 add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${EARTHWORM_SRC})
@@ -106,12 +106,12 @@ endif()
 #file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
-    testing/proxyBroadcasts/dataPacket.cpp
+    testing/broadcasts/internal/dataPacket.cpp
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
 if (${BUILD_EW})
-   set(TEST_SRC ${TEST_SRC} testing/earthworm/earthworm.cpp)
+   set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
 endif()
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
@@ -131,7 +131,7 @@ add_test(NAME unitTests
 #                                            Modules                                     #
 ##########################################################################################
 if (${BUILD_EW})
-   add_executable(broadcastWaveRing src/modules/proxyBroadcasts/broadcastWaveRing.cpp)
+   add_executable(broadcastWaveRing src/modules/broadcasts/broadcastWaveRing.cpp)
    set_target_properties(broadcastWaveRing PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
@@ -153,8 +153,8 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(urtspy MODULE
                python/urtspy.cpp
-               python/proxyBroadcasts.cpp
-               python/proxyBroadcasts/dataPacket.cpp)
+               python/broadcasts.cpp
+               python/broadcasts/dataPacket.cpp)
    set_target_properties(urtspy PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
