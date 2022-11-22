@@ -1,91 +1,102 @@
-#ifndef URTS_SERVICES_SCALABLE_PACKET_CACHE_BULK_DATA_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_PACKET_CACHE_BULK_DATA_REQUEST_HPP
+#ifndef UMPS_PROXY_SERVICES_PACKET_CACHE_BULKDATA_RESPONSE_HPP
+#define UMPS_PROXY_SERVICES_PACKET_CACHE_BULKDATA_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::PacketCache
 {
-class DataRequest;
+ class DataResponse;
 }
 namespace URTS::Services::Scalable::PacketCache
 {
-/// @name BulkDataRequst "bulkDataRequest.hpp" "urts/services/scalable/packetCache/bulkDataRequest.hpp"
-/// @brief This is a request message for querying the packetCache for multiple
-///        sensors.
-/// @note Since the underlying messaging is asynchronous it is to your advantage
-///       to provide your request a unique identifier since the requests are
-///       not required to filled in the order that they are put on the wire.
-/// @sa BulkDataResponse
+/// @name BulkDataResponse "bulkDataResponse.hpp" "urts/services/scalable/packetCache/bulkDataResponse.hpp"
+/// @brief This represents the data response for multiple sensors.
+/// @sa BulkDataRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class BulkDataRequest : public UMPS::MessageFormats::IMessage
+class BulkDataResponse : public UMPS::MessageFormats::IMessage
 {
+public:
+    enum ReturnCode
+    {   
+        Success = 0,             /*!< No errors were detected; the request was successful. */
+        NoSensor = 1,            /*!< The data for the requested sensor 
+                                      (Network, Station, Channel, Location Code) does not exist. */
+        InvalidMessageType = 2,  /*!< The received message type is not supported. */
+        InvalidMessage = 3,      /*!< The request message could not be parsed. */
+        InvalidTimeQuery = 4,    /*!< The time query parameters are invalid. */
+        AlgorithmicFailure = 5   /*!< An internal error was detected .*/
+    }; 
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    BulkDataRequest();
+    BulkDataResponse();
     /// @brief Copy constructor.
-    /// @param[in] request  The request from which to initialize this class.
-    BulkDataRequest(const BulkDataRequest &request);
+    /// @param[in] response  The response from which to initialize this class.
+    BulkDataResponse(const BulkDataResponse &response);
     /// @brief Move constructor.
-    /// @param[in,out] request  The request from which to initialize this class.
-    ///                         On exit, requests's behavior is undefined.
-    BulkDataRequest(BulkDataRequest &&request) noexcept;
+    /// @param[in,out] response  The response from which to initialize
+    ///                          this class.  On exit, responses' behavior is
+    ///                          undefined.
+    BulkDataResponse(BulkDataResponse &&response) noexcept;
     /// @}
     
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment operator.
-    /// @param[in] request  The request to copy to this.
-    /// @result A deep copy of the input request.
-    BulkDataRequest& operator=(const BulkDataRequest &request); 
+    /// @param[in] response  The response to copy to this.
+    /// @result A deep copy of the input response.
+    BulkDataResponse& operator=(const BulkDataResponse &response); 
     /// @brief Move assignment operator.
-    /// @param[in,out] request  The request whose memory will be moved to this.
-    ///                         On exit, request's behavior is undefined.
-    /// @result The memory from request moved to this.
-    BulkDataRequest& operator=(BulkDataRequest &&request) noexcept;
+    /// @param[in,out] response  The response whose memory will be moved to
+    ///                          this.  On exit, response's behavior is
+    ///                          undefined.
+    /// @result The memory from response moved to this.
+    BulkDataResponse& operator=(BulkDataResponse &&response) noexcept;
     /// @}
 
-    /// @name Required Parameters
+    /// @name Responses
     /// @{
 
-    /// @brief Adds a data request.
-    /// @param[in] request  The request to add to this bulk request.
-    /// @throws std::invalid_argument if request.haveNetwork(),
-    ///         request.haveStation(), request.haveChannel(),
-    ///         or request.haveLocationCode() is false.
-    /// @throws std::invalid_argument if the request already exists.
-    /// @sa \c haveDataRequest()
-    void addDataRequest(const DataRequest &request);
-    /// @result The number of requests.
-    [[nodiscard]] int getNumberOfDataRequests() const noexcept;
-    /// @result The data requests.
-    [[nodiscard]] std::vector<DataRequest> getDataRequests() const noexcept;
-    /// @result A pointer to the data requests.  This is an array whose 
-    ///         dimension is [getNumberOfRequests()]
-    [[nodiscard]] const DataRequest* getDataRequestsPointer() const noexcept;    
-    /// @result True indicates the data request already exists.
-    [[nodiscard]] bool haveDataRequest(const DataRequest &request) const noexcept;
-    /// @brief Clears all the data requests.
-    void clearDataRequests() noexcept;
+    /// @param[in] response  Adds a data response.  
+    void addDataResponse(const DataResponse &response);
+    /// @param[in,out] response  Adds a data response.  On exit, responses's
+    ///                          behavior will be undefined.
+    void addDataResponse(DataResponse &&response);
+    /// @result The data responses.
+    [[nodiscard]] std::vector<DataResponse> getDataResponses() const noexcept;
+    /// @result A pointer to the data responses.  This is an array whose 
+    ///         dimension is [\c getNumberOfDataResponses()].
+    [[nodiscard]] const DataResponse *getDataResponsesPointer() const noexcept;
+    /// @result The number of data responses.
+    [[nodiscard]] int getNumberOfDataResponses() const noexcept;
     /// @}
-    
-    /// @name Optional Parameters
+
+    /// @name Additional Information
     /// @{
 
-    /// @brief Sets the message identifier.
-    /// @param[in] identifier  The message identifier.
-    /// @note DataResponse will return this identifier so you can determine
-    ///       which requests have been filled.
+    /// @brief Allows the service to set its return code and signal to
+    ///        the requester whether or not the request was successfully
+    ///        processed.
+    /// @param[in] code  The return code.
+    void setReturnCode(ReturnCode code) noexcept;
+    /// @result The return code from the service.
+    [[nodiscard]] BulkDataResponse::ReturnCode getReturnCode() const noexcept;
+
+    /// @brief For asynchronous messaging this allows the requester to index
+    ///        the request.  This value will be returned so the requester
+    ///        can track which request was filled by the response.
+    /// @param[in] identifier   The request identifier.
     void setIdentifier(uint64_t identifier) noexcept;
-    /// @result Trhe message identifier.
+    /// @result The request identifier.
     [[nodiscard]] uint64_t getIdentifier() const noexcept;
     /// @}
 
     /// @name Message Properties
     /// @{
+
     /// @brief Converts the packet class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
@@ -117,10 +128,10 @@ public:
     /// @name Debugging Utilities
     /// @{
 
-    /// @brief Creates the class from a JSON data request message.
+    /// @brief Creates the class from a JSON data reseponse message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
-    /// @brief Converts the data request class to a JSON message.
+    /// @brief Converts the data response class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
@@ -149,11 +160,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~BulkDataRequest() override;
+    ~BulkDataResponse() override;
     /// @}
 private:
-    class BulkDataRequestImpl;
-    std::unique_ptr<BulkDataRequestImpl> pImpl;
+    class BulkDataResponseImpl;
+    std::unique_ptr<BulkDataResponseImpl> pImpl;
 };
 }
 #endif

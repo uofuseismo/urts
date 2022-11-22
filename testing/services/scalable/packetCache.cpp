@@ -1,6 +1,7 @@
 #include <cmath>
 #include <limits>
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
+#include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
 #include "urts/services/scalable/packetCache/dataRequest.hpp"
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
@@ -185,59 +186,6 @@ TEST(ServicesScalablePacketCache, DataRequest)
     EXPECT_NEAR(timeEnd,   t1, 1.e-5);
 }
 
-TEST(ServicesScalablePacketCache, BulkDataRequest)
-{
-    BulkDataRequest bulkRequest;
-    const std::string network = "UU";
-    const std::string station = "ARUT";
-    const std::vector<std::string> channels{"EHZ", "EHN", "EHE"};
-    int nRequests = static_cast<int> (channels.size());
-    const std::string locationCode = "01";
-    const uint64_t id = 400038;
-    double t0 = 1629737861;
-    double t1 = 1629737865;
-    EXPECT_EQ(bulkRequest.getMessageType(),
-              "URTS::Services::Scalable::PacketCache::BulkDataRequest");
-    DataRequest request;
-    EXPECT_NO_THROW(request.setNetwork(network));
-    EXPECT_NO_THROW(request.setStation(station));
-    EXPECT_NO_THROW(request.setLocationCode(locationCode));
-    request.setQueryTimes(std::pair {t0, t1});
-    for (int i = 0; i < nRequests; ++i)
-    {
-        EXPECT_NO_THROW(request.setChannel(channels.at(i)));
-        request.setIdentifier(id + i);
-        bulkRequest.addDataRequest(request);
-    }
-    bulkRequest.setIdentifier(id);
-    // Check for a duplicate - this is the most common case
-    request.setIdentifier(id + 0);
-    request.setChannel(channels.at(0));
-    EXPECT_THROW(bulkRequest.addDataRequest(request), std::invalid_argument);
-
-    EXPECT_EQ(bulkRequest.getNumberOfDataRequests(), nRequests);
-
-    auto message = bulkRequest.toMessage();
-    BulkDataRequest bulkRequestCopy;
-    EXPECT_NO_THROW(bulkRequestCopy.fromMessage(message));
-
-    EXPECT_EQ(bulkRequestCopy.getNumberOfDataRequests(), nRequests);
-    EXPECT_EQ(bulkRequestCopy.getIdentifier(), id);
-    auto requestsPtr = bulkRequestCopy.getDataRequestsPointer();
-    for (int i = 0; i < nRequests; ++i)
-    {
-        EXPECT_EQ(requestsPtr[i].getNetwork(), network);
-        EXPECT_EQ(requestsPtr[i].getStation(), station);
-        EXPECT_EQ(requestsPtr[i].getChannel(), channels.at(i));
-        EXPECT_EQ(requestsPtr[i].getLocationCode(), locationCode);
-        EXPECT_EQ(requestsPtr[i].getIdentifier(), id + i);
-        auto [timeStart, timeEnd] = requestsPtr[i].getQueryTimes();
-        EXPECT_NEAR(timeStart, t0, 1.e-5);
-        EXPECT_NEAR(timeEnd,   t1, 1.e-5);
-    }
-}
-
-
 TEST(ServicesScalablePacketCache, DataResponse)
 {
     const std::string network{"UU"};
@@ -309,6 +257,163 @@ TEST(ServicesScalablePacketCache, DataResponse)
     for (size_t i = 0; i < packetsBack.size(); ++i)
     {
         EXPECT_TRUE(packetsBack.at(i) == dataPackets.at(i));
+    }
+}
+
+TEST(ServicesScalablePacketCache, BulkDataRequest)
+{
+    BulkDataRequest bulkRequest;
+    const std::string network = "UU";
+    const std::string station = "ARUT";
+    const std::vector<std::string> channels{"EHZ", "EHN", "EHE"};
+    int nRequests = static_cast<int> (channels.size());
+    const std::string locationCode = "01";
+    const uint64_t id = 400038;
+    double t0 = 1629737861;
+    double t1 = 1629737865;
+    EXPECT_EQ(bulkRequest.getMessageType(),
+              "URTS::Services::Scalable::PacketCache::BulkDataRequest");
+    DataRequest request;
+    EXPECT_NO_THROW(request.setNetwork(network));
+    EXPECT_NO_THROW(request.setStation(station));
+    EXPECT_NO_THROW(request.setLocationCode(locationCode));
+    request.setQueryTimes(std::pair {t0, t1});
+    for (int i = 0; i < nRequests; ++i)
+    {
+        EXPECT_NO_THROW(request.setChannel(channels.at(i)));
+        request.setIdentifier(id + i); 
+        bulkRequest.addDataRequest(request);
+    }   
+    bulkRequest.setIdentifier(id);
+    // Check for a duplicate - this is the most common case
+    request.setIdentifier(id + 0); 
+    request.setChannel(channels.at(0));
+    EXPECT_THROW(bulkRequest.addDataRequest(request), std::invalid_argument);
+
+    EXPECT_EQ(bulkRequest.getNumberOfDataRequests(), nRequests);
+
+    auto message = bulkRequest.toMessage();
+    BulkDataRequest bulkRequestCopy;
+    EXPECT_NO_THROW(bulkRequestCopy.fromMessage(message));
+
+    EXPECT_EQ(bulkRequestCopy.getNumberOfDataRequests(), nRequests);
+    EXPECT_EQ(bulkRequestCopy.getIdentifier(), id);
+    auto requestsPtr = bulkRequestCopy.getDataRequestsPointer();
+    for (int i = 0; i < nRequests; ++i)
+    {
+        EXPECT_EQ(requestsPtr[i].getNetwork(), network);
+        EXPECT_EQ(requestsPtr[i].getStation(), station);
+        EXPECT_EQ(requestsPtr[i].getChannel(), channels.at(i));
+        EXPECT_EQ(requestsPtr[i].getLocationCode(), locationCode);
+        EXPECT_EQ(requestsPtr[i].getIdentifier(), id + i); 
+        auto [timeStart, timeEnd] = requestsPtr[i].getQueryTimes();
+        EXPECT_NEAR(timeStart, t0, 1.e-5);
+        EXPECT_NEAR(timeEnd,   t1, 1.e-5);
+    }
+}
+
+TEST(PacketCache, BulkDataResponse)
+{
+    const std::string network{"UU"};
+    const std::string station{"VRUT"};
+    const std::vector<std::string> channels{"EHZ", "EHN", "EHE"};
+    const std::string locationCode{"01"};
+    const double samplingRate{100};
+    const uint64_t id{594382};
+    std::vector<UDP::DataPacket> zDataPackets, nDataPackets, eDataPackets;
+    const double t0 = 0;
+    std::vector<double> startTimes;
+    const std::vector<int> samplesPerPacket{100, 200, 100, 200};
+    auto t1 = t0; 
+    for (const auto &nSamples : samplesPerPacket)
+    {   
+        startTimes.push_back(t1);
+        UDP::DataPacket dataPacket;
+        dataPacket.setNetwork(network);
+        dataPacket.setStation(station);
+        dataPacket.setChannel(channels.at(0));
+        dataPacket.setLocationCode(locationCode);
+        dataPacket.setSamplingRate(samplingRate);
+        dataPacket.setStartTime(t1);
+        std::vector<double> data(nSamples); 
+        std::fill(data.begin(), data.end(), static_cast<double> (nSamples));
+        dataPacket.setData(data);
+        zDataPackets.push_back(dataPacket);
+ 
+        dataPacket.setChannel(channels.at(1));
+        nDataPackets.push_back(dataPacket);
+
+        dataPacket.setChannel(channels.at(2));
+        eDataPackets.push_back(dataPacket);
+        // Update start time
+        t1 = t1 + std::round( (nSamples - 1)/samplingRate );
+    }   
+    BulkDataResponse bulkResponse;
+    DataResponse response;
+    auto dataRC = DataResponse::ReturnCode::InvalidMessage;
+    response.setPackets(zDataPackets);
+    response.setIdentifier(id + 1);
+    response.setReturnCode(dataRC);
+    EXPECT_NO_THROW(bulkResponse.addDataResponse(response));
+
+    response.setPackets(nDataPackets);
+    response.setIdentifier(id + 2);
+    response.setReturnCode(dataRC);
+    EXPECT_NO_THROW(bulkResponse.addDataResponse(response));
+
+    response.setPackets(eDataPackets);
+    response.setIdentifier(id + 3);
+    response.setReturnCode(dataRC);
+    EXPECT_NO_THROW(bulkResponse.addDataResponse(response));
+
+    EXPECT_EQ(bulkResponse.getNumberOfDataResponses(), 3);
+    bulkResponse.setIdentifier(id);
+    bulkResponse.setReturnCode(BulkDataResponse::ReturnCode::NoSensor);
+
+    // Reconsitute the bulk response
+    auto message = bulkResponse.toMessage();
+    BulkDataResponse brCopy;
+    EXPECT_NO_THROW(brCopy.fromMessage(message));
+
+    EXPECT_EQ(brCopy.getMessageType(),
+              "URTS::Services::Scalable::PacketCache::BulkDataResponse");
+    EXPECT_EQ(brCopy.getReturnCode(), BulkDataResponse::ReturnCode::NoSensor);
+    EXPECT_EQ(brCopy.getNumberOfDataResponses(), 3);
+    EXPECT_EQ(brCopy.getIdentifier(), id);
+    auto responses = brCopy.getDataResponses();
+    int i = 0;
+    for (const auto &r : responses)
+    {
+        EXPECT_EQ(r.getReturnCode(), DataResponse::ReturnCode::InvalidMessage);
+        EXPECT_EQ(r.getIdentifier(), id + i + 1);
+        auto packetsBack = r.getPackets();
+        EXPECT_EQ(packetsBack.size(), samplesPerPacket.size());
+        if (i == 0)
+        {
+            for (int j = 0; j < static_cast<int> (packetsBack.size()); ++j)
+            {
+                EXPECT_TRUE(packetsBack.at(j) == zDataPackets.at(j));
+            }
+        }
+        else if (i == 1)
+        {
+            for (int j = 0; j < static_cast<int> (packetsBack.size()); ++j)
+            {
+                EXPECT_TRUE(packetsBack.at(j) == nDataPackets.at(j));
+            }
+        }
+        else if (i == 2)
+        {
+            for (int j = 0; j < static_cast<int> (packetsBack.size()); ++j)
+            {
+                EXPECT_TRUE(packetsBack.at(j) == eDataPackets.at(j));
+            }
+        }
+        else
+        {
+            ASSERT_TRUE(false);
+        }
+        i = i + 1;
     }
 }
 

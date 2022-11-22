@@ -67,6 +67,7 @@ set(GENERIC_SRC
     src/services/standalone/incrementer/requestor.cpp
     src/services/standalone/incrementer/requestorOptions.cpp
     src/services/scalable/packetCache/bulkDataRequest.cpp
+    src/services/scalable/packetCache/bulkDataResponse.cpp
     src/services/scalable/packetCache/dataRequest.cpp
     src/services/scalable/packetCache/dataResponse.cpp
     src/services/scalable/packetCache/sensorRequest.cpp
