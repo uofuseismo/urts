@@ -1,5 +1,6 @@
 <map id="Broadcasts" name="Broadcasts">
-<area shape="rect" id="node1" href="$group___modules___broadcasts___import.html" title="These are modules for importing data from other utilities and broadcasting these products to a URTS b..." alt="" coords="273,5,415,31"/>
-<area shape="rect" id="node2" title="Broadcasts are publisher&#45;subscriber messaging patterns. In this case there are producer(s) that creat..." alt="" coords="131,5,225,31"/>
-<area shape="rect" id="node3" href="$group___modules__chapter.html" title=" " alt="" coords="5,5,83,31"/>
+<area shape="rect" id="node1" title="Broadcasts are publisher&#45;subscriber messaging patterns. In this case there are producer(s) that creat..." alt="" coords="131,31,225,56"/>
+<area shape="rect" id="node2" href="$group___modules___broadcasts___internal.html" title="These are modules for broadcasting common data types used by URTS." alt="" coords="275,5,423,31"/>
+<area shape="rect" id="node4" href="$group___modules___broadcasts___external.html" title="These are modules for importing and exporting data streams by other utilities like Earthworm." alt="" coords="273,55,425,80"/>
+<area shape="rect" id="node3" href="$group___modules__chapter.html" title=" " alt="" coords="5,31,83,56"/>
 </map>

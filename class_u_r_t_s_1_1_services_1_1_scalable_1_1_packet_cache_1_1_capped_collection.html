@@ -136,10 +136,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2ec6cefad49ff8f161c3f3ad5ab90a7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2ec6cefad49ff8f161c3f3ad5ab90a7f">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:a2ec6cefad49ff8f161c3f3ad5ab90a7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Adding Packets</div></td></tr>
-<tr class="memitem:abdd6ab037b12d6efc650a622e579e5ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#abdd6ab037b12d6efc650a622e579e5ef">addPacket</a> (const <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &amp;packet)</td></tr>
+<tr class="memitem:abdd6ab037b12d6efc650a622e579e5ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#abdd6ab037b12d6efc650a622e579e5ef">addPacket</a> (const URTS::ProxyBroadcasts::DataPacket::DataPacket &amp;packet)</td></tr>
 <tr class="memdesc:abdd6ab037b12d6efc650a622e579e5ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a packet to the collection.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#abdd6ab037b12d6efc650a622e579e5ef">More...</a><br /></td></tr>
 <tr class="separator:abdd6ab037b12d6efc650a622e579e5ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c2b8fc7dae88a32fb6c7cfeb4c33715"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a5c2b8fc7dae88a32fb6c7cfeb4c33715">addPacket</a> (<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &amp;&amp;packet)</td></tr>
+<tr class="memitem:a5c2b8fc7dae88a32fb6c7cfeb4c33715"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a5c2b8fc7dae88a32fb6c7cfeb4c33715">addPacket</a> (URTS::ProxyBroadcasts::DataPacket::DataPacket &amp;&amp;packet)</td></tr>
 <tr class="memdesc:a5c2b8fc7dae88a32fb6c7cfeb4c33715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a packet to the collection. This uses move semantics and is slightly faster.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a5c2b8fc7dae88a32fb6c7cfeb4c33715">More...</a><br /></td></tr>
 <tr class="separator:a5c2b8fc7dae88a32fb6c7cfeb4c33715"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3ffb8a766e7d2210eda78d2761d9588"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#af3ffb8a766e7d2210eda78d2761d9588">haveSensor</a> (const std::string &amp;network, const std::string &amp;station, const std::string &amp;channel, const std::string &amp;locationCode) const noexcept</td></tr>
@@ -152,17 +152,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad43c466295d511c7d85894255fee06b8"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ad43c466295d511c7d85894255fee06b8">getEarliestStartTime</a> (const std::string &amp;name) const</td></tr>
 <tr class="memdesc:ad43c466295d511c7d85894255fee06b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the start time of the earliest packet in the buffer.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ad43c466295d511c7d85894255fee06b8">More...</a><br /></td></tr>
 <tr class="separator:ad43c466295d511c7d85894255fee06b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c922d859dcc052b1c13a44b663de623"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a4c922d859dcc052b1c13a44b663de623">getPackets</a> (const std::string &amp;name, double t0) const</td></tr>
+<tr class="memitem:a4c922d859dcc052b1c13a44b663de623"><td class="memItemLeft" align="right" valign="top">std::vector&lt; URTS::ProxyBroadcasts::DataPacket::DataPacket &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a4c922d859dcc052b1c13a44b663de623">getPackets</a> (const std::string &amp;name, double t0) const</td></tr>
 <tr class="memdesc:a4c922d859dcc052b1c13a44b663de623"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all packets beginning at time t0.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a4c922d859dcc052b1c13a44b663de623">More...</a><br /></td></tr>
 <tr class="separator:a4c922d859dcc052b1c13a44b663de623"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4d9ed3a05a5367d3682ace0ca9cf3fc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ad4d9ed3a05a5367d3682ace0ca9cf3fc">getPackets</a> (const std::string &amp;name, const std::chrono::microseconds &amp;t0) const</td></tr>
+<tr class="memitem:ad4d9ed3a05a5367d3682ace0ca9cf3fc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; URTS::ProxyBroadcasts::DataPacket::DataPacket &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ad4d9ed3a05a5367d3682ace0ca9cf3fc">getPackets</a> (const std::string &amp;name, const std::chrono::microseconds &amp;t0) const</td></tr>
 <tr class="separator:ad4d9ed3a05a5367d3682ace0ca9cf3fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2449cc24e2c6940b25e7c6d4e5da8c63"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2449cc24e2c6940b25e7c6d4e5da8c63">getPackets</a> (const std::string &amp;name, double t0, double t1) const</td></tr>
+<tr class="memitem:a2449cc24e2c6940b25e7c6d4e5da8c63"><td class="memItemLeft" align="right" valign="top">std::vector&lt; URTS::ProxyBroadcasts::DataPacket::DataPacket &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2449cc24e2c6940b25e7c6d4e5da8c63">getPackets</a> (const std::string &amp;name, double t0, double t1) const</td></tr>
 <tr class="memdesc:a2449cc24e2c6940b25e7c6d4e5da8c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all packets between time t0 and t1.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2449cc24e2c6940b25e7c6d4e5da8c63">More...</a><br /></td></tr>
 <tr class="separator:a2449cc24e2c6940b25e7c6d4e5da8c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a1ebc01a743038cc1b920fda29ac17b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2a1ebc01a743038cc1b920fda29ac17b">getPackets</a> (const std::string &amp;name, const std::chrono::microseconds &amp;t0, const std::chrono::microseconds &amp;t1) const</td></tr>
+<tr class="memitem:a2a1ebc01a743038cc1b920fda29ac17b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; URTS::ProxyBroadcasts::DataPacket::DataPacket &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2a1ebc01a743038cc1b920fda29ac17b">getPackets</a> (const std::string &amp;name, const std::chrono::microseconds &amp;t0, const std::chrono::microseconds &amp;t1) const</td></tr>
 <tr class="separator:a2a1ebc01a743038cc1b920fda29ac17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5606cdc13b89d82410829db7f9a8794f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a5606cdc13b89d82410829db7f9a8794f">getPackets</a> (const std::string &amp;name) const</td></tr>
+<tr class="memitem:a5606cdc13b89d82410829db7f9a8794f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; URTS::ProxyBroadcasts::DataPacket::DataPacket &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a5606cdc13b89d82410829db7f9a8794f">getPackets</a> (const std::string &amp;name) const</td></tr>
 <tr class="separator:a5606cdc13b89d82410829db7f9a8794f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:adb1e3c25e4252ec07feac6e2fdc9ef27"><td class="memItemLeft" align="right" valign="top"><a id="adb1e3c25e4252ec07feac6e2fdc9ef27"></a>
@@ -222,7 +222,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void URTS::Services::Scalable::PacketCache::CappedCollection::addPacket </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &amp;&#160;</td>
+          <td class="paramtype">const URTS::ProxyBroadcasts::DataPacket::DataPacket &amp;&#160;</td>
           <td class="paramname"><em>packet</em></td><td>)</td>
           <td></td>
         </tr>
@@ -256,7 +256,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void URTS::Services::Scalable::PacketCache::CappedCollection::addPacket </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a> &amp;&amp;&#160;</td>
+          <td class="paramtype">URTS::ProxyBroadcasts::DataPacket::DataPacket &amp;&amp;&#160;</td>
           <td class="paramname"><em>packet</em></td><td>)</td>
           <td></td>
         </tr>
@@ -315,7 +315,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a>&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
+          <td class="memname">std::vector&lt;URTS::ProxyBroadcasts::DataPacket::DataPacket&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -340,7 +340,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a>&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
+          <td class="memname">std::vector&lt;URTS::ProxyBroadcasts::DataPacket::DataPacket&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -382,7 +382,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a>&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
+          <td class="memname">std::vector&lt;URTS::ProxyBroadcasts::DataPacket::DataPacket&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -431,7 +431,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a>&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
+          <td class="memname">std::vector&lt;URTS::ProxyBroadcasts::DataPacket::DataPacket&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -476,7 +476,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_data_packet.html">URTS::ProxyBroadcasts::DataPacket::DataPacket</a>&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
+          <td class="memname">std::vector&lt;URTS::ProxyBroadcasts::DataPacket::DataPacket&gt; URTS::Services::Scalable::PacketCache::CappedCollection::getPackets </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>

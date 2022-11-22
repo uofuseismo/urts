@@ -1,4 +1,5 @@
 var group___modules___broadcasts =
 [
-    [ "Import Broadcasts", "group___modules___broadcasts___import.html", "group___modules___broadcasts___import" ]
+    [ "Internal Broadcasts", "group___modules___broadcasts___internal.html", null ],
+    [ "External Broadcasts", "group___modules___broadcasts___external.html", null ]
 ];

@@ -1,0 +1,4 @@
+<map id="External Broadcasts" name="External Broadcasts">
+<area shape="rect" id="node1" href="$group___modules___broadcasts.html" title="Broadcasts are publisher&#45;subscriber messaging patterns. In this case there are producer(s) that creat..." alt="" coords="5,5,100,31"/>
+<area shape="rect" id="node2" title="These are modules for importing and exporting data streams by other utilities like Earthworm." alt="" coords="148,5,300,31"/>
+</map>
