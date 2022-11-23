@@ -3,7 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <vector>
-namespace URTS::ProxyBroadcasts::DataPacket
+namespace URTS::Broadcasts::Internal::DataPacket
 {
  class DataPacket;
 }
@@ -94,7 +94,7 @@ public:
     ///       during initialization.  Additionally, the data packet must have
     ///       a positive sampling rate and data must actually exist on the
     ///       packet.
-    void addPacket(const URTS::ProxyBroadcasts::DataPacket::DataPacket &packet);
+    void addPacket(const URTS::Broadcasts::Internal::DataPacket::DataPacket &packet);
     /// @brief Attempts to add the given packet to the buffer.
     /// @param[in,out] packet   The packet to add to the buffer.  On exit,
     ///                         packet's behavior is undefined.
@@ -103,7 +103,7 @@ public:
     ///       during initialization.  Additionally, the data packet must have
     ///       a positive sampling rate and data must actually exist on the
     ///       packet.
-    void addPacket(URTS::ProxyBroadcasts::DataPacket::DataPacket &&packet);
+    void addPacket(URTS::Broadcasts::Internal::DataPacket::DataPacket &&packet);
     /// @}
 
     /// @name Querying Packets
@@ -119,12 +119,12 @@ public:
     /// @result All packets from time t0 to the most recent packet.
     /// @note If data younger than t0 has expired then the oldest sample in 
     ///       the buffer will be the first element of the result.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> getPackets(double t0) const;
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets(double t0) const;
     /// @brief Gets all packets beginning at time t0 in micrseconds.
     /// @param[in] t0  The UTC start time of the query in microseconds since
     ///                the epoch.
     /// @result All packets from time t0 to the most recent packet.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::chrono::microseconds &t0) const;
     /// @brief Gets all packets between time t0 and t1.
     /// @param[in] t0  The UTC start time of the query in seconds since
@@ -133,19 +133,19 @@ public:
     ///                the epoch.
     /// @result All packets from t0 to t1.
     /// @throws std::invalid_argument if t0 >= t1.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> getPackets(double t0, double t1) const;
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets(double t0, double t1) const;
     /// @param[in] t0  The UTC start time of the query in microseconds
     ///                since the epoch.
     /// @param[in] t1  The UTC end time of the query in micrsoseconds
     ///                since the epoch.
     /// @result All packets from t0 to t1.
     /// @throws std::invalid_argument if t0 >= t1.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::chrono::microseconds &t0,
                    const std::chrono::microseconds &t1) const;
     /// @result All the datapackets in the buffer.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> getPackets() const;
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets() const;
     /// @}
 
     /// @name Cleaning

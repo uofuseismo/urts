@@ -164,7 +164,7 @@ DataPacket::~DataPacket() = default;
 /// Network
 void DataPacket::setNetwork(const std::string &network)
 {
-    if (isEmpty(network)){throw std::invalid_argument("Network is empty");}
+    if (::isEmpty(network)){throw std::invalid_argument("Network is empty");}
     pImpl->mNetwork = network;
 }
 
@@ -182,7 +182,7 @@ bool DataPacket::haveNetwork() const noexcept
 /// Station
 void DataPacket::setStation(const std::string &station)
 {
-    if (isEmpty(station)){throw std::invalid_argument("Station is empty");}
+    if (::isEmpty(station)){throw std::invalid_argument("Station is empty");}
     pImpl->mStation = station;
 }
 
@@ -200,7 +200,7 @@ bool DataPacket::haveStation() const noexcept
 /// Channel
 void DataPacket::setChannel(const std::string &channel)
 {
-    if (isEmpty(channel)){throw std::invalid_argument("Channel is empty");}
+    if (::isEmpty(channel)){throw std::invalid_argument("Channel is empty");}
     pImpl->mChannel = channel;
 }
 
@@ -218,7 +218,7 @@ bool DataPacket::haveChannel() const noexcept
 /// Location code
 void DataPacket::setLocationCode(const std::string &location)
 {
-    if (isEmpty(location)){throw std::invalid_argument("Location is empty");}
+    if (::isEmpty(location)){throw std::invalid_argument("Location is empty");}
     pImpl->mLocationCode = location;
 }
 

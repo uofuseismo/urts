@@ -7,7 +7,7 @@ namespace UMPS::Logging
 {
  class ILog;
 }
-namespace URTS::ProxyBroadcasts::DataPacket
+namespace URTS::Broadcasts::Internal::DataPacket
 {
  class DataPacket;
 }
@@ -51,7 +51,7 @@ public:
     /// @throws std::runtime_error if \c isInitialized() is false.
     /// @note If the underlying buffer is full and the data is expired this
     ///       packet will not be added.
-    void addPacket(const URTS::ProxyBroadcasts::DataPacket::DataPacket &packet);
+    void addPacket(const URTS::Broadcasts::Internal::DataPacket::DataPacket &packet);
     /// @brief Adds a packet to the collection.  This uses move semantics and
     ///        is slightly faster.
     /// @param[in,out] packet  The datapacket to add to the collection.
@@ -61,7 +61,7 @@ public:
     /// @throws std::runtime_error if \c isInitialized() is false.
     /// @note If the underlying buffer is full and the data is expired this
     ///       packet will not be added.
-    void addPacket(URTS::ProxyBroadcasts::DataPacket::DataPacket &&packet);
+    void addPacket(URTS::Broadcasts::Internal::DataPacket::DataPacket &&packet);
     /// @result True indicates that the sensor exists in the collection.
     [[nodiscard]] bool haveSensor(const std::string &network,
                                   const std::string &station,
@@ -92,14 +92,14 @@ public:
     /// @note If data younger than t0 has expired then the oldest sample in 
     ///       the buffer will be the first element of the result.
     /// @throws std::invalid_argument if \c haveSensor(name) is false.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket> getPackets(const std::string &name, double t0) const;
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets(const std::string &name, double t0) const;
     /// @param[in] name  The name of the channel.
     /// @param[in] t0    The UTC start time of the query in microseconds since
     ///                  the epoch.
     /// @result All packets from time t0 to the most recent packet for the
     ///         given station.
     /// @throws std::invalid_argument if \c haveSensor(name) is false.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::string &name, const std::chrono::microseconds &t0) const;
     /// @brief Gets all packets between time t0 and t1.
     /// @param[in] name  The name of the channel.
@@ -109,7 +109,7 @@ public:
     ///                  the epoch.
     /// @result All packets from t0 to t1.
     /// @throws std::invalid_argument if t0 >= t1.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::string &name, double t0, double t1) const;
     /// @param[in] name  The name of the channel.
     /// @param[in] t0    The UTC start time of the query in microseconds
@@ -118,13 +118,13 @@ public:
     ///                  since the epoch.
     /// @result All packets from t0 to t1.
     /// @throws std::invalid_argument if t0 >= t1.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::string &name,
                    const std::chrono::microseconds &t0,
                    const std::chrono::microseconds &t1) const;
     /// @result All the datapackets in the buffer.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::vector<URTS::ProxyBroadcasts::DataPacket::DataPacket>
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         getPackets(const std::string &name) const;
     /// @}
 

@@ -48,6 +48,7 @@ if (${FindEarthworm_FOUND})
       add_compile_definitions(WITH_MSEED)
    endif()
 endif()
+add_compile_definitions(URTS_SRC)
 
 set(VERSION_SRC
     src/version.cpp)
@@ -68,6 +69,8 @@ set(GENERIC_SRC
     src/services/standalone/incrementer/requestorOptions.cpp
     src/services/scalable/packetCache/bulkDataRequest.cpp
     src/services/scalable/packetCache/bulkDataResponse.cpp
+    src/services/scalable/packetCache/cappedCollection.cpp
+    src/services/scalable/packetCache/circularBuffer.cpp
     src/services/scalable/packetCache/dataRequest.cpp
     src/services/scalable/packetCache/dataResponse.cpp
     src/services/scalable/packetCache/sensorRequest.cpp
@@ -85,9 +88,9 @@ set_target_properties(urts PROPERTIES
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO)
 target_include_directories(urts
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            PUBLIC ${UMPS_INCLUDE_DIR}
-                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>
-                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
 target_link_libraries(urts
                       PRIVATE ${UMPS_LIBRARY} Threads::Threads)
 if (${BUILD_EW})
