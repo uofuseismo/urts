@@ -25,5 +25,6 @@ var hierarchy =
     [ "URTS::Services::Standalone::Incrementer::ServiceOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html", null ],
-    [ "URTS::Broadcasts::External::Earthworm::WaveRing", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html", null ]
+    [ "URTS::Broadcasts::External::Earthworm::WaveRing", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html", null ],
+    [ "URTS::Services::Scalable::PacketCache::WigginsInterpolator", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html", null ]
 ];
