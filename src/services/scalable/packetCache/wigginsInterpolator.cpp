@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <vector>
 #include <cstdbool>
 #include <algorithm>
 #include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
@@ -8,6 +9,117 @@
 
 using namespace URTS::Services::Scalable::PacketCache;
 namespace UDP = URTS::Broadcasts::Internal::DataPacket;
+
+namespace
+{
+std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
+    const int64_t gapTolerance,
+    const std::vector<std::pair<int64_t, int64_t>> &packetStartEndTimes,
+    const bool lSorted)
+{
+    auto nPackets = static_cast<int> (packetStartEndTimes.size());
+    std::vector<std::pair<int64_t,int64_t>> gapStartEnd;
+    gapStartEnd.reserve(nPackets);
+    if (lSorted)
+    {
+        for (int i = 1; i < nPackets; ++i)
+        {
+            auto t0 = packetStartEndTimes[i-1].second;
+            auto t1 = packetStartEndTimes[i].first;
+#ifndef NDEBUG
+            assert(t1 - t0 >= 0);
+#endif
+            if (t1 - t0 > gapTolerance)
+            {
+                gapStartEnd.push_back( std::pair{t0, t1} );
+            }
+        }
+    }
+    else
+    {
+        // For each packet...
+        for (int i = 0; i < nPackets; ++i)
+        {
+            // Hunt for the adjacent packet
+            auto t0 = packetStartEndTimes[i].second; 
+            if (i > 1){t0 = packetStartEndTimes[i - 1].second;}
+            std::pair<int64_t, int64_t> nearestPacket;
+            nearestPacket.first = t0;
+            auto dMin = std::numeric_limits<int64_t>::max(); 
+            for (int j = 0; j < nPackets; ++j)
+            {
+                if (i == j){continue;}
+                auto t1 = packetStartEndTimes[j].first; 
+                if (t1 < t0){continue;}
+                if (t1 - t0 < dMin)
+                {
+                    dMin = t1 - t0;
+                    nearestPacket.second = t1;
+                }
+            }
+            // Check if the adjacent packet exceeds the gap tolerance
+            if (nearestPacket.second - nearestPacket.first > gapTolerance)
+            {
+                gapStartEnd.push_back(nearestPacket);
+            }
+        }
+    }
+    return gapStartEnd;
+        
+}
+
+void fillGapPointer(const size_t nNewSamples,
+                    const int64_t targetSamplingPeriodMicroSeconds,
+                    const std::vector<int64_t> &timesToEvaluate,
+                    const std::vector<std::pair<int64_t, int64_t>> &gapStartEnd,
+                    std::vector<int8_t> *gapIndicator)
+{
+    // Less than this difference we're basically collocating
+    auto targetDt2
+         = static_cast<int64_t> (0.5*targetSamplingPeriodMicroSeconds);
+    // Fill the default result
+    gapIndicator->resize(nNewSamples, 0);
+    if (gapStartEnd.empty()){return;} //No gaps
+    // Fill gaps...
+    const auto *__restrict__ times = timesToEvaluate.data();
+    auto *__restrict__ gapPointer = gapIndicator->data();
+    for (const auto &gap : gapStartEnd)
+    {
+        auto t0 = gap.first;
+        auto t1 = gap.second; 
+        // Locate the times between these samples
+        auto startPointer = std::lower_bound(timesToEvaluate.begin(),
+                                             timesToEvaluate.end(), t0);
+        size_t iStart = std::distance(timesToEvaluate.begin(), startPointer);
+        while (iStart > 0)
+        {
+            if (times[iStart] < t0){break;}
+            iStart = iStart - 1;
+        } 
+        auto endPointer = std::lower_bound(timesToEvaluate.begin(),
+                                           timesToEvaluate.end(), t1);
+        size_t iEnd = std::distance(timesToEvaluate.begin(), endPointer);
+        iEnd = std::min(iEnd, nNewSamples);
+        while (iEnd < nNewSamples)
+        {
+            if (times[iEnd] > t1){break;}
+            iEnd = iEnd + 1;
+        }
+        for (auto it = iStart; it < iEnd; ++it)
+        {
+            // The gap tolerance has been exceeded since this defined as gap.
+            // As long as this isn't the input datapoint then this is in the
+            // gap.
+            if (t0 + targetDt2 < times[it] && times[it] < t1 - targetDt2)
+            {
+                 gapPointer[it] = 1;
+            }
+        }
+    }
+}
+                
+                    
+}
 
 class WigginsInterpolator::WigginsInterpolatorImpl
 {
@@ -172,7 +284,7 @@ void WigginsInterpolator::interpolate(
                 = static_cast<double> (1000000./samplingRate);
             auto t0 = packets[iPacket].getStartTime().count();
             auto t1 = packets[iPacket].getEndTime().count();
-            startEndTimes.push_back(std::pair(t0, t1)); 
+            startEndTimes.push_back(std::pair{t0, t1});
             auto *__restrict__ timesPtr = &times[i0];
             for (int i = 0; i < nSamplesInPacket; ++i)
             {
@@ -216,9 +328,18 @@ void WigginsInterpolator::interpolate(
                                              checkSorting);
     if (!pImpl->mSignal.empty())
     {
+        auto nNewSamples = pImpl->mSignal.size(); 
         pImpl->mStartTime = std::chrono::microseconds{time0};
         pImpl->mEndTime = std::chrono::microseconds{timesToEvaluate.back()}; 
-        pImpl->mGapIndicator.resize(pImpl->mSignal.size(), 0);
+        // Perform gap check
+        auto gapStartEnd = ::createGapStartEnd(pImpl->mGapTolerance.count(),
+                                               startEndTimes,
+                                               isSorted);
+        ::fillGapPointer(nNewSamples,
+                         targetSamplingPeriodMicroSeconds,
+                         timesToEvaluate,
+                         gapStartEnd,
+                         &pImpl->mGapIndicator);
     }
 }
 

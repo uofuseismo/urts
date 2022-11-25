@@ -1,3 +1,4 @@
+#include <fstream>
 #include <cmath>
 #include <limits>
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
@@ -6,6 +7,7 @@
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
+#include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include <gtest/gtest.h>
 
@@ -312,7 +314,7 @@ TEST(ServicesScalablePacketCache, BulkDataRequest)
     }
 }
 
-TEST(PacketCache, BulkDataResponse)
+TEST(ServicesScalablePacketCache, BulkDataResponse)
 {
     const std::string network{"UU"};
     const std::string station{"VRUT"};
@@ -415,6 +417,163 @@ TEST(PacketCache, BulkDataResponse)
         }
         i = i + 1;
     }
+}
+
+TEST(ServicesScalablePacketCache, Wiggins)
+{
+    const double samplingRate{200};
+    const double targetSamplingRate{250};
+    const double targetSamplingPeriod = 1/targetSamplingRate;
+    std::chrono::microseconds gapTolerance{55000};
+    auto infl = std::ifstream("data/gse2.txt");
+    double yDiff{0};
+    std::vector<double> t;
+    std::vector<double> x;
+    t.reserve(12000);
+    x.reserve(12000);
+    std::string line;
+    while (std::getline(infl, line))
+    {
+        t.push_back(t.size()/samplingRate);
+        x.push_back(std::stod(line));
+    }   
+    infl.close();
+    EXPECT_EQ(x.size(), 12000);
+    std::vector<double> newTimes;
+    std::vector<double> yRef;
+    newTimes.reserve(14999);
+    yRef.reserve(14999);
+    infl = std::ifstream("data/wigint.txt");
+    while (std::getline(infl, line))
+    {   
+        double t, yi; 
+        sscanf(line.c_str(), "%lf,%lf\n", &t, &yi);
+        newTimes.push_back(t);
+        yRef.push_back(yi);
+    }   
+    infl.close();
+    EXPECT_EQ(yRef.size(), 14999);
+    // Interpolate this
+    /*
+    auto yi = weightedAverageSlopes(t, x, newTimes.front(),
+                                    newTimes.back(), targetSamplingRate);
+    EXPECT_EQ(yi.size(), yRef.size());
+    double yDiff = 0;
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {   
+        yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
+    */
+    // Packetize this data
+    auto n = static_cast<int> (x.size());
+    std::vector<UDP::DataPacket> packets;
+    int packetSize = 100;
+    int i0 = 0;
+    double t0 = 1644516968;
+    std::chrono::microseconds t0MuSec{static_cast<int64_t> (std::round(t0*1000000))};
+    double t1 = t0 + (yRef.size() - 1)*targetSamplingPeriod;
+    std::chrono::microseconds t1MuSec{static_cast<int64_t> (std::round(t1*1000000))};
+    for (int i = 0; i < n; ++i)
+    {
+        UDP::DataPacket packet;
+        auto i1 = std::min(i0 + packetSize, n);
+        auto nCopy = i1 - i0;
+        packet.setNetwork("UU");
+        packet.setStation("GH2");
+        packet.setChannel("EHZ");
+        packet.setLocationCode("01");
+        //auto startTime = static_cast<int64_t>
+        //                 ( std::round( (t0 + i0*(1./samplingRate))*1.e6 ) );
+        //packet.setStartTime(std::chrono::microseconds{startTime} );
+        packet.setStartTime(t0 + i0/samplingRate);
+        packet.setSamplingRate(samplingRate);
+        packet.setData(nCopy, &x[i0]);
+        packets.push_back(std::move(packet));
+        i0 = i1;
+        if (i0 == n){break;}
+    }
+    auto packetsCopy = packets;
+    // Interpolate it
+    WigginsInterpolator interpolator;
+    EXPECT_NO_THROW(interpolator.setTargetSamplingRate(targetSamplingRate));
+    EXPECT_NO_THROW(interpolator.setGapTolerance(gapTolerance));
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
+    EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
+    EXPECT_EQ(interpolator.getNumberOfSamples(),
+              static_cast<int> (newTimes.size()));
+    auto yi = interpolator.getSignal();
+    yDiff = 0;
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {
+        yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
+    // There should be no gaps
+    auto gapPtr = interpolator.getGapIndicatorPointer();
+    for (int i = 0; i < interpolator.getNumberOfSamples(); ++i)
+    {
+        EXPECT_EQ(gapPtr[i], 0);
+    }
+    // Try clearing the signal
+    interpolator.clearSignal();
+    EXPECT_NEAR(interpolator.getTargetSamplingRate(),
+                targetSamplingRate, 1.e-14);
+    EXPECT_EQ(interpolator.getNumberOfSamples(), 0);
+    EXPECT_EQ(interpolator.getGapTolerance(), gapTolerance);
+    // Add some duplicate packets (really wherever)
+    packets.push_back(packets[0]);
+    packets.push_back(packets[1]);
+    // And change the order
+    std::srand(500582);
+    std::random_shuffle(packets.begin(), packets.end());
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
+    EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
+    EXPECT_EQ(interpolator.getNumberOfSamples(),
+              static_cast<int> (newTimes.size()));
+    yi = interpolator.getSignal();
+    yDiff = 0;
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {
+        yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
+    // Make a gap and let the interpolator chew
+    packets = packetsCopy;
+    auto packet1 = packets.at(1);
+    auto packet5 = packets.at(5);
+    packets.erase(packets.begin() + 5);
+    packets.erase(packets.begin() + 1);
+    interpolator.clearSignal();
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    gapPtr = interpolator.getGapIndicatorPointer();
+    yi = interpolator.getSignal();
+    EXPECT_EQ(yi.size(), yRef.size());
+    yDiff = 0;
+    // Note, the interpolation happens at previous packet's end time
+    // and subsequent packet's start time
+    auto t0Packet1 = packet1.getStartTime().count() - static_cast<int64_t> (targetSamplingPeriod*1.e6);
+    auto t1Packet1 = packet1.getEndTime().count()   + static_cast<int64_t> (targetSamplingPeriod*1.e6); 
+    auto t0Packet5 = packet5.getStartTime().count() - static_cast<int64_t> (targetSamplingPeriod*1.e6);
+    auto t1Packet5 = packet5.getEndTime().count()   + static_cast<int64_t> (targetSamplingPeriod*1.e6);
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {
+        auto time = t0MuSec.count()
+                  + static_cast<int64_t>
+                    (std::round(i*targetSamplingPeriod*1.e6));
+        if ( (time > t0Packet1 && time < t1Packet1) ||
+             (time > t0Packet5 && time < t1Packet5) )
+        {
+            EXPECT_EQ(gapPtr[i], 1);
+        }
+        else
+        {
+            EXPECT_EQ(gapPtr[i], 0);
+        }
+    }
+      
 }
 
 }
