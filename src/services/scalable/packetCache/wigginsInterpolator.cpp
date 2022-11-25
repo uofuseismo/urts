@@ -42,7 +42,7 @@ std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
         {
             // Hunt for the adjacent packet
             auto t0 = packetStartEndTimes[i].second; 
-            if (i > 1){t0 = packetStartEndTimes[i - 1].second;}
+            //if (i > 1){t0 = packetStartEndTimes[i - 1].second;}
             std::pair<int64_t, int64_t> nearestPacket;
             nearestPacket.first = t0;
             auto dMin = std::numeric_limits<int64_t>::max(); 

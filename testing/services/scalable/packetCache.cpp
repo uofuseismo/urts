@@ -573,7 +573,27 @@ TEST(ServicesScalablePacketCache, Wiggins)
             EXPECT_EQ(gapPtr[i], 0);
         }
     }
-      
+    // Shuffle and repeat
+    std::random_shuffle(packets.begin(), packets.end());
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    yi = interpolator.getSignal();
+    gapPtr = interpolator.getGapIndicatorPointer();
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {
+        auto time = t0MuSec.count()
+                  + static_cast<int64_t>
+                    (std::round(i*targetSamplingPeriod*1.e6));
+        if ( (time > t0Packet1 && time < t1Packet1) ||
+             (time > t0Packet5 && time < t1Packet5) )
+        {
+            EXPECT_EQ(gapPtr[i], 1);
+        }
+        else
+        {
+            EXPECT_EQ(gapPtr[i], 0);
+        }
+    }
+ 
 }
 
 }

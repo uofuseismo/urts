@@ -107,7 +107,7 @@ endif()
 ##########################################################################################
 #                                         Unit Tests                                     #
 ##########################################################################################
-#file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
+file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
     testing/broadcasts/internal/dataPacket.cpp
