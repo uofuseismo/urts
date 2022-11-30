@@ -42,14 +42,6 @@ public:
     void initialize(const ServiceOptions &options);
     /// @result True indicates that the service is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @brief Gets the name of the item being incremented.
-    /// @throws std::runtime_error if the class is not initialized.
-    //[[nodiscard]] std::string getName() const;
-    /// @brief Gets the address to submit requests to this service.
-    /// @throws std::runtime_error if the class is not running.
-    //[[nodiscard]] std::string getRequestAddress() const;
-    /// @result The details for connecting to the service.
-    //[[nodiscard]] ConnectionInformation::Details getConnectionDetails() const;
 
     /// @brief Starts the service.
     void start();

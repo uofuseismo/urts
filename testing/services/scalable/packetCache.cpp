@@ -1,10 +1,12 @@
 #include <fstream>
 #include <cmath>
 #include <limits>
+#include <umps/authentication/zapOptions.hpp>
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
 #include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
 #include "urts/services/scalable/packetCache/dataRequest.hpp"
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
+#include "urts/services/scalable/packetCache/requestorOptions.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
 #include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
@@ -114,7 +116,7 @@ TEST(ServicesScalablePacketCache, SensorRequest)
     EXPECT_EQ(requestCopy.getIdentifier(), id);
 }
 
-TEST(PacketCache, SensorResponse)
+TEST(ServicesScalablePacketCache, SensorResponse)
 {
     const std::unordered_set<std::string> names{"UU.FORK.HHN.01",
                                                 "UU.FORK.HHE.01",
@@ -417,6 +419,43 @@ TEST(ServicesScalablePacketCache, BulkDataResponse)
         }
         i = i + 1;
     }
+}
+
+TEST(ServicesStandaloneIncrementer, RequestorOptions)
+{
+    const std::string address{"tcp://127.0.0.1:5550"};
+    const int sendHWM{105};
+    const int recvHWM{106};
+    const std::chrono::milliseconds sendTimeOut{120};
+    const std::chrono::milliseconds recvTimeOut{145};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    RequestorOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvHWM));
+    options.setSendTimeOut(sendTimeOut);
+    options.setReceiveTimeOut(recvTimeOut);
+    options.setZAPOptions(zapOptions);
+
+    RequestorOptions copy(options);
+    EXPECT_EQ(copy.getAddress(), address);
+    EXPECT_EQ(copy.getSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(copy.getReceiveHighWaterMark(), recvHWM);
+    EXPECT_EQ(copy.getSendTimeOut(), sendTimeOut); 
+    EXPECT_EQ(copy.getReceiveTimeOut(), recvTimeOut);
+    EXPECT_EQ(copy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+
+    options.clear();
+    EXPECT_EQ(options.getSendHighWaterMark(), 4096);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 8192);
+    EXPECT_EQ(options.getSendTimeOut(), std::chrono::milliseconds {0});
+    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds {5000});
+    zapOptions.setGrasslandsClient();
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
 }
 
 TEST(ServicesScalablePacketCache, Wiggins)

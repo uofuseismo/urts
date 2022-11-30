@@ -1,10 +1,10 @@
 #include <string>
 #include <chrono>
 #include <umps/authentication/zapOptions.hpp>
-#include "urts/services/standalone/incrementer/requestorOptions.hpp"
+#include "urts/services/scalable/packetCache/requestorOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Services::Standalone::Incrementer;
+using namespace URTS::Services::Scalable::PacketCache;
 namespace UAuth = UMPS::Authentication;
 
 class RequestorOptions::RequestorOptionsImpl
@@ -13,9 +13,9 @@ public:
     std::string mAddress;
     UAuth::ZAPOptions mZAPOptions;
     int mSendHighWaterMark{4096};
-    int mReceiveHighWaterMark{4096};
+    int mReceiveHighWaterMark{8192};
     std::chrono::milliseconds mSendTimeOut{0};
-    std::chrono::milliseconds mReceiveTimeOut{2000};
+    std::chrono::milliseconds mReceiveTimeOut{5000};
 };
 
 /// C'tor
