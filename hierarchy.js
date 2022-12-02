@@ -3,7 +3,7 @@ var hierarchy =
     [ "URTS::Services::Scalable::PacketCache::CappedCollection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html", null ],
     [ "URTS::Services::Scalable::PacketCache::CircularBuffer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Counter", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html", null ],
-    [ "IMessage", null, [
+    [ "UMPS::MessageFormats::IMessage", null, [
       [ "URTS::Broadcasts::External::Earthworm::TraceBuf2< T >", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html", null ],
       [ "URTS::Broadcasts::Internal::DataPacket::DataPacket", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html", null ],
       [ "URTS::Services::Scalable::PacketCache::BulkDataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html", null ],
@@ -20,6 +20,7 @@ var hierarchy =
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Requestor", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor.html", null ],
+    [ "URTS::Services::Scalable::PacketCache::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Service", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service.html", null ],
     [ "URTS::Services::Standalone::Incrementer::ServiceOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html", null ],
