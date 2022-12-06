@@ -2,8 +2,7 @@
 #include <memory>
 #include <chrono>
 #include <thread>
-#include <csignal>
-#include <condition_variable>
+#include <filesystem>
 #include <mutex>
 #ifndef NDEBUG
 #include <cassert>
@@ -11,8 +10,6 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <filesystem>
-#include <umps/modules/module.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
 #include <umps/logging/dailyFile.hpp>
@@ -35,12 +32,7 @@
 #include <umps/services/command/terminateResponse.hpp>
 #include <umps/modules/operator/readZAPOptions.hpp>
 #include <umps/messaging/context.hpp>
-#include <umps/messaging/requestRouter/requestOptions.hpp>
 #include <umps/authentication/zapOptions.hpp>
-#include <umps/authentication/certificate/keys.hpp>
-#include <umps/authentication/certificate/userNameAndPassword.hpp>
-//#include <umps/proxyBroadcasts/dataPacket/subscriber.hpp>
-//#include <umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp>
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "urts/broadcasts/internal/dataPacket/publisher.hpp"
 #include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
@@ -117,14 +109,19 @@ struct ProgramOptions
                 throw std::runtime_error("Failed to make log directory");
             }
         }
-        // Broadcast name
+        //----------------------------Publisher Options-----------------------//
         mDataPacketBroadcastName
             = propertyTree.get<std::string>
-                ("General.dataPacketBroadcast", mDataPacketBroadcastName);
+                ("PublisherOptions.dataPacketBroadcast",
+                 mDataPacketBroadcastName);
         if (mDataPacketBroadcastName.empty())
         {
-            throw std::runtime_error("General.dataPacketBroadcast not set");
+            throw std::runtime_error(
+               "PublisherOptions.dataPacketBroadcast not set");
         }
+
+        mBroadcastAddress
+            = propertyTree.get<std::string> ("PublisherOptions.address", "");
         //----------------------------- Earthworm ----------------------------//
         // EW_PARAMS environment variable
         mEarthwormParametersDirectory = propertyTree.get<std::string>
@@ -159,19 +156,19 @@ struct ProgramOptions
     std::string mModuleName{MODULE_NAME};
     std::string mEarthwormInstallation{"INST_UNKNOWN"};
     std::string mEarthwormWaveRingName{"WAVE_RING"};
-    //std::string operatorAddress;
     std::string mDataPacketBroadcastName{"DataPacket"};
+    std::string mBroadcastAddress{""};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
-    std::filesystem::path mLogFileDirectory{"/var/log/umps"};
+    std::filesystem::path mLogFileDirectory{"/var/log/urts"};
     std::chrono::seconds heartBeatInterval{30};
     int mEarthwormWait{0};
-    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::Info;
+    UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
 };
 
 /// @result The logger for this application.
 std::shared_ptr<UMPS::Logging::ILog>
-    createLogger(const std::string &moduleName,
-                 const std::filesystem::path logFileDirectory = "/var/log/umps",
+    createLogger(const std::string &moduleName = MODULE_NAME,
+                 const std::filesystem::path logFileDirectory = "/var/log/urts",
                  const UMPS::Logging::Level verbosity = UMPS::Logging::Level::Info,
                  const int hour = 0, const int minute = 0)
 {
@@ -476,13 +473,17 @@ public:
     bool mInitialized{false};
 };
 
+///--------------------------------------------------------------------------///
+///                                 Main Function                            ///
+///--------------------------------------------------------------------------///
+
 int main(int argc, char *argv[])
 {
     // Get the ini file from the command line
     std::string iniFile;
     try 
     {
-        iniFile = parseCommandLineOptions(argc, argv);
+        iniFile = ::parseCommandLineOptions(argc, argv);
         if (iniFile.empty()){return EXIT_SUCCESS;}
     }
     catch (const std::exception &e)
@@ -504,12 +505,10 @@ int main(int argc, char *argv[])
     // Create the logger
     constexpr int hour = 0;
     constexpr int minute = 0;
-    auto logger = createLogger(programOptions.mModuleName,
-                               programOptions.mLogFileDirectory,
-                               programOptions.mVerbosity,
-                               hour, minute);
-    // Initialize the wave ring
-
+    auto logger = ::createLogger(programOptions.mModuleName,
+                                 programOptions.mLogFileDirectory,
+                                 programOptions.mVerbosity,
+                                 hour, minute);
     // This module only needs one context.  There's not much data to move.
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
     // Initialize the modules
@@ -530,13 +529,18 @@ int main(int argc, char *argv[])
         processManager.insert(std::move(heartbeat));
 
         logger->debug("Creating packet broadcast process...");
-        auto packetAddress
-            = uOperator->getProxyBroadcastFrontendDetails(
-                 programOptions.mDataPacketBroadcastName).getAddress();
+        auto packetAddress = programOptions.mBroadcastAddress;
+        if (::isEmpty(packetAddress))
+        {
+            packetAddress
+                = uOperator->getProxyBroadcastFrontendDetails(
+                     programOptions.mDataPacketBroadcastName).getAddress();
+            programOptions.mBroadcastAddress = packetAddress;
+        }
         UDP::PublisherOptions packetPublisherOptions;
         auto packetPublisher
             = std::make_unique<UDP::Publisher> (context, logger);
-        packetPublisherOptions.setAddress(packetAddress);
+        packetPublisherOptions.setAddress(programOptions.mBroadcastAddress);
         packetPublisherOptions.setZAPOptions(programOptions.mZAPOptions);
         packetPublisher->initialize(packetPublisherOptions);
 
@@ -573,7 +577,7 @@ int main(int argc, char *argv[])
     // The main thread waits and, when requested, sends a stop to all processes
     logger->info("Starting main thread...");
     processManager.handleMainThread();
-     // Done
+    // Done
     logger->info("Exiting...");
     return EXIT_SUCCESS;
 }

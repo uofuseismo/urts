@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <filesystem>
 #include <boost/property_tree/ptree.hpp>
@@ -204,6 +203,7 @@ int ServiceOptions::getReceiveHighWaterMark() const noexcept
     return pImpl->mReceiveHighWaterMark;
 }
 
+/*
 void ServiceOptions::parseInitializationFile(const std::string &iniFile,
                                              const std::string &section)
 {
@@ -222,10 +222,12 @@ void ServiceOptions::parseInitializationFile(const std::string &iniFile,
                                          options.getSqlite3FileName());
     options.setSqlite3FileName(sqlite3FileName);
 
-    auto increment = propertyTree.get<int> (section + ".increment", 1); 
+    auto increment = propertyTree.get<int> (section + ".increment",
+                                            options.getIncrement()); 
     options.setIncrement(increment);
 
-    auto initialValue = propertyTree.get<int> (section + ".initialValue", 0); 
+    auto initialValue = propertyTree.get<int32_t> (section + ".initialValue",
+                                                   options.getInitialValue());
     options.setInitialValue(initialValue);
 
     // Connection
@@ -248,3 +250,4 @@ void ServiceOptions::parseInitializationFile(const std::string &iniFile,
     // Got everything and didn't throw -> copy to this
     *this = std::move(options);
 }
+*/

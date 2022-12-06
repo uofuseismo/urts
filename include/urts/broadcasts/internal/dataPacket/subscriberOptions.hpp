@@ -2,8 +2,10 @@
 #define URTS_BROADCASTS_INTERNAL_DATA_PACKET_SUBSCRIBER_OPTIONS_HPP
 #include <memory>
 #include <chrono>
-#include <umps/authentication/zapOptions.hpp>
-#include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
+namespace UMPS::Authentication
+{
+class ZAPOptions;
+}
 namespace URTS::Broadcasts::Internal::DataPacket
 {
 /// @class SubscriberOptions "subscriberOptions.hpp" "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
@@ -88,8 +90,6 @@ public:
     [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}
 
-    /// @result The subscriber options.
-    [[nodiscard]] UMPS::Messaging::PublisherSubscriber::SubscriberOptions getSubscriberOptions() const noexcept;
     /// @name Destructors
     /// @{
 

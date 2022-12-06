@@ -75,7 +75,10 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/dataResponse.cpp
     src/services/scalable/packetCache/sensorRequest.cpp
     src/services/scalable/packetCache/sensorResponse.cpp
+    #src/services/scalable/packetCache/service.cpp
+    src/services/scalable/packetCache/serviceOptions.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
+    src/services/scalable/packetCache/requestor.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
 if (${BUILD_EW})
@@ -135,16 +138,26 @@ add_test(NAME unitTests
 ##########################################################################################
 #                                            Modules                                     #
 ##########################################################################################
+add_executable(incrementer src/modules/services/standalone/incrementer.cpp)
+set_target_properties(incrementer PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_include_directories(incrementer PRIVATE
+                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                           Boost::program_options)
+target_link_libraries(incrementer
+                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
+
 if (${BUILD_EW})
    add_executable(broadcastWaveRing src/modules/broadcasts/broadcastWaveRing.cpp)
    set_target_properties(broadcastWaveRing PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
-   target_include_directories(broadcastWaveRing
-                              PRIVATE ${CMAKE_SOURCE_DIR}/include
-                                      ${UMPS_INCLUDE_DIR}
-                                      Boost::program_options)
+   target_include_directories(broadcastWaveRing PRIVATE
+                              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
    target_link_libraries(broadcastWaveRing
                          PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)

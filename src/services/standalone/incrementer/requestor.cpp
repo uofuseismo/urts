@@ -98,7 +98,7 @@ void Requestor::initialize(const RequestorOptions &options)
     URouterDealer::RequestOptions requestOptions;
     requestOptions.setAddress(options.getAddress());
     requestOptions.setZAPOptions(options.getZAPOptions());
-    requestOptions.setMessageFormats(createMessageFormats());
+    requestOptions.setMessageFormats(::createMessageFormats());
     requestOptions.setSendHighWaterMark(options.getSendHighWaterMark());
     requestOptions.setReceiveHighWaterMark(options.getReceiveHighWaterMark());
     requestOptions.setSendTimeOut(options.getSendTimeOut());

@@ -1,6 +1,8 @@
-#include <iostream>
+#include <umps/authentication/zapOptions.hpp>
 #include <umps/messaging/publisherSubscriber/subscriber.hpp>
 #include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
+#include <umps/messageFormats/messages.hpp>
+#include <umps/messageFormats/message.hpp>
 #include <umps/logging/log.hpp>
 #include "urts/broadcasts/internal/dataPacket/subscriber.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
@@ -19,9 +21,13 @@ public:
                    std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
+        std::unique_ptr<UMPS::MessageFormats::IMessage> dataPacketMessageType
+            = std::make_unique<DataPacket> (); 
+        mMessageTypes.add(dataPacketMessageType);
     }
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions mOptions;
+    UMPS::MessageFormats::Messages mMessageTypes;
 };
 
 /// C'tor
@@ -64,9 +70,15 @@ Subscriber& Subscriber::operator=(Subscriber &&subscriber) noexcept
 void Subscriber::initialize(const SubscriberOptions &options)
 {
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
-    pImpl->mOptions = options;
-    auto subscriberOptions = pImpl->mOptions.getSubscriberOptions();
+    UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
+    subscriberOptions.setAddress(options.getAddress());
+    subscriberOptions.setZAPOptions(options.getZAPOptions());
+    subscriberOptions.setReceiveTimeOut(options.getTimeOut());
+    subscriberOptions.setReceiveHighWaterMark(options.getHighWaterMark());
+    subscriberOptions.setMessageTypes(pImpl->mMessageTypes);
+    //auto subscriberOptions = pImpl->mOptions.getSubscriberOptions();
     pImpl->mSubscriber->initialize(subscriberOptions);
+    pImpl->mOptions = options;
 }
 
 /// Initialized?

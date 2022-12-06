@@ -118,10 +118,3 @@ std::chrono::milliseconds SubscriberOptions::getTimeOut() const noexcept
 {
     return pImpl->mOptions.getReceiveTimeOut();
 }
-
-/// Gets the options
-UMPS::Messaging::PublisherSubscriber::SubscriberOptions
-    SubscriberOptions::getSubscriberOptions() const noexcept
-{
-    return pImpl->mOptions;
-}

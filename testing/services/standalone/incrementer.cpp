@@ -200,22 +200,38 @@ TEST(ServicesStandaloneIncrementer, RequestorOptions)
 
 TEST(ServicesStandaloneIncrementer, ServiceOptions)
 {
+    /*
     const char *cParms = "[Incrementer]\nsqlite3FileName = tables/incrementer.sqlite3\ninitialValue = 2\nincrement = 3\naddress = tcp://localhost:5560\nsendHighWaterMark = 40\nreceiveHighWaterMark = 50\npollingTimeOut = 12";
-    //std::cout << cParms << std::endl;
     const std::string iniFileName = "incrementerExample.ini";
     std::ofstream tempFile(iniFileName);
     tempFile << cParms;
     tempFile.close();
+    */
+    constexpr std::chrono::milliseconds pollingTimeOut{12};
+    constexpr int receiveHighWaterMark{50};
+    constexpr int sendHighWaterMark{50};
+    const std::string address="tcp://localhost:5560";
+    const std::string sqlite3FileName = "tables/incrementer.sqlite3"; 
+    constexpr int increment{2};
+    constexpr int initialValue{3}; 
 
     ServiceOptions options; 
-    EXPECT_NO_THROW(options.parseInitializationFile(iniFileName));
-    EXPECT_EQ(options.getSqlite3FileName(), "tables/incrementer.sqlite3");
-    EXPECT_EQ(options.getInitialValue(), 2);
-    EXPECT_EQ(options.getIncrement(), 3);
-    EXPECT_EQ(options.getAddress(), "tcp://localhost:5560");
-    EXPECT_EQ(options.getSendHighWaterMark(), 40);
-    EXPECT_EQ(options.getReceiveHighWaterMark(), 50);
-    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {12});
+    EXPECT_NO_THROW(options.setSqlite3FileName(sqlite3FileName));
+    EXPECT_NO_THROW(options.setIncrement(increment));
+    EXPECT_NO_THROW(options.setInitialValue(initialValue));
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHighWaterMark));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(receiveHighWaterMark));
+    EXPECT_NO_THROW(options.setPollingTimeOut(pollingTimeOut));
+    
+    //EXPECT_NO_THROW(options.parseInitializationFile(iniFileName));
+    EXPECT_EQ(options.getSqlite3FileName(), sqlite3FileName);
+    EXPECT_EQ(options.getInitialValue(), initialValue);
+    EXPECT_EQ(options.getIncrement(), increment);
+    EXPECT_EQ(options.getAddress(), address);
+    EXPECT_EQ(options.getSendHighWaterMark(), sendHighWaterMark);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), receiveHighWaterMark);
+    EXPECT_EQ(options.getPollingTimeOut(), pollingTimeOut);
 
     options.clear();
     EXPECT_EQ(options.getInitialValue(), 0);
@@ -225,10 +241,12 @@ TEST(ServicesStandaloneIncrementer, ServiceOptions)
     EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
     EXPECT_FALSE(options.haveAddress());
 
+    /*
     if (std::filesystem::exists(iniFileName))
     {
         std::filesystem::remove(iniFileName);
     }
+    */
 }
 
 ///--------------------------------------------------------------------------///
