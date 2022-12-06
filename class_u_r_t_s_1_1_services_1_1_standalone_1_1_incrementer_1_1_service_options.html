@@ -93,7 +93,6 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_services_1_1_standal
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">URTS::Services::Standalone::Incrementer::ServiceOptions Class Reference</div>  </div>
@@ -103,13 +102,10 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_services_1_1_standal
 <p>The options that define the backend incrementer service.  
  <a href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#details">More...</a></p>
 
-<p><code>#include &quot;<a class="el" href="service_options_8hpp_source.html">urts/services/standalone/incrementer/serviceOptions.hpp</a>&quot;</code></p>
+<p><code>#include &quot;<a class="el" href="standalone_2incrementer_2service_options_8hpp_source.html">urts/services/standalone/incrementer/serviceOptions.hpp</a>&quot;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac80b55a3a0eae5295d93effd2ddb4b71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#ac80b55a3a0eae5295d93effd2ddb4b71">parseInitializationFile</a> (const std::string &amp;fileName, const std::string &amp;section=&quot;Incrementer&quot;)</td></tr>
-<tr class="memdesc:ac80b55a3a0eae5295d93effd2ddb4b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the options from an initialization file.  <a href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#ac80b55a3a0eae5295d93effd2ddb4b71">More...</a><br /></td></tr>
-<tr class="separator:ac80b55a3a0eae5295d93effd2ddb4b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Constructors</div></td></tr>
 <tr class="memitem:ae5638037c28ca5bdbee7fadf2c6b3613"><td class="memItemLeft" align="right" valign="top"><a id="ae5638037c28ca5bdbee7fadf2c6b3613"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#ae5638037c28ca5bdbee7fadf2c6b3613">ServiceOptions</a> ()</td></tr>
@@ -129,6 +125,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2e7ab36955a804aad8260dca8e46d67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment.  <a href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#a2e7ab36955a804aad8260dca8e46d67a">More...</a><br /></td></tr>
 <tr class="separator:a2e7ab36955a804aad8260dca8e46d67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Required Connection Options</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>Loads the options from an initialization file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fileName</td><td>The name of the initialization file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">section</td><td>The section of the initialization file with the incrementer service options to be parsed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the initialization file does not, exist cannot be parsed, does not have the specified section, or has incorrect information. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div></td></tr>
 <tr class="memitem:a1a8617ac026b9b56cff1170f6162b4c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#a1a8617ac026b9b56cff1170f6162b4c8">setAddress</a> (const std::string &amp;address)</td></tr>
 <tr class="memdesc:a1a8617ac026b9b56cff1170f6162b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the address to which to connect.  <a href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#a1a8617ac026b9b56cff1170f6162b4c8">More...</a><br /></td></tr>
 <tr class="separator:a1a8617ac026b9b56cff1170f6162b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -575,49 +586,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ac80b55a3a0eae5295d93effd2ddb4b71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac80b55a3a0eae5295d93effd2ddb4b71">&#9670;&nbsp;</a></span>parseInitializationFile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void URTS::Services::Standalone::Incrementer::ServiceOptions::parseInitializationFile </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>fileName</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>section</em> = <code>&quot;Incrementer&quot;</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Loads the options from an initialization file. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">fileName</td><td>The name of the initialization file. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">section</td><td>The section of the initialization file with the incrementer service options to be parsed. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if the initialization file does not, exist cannot be parsed, does not have the specified section, or has incorrect information. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a1a8617ac026b9b56cff1170f6162b4c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1a8617ac026b9b56cff1170f6162b4c8">&#9670;&nbsp;</a></span>setAddress()</h2>
 
@@ -902,7 +870,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/urts/services/standalone/incrementer/<a class="el" href="service_options_8hpp_source.html">serviceOptions.hpp</a></li>
+<li>include/urts/services/standalone/incrementer/<a class="el" href="standalone_2incrementer_2service_options_8hpp_source.html">serviceOptions.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -910,7 +878,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Standalone</b></li><li class="navelem"><b>Incrementer</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html">ServiceOptions</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Tue Dec 6 2022 22:58:24 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

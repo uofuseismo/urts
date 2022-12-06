@@ -8,5 +8,5 @@ var dir_313e5b75a9ed908314b82c2667c4b6e9 =
     [ "requestor.hpp", "requestor_8hpp_source.html", null ],
     [ "requestorOptions.hpp", "standalone_2incrementer_2requestor_options_8hpp_source.html", null ],
     [ "service.hpp", "service_8hpp_source.html", null ],
-    [ "serviceOptions.hpp", "service_options_8hpp_source.html", null ]
+    [ "serviceOptions.hpp", "standalone_2incrementer_2service_options_8hpp_source.html", null ]
 ];

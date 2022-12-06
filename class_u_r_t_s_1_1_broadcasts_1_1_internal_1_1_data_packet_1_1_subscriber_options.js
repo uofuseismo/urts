@@ -7,7 +7,6 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_opt
     [ "clear", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#ad95b8a799442cb50a0b284589efa4837", null ],
     [ "getAddress", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#aa67d1040087a224f12f23a8b88cc2687", null ],
     [ "getHighWaterMark", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a317fbb51f5f7f31777a096d4bd5d28fb", null ],
-    [ "getSubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#ab07e2636fbc6bb49a8ff86df0cbcab71", null ],
     [ "getTimeOut", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a7181d6f0eca9febfe65139ca87796923", null ],
     [ "getZAPOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#ad9ab6664dc14eab217d168a5b8e40e56", null ],
     [ "haveAddress", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a640fe86ea8526e0c08d56e0afa315b62", null ],
