@@ -26,6 +26,14 @@ var NAVTREE =
 [
   [ "URTS", "index.html", [
     [ "Overview", "index.html", null ],
+    [ "Installation", "_installation.html", [
+      [ "Installation", "_installation.html#TopicInstall", [
+        [ "Operating Systems", "_installation.html#TopicInstall_OS", null ],
+        [ "Prerequisites", "_installation.html#TopicInstall_Prerequisites", null ],
+        [ "Compiling", "_installation.html#TopicInstall_Compiling", null ],
+        [ "the Documentation", "_installation.html#Generating", null ]
+      ] ]
+    ] ],
     [ "Chapters", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -47,10 +55,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html",
-"class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a0e3551f4fd5b54f19f41a7fe5942f041",
-"class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html#a85aea06e8a38af236b8f9f4696509f6d",
-"functions_n.html"
+"_installation.html",
+"class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_response.html#acb5a6c482e4b3111ea316fb44d7fa8c2",
+"class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html#a2aedabd657de0ad62568635d07214efb",
+"functions_func_w.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
