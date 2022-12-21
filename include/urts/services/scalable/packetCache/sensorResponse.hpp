@@ -5,13 +5,13 @@
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::PacketCache
 {
-/// @class SensorResponse "sensorResponse.hpp" "umps/proxyServices/packetCache/sensorResponse.hpp"
+/// @class SensorResponse "sensorResponse.hpp" "urts/services/scalable/packetCache/sensorResponse.hpp"
 /// @brief This represents all available sensors in the cache.
-/// @sa SensorRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SensorResponse : public UMPS::MessageFormats::IMessage
 {
 public:
+    /// @brief Defines the return code for a sensor request.
     enum ReturnCode
     {   
         Success = 0,             /*!< No errors were detected; the request was successful. */

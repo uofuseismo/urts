@@ -1,19 +1,19 @@
-#ifndef URTS_BROADCASTS_EXTERNAL_EARTHWORM_TRACEBUF2
-#define URTS_BROADCASTS_EXTERNAL_EARTHWORM_TRACEBUF2
+#ifndef URTS_BROADCASTS_EXTERNAL_EARTHWORM_TRACEBUF2_HPP
+#define URTS_BROADCASTS_EXTERNAL_EARTHWORM_TRACEBUF2_HPP
 #include <memory>
 #include <vector>
 #include <string>
-#include "umps/messageFormats/message.hpp"
+#include <umps/messageFormats/message.hpp>
 namespace URTS::Broadcasts::Internal::DataPacket
 {
  class DataPacket;
 }
 namespace URTS::Broadcasts::External::Earthworm
 {
-/// @name TraceBuf2 "tracebuf2.hpp" "urts/earthworm/tracebuf2.hpp"
+/// @name TraceBuf2 "traceBuf2.hpp" "urts/broadcasts/external/earthworm/traceBuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Modules_Broadcasts_Import
+/// @ingroup Modules_Broadcasts_External_Earthworm_WaveRing
 template<class T = double>
 class TraceBuf2 : public UMPS::MessageFormats::IMessage
 {
@@ -210,6 +210,7 @@ public:
 
     /// @name Conversions
     /// @{
+
     /// @result This class expressed as a datapacket.
     [[nodiscard]] URTS::Broadcasts::Internal::DataPacket::DataPacket toDataPacket() const;
     /// @}
@@ -249,8 +250,11 @@ public:
     /// @param[in,out] lhs  Class to exchange with rhs.
     /// @param[in,out] rhs  Class to exchange with lhs.
     friend void swap(TraceBuf2<double>  &lhs, TraceBuf2<double>  &rhs);
+    /// @copydoc swap
     friend void swap(TraceBuf2<float>   &lhs, TraceBuf2<float>   &rhs);
+    /// @copydoc swap
     friend void swap(TraceBuf2<int>     &lhs, TraceBuf2<int>     &rhs);
+    /// @copydoc swap
     friend void swap(TraceBuf2<int16_t> &lhs, TraceBuf2<int16_t> &rhs);
 private:
     class TraceBuf2Impl;

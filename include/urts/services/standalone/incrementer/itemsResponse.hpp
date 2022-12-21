@@ -11,6 +11,7 @@ namespace URTS::Services::Standalone::Incrementer
 class ItemsResponse : public UMPS::MessageFormats::IMessage
 {
 public:
+    /// @brief Defines the return code for an items request.
     enum ReturnCode
     {
         Success = 0,           /*!< No errors were detected; the request was succesful. */

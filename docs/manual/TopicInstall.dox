@@ -1,0 +1,81 @@
+namespace UMPS
+{
+/*!
+\page Installation
+\ingroup Install_chapter
+\section TopicInstall Installation
+
+This page is intended to help with compiling the code from source.
+
+\subsection TopicInstall_OS Operating Systems
+
+Currently, the software has been compiled and tested on Ubuntu22.  While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and using the latest LLVM compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.
+
+\subsection TopicInstall_Prerequisites Prerequisites
+
+The following utilities are required to build the core URTS package.
+
+   - C++20
+   - <a href="https://cmake.org/">CMake</a> v3.16 or greater for generation of Makefiles
+   - <a href="https://github.com/uofuseismo/umps">UMPS</a> for message passing.
+
+Additionally, you may wish to get pybind11 to build the Python wrappers, Doxygen to generate the documentation, and Earthworm to help import data
+
+  - <a href="https://github.com/pybind/pybind11">pybind11</a> for generating Python wrappers.
+  - <a href="https://www.doxygen.nl/index.html">Doxygen</a> for generating the documentation.
+  - <a href="http://folkworm.ceri.memphis.edu/ew-dist/v7.10.1/earthworm_7.10.1-src.tgz">Earthworm</a> for data import utilities.
+
+\subsection TopicInstall_Compiling Compiling
+
+To compile URTS with Python and Earthworm you may make a script in the root source directory that looks like
+
+    #!/bin/bash
+    export CXX=clang++
+    export ORGANIZATION=UUSS
+    export BUILD_DIR=clang_build
+    export EARTHWORM_ROOT=/opt/earthworm/earthworm_7.10/
+    if [ -d ${BUILD_DIR} ]; then
+       rm -rf ${BUILD_DIR}
+    fi
+    mkdir ${BUILD_DIR}
+    cd ${BUILD_DIR}
+    cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DUMPS_LIBRARY=/usr/local/lib/libumps.so \
+    -DUMPS_PYTHON_LIBRARY=/usr/local/lib/libumps_python.so \
+    -DUMPS_INCLUDE_DIR=/usr/local/include \
+    -DWRAP_PYTHON=ON \
+    -DPYTHON_EXECUTABLE=${HOME}/anaconda3/bin/python \
+    -DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.8.so
+
+Upon a successful CMake configuration, you would then descend into the appropriate directory, 
+
+    cd clang_build
+    make
+
+With any luck the code will successfully compile.  You can then test it  
+
+    make test
+
+And install
+
+    make install
+
+which may require sudo privileges. 
+
+\subsection Generating the Documentation
+
+In this instance, you would descend into the docs path
+
+    cd docs
+    mkdir docs_build
+    cd docs_build
+    cmake ..
+    make docs
+    firefox html/index.html
+
+A word to the wise: DO NOT touch docs/Doxyfile.gh or docs/html.  These exist for the benefit of github pages.
+
+*/
+}

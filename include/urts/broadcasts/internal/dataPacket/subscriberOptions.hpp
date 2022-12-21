@@ -11,6 +11,7 @@ namespace URTS::Broadcasts::Internal::DataPacket
 /// @class SubscriberOptions "subscriberOptions.hpp" "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 /// @brief Defines the parameters for connecting to the data packet backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_Broadcasts_Internal_DataPacket
 class SubscriberOptions
 {
 public:

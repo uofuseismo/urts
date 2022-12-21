@@ -138,7 +138,7 @@ add_test(NAME unitTests
 ##########################################################################################
 #                                            Modules                                     #
 ##########################################################################################
-add_executable(incrementer src/modules/services/standalone/incrementer.cpp)
+add_executable(incrementer src/services/standalone/incrementer/module.cpp)
 set_target_properties(incrementer PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
@@ -149,8 +149,20 @@ target_include_directories(incrementer PRIVATE
 target_link_libraries(incrementer
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
+add_executable(packetCache src/services/scalable/packetCache/module.cpp)
+set_target_properties(packetCache PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_include_directories(packetCache PRIVATE
+                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                           Boost::program_options)
+target_link_libraries(packetCache
+                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)  
+
+set(URTS_MODULES incrementer packetCache)
 if (${BUILD_EW})
-   add_executable(broadcastWaveRing src/modules/broadcasts/broadcastWaveRing.cpp)
+   add_executable(broadcastWaveRing src/broadcasts/internal/dataPacket/module.cpp)
    set_target_properties(broadcastWaveRing PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
@@ -161,6 +173,7 @@ if (${BUILD_EW})
    target_link_libraries(broadcastWaveRing
                          PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
+   set(URTS_MODULES ${MODULES} broadcastWaveRing)
 endif()
 
 ##########################################################################################
@@ -201,13 +214,13 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 if (WRAP_PYTHON)
-   install(TARGETS urts urtspy
+   install(TARGETS urts urtspy ${URTS_MODULES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else()
-   install(TARGETS urts
+   install(TARGETS urts ${URTS_MODULES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

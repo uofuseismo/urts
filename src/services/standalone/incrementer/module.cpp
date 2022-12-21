@@ -18,6 +18,10 @@
 #include <umps/modules/processManager.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
@@ -80,15 +84,14 @@ std::shared_ptr<UMPS::Logging::ILog>
 struct ProgramOptions
 {
     /// @brief Load the module options from an initialization file.
-    void parseInitializationFile(const std::string &iniFile,
-                                 const std::string generalSection = "General")
+    void parseInitializationFile(const std::string &iniFile)
     {
         boost::property_tree::ptree propertyTree;
         boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
         //----------------------------- General ------------------------------//
         // Module name
         mModuleName
-            = propertyTree.get<std::string> (generalSection + ".moduleName",
+            = propertyTree.get<std::string> ("General.moduleName",
                                              mModuleName);
         if (mModuleName.empty())
         {
@@ -96,12 +99,12 @@ struct ProgramOptions
         }
         // Verbosity
         mVerbosity = static_cast<UMPS::Logging::Level>
-                     (propertyTree.get<int> (generalSection + ".verbose",
+                     (propertyTree.get<int> ("General.verbose",
                                              static_cast<int> (mVerbosity)));
         // Log file directory
-        mLogFileDirectory = propertyTree.get<std::string>
-            (generalSection + ".logFileDirectory",
-             mLogFileDirectory.string());
+        mLogFileDirectory
+            = propertyTree.get<std::string> ("General.logFileDirectory",
+                                             mLogFileDirectory.string());
         if (!mLogFileDirectory.empty() &&
             !std::filesystem::exists(mLogFileDirectory))
         {
@@ -129,18 +132,18 @@ struct ProgramOptions
 
         auto pollingTimeOut
             = propertyTree.get<int64_t>
-              ("Incrementer.getPollingTimeOut()",
+              ("Incrementer.servicePollingTimeOut",
                mIncrementerServiceOptions.getPollingTimeOut().count());
         mIncrementerServiceOptions.setPollingTimeOut(
             std::chrono::milliseconds {pollingTimeOut});
 
         auto receiveHWM
-            = propertyTree.get<int> ("Incrementer.receiveHighWaterMark",
+            = propertyTree.get<int> ("Incrementer.serviceReceiveHighWaterMark",
                   mIncrementerServiceOptions.getReceiveHighWaterMark());
         mIncrementerServiceOptions.setReceiveHighWaterMark(receiveHWM);
 
         auto sendHWM
-            = propertyTree.get<int> ("Incrementer.sendHighWaterMark",
+            = propertyTree.get<int> ("Incrementer.serviceSendHighWaterMark",
                   mIncrementerServiceOptions.getSendHighWaterMark());
         mIncrementerServiceOptions.setSendHighWaterMark(sendHWM); 
         //------------------------ Incrementer Options -----------------------//
@@ -152,21 +155,20 @@ struct ProgramOptions
 
         auto increment
             = propertyTree.get<int> ("Incrementer.increment",
-                                     mIncrementerServiceOptions.getIncrement()); 
+                                     mIncrementerServiceOptions.getIncrement());
         mIncrementerServiceOptions.setIncrement(increment);
 
         auto initialValue
             = propertyTree.get<int32_t>
                   ("Incrementer.initialValue",
                    mIncrementerServiceOptions.getInitialValue());
-        mIncrementerServiceOptions.setInitialValue(initialValue); 
+        mIncrementerServiceOptions.setInitialValue(initialValue);
 
     }
 ///private:
     UIncrementer::ServiceOptions mIncrementerServiceOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string mModuleName{MODULE_NAME};
-    //std::string operatorAddress;
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::string mServiceName{"Incrementer"};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
@@ -197,6 +199,7 @@ public:
         {
             mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
+        // Create local command replier
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::Service> (mLogger);
         UMPS::Services::Command::ServiceOptions localServiceOptions;
@@ -208,6 +211,7 @@ public:
                       std::placeholders::_2,
                       std::placeholders::_3));
         mLocalCommand->initialize(localServiceOptions);
+
         mInitialized = true;
     }
     /// Destructor
@@ -227,6 +231,11 @@ public:
         std::scoped_lock lock(mMutex);
         return mKeepRunning; 
     }
+    /// @result True indicates this is still running
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return keepRunning();
+    } 
     /// @brief Toggles this as running or not running
     void setRunning(const bool running)
     {
@@ -234,7 +243,7 @@ public:
         mKeepRunning = running;
     }
     /// @brief Stops the process.
-    void stop() //override
+    void stop() override
     {
         setRunning(false);
         if (mIncrementer != nullptr)
@@ -245,6 +254,20 @@ public:
         {
             if (mLocalCommand->isRunning()){mLocalCommand->stop();}
         }
+    }
+    /// @brief Starts the process.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Incrementer not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the incrementer service...");
+        mIncrementer->start();
+        mLogger->debug("Starting the local command proxy..."); 
+        mLocalCommand->start();
     }
     /// @brief Callback for interacting with user 
     std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -274,6 +297,7 @@ public:
         }
         else if (messageType == terminateRequest.getMessageType())
         {
+            mLogger->info("Received terminate request...");
             USC::TerminateResponse response;
             try
             {
@@ -341,6 +365,8 @@ private:
     std::unique_ptr<UIncrementer::Service> mIncrementer{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
+    std::unique_ptr<UMPS::ProxyServices::Command::Replier>
+        mModuleRegistryReplier{nullptr};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
@@ -366,7 +392,7 @@ int main(int argc, char *argv[])
     ProgramOptions programOptions;
     try
     {
-        programOptions.parseInitializationFile(iniFile, "General");
+        programOptions.parseInitializationFile(iniFile);
     }
     catch (const std::exception &e) 
     {
@@ -382,22 +408,41 @@ int main(int argc, char *argv[])
                                hour, minute);
     // This module only needs one context.  There's not much data to move.
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
-    // Initialize modules
+    // Initialize the various processes
+    logger->info("Initializing processes...");
+    UMPS::Modules::ProcessManager processManager(logger);
     try
     {
+        // Connect to the operator
         logger->debug("Connecting to uOperator...");
         const std::string operatorSection{"uOperator"};
         auto uOperator = UCI::createRequestor(iniFile, operatorSection,
                                               context, logger);
         programOptions.mZAPOptions = uOperator->getZAPOptions();
 
+        // Create a heartbeat
         logger->debug("Creating heartbeat process...");
         namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
         auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
                                                             "Heartbeat",
                                                             context, logger);
-        //processManager.insert(std::move(heartbeat));
+        processManager.insert(std::move(heartbeat));
 
+        // Create the module command replier
+        logger->debug("Creating module registry replier process...");
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+/*
+        remoteServiceOptions.setCallback(
+            std::bind(&Incrementer::commandCallback,
+                      *incrementerService,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+*/
+
+        // Get the backend service connection details
         if (!programOptions.mIncrementerServiceOptions.haveAddress())
         {
             auto address = uOperator->getProxyServiceBackendDetails(
@@ -406,6 +451,33 @@ int main(int argc, char *argv[])
         }
         programOptions.mIncrementerServiceOptions.setZAPOptions(
             programOptions.mZAPOptions);
+        // Create the incrementer service
+        auto incrementerService
+            = std::make_unique<UIncrementer::Service> (context, logger);
+        incrementerService->initialize(
+            programOptions.mIncrementerServiceOptions);
+
+        auto incrementerProcess
+            = std::make_unique<Incrementer> (programOptions.mModuleName,
+                                             std::move(incrementerService),
+                                             logger);
+
+        auto callbackFunction = std::bind(&Incrementer::commandCallback,
+                                          &*incrementerProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        auto remoteReplier
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        // Add the remote replier and incrementer
+        processManager.insert(std::move(remoteReplier));
+        processManager.insert(std::move(incrementerProcess));
     }
     catch (const std::exception &e)
     {
@@ -413,11 +485,7 @@ int main(int argc, char *argv[])
         logger->error(e.what());
         return EXIT_FAILURE;
     } 
-/*
-    // Initialize the modules
-    logger->info("Initializing processes...");
-    UMPS::Modules::ProcessManager processManager(logger);
-    // Start the modules
+    // Start the processes
     logger->info("Starting processes...");
     try
     {
@@ -435,9 +503,6 @@ int main(int argc, char *argv[])
     // Done
     logger->info("Exiting...");
     return EXIT_SUCCESS;
-
-*/
-    return EXIT_SUCCESS;
 }
 
 ///--------------------------------------------------------------------------///
@@ -447,11 +512,19 @@ int main(int argc, char *argv[])
 std::string parseCommandLineOptions(int argc, char *argv[])
 {
     std::string iniFile;
-    boost::program_options::options_description desc("Allowed options");
+    boost::program_options::options_description desc(
+R"""(
+The incrementer service allows other modules to uniquely increment values of
+interest - e.g., pick identifiers, arrival identifiers, origin identifiers,
+event identifiers, etc.  Example usage:
+
+    incrementer --ini=incrementer.ini
+
+Allowed options)""");
     desc.add_options()
-        ("help", "produce help message")
+        ("help", "Produces this help message")
         ("ini",  boost::program_options::value<std::string> (),
-                 "Defines the initialization file for this module");
+                 "The initialization file for this executable");
     boost::program_options::variables_map vm;
     boost::program_options::store(
         boost::program_options::parse_command_line(argc, argv, desc), vm);

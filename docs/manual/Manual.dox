@@ -19,7 +19,7 @@ namespace URTS {
     \ingroup Modules_Broadcasts */
 /** \defgroup Modules_Broadcasts_External_Earthworm Earthworm Broadcasts
     \brief These are modules for wrangling common Earthworm data types.
-    \ingroup MOdules_Broadcasts_External */
+    \ingroup Modules_Broadcasts_External */
 
 /** \defgroup Modules_Services Services
     \brief Services are request-reply messaging patterns.  In this case there are client(s) that make a request and server(s) that process those requests. */

@@ -9,7 +9,7 @@ namespace URTS::Broadcasts::Internal::DataPacket
 /// @class DataPacket "dataPacket.hpp" "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 /// @brief Defines a seismic data packet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Messages_MessageFormats
+/// @ingroup Modules_Broadcasts_Internal_DataPacket
 class DataPacket : public UMPS::MessageFormats::IMessage
 {
 public:

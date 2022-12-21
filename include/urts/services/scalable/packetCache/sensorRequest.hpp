@@ -10,7 +10,6 @@ namespace URTS::Services::Scalable::PacketCache
 /// @note Since the underlying messaging is asynchronous it is to your advantage
 ///       to provide your request a unique identifier since the requests are
 ///       not required to filled in the order that they are put on the wire.
-/// @sa SensorResponse
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SensorRequest : public UMPS::MessageFormats::IMessage
 {

@@ -1,9 +1,9 @@
 namespace URTS
 {
+/*!
+\mainpage notitle
 
-/** \mainpage notitle
-
-This is the API documentation for <a href="https://uofuseismo.github.io/urts/modules.html">UMPS</a>.
+This is the API documentation for <a href="https://uofuseismo.github.io/urts/modules.html">URTS</a>.
 
 For those looking to build from source, read the \link TopicInstall install \endlink document.
 
@@ -16,5 +16,4 @@ This software was initially presented in On-premises Integration of Machine Lear
 Finally, the search engine allows you to quickly find the documentation corresponding to the given class or function.
 
 */
-
 }

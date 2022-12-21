@@ -1,0 +1,15 @@
+namespace URTS
+{
+/*!
+\section InternalBroadcasts Internal Broadcasts
+\ingroup Modules_Broadcasts_Internal
+
+These are routines for broadcasting particular datatypes in URTS.
+
+\subsection InternalBroadcasts_DataPacket Data Packet
+\defgroup Modules_Broadcasts_Internal_DataPacket Data Packet
+
+This broadcast paradigm is useful for transmission of waveform snippets that can be encapsulated as data packets.
+
+*/
+}

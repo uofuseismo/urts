@@ -13,6 +13,7 @@ namespace URTS::Broadcasts::Internal::DataPacket
 /// @class Subscriber "subscriber.hpp" "urts/broadcasts/internal/dataPacket/subscriber.hpp"
 /// @brief A convenience function to subscribe to a dataPacket broadcast.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_Broadcasts_Internal_DataPacket
 class Subscriber
 {
 public:
@@ -43,6 +44,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment.
     /// @param[in,out] subscriber  The subscriber whose memory will be moved to
     ///                            this.  On exit, subscriber's behavior is

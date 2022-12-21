@@ -16,6 +16,7 @@ namespace URTS::Services::Scalable::PacketCache
 class DataResponse : public UMPS::MessageFormats::IMessage
 {
 public:
+    /// @brief Defines the return code for a data request.
     enum ReturnCode
     {
         Success = 0,             /*!< No errors were detected; the request was successful. */

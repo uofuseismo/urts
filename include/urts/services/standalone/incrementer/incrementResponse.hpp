@@ -10,6 +10,7 @@ namespace URTS::Services::Standalone::Incrementer
 class IncrementResponse : public UMPS::MessageFormats::IMessage
 {
 public:
+    /// @brief Defines the return code for an increment request.
     enum ReturnCode
     {
         Success = 0,           /*!< No errors were detected; the request was succesful. */

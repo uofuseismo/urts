@@ -78,6 +78,7 @@ public:
 
     /// @name Interpolate
     /// @{
+
     /// @brief Interpolates the data packets.  This will interpolate from the
     ///        earliest time in the colleciton of packets up to the latest
     ///        time in the packets.

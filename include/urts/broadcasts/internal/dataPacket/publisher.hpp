@@ -14,6 +14,7 @@ namespace URTS::Broadcasts::Internal::DataPacket
 /// @class Publisher "publisher.hpp" "urts/broadcasts/internal/dataPacket/publisher.hpp"
 /// @brief A ZeroMQ publisher specialized for sending data packets.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_Broadcasts_Internal_DataPacket
 class Publisher
 {
 public:

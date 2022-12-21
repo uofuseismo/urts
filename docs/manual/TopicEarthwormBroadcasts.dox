@@ -1,0 +1,22 @@
+namespace URTS
+{
+/*!
+\section EarthwormBroadcasts Earthworm Broadcasts
+\ingroup Modules_Broadcasts_External_Earthworm
+
+These are routines for broadcasting particular datatypes from Earthworm rings into URTS.
+
+\subsection EarthwormBroadcasts_WaveRing Wave Ring
+\defgroup Modules_Broadcasts_External_Earthworm_WaveRing TraceBuf2 Waveform Ring
+
+This utility is for exporting TraceBuf2 messages from an earthworm (wave) ring to URTS.
+
+    broadcastWaveRing --ini=broadcastWaveRing.ini
+
+An example initialization file is as follows:
+
+\include configFiles/broadcastWaveRing.ini
+
+*/
+}
+

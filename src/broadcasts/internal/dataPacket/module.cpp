@@ -16,6 +16,10 @@
 #include <umps/logging/standardOut.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
@@ -65,11 +69,13 @@ namespace
     return commands;
 }
 
+/*
 /// @resultGets the input line.
 [[nodiscard]] std::string getInputLine() noexcept
 {
     return std::string{MODULE_NAME} + "$";
 }
+*/
 
 }
 
@@ -77,28 +83,26 @@ namespace
 struct ProgramOptions
 {
     /// @brief Load the module options from an initialization file.
-    void parseInitializationFile(const std::string &iniFile,
-                                 const std::string generalSection = "General")
+    void parseInitializationFile(const std::string &iniFile)
     {
         boost::property_tree::ptree propertyTree;
         boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
         //------------------------------ General -----------------------------//
         // Module name
         mModuleName
-            = propertyTree.get<std::string> (generalSection + ".moduleName",
-                                             mModuleName);
+            = propertyTree.get<std::string> ("General.moduleName", mModuleName);
         if (mModuleName.empty())
         {
             throw std::runtime_error("Module name not defined");
         }
         // Verbosity
         mVerbosity = static_cast<UMPS::Logging::Level>
-                     (propertyTree.get<int> (generalSection + ".verbose",
+                     (propertyTree.get<int> ("General.verbose",
                                              static_cast<int> (mVerbosity)));
         // Log file directory
-        mLogFileDirectory = propertyTree.get<std::string>
-            (generalSection + ".logFileDirectory",
-             mLogFileDirectory.string());
+        mLogFileDirectory
+            = propertyTree.get<std::string> ("General.logFileDirectory",
+                                             mLogFileDirectory.string());
         if (!mLogFileDirectory.empty() &&
             !std::filesystem::exists(mLogFileDirectory))
         {
@@ -308,11 +312,12 @@ public:
         mLogger->debug("Starting the local command proxy..."); 
         mLocalCommand->start();
     }
-    /// Running?
+    /// @result True indicates this is running.
     [[nodiscard]] bool isRunning() const noexcept override
     {
         return keepRunning();
     }
+    /// @brief Reads EW messages and publishes them to an URTS broadcast
     void run()
     {
         if (!mWaveRing->isConnected())
@@ -495,7 +500,7 @@ int main(int argc, char *argv[])
     ProgramOptions programOptions;
     try
     {
-        programOptions.parseInitializationFile(iniFile, "General");
+        programOptions.parseInitializationFile(iniFile);
     }
     catch (const std::exception &e)
     {
@@ -511,7 +516,7 @@ int main(int argc, char *argv[])
                                  hour, minute);
     // This module only needs one context.  There's not much data to move.
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
-    // Initialize the modules
+    // Initialize the various processes
     logger->info("Initializing processes...");
     UMPS::Modules::ProcessManager processManager(logger);
     try
@@ -537,6 +542,7 @@ int main(int argc, char *argv[])
                      programOptions.mDataPacketBroadcastName).getAddress();
             programOptions.mBroadcastAddress = packetAddress;
         }
+        // Create the publisher
         UDP::PublisherOptions packetPublisherOptions;
         auto packetPublisher
             = std::make_unique<UDP::Publisher> (context, logger);
@@ -554,6 +560,26 @@ int main(int argc, char *argv[])
                                                   std::move(packetPublisher), 
                                                   std::move(earthwormReader),
                                                   logger);
+ 
+        // Create the remote registry
+        auto callbackFunction = std::bind(&BroadcastPackets::commandCallback,
+                                          &*broadcastProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        auto remoteReplier
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+
+
         processManager.insert(std::move(broadcastProcess)); 
     }
     catch (const std::exception &e)

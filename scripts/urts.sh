@@ -84,7 +84,7 @@ function start_program()
     if [ ! -z "${pid}" ]; then
         echo "${name} already running (pid=${pid})" >&2
     else
-        echo -n "Starting ${name} - " &>2
+        echo -n "Starting ${name} - " >&2
         # Run the command
         pushd ${workdir} > /dev/null
         nohup ${command} > /dev/null 2>&1 &
@@ -122,7 +122,6 @@ function urts()
     local duration=${5-${DURATION}}
     local workdir=${6-${WORKDIR}}
     local exec_command="${executable} ${args}"
-    echo ${exec_command} &>=2
     EXIT_STATUS=0
     case "$ACTION" in
         start)
