@@ -27,6 +27,7 @@ var annotated_dup =
             [ "CircularBuffer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer" ],
             [ "DataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request" ],
             [ "DataResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response" ],
+            [ "Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor" ],
             [ "RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options" ],
             [ "SensorRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_request" ],
             [ "SensorResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response" ],

@@ -19,6 +19,7 @@ var hierarchy =
     ] ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher_options.html", null ],
+    [ "URTS::Services::Scalable::PacketCache::Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Requestor", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor.html", null ],
     [ "URTS::Services::Scalable::PacketCache::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor_options.html", null ],
