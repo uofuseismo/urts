@@ -580,6 +580,7 @@ int main(int argc, char *argv[])
                                                    logger);
 
 
+        processManager.insert(std::move(remoteReplier));
         processManager.insert(std::move(broadcastProcess)); 
     }
     catch (const std::exception &e)

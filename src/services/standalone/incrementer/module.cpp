@@ -433,15 +433,6 @@ int main(int argc, char *argv[])
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
         moduleDetails.setName(programOptions.mModuleName);
-/*
-        remoteServiceOptions.setCallback(
-            std::bind(&Incrementer::commandCallback,
-                      *incrementerService,
-                      std::placeholders::_1,
-                      std::placeholders::_2,
-                      std::placeholders::_3));
-*/
-
         // Get the backend service connection details
         if (!programOptions.mIncrementerServiceOptions.haveAddress())
         {
