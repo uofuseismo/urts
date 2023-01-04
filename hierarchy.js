@@ -23,6 +23,7 @@ var hierarchy =
     [ "URTS::Services::Standalone::Incrementer::Requestor", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor.html", null ],
     [ "URTS::Services::Scalable::PacketCache::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor_options.html", null ],
+    [ "URTS::Services::Scalable::PacketCache::Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Service", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service.html", null ],
     [ "URTS::Services::Scalable::PacketCache::ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::ServiceOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html", null ],

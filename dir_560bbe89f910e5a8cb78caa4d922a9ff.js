@@ -10,6 +10,7 @@ var dir_560bbe89f910e5a8cb78caa4d922a9ff =
     [ "requestorOptions.hpp", "scalable_2packet_cache_2requestor_options_8hpp_source.html", null ],
     [ "sensorRequest.hpp", "sensor_request_8hpp_source.html", null ],
     [ "sensorResponse.hpp", "sensor_response_8hpp_source.html", null ],
+    [ "service.hpp", "scalable_2packet_cache_2service_8hpp_source.html", null ],
     [ "serviceOptions.hpp", "scalable_2packet_cache_2service_options_8hpp_source.html", null ],
     [ "wigginsInterpolator.hpp", "wiggins_interpolator_8hpp_source.html", null ]
 ];
