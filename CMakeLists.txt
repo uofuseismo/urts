@@ -75,7 +75,7 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/dataResponse.cpp
     src/services/scalable/packetCache/sensorRequest.cpp
     src/services/scalable/packetCache/sensorResponse.cpp
-    #src/services/scalable/packetCache/service.cpp
+    src/services/scalable/packetCache/service.cpp
     src/services/scalable/packetCache/serviceOptions.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/requestor.cpp
