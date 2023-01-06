@@ -9,8 +9,11 @@
 #include "urts/services/scalable/packetCache/requestorOptions.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
+#include "urts/services/scalable/packetCache/serviceOptions.hpp"
+#include "urts/services/scalable/packetCache/service.hpp"
 #include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -421,7 +424,7 @@ TEST(ServicesScalablePacketCache, BulkDataResponse)
     }
 }
 
-TEST(ServicesStandaloneIncrementer, RequestorOptions)
+TEST(ServicesStandalonePacketCache, RequestorOptions)
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int sendHWM{105};
@@ -457,6 +460,66 @@ TEST(ServicesStandaloneIncrementer, RequestorOptions)
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               zapOptions.getSecurityLevel());
 }
+
+TEST(ServicesStandalonePacketCache, ServiceOptions)
+{
+    const std::string address{"tcp://127.0.0.1:5550"};
+    const std::string dataAddress{"tcp://127.0.0.1:5551"};
+    const int sendHWM{105};
+    const int recvHWM{106};
+    const int dataRecvHWM{107};
+    const std::chrono::milliseconds recvTimeOut{145};
+    const std::chrono::milliseconds pollTimeOut{155};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    URTS::Broadcasts::Internal::DataPacket::SubscriberOptions sOptions;
+    sOptions.setAddress(dataAddress);
+    sOptions.setHighWaterMark(dataRecvHWM);
+    sOptions.setTimeOut(recvTimeOut);
+    sOptions.setZAPOptions(zapOptions);
+
+    ServiceOptions options;
+    EXPECT_NO_THROW(options.setReplierAddress(address));
+    EXPECT_NO_THROW(options.setReplierSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReplierReceiveHighWaterMark(recvHWM));
+    EXPECT_NO_THROW(options.setDataPacketSubscriberOptions(sOptions));
+    options.setReplierPollingTimeOut(pollTimeOut);
+    options.setReplierZAPOptions(zapOptions);
+  
+    ServiceOptions copy(options);
+    EXPECT_EQ(options.getReplierAddress(), address);
+    EXPECT_EQ(options.getReplierSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(options.getReplierReceiveHighWaterMark(), recvHWM);
+    EXPECT_EQ(options.getReplierPollingTimeOut(), pollTimeOut);
+    EXPECT_EQ(options.getReplierZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    auto sCopy = options.getDataPacketSubscriberOptions();
+    EXPECT_EQ(sCopy.getAddress(), dataAddress);
+    EXPECT_EQ(sCopy.getHighWaterMark(), dataRecvHWM);
+    EXPECT_EQ(sCopy.getTimeOut(), recvTimeOut);
+    EXPECT_EQ(sCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+
+    options.clear();
+    EXPECT_FALSE(options.haveReplierAddress());
+    EXPECT_EQ(options.getReplierSendHighWaterMark(), 8192);
+    EXPECT_EQ(options.getReplierReceiveHighWaterMark(), 4096);     
+    EXPECT_EQ(options.getReplierPollingTimeOut(),
+              std::chrono::milliseconds {10});
+    EXPECT_EQ(options.getReplierZAPOptions().getSecurityLevel(),
+              UMPS::Authentication::SecurityLevel::Grasslands);
+/*
+    sCopy = options.getDataPacketSubscriberOptions();
+    EXPECT_FALSE(sCopy.haveAddress());
+    EXPECT_EQ(sCopy.getTimeOut(), std::chrono::milliseconds {10});
+    EXPECT_EQ(sCopy.getHighWaterMark(), 0);
+    EXPECT_EQ(sCopy.getZAPOptions().getSecurityLevel(),
+              UMPS::Authentication::SecurityLevel::Grasslands);
+*/
+}
+
+
 
 TEST(ServicesScalablePacketCache, Wiggins)
 {

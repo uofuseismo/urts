@@ -22,6 +22,7 @@
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
+#include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
 #include <umps/services/connectionInformation/socketDetails/dealer.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
@@ -31,7 +32,10 @@
 #include <umps/services/command/serviceOptions.hpp>
 #include <umps/services/command/terminateRequest.hpp>
 #include <umps/services/command/terminateResponse.hpp>
+#include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include "urts/services/scalable/packetCache/service.hpp"
+#include "urts/services/scalable/packetCache/serviceOptions.hpp"
+#include "private/isEmpty.hpp"
 
 namespace UPacketCache = URTS::Services::Scalable::PacketCache;
 namespace UAuth = UMPS::Authentication;
@@ -125,8 +129,77 @@ struct ProgramOptions
                 throw std::runtime_error("Failed to make log directory");
             }
         }
+        //----------------Backend Service Connection Information--------------//
+        mServiceName = propertyTree.get<std::string>
+                       ("PacketCache.proxyServiceName", mServiceName);
+    
+        auto backendAddress = propertyTree.get<std::string>
+                              ("PacketCache.proxyServiceAddress", "");
+        if (!::isEmpty(backendAddress))
+        {
+            mPacketCacheServiceOptions.setReplierAddress(backendAddress);
+        }
+        if (::isEmpty(mServiceName) && ::isEmpty(backendAddress))
+        {
+            throw std::runtime_error("Service backend address indeterminable");
+        }
+        mPacketCacheServiceOptions.setReplierReceiveHighWaterMark(
+            propertyTree.get<int> (
+                "PacketCache.proxyServiceReceiveHighWaterMark",
+                mPacketCacheServiceOptions.getReplierReceiveHighWaterMark())
+        );
+        mPacketCacheServiceOptions.setReplierSendHighWaterMark(
+            propertyTree.get<int> (
+                "PacketCache.proxyServiceSendHighWaterMark",
+                mPacketCacheServiceOptions.getReplierSendHighWaterMark())
+        );
+
+        auto pollingTimeOut 
+            = static_cast<int> (
+               mPacketCacheServiceOptions.getReplierPollingTimeOut().count()
+              );
+        pollingTimeOut = propertyTree.get<int> (
+              "PacketCache.proxyServicePollingTimeOut", pollingTimeOut);
+        mPacketCacheServiceOptions.setReplierPollingTimeOut(
+            std::chrono::milliseconds {pollingTimeOut} );
+         
+        //-----------------Data Broadcast Connection Information--------------//
+        mDataBroadcastName = propertyTree.get<std::string>
+                             ("PacketCache.dataBroadcastName",
+                              mDataBroadcastName);
+        auto dataBroadcastAddress =  propertyTree.get<std::string>
+                                     ("PacketCache.dataBroadcastAddress", "");
+        if (!::isEmpty(dataBroadcastAddress))
+        {
+            mSubscriberOptions.setAddress(dataBroadcastAddress);
+        }
+        if (::isEmpty(mDataBroadcastName) && ::isEmpty(dataBroadcastAddress))
+        {
+            throw std::runtime_error("Data broadcast address indeterminable");
+        }
+        mSubscriberOptions.setHighWaterMark(
+            propertyTree.get<int> ("PacketCache.dataBroadcastHighWaterMark",
+                                   0));
+
+        auto dataTimeOut
+            = static_cast<int> (mSubscriberOptions.getTimeOut().count());
+        dataTimeOut = propertyTree.get<int> ("PacketCache.dataBroadcastTimeOut",
+                                             dataTimeOut);
+        mSubscriberOptions.setTimeOut(
+            std::chrono::milliseconds {dataTimeOut} );
+        //------------------------Packet Cache Options------------------------//
+        auto maximumNumberOfPackets
+            =  mPacketCacheServiceOptions.getMaximumNumberOfPackets();
+        mPacketCacheServiceOptions.setMaximumNumberOfPackets(
+            propertyTree.get<int> ("PacketCache.maximumNumberOfPackets",
+                                   maximumNumberOfPackets));
     }
 ///private:
+    UPacketCache::ServiceOptions mPacketCacheServiceOptions;
+    URTS::Broadcasts::Internal::DataPacket::SubscriberOptions
+        mSubscriberOptions;
+    std::string mServiceName{"PacketCache"};
+    std::string mDataBroadcastName{"DataPacket"};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::string mModuleName{MODULE_NAME};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
@@ -294,6 +367,59 @@ int main(int argc, char *argv[])
         auto uOperator = UCI::createRequestor(iniFile, operatorSection,
                                               generalContext, logger);
         programOptions.mZAPOptions = uOperator->getZAPOptions();
+ 
+        // Create a heartbeat
+        logger->debug("Creating heartbeat process...");
+        namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+        auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
+                                                            "Heartbeat",
+                                                            generalContext,
+                                                            logger);
+        processManager.insert(std::move(heartbeat));
+        // Create the module command replier
+        logger->debug("Creating module registry replier process...");
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        // Get the backend service connection details
+        if (!programOptions.mPacketCacheServiceOptions.haveReplierAddress())
+        {
+            auto address = uOperator->getProxyServiceBackendDetails(
+                              programOptions.mServiceName).getAddress();
+            programOptions.mPacketCacheServiceOptions.setReplierAddress(
+                address);
+        }
+        programOptions.mPacketCacheServiceOptions.setReplierZAPOptions(
+            programOptions.mZAPOptions);
+        // Get the subscriber connection details
+        if (!programOptions.mSubscriberOptions.haveAddress())
+        {
+            auto address = uOperator->getProxyBroadcastBackendDetails(
+                                programOptions.mDataBroadcastName).getAddress();
+            programOptions.mSubscriberOptions.setAddress(address);
+        }
+        programOptions.mSubscriberOptions.setZAPOptions(
+            programOptions.mZAPOptions);
+        programOptions.mPacketCacheServiceOptions
+                      .setDataPacketSubscriberOptions(
+                          programOptions.mSubscriberOptions);
+/*
+        // Create the remote replier
+        auto callbackFunction = std::bind(&PacketCache::commandCallback,
+                                          &*packetCacheProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        auto remoteReplier
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+*/
+
     }
     catch (const std::exception &e)
     {

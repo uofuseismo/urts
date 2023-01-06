@@ -24,7 +24,7 @@
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
 #include <umps/services/connectionInformation/socketDetails/proxy.hpp>
-#include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
+//#include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
 #include <umps/services/connectionInformation/socketDetails/xSubscriber.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>

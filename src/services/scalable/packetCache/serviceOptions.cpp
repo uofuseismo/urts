@@ -19,8 +19,8 @@ public:
     UAuth::ZAPOptions mReplierZAPOptions;
     std::string mReplierAddress;
     std::chrono::milliseconds mReplierPollingTimeOut{10};
-    int mReplierSendHighWaterMark{1024};
-    int mReplierReceiveHighWaterMark{1024};
+    int mReplierSendHighWaterMark{8192};
+    int mReplierReceiveHighWaterMark{4096};
     int mMaxPackets{300};
 };
 

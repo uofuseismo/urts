@@ -25,7 +25,7 @@
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
-#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
+#include <umps/services/connectionInformation/socketDetails/dealer.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
 #include <umps/services/command/commandRequest.hpp>

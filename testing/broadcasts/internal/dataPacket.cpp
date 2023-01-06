@@ -4,7 +4,9 @@
 #include <vector>
 #include <chrono>
 #include <limits>
+#include <umps/authentication/zapOptions.hpp>
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -75,6 +77,35 @@ TEST(BroadcastsInternalDataPacket, DataPacket)
         auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
         EXPECT_NEAR(res, 0, tol);
     }
+}
+
+TEST(roadcastsInternalDataPacket, SubscriberOptions)
+{
+    const std::string address{"tcp://127.0.0.1:5550"};
+    const int recvHWM{106};
+    const std::chrono::milliseconds recvTimeOut{145};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    SubscriberOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setHighWaterMark(recvHWM));
+    EXPECT_NO_THROW(options.setTimeOut(recvTimeOut));
+    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+
+    SubscriberOptions copy(options);
+    EXPECT_EQ(options.getAddress(), address);
+    EXPECT_EQ(options.getHighWaterMark(), recvHWM);
+    EXPECT_EQ(options.getTimeOut(), recvTimeOut);
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());    
+
+    options.clear();
+    EXPECT_FALSE(options.haveAddress());
+    EXPECT_EQ(options.getHighWaterMark(), 8192);
+    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds {10});
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UMPS::Authentication::SecurityLevel::Grasslands);
 }
 
 }
