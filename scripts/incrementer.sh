@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Purpose: Starts/stops/checks the broadcastWaveRing status.
+# Purpose: Starts/stops/checks the status of incrementer.
 # Author: Ben Baker 
 source urts.sh
 
