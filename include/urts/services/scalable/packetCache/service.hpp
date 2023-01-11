@@ -1,9 +1,16 @@
 #ifndef URTS_SERVICES_SCALABLE_PACKET_CACHE_SERVICE_HPP
 #define URTS_SERVICES_SCALABLE_PACKET_CACHE_SERVICE_HPP
 #include <memory>
-namespace UMPS::Logging
+namespace UMPS
 {
- class ILog;
+ namespace Logging
+ {
+  class ILog;
+ }
+ namespace Messaging
+ {
+  class Context;
+ }
 }
 namespace URTS::Services::Scalable::PacketCache
 {
@@ -23,12 +30,23 @@ public:
     /// @brief Constructor.
     Service();
     /// @brief Constructor with a given logger.
-    Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context for the replier, the broadcast,
+    ///        and a logger
+    Service(std::shared_ptr<UMPS::Messaging::Context> &responseContext,
+            std::shared_ptr<UMPS::Messaging::Context> &broadcastContext,
+            std::shared_ptr<UMPS::Logging::ILog> &logger); 
     /// @}
 
     /// @name Step 1: Initialization
     /// @{
 
+    /// @brief initializes the class.
+    /// @param[in] options  The packet cache options.
+    /// @throws std::invalid_argument if the replier and broadcast connection
+    ///         information are not set.
+    /// @throws std::runtime_error if there is an error connecting.
+    void initialize(const ServiceOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}

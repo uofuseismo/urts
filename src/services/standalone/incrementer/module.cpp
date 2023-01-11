@@ -449,9 +449,9 @@ int main(int argc, char *argv[])
             programOptions.mIncrementerServiceOptions);
 
         auto incrementerProcess
-            = std::make_unique<Incrementer> (programOptions.mModuleName,
-                                             std::move(incrementerService),
-                                             logger);
+            = std::make_unique<::Incrementer> (programOptions.mModuleName,
+                                               std::move(incrementerService),
+                                               logger);
 
         auto callbackFunction = std::bind(&Incrementer::commandCallback,
                                           &*incrementerProcess,

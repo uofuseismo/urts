@@ -22,6 +22,11 @@ nlohmann::json toJSONObject(
     nlohmann::json obj;
     obj["MessageType"] = response.getMessageType();
     obj["MessageVersion"] = response.getMessageVersion();
+    const auto &packetsReference = response.getPacketsReference();
+#ifndef NDEBUG
+    assert(static_cast<int> (packetsReference.size()) ==
+           response.getNumberOfPackets());
+#endif
     auto nPackets = response.getNumberOfPackets();
     obj["NumberOfPackets"] = nPackets;
     auto packetsPointer = response.getPacketsPointer();
@@ -33,16 +38,15 @@ nlohmann::json toJSONObject(
         obj["LocationCode"] = packetsPointer[0].getLocationCode();
         // Now the packets (these were sorted on time)
         nlohmann::json packetObjects;
-        for (int ip = 0; ip < nPackets; ++ip)
+	for (const auto &packet : packetsReference) //int ip = 0; ip < nPackets; ++ip)
         {
             nlohmann::json packetObject;
-            packetObject["StartTime"]
-                = packetsPointer[ip].getStartTime().count();
-            packetObject["SamplingRate"] = packetsPointer[ip].getSamplingRate();
-            auto nSamples = packetsPointer[ip].getNumberOfSamples();
+            packetObject["StartTime"] = packet.getStartTime().count();
+            packetObject["SamplingRate"] = packet.getSamplingRate();
+            auto nSamples = packet.getNumberOfSamples();
             if (nSamples > 0)
             {
-                packetObject["Data"] = packetsPointer[ip].getData();
+                packetObject["Data"] = packet.getData();
             }
             else
             {
@@ -258,6 +262,12 @@ std::vector<UDP::DataPacket> DataResponse::getPackets() const noexcept
 const UDP::DataPacket *DataResponse::getPacketsPointer() const noexcept
 {
     return pImpl->mPackets.data();
+}
+
+const std::vector<UDP::DataPacket>
+&DataResponse::getPacketsReference() const noexcept
+{
+    return pImpl->mPackets;
 }
 
 /// Identifier

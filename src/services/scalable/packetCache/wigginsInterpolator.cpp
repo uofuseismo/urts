@@ -227,20 +227,26 @@ void WigginsInterpolator::clear() noexcept
 void WigginsInterpolator::interpolate(
     const std::vector<UDP::DataPacket> &packets)
 {
+    interpolate(packets.size(), packets.data());
+}
+
+void WigginsInterpolator::interpolate(
+    const int nPackets, const UDP::DataPacket packets[])
+{
     clearSignal();
     // Is there data?
-    if (packets.empty()){throw std::invalid_argument("No data packets");}
+    if (nPackets < 1){throw std::invalid_argument("No data packets");}
+    if (packets == nullptr){throw std::invalid_argument("packets is NULL");}
     // Do all packets have sampling rates
-    for (const auto &packet : packets)
+    for (int ip = 0; ip < nPackets; ++ip)
     {
-        if (!packet.haveSamplingRate())
+        if (!packets[ip].haveSamplingRate())
         {
             throw std::invalid_argument(
                "Sampling rate must be set for all packets");
         }
     }
     // Is there data?
-    auto nPackets = static_cast<int> (packets.size());
     std::vector<int> packetSamplePtr(nPackets + 1);
     int nSamples = 0;
     packetSamplePtr[0] = 0;
@@ -259,7 +265,7 @@ void WigginsInterpolator::interpolate(
     }
     // Are the packets in order?
     auto isSorted
-        = std::is_sorted(packets.begin(), packets.end(),
+        = std::is_sorted(packets, packets + nPackets,
                          [](const UDP::DataPacket &lhs,
                             const UDP::DataPacket &rhs)
                          {

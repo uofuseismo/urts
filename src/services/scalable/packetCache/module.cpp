@@ -8,7 +8,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/dailyFile.hpp>
-//#include <umps/logging/standardOut.hpp>
+#include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
 #include <umps/messageFormats/message.hpp>
 #include <umps/modules/process.hpp>
@@ -213,8 +213,42 @@ struct ProgramOptions
 class PacketCache : public UMPS::Modules::IProcess
 {
 public:
-    /// @brief Default c'tor.
+    /// @brief Default constructor.
     PacketCache() = default;
+    /// @brief Constructor.
+    PacketCache(const std::string &moduleName,
+                std::unique_ptr<UPacketCache::Service> &&packetCache,
+                std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mPacketCache(std::move(packetCache)),
+        mLogger(logger)
+    {
+        if (mPacketCache == nullptr)
+        {
+            throw std::invalid_argument("Packet cache is NULL");
+        }
+        if (!mPacketCache->isInitialized())
+        {
+            throw std::invalid_argument("Packet cache not initialized");
+        }
+        if (mLogger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
+        }
+        // Create local command replier
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(moduleName);
+        localServiceOptions.setCallback(
+            std::bind(&PacketCache::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
+
+        mInitialized = true;
+    }
     /// @brief Destructor.
     ~PacketCache()
     {   
@@ -256,6 +290,20 @@ public:
             if (mLocalCommand->isRunning()){mLocalCommand->stop();}
         }
     }
+    /// @brief Starts the process.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Incrementer not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the packet cache service...");
+        mPacketCache->start();
+        mLogger->debug("Starting the local command proxy...");
+        mLocalCommand->start();
+    }
     /// @brief Callback for interacting with user 
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         commandCallback(const std::string &messageType,
@@ -290,11 +338,11 @@ public:
             {
                 terminateRequest.fromMessage(
                     static_cast<const char *> (data), length);
-            }   
-            catch (const std::exception &e) 
-            {   
+            }
+            catch (const std::exception &e)
+            {
                 mLogger->error("Failed to unpack terminate request");
-            }   
+            }
             issueStopCommand();
             response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
             return response.clone();
@@ -381,6 +429,7 @@ int main(int argc, char *argv[])
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
         moduleDetails.setName(programOptions.mModuleName);
+        moduleDetails.setInstance(instance);
         // Get the backend service connection details
         if (!programOptions.mPacketCacheServiceOptions.haveReplierAddress())
         {
@@ -403,7 +452,20 @@ int main(int argc, char *argv[])
         programOptions.mPacketCacheServiceOptions
                       .setDataPacketSubscriberOptions(
                           programOptions.mSubscriberOptions);
-/*
+        // Create the packet cache service
+        auto broadcastContext = std::make_shared<UMPS::Messaging::Context> (1);
+        auto replierContext = std::make_shared<UMPS::Messaging::Context> (1);
+        auto packetCacheService
+            = std::make_unique<UPacketCache::Service> (replierContext,
+                                                       broadcastContext,
+                                                       logger);
+        packetCacheService->initialize(
+            programOptions.mPacketCacheServiceOptions);
+ 
+        auto packetCacheProcess
+           = std::make_unique<::PacketCache> (programOptions.mModuleName,
+                                              std::move(packetCacheService),
+                                              logger);
         // Create the remote replier
         auto callbackFunction = std::bind(&PacketCache::commandCallback,
                                           &*packetCacheProcess,
@@ -418,8 +480,9 @@ int main(int argc, char *argv[])
                                                    "ModuleRegistry",
                                                    nullptr, // Make new context
                                                    logger);
-*/
-
+        // Add the remote replier and incrementer
+        processManager.insert(std::move(remoteReplier));
+        processManager.insert(std::move(packetCacheProcess));
     }
     catch (const std::exception &e)
     {
@@ -427,6 +490,23 @@ int main(int argc, char *argv[])
         logger->error(e.what());
         return EXIT_FAILURE;
     }
+    // Start the processes
+    logger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // The main thread waits and, when requested, sends a stop to all processes
+    logger->info("Starting main thread...");
+    processManager.handleMainThread();
+    // Done
+    logger->info("Exiting...");
     return EXIT_SUCCESS;
 }
 

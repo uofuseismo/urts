@@ -84,6 +84,11 @@ public:
     ///        time in the packets.
     /// @param[in] packets  The packets to interpolate.
     void interpolate(const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &packets);
+    /// @brief Interpolates the data packets.
+    /// @param[in] nPackets  The number of packets (which must be positive).
+    /// @parma[in] packets   An array of data packets.  This has dimension
+    ///                      [nPackets].
+    void interpolate(int nPackets, const URTS::Broadcasts::Internal::DataPacket::DataPacket packets[]);
     /// @}
 
     /// @name Interpolated Signal
@@ -119,8 +124,8 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Resets the start/end time to zero and releases memory of the
-    ///        gap pointer and signal.  This will modify the gap tolerance or
-    ///        target sampling rate.
+    ///        gap pointer and signal.  This will not modify the gap tolerance
+    ///        or target sampling rate.
     void clearSignal() noexcept; 
     /// @brief Destructor.
     ~WigginsInterpolator();

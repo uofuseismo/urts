@@ -1,6 +1,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
 #include <umps/messaging/routerDealer/reply.hpp>
@@ -320,6 +321,7 @@ public:
     std::unique_ptr<CappedCollection> mCappedCollection{nullptr};
     std::unique_ptr<URouterDealer::Reply> mPacketCacheReplier{nullptr};
     ::ThreadSafeQueue<UDP::DataPacket> mDataPacketQueue;
+    ServiceOptions mOptions;
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
@@ -338,47 +340,77 @@ Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context)
 }
 */
 
-/// Constructor logger
+/// Constructor with logger
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, logger))
 {
 }
 
-/*
-/// Constructor logger
-Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
+/// Constructor with context and a logger
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &replierContext,
+                 std::shared_ptr<UMPS::Messaging::Context> &broadcastContext,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (context, logger))
+    pImpl(std::make_unique<ServiceImpl> (replierContext,
+                                         broadcastContext,
+                                         logger))
 {
 }
-
-
-*/
 
 /// Destructor
 Service::~Service() = default;
 
-/*
 /// Initialize the class
 void Service::initialize(const ServiceOptions &options)
-//    const int maxPackets,
-//    const UDataPacket::SubscriberOptions<T> &dataPacketSubscriberOptions,
-//    const ReplierOptions &packetCacheReplierOptions)
 {
-    stop(); // Ensure the service is stopped
-    if (maxPackets <= 0)
+    auto subscriberOptions = options.getDataPacketSubscriberOptions();
+    if (!subscriberOptions.haveAddress())
     {
-        throw std::invalid_argument("Max packets must be positive");
+        throw std::invalid_argument("Data packet subscriber address not set");
     }
-    pImpl->mDataPacketSubscriber->initialize(dataPacketSubscriberOptions);
-    pImpl->mCappedCollection->initialize(maxPackets);
-    pImpl->mPacketCacheReplier->initialize(packetCacheReplierOptions,
-                                           pImpl->mCappedCollection);
+    if (!options.haveReplierAddress())
+    {
+        throw std::invalid_argument("Replier address not set");
+    }
+    // Ensure the service is stopped
+    stop(); // Ensure the service is stopped
+    // Create the replier
+    pImpl->mLogger->debug("Creating packet cache replier...");
+    UMPS::Messaging::RouterDealer::ReplyOptions replierOptions;
+    replierOptions.setAddress(options.getReplierAddress());
+    replierOptions.setZAPOptions(options.getReplierZAPOptions());
+    replierOptions.setPollingTimeOut(options.getReplierPollingTimeOut());
+    replierOptions.setSendHighWaterMark(options.getReplierSendHighWaterMark());
+    replierOptions.setReceiveHighWaterMark(
+        options.getReplierReceiveHighWaterMark());
+    replierOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                         &*this->pImpl,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2,
+                                         std::placeholders::_3));
+    pImpl->mPacketCacheReplier->initialize(replierOptions); 
+    std::this_thread::sleep_for(std::chrono::milliseconds {10});
+    // Create the data packet subscriber
+    pImpl->mLogger->debug("Creating data packet subscriber...");
+    pImpl->mDataPacketSubscriber->initialize(subscriberOptions);
+    std::this_thread::sleep_for(std::chrono::milliseconds {10});
+    // Create the capped collection
+    pImpl->mLogger->debug("Creating capped collection...");
+    auto maximumNumberOfPackets = options.getMaximumNumberOfPackets();
+    pImpl->mCappedCollection->initialize(maximumNumberOfPackets);
+    // Initialized?
     pImpl->mInitialized = pImpl->mDataPacketSubscriber->isInitialized() &&
                           pImpl->mPacketCacheReplier->isInitialized() &&
                           pImpl->mCappedCollection->isInitialized();
+    if (pImpl->mInitialized)
+    {
+        pImpl->mLogger->debug("Packet cache service initialized"); 
+        pImpl->mOptions = options;
+    }
+    else
+    {
+        pImpl->mLogger->error("Failed to initialize packet cache service");
+    }
 }
-*/
 
 /// Start service
 void Service::start()

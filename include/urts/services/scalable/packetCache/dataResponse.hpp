@@ -81,6 +81,7 @@ public:
     /// @note If result.empty() then a problem was likely detected and you
     ///       should check the return code.
     [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets() const noexcept;
+    [[nodiscard]] const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &getPacketsReference() const noexcept;
     /// @}
 
     /// @name Additional Information
