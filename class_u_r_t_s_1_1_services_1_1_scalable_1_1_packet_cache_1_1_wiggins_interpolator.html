@@ -140,6 +140,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abcb3c7ee6706da940abe4c67fc5e5d7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#abcb3c7ee6706da940abe4c67fc5e5d7c">interpolate</a> (const std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a> &gt; &amp;packets)</td></tr>
 <tr class="memdesc:abcb3c7ee6706da940abe4c67fc5e5d7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the data packets. This will interpolate from the earliest time in the colleciton of packets up to the latest time in the packets.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#abcb3c7ee6706da940abe4c67fc5e5d7c">More...</a><br /></td></tr>
 <tr class="separator:abcb3c7ee6706da940abe4c67fc5e5d7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1da1577c688d5f6f6185852ddca055d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a1da1577c688d5f6f6185852ddca055d9">interpolate</a> (int nPackets, const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a> packets[])</td></tr>
+<tr class="memdesc:a1da1577c688d5f6f6185852ddca055d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the data packets.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a1da1577c688d5f6f6185852ddca055d9">More...</a><br /></td></tr>
+<tr class="separator:a1da1577c688d5f6f6185852ddca055d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Interpolated Signal</div></td></tr>
 <tr class="memitem:a8a43280b0cf7b0c1129e2b318ca0e57e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a8a43280b0cf7b0c1129e2b318ca0e57e">getSignal</a> () const noexcept</td></tr>
 <tr class="separator:a8a43280b0cf7b0c1129e2b318ca0e57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,7 +165,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a60a1442d67015aa31ca0711c41f8eee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a388533620c4fd1a372913af3f3656461"><td class="memItemLeft" align="right" valign="top"><a id="a388533620c4fd1a372913af3f3656461"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a388533620c4fd1a372913af3f3656461">clearSignal</a> () noexcept</td></tr>
-<tr class="memdesc:a388533620c4fd1a372913af3f3656461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the start/end time to zero and releases memory of the gap pointer and signal. This will modify the gap tolerance or target sampling rate. <br /></td></tr>
+<tr class="memdesc:a388533620c4fd1a372913af3f3656461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the start/end time to zero and releases memory of the gap pointer and signal. This will not modify the gap tolerance or target sampling rate. <br /></td></tr>
 <tr class="separator:a388533620c4fd1a372913af3f3656461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1efae9b5703dc410de64fc7be2bb42a1"><td class="memItemLeft" align="right" valign="top"><a id="a1efae9b5703dc410de64fc7be2bb42a1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a1efae9b5703dc410de64fc7be2bb42a1">~WigginsInterpolator</a> ()</td></tr>
@@ -472,7 +475,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <a id="abcb3c7ee6706da940abe4c67fc5e5d7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcb3c7ee6706da940abe4c67fc5e5d7c">&#9670;&nbsp;</a></span>interpolate()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abcb3c7ee6706da940abe4c67fc5e5d7c">&#9670;&nbsp;</a></span>interpolate() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -491,6 +494,42 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">packets</td><td>The packets to interpolate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1da1577c688d5f6f6185852ddca055d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da1577c688d5f6f6185852ddca055d9">&#9670;&nbsp;</a></span>interpolate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Services::Scalable::PacketCache::WigginsInterpolator::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nPackets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>&#160;</td>
+          <td class="paramname"><em>packets</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interpolates the data packets. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nPackets</td><td>The number of packets (which must be positive). @parma[in] packets An array of data packets. This has dimension [nPackets]. </td></tr>
   </table>
   </dd>
 </dl>
@@ -635,7 +674,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html">WigginsInterpolator</a></li>
-    <li class="footer">Generated on Fri Jan 6 2023 23:04:08 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Jan 11 2023 23:01:00 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

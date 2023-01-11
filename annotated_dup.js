@@ -33,6 +33,8 @@ var annotated_dup =
             [ "SensorResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response" ],
             [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service" ],
             [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options" ],
+            [ "SingleComponentWaveform", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform" ],
+            [ "ThreeComponentWaveform", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform" ],
             [ "WigginsInterpolator", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator" ]
           ] ]
         ] ],

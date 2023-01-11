@@ -123,7 +123,14 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html#acdb08770225f47c8668296259c8c055e">Service</a> (std::shared_ptr&lt; UMPS::Logging::ILog &gt; &amp;logger)</td></tr>
 <tr class="memdesc:acdb08770225f47c8668296259c8c055e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with a given logger. <br /></td></tr>
 <tr class="separator:acdb08770225f47c8668296259c8c055e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf2c79ed2a7765da869763db3d686130"><td class="memItemLeft" align="right" valign="top"><a id="adf2c79ed2a7765da869763db3d686130"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html#adf2c79ed2a7765da869763db3d686130">Service</a> (std::shared_ptr&lt; UMPS::Messaging::Context &gt; &amp;responseContext, std::shared_ptr&lt; UMPS::Messaging::Context &gt; &amp;broadcastContext, std::shared_ptr&lt; UMPS::Logging::ILog &gt; &amp;logger)</td></tr>
+<tr class="memdesc:adf2c79ed2a7765da869763db3d686130"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with a given context for the replier, the broadcast, and a logger. <br /></td></tr>
+<tr class="separator:adf2c79ed2a7765da869763db3d686130"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Step 1: Initialization</div></td></tr>
+<tr class="memitem:aca9f8ea77513e5c8cbce5224af06442a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html#aca9f8ea77513e5c8cbce5224af06442a">initialize</a> (const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html">ServiceOptions</a> &amp;options)</td></tr>
+<tr class="memdesc:aca9f8ea77513e5c8cbce5224af06442a"><td class="mdescLeft">&#160;</td><td class="mdescRight">initializes the class.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html#aca9f8ea77513e5c8cbce5224af06442a">More...</a><br /></td></tr>
+<tr class="separator:aca9f8ea77513e5c8cbce5224af06442a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a244143f1c5401be11d7fa0a25c514705"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html#a244143f1c5401be11d7fa0a25c514705">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:a244143f1c5401be11d7fa0a25c514705"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Step 2: Start</div></td></tr>
@@ -169,6 +176,39 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The total number of packets in the packet cache. </dd></dl>
+
+</div>
+</div>
+<a id="aca9f8ea77513e5c8cbce5224af06442a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca9f8ea77513e5c8cbce5224af06442a">&#9670;&nbsp;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Services::Scalable::PacketCache::Service::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html">ServiceOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>initializes the class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">options</td><td>The packet cache options. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the replier and broadcast connection information are not set. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if there is an error connecting. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -258,7 +298,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service.html">Service</a></li>
-    <li class="footer">Generated on Fri Jan 6 2023 23:04:08 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Jan 11 2023 23:01:00 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

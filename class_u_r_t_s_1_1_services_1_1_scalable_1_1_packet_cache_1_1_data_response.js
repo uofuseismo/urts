@@ -26,6 +26,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response =
     [ "getNumberOfPackets", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a5da544d2d852b65270ba3bd90e3d3c0e", null ],
     [ "getPackets", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a0ca3a5038546459b214260db81907318", null ],
     [ "getPacketsPointer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a281a85fd91a74960af81b0347bfd0856", null ],
+    [ "getPacketsReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a46ec72743a21a840d24fc15a69e34e42", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a47d6f05221eddd9f01f96c205d013c89", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a327b829703deea505b40510e4bb339ce", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#abb07925e9f1017204e2033468acaf2e0", null ],
