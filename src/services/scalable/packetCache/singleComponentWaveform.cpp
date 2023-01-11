@@ -251,9 +251,16 @@ SingleComponentWaveform::getGapTolerance() const noexcept
 }
 
 /// Set packets
-void SingleComponentWaveform::set(const DataResponse &response)
+void SingleComponentWaveform::interpolate(
+    const DataResponse &response,
+    const std::chrono::microseconds &startTime,
+    const std::chrono::microseconds &endTime)
 {
     pImpl->mInterpolator.clearSignal();
+    if (endTime < startTime)
+    {
+        throw std::invalid_argument("Start time cannot exceed end time");
+    }
     int nPackets = response.getNumberOfPackets();
     if (nPackets < 1){return;} // Nothing to do
     const auto &packetsReference = response.getPacketsReference();
@@ -261,6 +268,8 @@ void SingleComponentWaveform::set(const DataResponse &response)
     assert(static_cast<int> (packetsReference.size()) == nPackets);
 #endif
     /// Preliminary checks on packets
+    auto t0Packets = packetsReference[0].getStartTime();
+    auto t1Packets = packetsReference[0].getEndTime();
     auto network = packetsReference[0].getNetwork();
     auto station = packetsReference[0].getStation();
     auto channel = packetsReference[0].getChannel();
@@ -271,6 +280,8 @@ void SingleComponentWaveform::set(const DataResponse &response)
     }
     for (int i = 1; i < nPackets; ++i)
     {
+        t0Packets = std::min(t0Packets, packetsReference[i].getStartTime());
+        t1Packets = std::max(t1Packets, packetsReference[i].getEndTime());
         if (!packetsReference[i].haveSamplingRate())
         {
             throw std::invalid_argument("Sampling rate not set for packet "
@@ -293,6 +304,9 @@ void SingleComponentWaveform::set(const DataResponse &response)
             throw std::invalid_argument("Inconsistent location codes");
         }
     }
+    /// Set the appropriate start/end interpolation time
+    auto t0Interpolate = std::max(startTime, t0Packets);
+    auto t1Inteprolate = std::min(endTime,   t1Packets);
     /// Set my data
     setNetwork(network);
     setStation(station);
