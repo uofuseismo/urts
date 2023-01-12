@@ -65,7 +65,6 @@ std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
         }
     }
     return gapStartEnd;
-        
 }
 
 void fillGapPointer(const size_t nNewSamples,
@@ -118,7 +117,6 @@ void fillGapPointer(const size_t nNewSamples,
     }
 }
                 
-                    
 }
 
 class WigginsInterpolator::WigginsInterpolatorImpl
@@ -225,18 +223,26 @@ void WigginsInterpolator::clear() noexcept
 
 /// Interpolate
 void WigginsInterpolator::interpolate(
-    const std::vector<UDP::DataPacket> &packets)
+    const std::vector<UDP::DataPacket> &packets,
+    const std::chrono::microseconds &startTime,
+    const std::chrono::microseconds &endTime)
 {
-    interpolate(packets.size(), packets.data());
+    interpolate(packets.size(), packets.data(), startTime, endTime);
 }
 
 void WigginsInterpolator::interpolate(
-    const int nPackets, const UDP::DataPacket packets[])
+    const int nPackets, const UDP::DataPacket packets[],
+    const std::chrono::microseconds &desiredInterpolationStartTime,
+    const std::chrono::microseconds &desiredInterpolationEndTime)
 {
     clearSignal();
-    // Is there data?
-    if (nPackets < 1){throw std::invalid_argument("No data packets");}
+    if (nPackets < 1){return;} // Nothing to do
     if (packets == nullptr){throw std::invalid_argument("packets is NULL");}
+    if (desiredInterpolationStartTime > desiredInterpolationEndTime)
+    {
+        throw std::invalid_argument(
+            "Desired interpolation start time exceeds end time");
+    }
     // Do all packets have sampling rates
     for (int ip = 0; ip < nPackets; ++ip)
     {
@@ -311,6 +317,21 @@ void WigginsInterpolator::interpolate(
         time0 = *tMinMax.first;
         time1 = *tMinMax.second;
     }
+    if (desiredInterpolationStartTime.count() > time0 &&
+        desiredInterpolationStartTime.count() < time1)
+    {
+
+    }
+    // Prevent user from trying to start interpolation after signal ends
+    if (desiredInterpolationStartTime.count() < time1)
+    {
+        time0 = std::max(time0, desiredInterpolationStartTime.count());
+    }
+    // Prevent user from trying to end interpolation before signal starts
+    if (desiredInterpolationEndTime.count() >= time0)
+    {
+        time1 = std::min(time1, desiredInterpolationEndTime.count()); 
+    }
     auto targetSamplingRate = pImpl->mTargetSamplingRate;
     auto targetSamplingPeriodMicroSeconds
         = static_cast<int64_t> (std::round(1000000./targetSamplingRate));
@@ -319,6 +340,34 @@ void WigginsInterpolator::interpolate(
           (std::round((time1 - time0)
                      /static_cast<double> (targetSamplingPeriodMicroSeconds)));
     std::vector<int64_t> timesToEvaluate;
+    // Now figure out the actual end time.  The idea is after the space estimate
+    // to start the next loop definitely before the end of the desired 
+    // interpolation time.  When we exceed that desired time we call it a day
+    // and break.  Barring weird overflow, we won't spend much time in this
+    // loop.
+    int nNewSamples = spaceEstimate - 1;
+    while (true)
+    {
+        auto interpolationTime
+            = time0 + nNewSamples*targetSamplingPeriodMicroSeconds;
+        if (interpolationTime > time1){break;}
+        nNewSamples = nNewSamples + 1;
+    }
+    nNewSamples = std::max(nNewSamples, 1); // Interpolate at `start point'
+    // Fill the interpolation times 
+    timesToEvaluate.resize(nNewSamples);
+    auto *__restrict__ timesToEvaluatePtr = timesToEvaluate.data();
+    for (int i = 0; i < nNewSamples; ++i)
+    {
+        timesToEvaluatePtr[i] = time0 + i*targetSamplingPeriodMicroSeconds;
+    }
+#ifndef NDEBUG
+    assert(timesToEvaluate.front() >= time0);
+    assert(timesToEvaluate.back() <= time1);
+    assert(timesToEvaluate.front() <= timesToEvaluate.back());
+#endif
+    /* 
+    // A very crude way to do this
     timesToEvaluate.reserve(std::max(1, spaceEstimate));
     int i = 0;
     while (true)
@@ -328,6 +377,7 @@ void WigginsInterpolator::interpolate(
        timesToEvaluate.push_back(interpolationTime);
        i = i + 1;
     }
+    */
     // Package into the result
     auto checkSorting = !isSorted;
     pImpl->mSignal = ::weightedAverageSlopes(times, data, timesToEvaluate,

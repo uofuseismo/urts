@@ -84,13 +84,13 @@ public:
 
     /// @brief Sets the data response and interpolates to a continuous signal.
     /// @param[in] dataResponse  The data response from the packet cache.
-    /// @param[in] t0            The start time (UTC) in microseconds since the
+    /// @param[in] startTime     The start time (UTC) in microseconds since the
     ///                          epoch of the interpolation in microseconds
     ///                          since the epoch.  If this is less than the
     ///                          minimum start time of all the packets then the
     ///                          interpolation will start at the minimum start
     ///                          time of all packets.
-    /// @param[in] t1            The end time (UTC) in microseconds since the
+    /// @param[in] endTime       The end time (UTC) in microseconds since the
     ///                          epoch of the interpolation in microseconds
     ///                          since the epoch.  If this is greater than the
     ///                          maximum start time of all the packets then the
@@ -103,8 +103,8 @@ public:
     ///         to different channels.
     /// @throws std::runtime_error if an error occurs during interpolation.
     void interpolate(const DataResponse &dataResponse,
-                     const std::chrono::microseconds &t0 = std::chrono::microseconds {-631152000000000},
-                     const std::chrono::microseconds &t1 = std::chrono::microseconds {5680281600000000});
+                     const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
+                     const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
     /// @}
 
     /// @name Waveform Getters

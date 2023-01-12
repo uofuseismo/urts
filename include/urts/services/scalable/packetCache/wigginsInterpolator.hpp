@@ -82,13 +82,35 @@ public:
     /// @brief Interpolates the data packets.  This will interpolate from the
     ///        earliest time in the colleciton of packets up to the latest
     ///        time in the packets.
-    /// @param[in] packets  The packets to interpolate.
-    void interpolate(const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &packets);
+    /// @param[in] packets    The packets to interpolate.
+    /// @param[in] startTime  The start time (UTC) in microseconds since the
+    ///                       epoch of the interpolation.
+    ///                       If this is less than the minimum start time
+    ///                       of all the packets then the interpolation will
+    ///                       start at the minimum start time of all packets.
+    /// @param[in] endTime    The end time (UTC) in microseconds since the
+    ///                       epoch of the interpolation.
+    ///                       If this is greater than the maximum start time
+    ///                       of all the packets then the interpolation will
+    ///                       end at the maximum start time of all packets.
+    /// @throws std::runtime_error if an error occurs.
+    /// @throws std::invalid_argument if the start time exceeds the end time.
+    void interpolate(const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &packets,
+                     const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
+                     const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
     /// @brief Interpolates the data packets.
-    /// @param[in] nPackets  The number of packets (which must be positive).
-    /// @parma[in] packets   An array of data packets.  This has dimension
-    ///                      [nPackets].
-    void interpolate(int nPackets, const URTS::Broadcasts::Internal::DataPacket::DataPacket packets[]);
+    /// @param[in] nPackets   The number of packets (which must be positive).
+    /// @parma[in] packets    An array of data packets.  This has dimension
+    ///                       [nPackets].
+    /// @param[in] startTime  The start time (UTC) in microseconds since the
+    ///                       epoch of the interpolation. 
+    /// @param[in] endTime    The end time (UTC) in microsecond since the
+    ///                       epoch of the interpolation.
+    /// @throws std::invalid_argument if the start time exceeds the end time,
+    ///         the number of packets is positive and packets is NULL. 
+    void interpolate(int nPackets, const URTS::Broadcasts::Internal::DataPacket::DataPacket packets[],
+                     const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
+                     const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
     /// @}
 
     /// @name Interpolated Signal

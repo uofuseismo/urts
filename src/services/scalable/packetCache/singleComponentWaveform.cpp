@@ -306,14 +306,15 @@ void SingleComponentWaveform::interpolate(
     }
     /// Set the appropriate start/end interpolation time
     auto t0Interpolate = std::max(startTime, t0Packets);
-    auto t1Inteprolate = std::min(endTime,   t1Packets);
+    auto t1Interpolate = std::min(endTime,   t1Packets);
     /// Set my data
     setNetwork(network);
     setStation(station);
     setChannel(channel);
     setLocationCode(locationCode);
     /// Interpolate
-    pImpl->mInterpolator.interpolate(packetsReference);
+    pImpl->mInterpolator.interpolate(packetsReference,
+                                     t0Interpolate, t1Interpolate);
 }
 
 /// Number of samples

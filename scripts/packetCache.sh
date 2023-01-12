@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Purpose: Starts/stops/checks the status of incrementer.
+# Purpose: Starts/stops/checks status of the packetCache.
 # Author: Ben Baker 
 source urts.sh
 
 # Workspace directory
 WORKDIR=`dirname $0`
 # Config file
-CONFIG_FILE=$(pwd)/incrementer.ini
+CONFIG_FILE=$(pwd)/packetCache.ini
 # Name of executable
-EXECUTABLE=incrementer
+EXECUTABLE=packetCache
 # Seconds to wait to stop/start a program
 DURATION=10
 # Name displayed by the init script
-NAME="Incrementer Service"
+NAME="PacketCache Service"
 
 # Define the executable
 ARGS="--ini=${CONFIG_FILE}"

@@ -6,7 +6,7 @@ source urts.sh
 # Workspace directory
 WORKDIR=`dirname $0`
 # Config file
-CONFIG_FILE=/home/bbaker/Codes/urts/clang_build/waveRing.ini
+CONFIG_FILE=$(pwd)/waveRing.ini
 # Name of executable
 EXECUTABLE=broadcastWaveRing
 # Seconds to wait to stop/start a program
@@ -15,7 +15,6 @@ DURATION=10
 NAME="Earthworm Wave Ring Broadcast"
 
 # Define the executable
-#COMMAND="${EXECUTABLE} --ini=${CONFIG_FILE}"
 ARGS="--ini=${CONFIG_FILE}"
 
 ACTION=$1
