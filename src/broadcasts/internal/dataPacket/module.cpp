@@ -413,6 +413,9 @@ public:
             catch (const std::exception &e)
             {
                 mLogger->error("Failed to unpack terminate request");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
             }
             issueStopCommand(); 
             response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
@@ -430,7 +433,7 @@ public:
             {
                 mLogger->error("Failed to unpack text request");
                 response.setReturnCode(
-                    USC::CommandReturnCode::ApplicationError);
+                    USC::CommandResponse::ReturnCode::ApplicationError);
             }
             auto command = commandRequest.getCommand(); 
             if (command == "quit")
@@ -438,7 +441,8 @@ public:
                 mLogger->debug("Issuing quit command...");
                 issueStopCommand(); 
                 response.setResponse("Bye!  But next time use the terminate command.");
-                response.setReturnCode(USC::CommandReturnCode::Success);
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
             }
             else
             {
@@ -447,11 +451,13 @@ public:
                 {
                     mLogger->debug("Invalid command: " + command);
                     response.setResponse("Invalid command: " + command);
-                    response.setReturnCode(USC::CommandReturnCode::InvalidCommand);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::InvalidCommand);
                 }
                 else
                 {
-                    response.setReturnCode(USC::CommandReturnCode::Success);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
                 }
             }
             return response.clone();

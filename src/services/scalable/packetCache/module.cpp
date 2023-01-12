@@ -49,7 +49,6 @@ namespace UCI = UMPS::Services::ConnectionInformation;
     std::string commands{
 R"""(
 Commands: 
-   quit       Exits the program.
    cacheSize  Total number of packets in the cache.
    help       Displays this message.
 )"""};
@@ -330,6 +329,61 @@ public:
             }
             return response.clone();
         }
+        else if (messageType == commandRequest.getMessageType())
+        {
+            USC::CommandResponse response;
+            try
+            {
+                commandRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e) 
+            {
+                mLogger->error("Failed to unpack commands request: "
+                             + std::string {e.what()});
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::ApplicationError);
+                return response.clone();
+            }
+            auto command = commandRequest.getCommand();
+            if (command == "cacheSize")
+            {
+                mLogger->debug("Issuing cacheSize command...");
+                try
+                {
+                    auto cacheSize = std::to_string(
+                        mPacketCache->getTotalNumberOfPackets());
+                    response.setResponse(cacheSize);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error("Error getting cache size: "
+                                 + std::string {e.what()});
+                    response.setResponse("Server error detected");
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::ApplicationError);
+                }
+            }
+            else
+            {
+                response.setResponse(getInputOptions());
+                if (command != "help")
+                {
+                    mLogger->debug("Invalid command: " + command);
+                    response.setResponse("Invalid command: " + command);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::InvalidCommand);
+                }
+                else
+                {
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
+                }
+            }
+            return response.clone();
+        }
         else if (messageType == terminateRequest.getMessageType())
         {
             mLogger->info("Received terminate request...");
@@ -341,7 +395,10 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to unpack terminate request");
+                mLogger->error("Failed to unpack terminate request.");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
             }
             issueStopCommand();
             response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
