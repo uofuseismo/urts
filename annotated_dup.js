@@ -6,6 +6,10 @@ var annotated_dup =
           [ "Earthworm", null, [
             [ "TraceBuf2", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2" ],
             [ "WaveRing", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring" ]
+          ] ],
+          [ "SEEDLink", null, [
+            [ "Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client" ],
+            [ "ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options" ]
           ] ]
         ] ],
         [ "Internal", null, [
