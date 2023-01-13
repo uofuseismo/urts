@@ -85,6 +85,10 @@ public:
     ///         ring.  This has dimension [\c getNumberOfTraceBuf2Messages()].
     /// @note This is not recommended for general use.
     [[nodiscard]] const TraceBuf2<double> *getTraceBuf2MessagesPointer() const noexcept;
+    /// @result A reference to the array of traceBuf2 messages read from the
+    ///         ring.
+    /// @note This is not recommended for general use. 
+    [[nodiscard]] const std::vector<TraceBuf2<double>> &getTraceBuf2MessagesReference() const noexcept;
     /// @}
 
     /// @name Destructors

@@ -344,19 +344,23 @@ public:
                 continue;
             }
             auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
-            auto traceBuf2MessagesPtr
-                = mWaveRing->getTraceBuf2MessagesPointer();
+            //auto traceBuf2MessagesPtr
+            //    = mWaveRing->getTraceBuf2MessagesPointer();
+            const auto &traceBuf2MessagesReference
+                 = mWaveRing->getTraceBuf2MessagesReference();
             // Now broadcast the tracebufs as datapacket messages
             int nSent = 0;
-            for (int iMessage = 0; iMessage < nMessages; ++iMessage)
+            //for (int iMessage = 0; iMessage < nMessages; ++iMessage)
+            for (const auto &traceBuf2Message : traceBuf2MessagesReference)
             {
                 // Send it
                 try
                 {
-                    auto dataPacket
-                        = traceBuf2MessagesPtr[iMessage].toDataPacket();
+                    //auto dataPacket
+                    //    = traceBuf2MessagesPtr[iMessage].toDataPacket();
+                    auto dataPacket = traceBuf2Message.toDataPacket();
                     mPacketPublisher->send(dataPacket);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                    //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Don't baby zmq
                     nSent = nSent + 1;
                 }
                 catch (const std::exception &e)

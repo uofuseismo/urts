@@ -501,6 +501,12 @@ const TraceBuf2<double> *WaveRing::getTraceBuf2MessagesPointer() const noexcept
     return pImpl->mTraceBuf2Messages.data();
 }
 
+const std::vector<TraceBuf2<double>>
+&WaveRing::getTraceBuf2MessagesReference() const noexcept
+{
+    return pImpl->mTraceBuf2Messages;
+}
+
 int WaveRing::getNumberOfTraceBuf2Messages() const noexcept
 {
     return static_cast<int> (pImpl->mTraceBuf2Messages.size());
