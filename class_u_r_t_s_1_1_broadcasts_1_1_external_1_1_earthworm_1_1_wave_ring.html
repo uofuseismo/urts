@@ -153,6 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a274c36d9e3f34d658450ae2b6ba2b82d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adab2b9dbe455e6095d7ff8b571328915"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html">TraceBuf2</a>&lt; double &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#adab2b9dbe455e6095d7ff8b571328915">getTraceBuf2MessagesReference</a> () const noexcept</td></tr>
 <tr class="separator:adab2b9dbe455e6095d7ff8b571328915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4594f77e00aae9db4e51803235d943b8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html">TraceBuf2</a>&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a4594f77e00aae9db4e51803235d943b8">moveTraceBuf2Messages</a> () noexcept</td></tr>
+<tr class="separator:a4594f77e00aae9db4e51803235d943b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:aacfda4cec7f15f79416c81d0ed54ba9e"><td class="memItemLeft" align="right" valign="top"><a id="aacfda4cec7f15f79416c81d0ed54ba9e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#aacfda4cec7f15f79416c81d0ed54ba9e">disconnect</a> () noexcept</td></tr>
@@ -487,6 +489,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a4594f77e00aae9db4e51803235d943b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4594f77e00aae9db4e51803235d943b8">&#9670;&nbsp;</a></span>moveTraceBuf2Messages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html">TraceBuf2</a>&lt;double&gt; &gt; URTS::Broadcasts::External::Earthworm::WaveRing::moveTraceBuf2Messages </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The traceBuf2 messages read from the ring moved to this. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>On exit, all read messages will have been moved and <code><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a66043a6f60b90b70f02aa58330d4d6be">getNumberOfTraceBuf2Messages()</a></code> will be 0. </dd></dl>
+
+</div>
+</div>
 <a id="afdd95696ffb5c975743c9c9fd808e939"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afdd95696ffb5c975743c9c9fd808e939">&#9670;&nbsp;</a></span>operator=()</h2>
 
@@ -556,7 +585,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>Earthworm</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html">WaveRing</a></li>
-    <li class="footer">Generated on Fri Jan 13 2023 20:56:45 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 21:17:30 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

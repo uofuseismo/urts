@@ -35,6 +35,7 @@ var class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2 =
     [ "getStation", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#ad6a69828aff007a27790e000ffde16f3", null ],
     [ "getVersion", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#ac339e51464a2639b332c87e882388efb", null ],
     [ "haveSamplingRate", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#af4451f2154f7da2d3ddb961da0904a54", null ],
+    [ "moveToDataPacket", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#ad15216093974ac4df56a7b5db4695c85", null ],
     [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a7dda31a9a8176e43402d3fd4bf1a0da4", null ],
     [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a31f1f35fc8c2897c22d55f51d8d9468c", null ],
     [ "setChannel", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a59fac26fce0bda9a76fdc4c308aa727e", null ],

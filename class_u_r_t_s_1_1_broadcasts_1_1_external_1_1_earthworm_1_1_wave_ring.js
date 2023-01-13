@@ -15,6 +15,7 @@ var class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring =
     [ "getTraceBuf2MessagesReference", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#adab2b9dbe455e6095d7ff8b571328915", null ],
     [ "haveEarthworm", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a7687d56ca220821b2b1a3c22f9ef113f", null ],
     [ "isConnected", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a41d72f718e4b311da96885cf6fb1ed59", null ],
+    [ "moveTraceBuf2Messages", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a4594f77e00aae9db4e51803235d943b8", null ],
     [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#adbccd96ee164fad44ba038470badcf70", null ],
     [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#afdd95696ffb5c975743c9c9fd808e939", null ],
     [ "read", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#ae88cc69754af59c36fb9e6a92ade83c5", null ]
