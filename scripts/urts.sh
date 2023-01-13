@@ -62,11 +62,11 @@ function stop_program()
 
         if [ -z "${pid}" ]; then
             #not running
-            echo "\nTERMINATED ${name} which was running on pid=${pid_save}" >&2
+            echo "  TERMINATED ${name} which was running on pid=${pid_save}" >&2
             EXIT_STATUS=0
         else
             #still running
-            echo "\nERROR: ${name} is still running on pid ${pid}" >&2
+            echo "  ERROR: ${name} is still running on pid ${pid}" >&2
             EXIT_STATUS=3
         fi
     fi
@@ -104,7 +104,7 @@ function start_program()
         if [ ! -z "${pid}" ]; then
             echo "${name} is running on pid ${pid}" >&2
         else
-            echo "ERROR: Unable to start ${name} using command:" >&2
+            echo "  ERROR: Unable to start ${name} using command:" >&2
             echo "  ${command}" >&2
             EXIT_STATUS=3
         fi
