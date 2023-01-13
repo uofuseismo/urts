@@ -89,6 +89,10 @@ public:
     ///         ring.
     /// @note This is not recommended for general use. 
     [[nodiscard]] const std::vector<TraceBuf2<double>> &getTraceBuf2MessagesReference() const noexcept;
+    /// @result The traceBuf2 messages read from the ring moved to this.
+    /// @note On exit, all read messages will have been moved and 
+    ///       \c getNumberOfTraceBuf2Messages() will be 0.
+    [[nodiscard]] std::vector<TraceBuf2<double>> moveTraceBuf2Messages() noexcept;
     /// @}
 
     /// @name Destructors

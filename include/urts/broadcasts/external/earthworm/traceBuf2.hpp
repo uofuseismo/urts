@@ -213,6 +213,9 @@ public:
 
     /// @result This class expressed as a datapacket.
     [[nodiscard]] URTS::Broadcasts::Internal::DataPacket::DataPacket toDataPacket() const;
+    /// @result Moves the memory from this data packet to this data packet.
+    /// @note This packet's behavior will be undefined after alling this.
+    [[nodiscard]] URTS::Broadcasts::Internal::DataPacket::DataPacket moveToDataPacket();
     /// @}
 
     /// @name Message Abstract Base Class Properties

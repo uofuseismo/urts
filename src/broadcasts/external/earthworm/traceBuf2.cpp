@@ -547,6 +547,25 @@ UDP::DataPacket TraceBuf2<T>::toDataPacket() const
     return dataPacket;
 }
 
+template<>
+UDP::DataPacket TraceBuf2<double>::moveToDataPacket()
+{
+    UDP::DataPacket dataPacket;
+    dataPacket.setNetwork(getNetwork());
+    dataPacket.setStation(getStation());
+    dataPacket.setChannel(getChannel());
+    dataPacket.setLocationCode(getLocationCode());
+    if (haveSamplingRate())
+    {   
+        dataPacket.setSamplingRate(getSamplingRate());
+    }   
+    auto startTime = getStartTime();
+    dataPacket.setStartTime(startTime);
+    auto nSamples = getNumberOfSamples();
+    if (nSamples > 0){dataPacket.setData(std::move(pImpl->mData));}
+    return dataPacket;
+}
+
 /// Set the network name
 template<class T>
 void TraceBuf2<T>::setNetwork(const std::string &network) noexcept
