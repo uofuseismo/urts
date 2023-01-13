@@ -343,7 +343,7 @@ public:
                              + std::string(e.what()));
                 continue;
             }
-            auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
+            //auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
             //auto traceBuf2MessagesPtr
             //    = mWaveRing->getTraceBuf2MessagesPointer();
             const auto &traceBuf2MessagesReference
