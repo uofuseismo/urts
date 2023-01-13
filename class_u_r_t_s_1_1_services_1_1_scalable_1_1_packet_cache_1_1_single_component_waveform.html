@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_services_1_1_scalabl
 </div><!--header-->
 <div class="contents">
 
-<p>This class converts a sequence of packets to a continuous waveform.  
+<p>This class converts a sequence of packets to a continuous waveform sampled at the channel's nominal sampling rate. This is accomplished via a (Wiggins) time-domain interpolation method.  
  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#details">More...</a></p>
 
 <p><code>#include &quot;<a class="el" href="single_component_waveform_8hpp_source.html">urts/services/scalable/packetCache/singleComponentWaveform.hpp</a>&quot;</code></p>
@@ -140,9 +140,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa7bdb117e6c884a028535fea72b1fbc6"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#aa7bdb117e6c884a028535fea72b1fbc6">getGapTolerance</a> () const noexcept</td></tr>
 <tr class="separator:aa7bdb117e6c884a028535fea72b1fbc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Packet Setters</div></td></tr>
-<tr class="memitem:ab259b046f6c9fd4ef996943393bc941c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ab259b046f6c9fd4ef996943393bc941c">interpolate</a> (const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;dataResponse, const std::chrono::microseconds &amp;t0=std::chrono::microseconds {-631152000000000}, const std::chrono::microseconds &amp;t1=std::chrono::microseconds {5680281600000000})</td></tr>
-<tr class="memdesc:ab259b046f6c9fd4ef996943393bc941c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data response and interpolates to a continuous signal.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ab259b046f6c9fd4ef996943393bc941c">More...</a><br /></td></tr>
-<tr class="separator:ab259b046f6c9fd4ef996943393bc941c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9532a6a73a5ad73408bd595088e6f8c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a9532a6a73a5ad73408bd595088e6f8c0">set</a> (const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;dataResponse, const std::chrono::microseconds &amp;startTime=std::chrono::microseconds {-631152000000000}, const std::chrono::microseconds &amp;endtime=std::chrono::microseconds {5680281600000000})</td></tr>
+<tr class="memdesc:a9532a6a73a5ad73408bd595088e6f8c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data response and interpolates to a continuous signal.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a9532a6a73a5ad73408bd595088e6f8c0">More...</a><br /></td></tr>
+<tr class="separator:a9532a6a73a5ad73408bd595088e6f8c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Waveform Getters</div></td></tr>
 <tr class="memitem:a550b5b9d5276164fd0c5f9f961c05da7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a550b5b9d5276164fd0c5f9f961c05da7">getNumberOfSamples</a> () const noexcept</td></tr>
 <tr class="separator:a550b5b9d5276164fd0c5f9f961c05da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,7 +201,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a5fa42542c9907ab6dbbc5b7711762bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This class converts a sequence of packets to a continuous waveform. </p>
+<div class="textblock"><p>This class converts a sequence of packets to a continuous waveform sampled at the channel's nominal sampling rate. This is accomplished via a (Wiggins) time-domain interpolation method. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Ben Baker (University of Utah) distributed under the MIT license. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a48daf4d803a5838400e1087cc48ea623"></a>
@@ -730,58 +730,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ab259b046f6c9fd4ef996943393bc941c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab259b046f6c9fd4ef996943393bc941c">&#9670;&nbsp;</a></span>interpolate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void URTS::Services::Scalable::PacketCache::SingleComponentWaveform::interpolate </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;&#160;</td>
-          <td class="paramname"><em>dataResponse</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
-          <td class="paramname"><em>t0</em> = <code>std::chrono::microseconds&#160;{-631152000000000}</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
-          <td class="paramname"><em>t1</em> = <code>std::chrono::microseconds&#160;{5680281600000000}</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the data response and interpolates to a continuous signal. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">dataResponse</td><td>The data response from the packet cache. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">t0</td><td>The start time (UTC) in microseconds since the epoch of the interpolation in microseconds since the epoch. If this is less than the minimum start time of all the packets then the interpolation will start at the minimum start time of all packets. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">t1</td><td>The end time (UTC) in microseconds since the epoch of the interpolation in microseconds since the epoch. If this is greater than the maximum start time of all the packets then the interpolation will end at the maximum start time of all packets. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>This will interpolate the packets to the nominal sampling rate and set the corresponding channel naming information. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if the naming information cannot be determined, there are no packets, or the packets correspond to different channels. </td></tr>
-    <tr><td class="paramname">std::runtime_error</td><td>if an error occurs during interpolation. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="acc935312da050c35bd7087269ed19a70"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acc935312da050c35bd7087269ed19a70">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
@@ -841,6 +789,58 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The memory from waveform moved to this. </dd></dl>
+
+</div>
+</div>
+<a id="a9532a6a73a5ad73408bd595088e6f8c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9532a6a73a5ad73408bd595088e6f8c0">&#9670;&nbsp;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Services::Scalable::PacketCache::SingleComponentWaveform::set </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;&#160;</td>
+          <td class="paramname"><em>dataResponse</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
+          <td class="paramname"><em>startTime</em> = <code>std::chrono::microseconds&#160;{-631152000000000}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
+          <td class="paramname"><em>endtime</em> = <code>std::chrono::microseconds&#160;{5680281600000000}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the data response and interpolates to a continuous signal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataResponse</td><td>The data response from the packet cache. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startTime</td><td>The start time (UTC) in microseconds since the epoch of the interpolation. If this is less than the minimum start time of all the packets then the interpolation will start at the minimum start time of all packets. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endTime</td><td>The end time (UTC) in microseconds since the epoch of the interpolation. If this is greater than the maximum end time of all the packets then the interpolation will end at the maximum end time of all packets. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This will interpolate the packets to the nominal sampling rate and set the corresponding channel naming information. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the naming information cannot be determined, there are no packets, or the packets correspond to different channels. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if an error occurs during interpolation. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1036,7 +1036,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html">SingleComponentWaveform</a></li>
-    <li class="footer">Generated on Thu Jan 12 2023 16:21:58 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 18:08:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

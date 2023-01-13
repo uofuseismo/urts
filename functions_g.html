@@ -108,7 +108,6 @@ $(document).ready(function(){initNavTree('functions_g.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html#a97a386bf6eab57f23160f1d6e09cf948">URTS::Services::Scalable::PacketCache::CircularBuffer</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html#a2bac55c0954dd4c389f14640e20545b8">URTS::Services::Scalable::PacketCache::DataRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a2f0824c6cbdd31963ac4eabbad071fb3">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#acea8cef90d5660361f19493a4adb3d37">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
 </li>
 <li>getCurrentValue()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html#accc63462ab3bb51b7dfb431b6197b0d3">URTS::Services::Standalone::Incrementer::Counter</a>
@@ -142,6 +141,9 @@ $(document).ready(function(){initNavTree('functions_g.html',''); initResizable()
 <li>getEarliestStartTime()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ad43c466295d511c7d85894255fee06b8">URTS::Services::Scalable::PacketCache::CappedCollection</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html#aa381e6fa994ea4ba9ef3ab665ca7e301">URTS::Services::Scalable::PacketCache::CircularBuffer</a>
+</li>
+<li>getEastChannel()
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a2f0d6f6a5b912d00b0711d5cb5de80cf">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
 </li>
 <li>getEndTime()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#abed483784f615c0c6b9a7a1969b50c07">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
@@ -269,6 +271,9 @@ $(document).ready(function(){initNavTree('functions_g.html',''); initResizable()
 <li>getNominalSamplingRate()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ab37810d33a7fc613b2316b85cbd19afc">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1701f60584dad86b5d67e8c4187e68e9">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
+</li>
+<li>getNorthChannel()
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1879d84eeef0e33515aff5045993971b">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
 </li>
 <li>getNumberOfDataRequests()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html#a47abe68f08a2674e9f62ad1e0d019fee">URTS::Services::Scalable::PacketCache::BulkDataRequest</a>
@@ -410,6 +415,9 @@ $(document).ready(function(){initNavTree('functions_g.html',''); initResizable()
 <li>getVersion()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#ac339e51464a2639b332c87e882388efb">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
 </li>
+<li>getVerticalChannel()
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a25724d6b1e5058c9a28f3ec0d1feb879">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
+</li>
 <li>getZAPOptions()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher_options.html#a9f35490e3ffc724481715e03ff3b5bee">URTS::Broadcasts::Internal::DataPacket::PublisherOptions</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#ad9ab6664dc14eab217d168a5b8e40e56">URTS::Broadcasts::Internal::DataPacket::SubscriberOptions</a>
@@ -423,7 +431,7 @@ $(document).ready(function(){initNavTree('functions_g.html',''); initResizable()
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jan 12 2023 16:21:59 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 18:08:29 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
