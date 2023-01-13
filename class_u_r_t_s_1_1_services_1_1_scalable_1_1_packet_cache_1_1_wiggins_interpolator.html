@@ -148,12 +148,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8a43280b0cf7b0c1129e2b318ca0e57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43ada7c8c30bc9f5b99c9d58afc856eb"><td class="memItemLeft" align="right" valign="top">const double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a43ada7c8c30bc9f5b99c9d58afc856eb">getSignalPointer</a> () const noexcept</td></tr>
 <tr class="separator:a43ada7c8c30bc9f5b99c9d58afc856eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3020c05615bc53813e2e74a5445a2dec"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a3020c05615bc53813e2e74a5445a2dec">getSignalReference</a> () const noexcept</td></tr>
+<tr class="separator:a3020c05615bc53813e2e74a5445a2dec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb6299b38939ae014c3e392233e9fd9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#afb6299b38939ae014c3e392233e9fd9f">getNumberOfSamples</a> () const noexcept</td></tr>
 <tr class="separator:afb6299b38939ae014c3e392233e9fd9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecdb4525d0de74fd525cd585c8c9933f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#aecdb4525d0de74fd525cd585c8c9933f">getGapIndicator</a> () const noexcept</td></tr>
 <tr class="separator:aecdb4525d0de74fd525cd585c8c9933f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b46b8c5707538660c91a773b19ef1cc"><td class="memItemLeft" align="right" valign="top">const int8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a1b46b8c5707538660c91a773b19ef1cc">getGapIndicatorPointer</a> () const noexcept</td></tr>
 <tr class="separator:a1b46b8c5707538660c91a773b19ef1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34df02fcae114d2182516aadd70e3d3b"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a34df02fcae114d2182516aadd70e3d3b">getGapIndicatorReference</a> () const noexcept</td></tr>
+<tr class="separator:a34df02fcae114d2182516aadd70e3d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f96bb48e20fd7bc017d8ba660824ea4"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a2f96bb48e20fd7bc017d8ba660824ea4">getStartTime</a> () const noexcept</td></tr>
 <tr class="separator:a2f96bb48e20fd7bc017d8ba660824ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3753a1421d10794384756261b2d106e"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#aa3753a1421d10794384756261b2d106e">getEndTime</a> () const noexcept</td></tr>
@@ -314,6 +318,34 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>A pointer to a signal that indicates whether or not the sample in the interpolated signal was within a packet (false) or between packets (true) - i.e., extrapolated. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. When possibleu se <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#aecdb4525d0de74fd525cd585c8c9933f">getGapIndicator()</a></code>. </dd></dl>
+
+</div>
+</div>
+<a id="a34df02fcae114d2182516aadd70e3d3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34df02fcae114d2182516aadd70e3d3b">&#9670;&nbsp;</a></span>getGapIndicatorReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;int8_t&gt;&amp; URTS::Services::Scalable::PacketCache::WigginsInterpolator::getGapIndicatorReference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a signal that indicates whether or not the sample in the interpolated signal was within a packet (false) or between packets (true) - i.e., extrapolated. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. When possibleu se <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#aecdb4525d0de74fd525cd585c8c9933f">getGapIndicator()</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -406,6 +438,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       <table class="memname">
         <tr>
           <td class="memname">const double* URTS::Services::Scalable::PacketCache::WigginsInterpolator::getSignalPointer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the interpolated signal. This is an array whose dimension is [<code>getNumberOfSamples</code>]. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. When possible use <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a8a43280b0cf7b0c1129e2b318ca0e57e">getSignal()</a></code>. </dd></dl>
+
+</div>
+</div>
+<a id="a3020c05615bc53813e2e74a5445a2dec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3020c05615bc53813e2e74a5445a2dec">&#9670;&nbsp;</a></span>getSignalReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;double&gt;&amp; URTS::Services::Scalable::PacketCache::WigginsInterpolator::getSignalReference </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -720,7 +779,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html">WigginsInterpolator</a></li>
-    <li class="footer">Generated on Fri Jan 13 2023 21:19:58 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 23:20:48 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

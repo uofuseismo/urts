@@ -150,6 +150,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa53d60d18ecef1e2e228c632d34c85fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf83c9e97ad75e4f7d1bae0cbf4a8599"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#adf83c9e97ad75e4f7d1bae0cbf4a8599">getEndTime</a> () const noexcept</td></tr>
 <tr class="separator:adf83c9e97ad75e4f7d1bae0cbf4a8599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4383e272ff1094c56821f3f5864262"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1d4383e272ff1094c56821f3f5864262">getSignal</a> () const noexcept</td></tr>
+<tr class="separator:a1d4383e272ff1094c56821f3f5864262"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ebc14d122fcc33721045a09cc7c1cc"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a72ebc14d122fcc33721045a09cc7c1cc">getSignalReference</a> () const noexcept</td></tr>
+<tr class="separator:a72ebc14d122fcc33721045a09cc7c1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2210eb2ed981147df5f973f020c9c97d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a2210eb2ed981147df5f973f020c9c97d">getGapIndicator</a> () const noexcept</td></tr>
+<tr class="separator:a2210eb2ed981147df5f973f020c9c97d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64070806671ac9d87c2763180279133d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a64070806671ac9d87c2763180279133d">getGapIndicatorReference</a> () const noexcept</td></tr>
+<tr class="separator:a64070806671ac9d87c2763180279133d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Channel Naming Information</div></td></tr>
 <tr class="memitem:acc557fb2e791bdf41cdd9882baba8f61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#acc557fb2e791bdf41cdd9882baba8f61">setNetwork</a> (const std::string &amp;network)</td></tr>
 <tr class="memdesc:acc557fb2e791bdf41cdd9882baba8f61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the network code.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#acc557fb2e791bdf41cdd9882baba8f61">More...</a><br /></td></tr>
@@ -435,6 +443,60 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a2210eb2ed981147df5f973f020c9c97d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2210eb2ed981147df5f973f020c9c97d">&#9670;&nbsp;</a></span>getGapIndicator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int8_t&gt; URTS::Services::Scalable::PacketCache::ThreeComponentWaveform::getGapIndicator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>An array of true/false that indicates whether or not the interpolated signal fell between packet endpoints. <br  />
+ </dd></dl>
+
+</div>
+</div>
+<a id="a64070806671ac9d87c2763180279133d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64070806671ac9d87c2763180279133d">&#9670;&nbsp;</a></span>getGapIndicatorReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;int8_t&gt;&amp; URTS::Services::Scalable::PacketCache::ThreeComponentWaveform::getGapIndicatorReference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a signal that indicates whether or not the sample in the interpolated signal was within a packet (false) or between packets (true) - i.e., extrapolated. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. When possibleu se <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a2210eb2ed981147df5f973f020c9c97d">getGapIndicator()</a></code>. </dd></dl>
+
+</div>
+</div>
 <a id="a9dc00c063680e02c2ae820277a46b56e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9dc00c063680e02c2ae820277a46b56e">&#9670;&nbsp;</a></span>getGapTolerance()</h2>
 
@@ -611,6 +673,59 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of samples in the three-component signal. </dd></dl>
+
+</div>
+</div>
+<a id="a1d4383e272ff1094c56821f3f5864262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4383e272ff1094c56821f3f5864262">&#9670;&nbsp;</a></span>getSignal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; URTS::Services::Scalable::PacketCache::ThreeComponentWaveform::getSignal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The interpolated signal. </dd></dl>
+
+</div>
+</div>
+<a id="a72ebc14d122fcc33721045a09cc7c1cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72ebc14d122fcc33721045a09cc7c1cc">&#9670;&nbsp;</a></span>getSignalReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;double&gt;&amp; URTS::Services::Scalable::PacketCache::ThreeComponentWaveform::getSignalReference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the interpolated signal. This is an array whose dimension is [<code>getNumberOfSamples</code>]. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. When possible use <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1d4383e272ff1094c56821f3f5864262">getSignal()</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -1216,7 +1331,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html">ThreeComponentWaveform</a></li>
-    <li class="footer">Generated on Fri Jan 13 2023 21:19:58 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 23:20:48 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
