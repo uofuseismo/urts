@@ -31,7 +31,7 @@ public:
     /// @brief Sets the perturbation to add to this pick to move it to the
     ///        corresponding bound.  This should be negative for percentiles
     ///        less than 50 and positive for percentiles greater than 0.
-    void setPerturbation(const std::chrono::microseconds &perturbation);
+    void setPerturbation(const std::chrono::microseconds &perturbation) noexcept;
     /// @result The perturbation to add to the pick to move it to this
     ///         percentile.  By default this is 0.
     [[nodiscard]] std::chrono::microseconds getPerturbation() const noexcept;
