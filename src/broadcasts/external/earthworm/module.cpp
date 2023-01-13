@@ -24,7 +24,6 @@
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
 #include <umps/services/connectionInformation/socketDetails/proxy.hpp>
-//#include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
 #include <umps/services/connectionInformation/socketDetails/xSubscriber.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
@@ -625,7 +624,6 @@ std::string parseCommandLineOptions(int argc, char *argv[])
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "Produce help message")
-        ("background", "Setting this is useful for running the program as a background process - e.g., with nohup")
         ("ini",  boost::program_options::value<std::string> (), 
                  "Defines the initialization file for this module");
     boost::program_options::variables_map vm;

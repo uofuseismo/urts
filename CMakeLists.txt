@@ -180,8 +180,9 @@ target_link_libraries(packetCache
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)  
 
 set(URTS_MODULES incrementer packetCache)
+
 if (${BUILD_EW})
-   add_executable(broadcastWaveRing src/broadcasts/internal/dataPacket/module.cpp)
+   add_executable(broadcastWaveRing src/broadcasts/external/earthworm/module.cpp)
    set_target_properties(broadcastWaveRing PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
@@ -193,6 +194,20 @@ if (${BUILD_EW})
                          PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} broadcastWaveRing)
+endif()
+if (${BUILD_SEEDLINK})
+   add_executable(broadcastSEEDLink src/broadcasts/external/seedlink/module.cpp)
+   set_target_properties(broadcastSEEDLink PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   target_include_directories(broadcastSEEDLink PRIVATE
+                              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
+   target_link_libraries(broadcastSEEDLink
+                         PRIVATE urts ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   set(URTS_MODULES ${MODULES} broadcastSEEDLink)
 endif()
 
 ##########################################################################################
