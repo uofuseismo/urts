@@ -8,6 +8,7 @@
 #include "urts/services/scalable/packetCache/dataResponse.hpp"
 #include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "checkPackets.hpp"
 
 #define NOMINAL_SAMPLING_RATE 100
 #define GAP_TOLERANCE_MUSEC 50000
@@ -251,10 +252,9 @@ SingleComponentWaveform::getGapTolerance() const noexcept
 }
 
 /// Set packets
-void SingleComponentWaveform::interpolate(
-    const DataResponse &response,
-    const std::chrono::microseconds &startTime,
-    const std::chrono::microseconds &endTime)
+void SingleComponentWaveform::set(const DataResponse &response,
+                                  const std::chrono::microseconds &startTime,
+                                  const std::chrono::microseconds &endTime)
 {
     pImpl->mInterpolator.clearSignal();
     if (endTime < startTime)
@@ -268,6 +268,13 @@ void SingleComponentWaveform::interpolate(
     assert(static_cast<int> (packetsReference.size()) == nPackets);
 #endif
     /// Preliminary checks on packets
+    auto [t0Packets, t1Packets]
+        = ::checkPacketsAndGetStartEndTime(packetsReference);
+    auto network = packetsReference.at(0).getNetwork();
+    auto station = packetsReference.at(0).getStation();
+    auto channel = packetsReference.at(0).getChannel();
+    auto locationCode = packetsReference.at(0).getLocationCode();
+    /*
     auto t0Packets = packetsReference[0].getStartTime();
     auto t1Packets = packetsReference[0].getEndTime();
     auto network = packetsReference[0].getNetwork();
@@ -303,6 +310,24 @@ void SingleComponentWaveform::interpolate(
         {
             throw std::invalid_argument("Inconsistent location codes");
         }
+    }
+    */
+    if (startTime > t1Packets)
+    {
+        auto errorMessage = "Desired interpolation start time ("
+                          + std::to_string(startTime.count())
+                          + ") exceeds last sample in data query ("
+                          + std::to_string(t1Packets.count())
+                          + ")"; 
+        throw std::invalid_argument(errorMessage);
+    }
+    if (endTime < t0Packets)
+    {
+        auto errorMessage = "Desired interpolation end time ("
+                          + std::to_string(endTime.count())
+                          + ") is than first sample in data query ("
+                          + std::to_string(t0Packets.count())
+                          + ")";
     }
     /// Set the appropriate start/end interpolation time
     auto t0Interpolate = std::max(startTime, t0Packets);

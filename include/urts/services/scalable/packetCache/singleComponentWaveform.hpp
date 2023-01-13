@@ -18,7 +18,9 @@ namespace URTS
 namespace URTS::Services::Scalable::PacketCache
 {
 /// @class SingleComponentWaveform "singleComponentWaveform.hpp" "urts/services/scalable/packetCache/singleComponentWaveform.hpp"
-/// @brief This class converts a sequence of packets to a continuous waveform.
+/// @brief This class converts a sequence of packets to a continuous waveform
+///        sampled at the channel's nominal sampling rate.  This is accomplished
+///        via a (Wiggins) time-domain interpolation method.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SingleComponentWaveform
 {
@@ -85,26 +87,24 @@ public:
     /// @brief Sets the data response and interpolates to a continuous signal.
     /// @param[in] dataResponse  The data response from the packet cache.
     /// @param[in] startTime     The start time (UTC) in microseconds since the
-    ///                          epoch of the interpolation in microseconds
-    ///                          since the epoch.  If this is less than the
-    ///                          minimum start time of all the packets then the
-    ///                          interpolation will start at the minimum start
-    ///                          time of all packets.
+    ///                          epoch of the interpolation.  If this is less
+    ///                          than the minimum start time of all the packets
+    ///                          then the interpolation will start at the
+    ///                          minimum start time of all packets.
     /// @param[in] endTime       The end time (UTC) in microseconds since the
-    ///                          epoch of the interpolation in microseconds
-    ///                          since the epoch.  If this is greater than the
-    ///                          maximum start time of all the packets then the
-    ///                          interpolation will end at the maximum start
-    ///                          time of all packets.
+    ///                          epoch of the interpolation.  If this is greater
+    ///                          than the maximum end time of all the packets
+    ///                          then the interpolation will end at the maximum
+    ///                          end time of all packets.
     /// @note This will interpolate the packets to the nominal sampling rate
     ///       and set the corresponding channel naming information.
     /// @throws std::invalid_argument if the naming information cannot be
     ///         determined, there are no packets, or the packets correspond
     ///         to different channels.
     /// @throws std::runtime_error if an error occurs during interpolation.
-    void interpolate(const DataResponse &dataResponse,
-                     const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
-                     const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
+    void set(const DataResponse &dataResponse,
+             const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
+             const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
     /// @}
 
     /// @name Waveform Getters

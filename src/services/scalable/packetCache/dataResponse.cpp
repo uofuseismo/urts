@@ -38,7 +38,7 @@ nlohmann::json toJSONObject(
         obj["LocationCode"] = packetsPointer[0].getLocationCode();
         // Now the packets (these were sorted on time)
         nlohmann::json packetObjects;
-	for (const auto &packet : packetsReference) //int ip = 0; ip < nPackets; ++ip)
+	for (const auto &packet : packetsReference)
         {
             nlohmann::json packetObject;
             packetObject["StartTime"] = packet.getStartTime().count();

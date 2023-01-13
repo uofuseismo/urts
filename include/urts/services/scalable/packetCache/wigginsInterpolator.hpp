@@ -90,9 +90,9 @@ public:
     ///                       start at the minimum start time of all packets.
     /// @param[in] endTime    The end time (UTC) in microseconds since the
     ///                       epoch of the interpolation.
-    ///                       If this is greater than the maximum start time
+    ///                       If this is greater than the maximum end time
     ///                       of all the packets then the interpolation will
-    ///                       end at the maximum start time of all packets.
+    ///                       end at the maximum end time of all packets.
     /// @throws std::runtime_error if an error occurs.
     /// @throws std::invalid_argument if the start time exceeds the end time.
     void interpolate(const std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> &packets,

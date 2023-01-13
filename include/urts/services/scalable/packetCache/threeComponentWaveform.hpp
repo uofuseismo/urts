@@ -86,14 +86,21 @@ public:
     /// @{
 
     /// @brief Sets the data response and interpolates to a continuous signal.
-    /// @param[in] The data response from the packet cache.
+    /// @param[in] verticalComponent  The data response from the packet cache
+    ///                               for the vertical component.
+    /// @param[in] northComponent     The data response from the packet cache
+    ///                               for the north (or 1) component.
+    /// @param[in] eastComponent      The data response from the packet cache
+    ///                               for the east (or 2) component.
     /// @note This will interpolate the packets to the nominal sampling rate
     ///       and set the corresponding channel naming information.
     /// @throws std::invalid_argument if the naming information cannot be
     ///         determined, there are no packets, or the packets correspond
     ///         to different channels.
     /// @throws std::runtime_error if an error occurs during interpolation.
-    void set(const DataResponse &dataResponse);
+    void set(const DataResponse &verticalComponent,
+             const DataResponse &northComponent,
+             const DataResponse &eastComponent);
     /// @}
 
     /// @name Waveform Getters
@@ -130,15 +137,35 @@ public:
     /// @result True indicates the station name was set.
     [[nodiscard]] bool haveStation() const noexcept;
 
-    /// @brief Sets the channel code.
-    /// @param[in] channel  The channel code - e.g., HHZ.
+    /// @brief Sets the vertical channel code.
+    /// @param[in] verticalChannel  The vertical channel code - e.g., HHZ.
     /// @throws std::invalid_argument if the channel code is empty.
-    void setChannel(const std::string &channel);
-    /// @result The channel code.
-    /// @throws std::runtime_error if \c haveChannel() is false. 
-    [[nodiscard]] std::string getChannel() const;
-    /// @result True indicates the channel code was set.
-    [[nodiscard]] bool haveChannel() const noexcept;
+    void setVerticalChannel(const std::string &verticalChannel);
+    /// @result The vertical channel code.
+    /// @throws std::runtime_error if \c haveVerticalChannel() is false. 
+    [[nodiscard]] std::string getVerticalChannel() const;
+    /// @result True indicates the vertical channel code was set.
+    [[nodiscard]] bool haveVerticalChannel() const noexcept;
+
+    /// @brief Sets the north (or 1) channel code.
+    /// @param[in] northChannel  The north channel code - e.g., HHN or HH1.
+    /// @throws std::invalid_argument if the channel code is empty.
+    void setNorthChannel(const std::string &northChannel);
+    /// @result The north channel code.
+    /// @throws std::runtime_error if \c haveNorthChannel() is false. 
+    [[nodiscard]] std::string getNorthChannel() const;
+    /// @result True indicates the north channel code was set.
+    [[nodiscard]] bool haveNorthChannel() const noexcept;
+
+    /// @brief Sets the east (or 2) channel code.
+    /// @param[in] eastChannel  The north channel code - e.g., HHE or HH2.
+    /// @throws std::invalid_argument if the channel code is empty.
+    void setEastChannel(const std::string &eastChannel);
+    /// @result The east channel code.
+    /// @throws std::runtime_error if \c haveEastChannel() is false. 
+    [[nodiscard]] std::string getEastChannel() const;
+    /// @result True indicates the east channel code was set.
+    [[nodiscard]] bool haveEastChannel() const noexcept;
 
     /// @brief Sets the location code.
     /// @param[in] locationCode  The location code - e.g., 01.
