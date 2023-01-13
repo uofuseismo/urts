@@ -131,6 +131,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
     testing/broadcasts/internal/dataPacket.cpp
+    testing/broadcasts/internal/pick.cpp
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )

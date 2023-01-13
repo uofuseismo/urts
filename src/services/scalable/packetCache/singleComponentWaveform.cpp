@@ -342,6 +342,30 @@ void SingleComponentWaveform::set(const DataResponse &response,
                                      t0Interpolate, t1Interpolate);
 }
 
+/// Signal
+std::vector<double> SingleComponentWaveform::getSignal() const noexcept
+{
+    return pImpl->mInterpolator.getSignal();
+}
+
+const std::vector<double>
+&SingleComponentWaveform::getSignalReference() const noexcept
+{
+    return pImpl->mInterpolator.getSignalReference();
+}
+
+/// Gap indicator
+std::vector<int8_t> SingleComponentWaveform::getGapIndicator() const noexcept
+{
+    return pImpl->mInterpolator.getGapIndicator();
+}
+
+const std::vector<int8_t>
+&SingleComponentWaveform::getGapIndicatorReference() const noexcept
+{
+    return pImpl->mInterpolator.getGapIndicatorReference();
+}
+
 /// Number of samples
 int SingleComponentWaveform::getNumberOfSamples() const noexcept
 {

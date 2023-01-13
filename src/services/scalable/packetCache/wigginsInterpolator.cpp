@@ -410,6 +410,12 @@ const double *WigginsInterpolator::getSignalPointer() const noexcept
     return pImpl->mSignal.data();
 }
 
+const std::vector<double> 
+&WigginsInterpolator::getSignalReference() const noexcept
+{
+    return pImpl->mSignal;
+}
+
 // Get gap indicator
 std::vector<int8_t> WigginsInterpolator::getGapIndicator() const noexcept
 {
@@ -419,6 +425,12 @@ std::vector<int8_t> WigginsInterpolator::getGapIndicator() const noexcept
 const int8_t *WigginsInterpolator::getGapIndicatorPointer() const noexcept
 {
     return pImpl->mGapIndicator.data();
+}
+
+const std::vector<int8_t>
+&WigginsInterpolator::getGapIndicatorReference() const noexcept
+{
+    return pImpl->mGapIndicator;
 }
 
 /// Start time

@@ -110,6 +110,24 @@ public:
     /// @name Waveform Getters
     /// @{
 
+    /// @result The interpolated signal.
+    [[nodiscard]] std::vector<double> getSignal() const noexcept;
+    /// @result A pointer to the interpolated signal.  This is an array whose
+    ///         dimension is [\c getNumberOfSamples].
+    /// @note This exists for performance reasons.  When possible use
+    ///       \c getSignal().
+    [[nodiscard]] const std::vector<double> &getSignalReference() const noexcept;
+
+    /// @result An array of true/false that indicates whether or not the 
+    ///         interpolated signal fell between packet endpoints.   
+    [[nodiscard]] std::vector<int8_t> getGapIndicator() const noexcept;
+    /// @result A pointer to a signal that indicates whether or not the
+    ///         sample in the interpolated signal was within a packet (false) or
+    ///         between packets (true) - i.e., extrapolated.
+    /// @note This exists for performance reasons.  When possibleu se
+    ///       \c getGapIndicator().
+    [[nodiscard]] const std::vector<int8_t> &getGapIndicatorReference() const noexcept;
+
     /// @result The number of samples in the three-component signal.
     [[nodiscard]] int getNumberOfSamples() const noexcept;
     /// @result The start time (UTC) of the signal since the epoch.

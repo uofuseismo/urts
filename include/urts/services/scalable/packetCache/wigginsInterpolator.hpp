@@ -123,6 +123,11 @@ public:
     /// @note This exists for performance reasons.  When possible use
     ///       \c getSignal().
     [[nodiscard]] const double *getSignalPointer() const noexcept;
+    /// @result A pointer to the interpolated signal.  This is an array whose
+    ///         dimension is [\c getNumberOfSamples].
+    /// @note This exists for performance reasons.  When possible use
+    ///       \c getSignal().
+    [[nodiscard]] const std::vector<double> &getSignalReference() const noexcept;
     /// @result The number of samples in the interpolated signal.
     [[nodiscard]] int getNumberOfSamples() const noexcept;
 
@@ -132,7 +137,15 @@ public:
     /// @result A pointer to a signal that indicates whether or not the
     ///         sample in the interpolated signal was within a packet (false) or
     ///         between packets (true) - i.e., extrapolated.
+    /// @note This exists for performance reasons.  When possibleu se
+    ///       \c getGapIndicator().
     [[nodiscard]] const int8_t *getGapIndicatorPointer() const noexcept;
+    /// @result A pointer to a signal that indicates whether or not the
+    ///         sample in the interpolated signal was within a packet (false) or
+    ///         between packets (true) - i.e., extrapolated.
+    /// @note This exists for performance reasons.  When possibleu se
+    ///       \c getGapIndicator().
+    [[nodiscard]] const std::vector<int8_t> &getGapIndicatorReference() const noexcept;
 
     /// @result The start time of the interpolated signal.
     [[nodiscard]] std::chrono::microseconds getStartTime() const noexcept;

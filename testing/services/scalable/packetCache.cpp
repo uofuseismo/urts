@@ -11,6 +11,8 @@
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
 #include "urts/services/scalable/packetCache/serviceOptions.hpp"
 #include "urts/services/scalable/packetCache/service.hpp"
+#include "urts/services/scalable/packetCache/singleComponentWaveform.hpp"
+#include "urts/services/scalable/packetCache/threeComponentWaveform.hpp"
 #include "urts/services/scalable/packetCache/wigginsInterpolator.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
@@ -103,6 +105,45 @@ bool operator==(const UDP::DataPacket &lhs, const UDP::DataPacket &rhs)
         }
     }
     return true;
+}
+
+std::pair<std::vector<double>, std::vector<double>>
+loadGSE2(const std::string &fileName = "data/gse2.txt",
+         const double samplingRate = 200)
+{
+    auto infl = std::ifstream(fileName);
+    std::vector<double> t;
+    std::vector<double> x;
+    t.reserve(12000);
+    x.reserve(12000);
+    std::string line;
+    while (std::getline(infl, line))
+    {   
+        t.push_back(t.size()/samplingRate);
+        x.push_back(std::stod(line));
+    }   
+    infl.close();
+    return std::pair {t, x};
+}
+
+std::pair<std::vector<double>, std::vector<double>>
+loadInterpolatedGSE2(const std::string &fileName = "data/wigint.txt")
+{
+    std::vector<double> newTimes;
+    std::vector<double> yRef;
+    newTimes.reserve(14999);
+    yRef.reserve(14999);
+    auto infl = std::ifstream(fileName);
+    std::string line;
+    while (std::getline(infl, line))
+    {   
+        double t, yi; 
+        sscanf(line.c_str(), "%lf,%lf\n", &t, &yi);
+        newTimes.push_back(t);
+        yRef.push_back(yi);
+    }   
+    infl.close();
+    return std::pair {newTimes, yRef};
 }
 
 TEST(ServicesScalablePacketCache, SensorRequest)
@@ -527,8 +568,10 @@ TEST(ServicesScalablePacketCache, Wiggins)
     const double targetSamplingRate{250};
     const double targetSamplingPeriod = 1/targetSamplingRate;
     std::chrono::microseconds gapTolerance{55000};
-    auto infl = std::ifstream("data/gse2.txt");
+    //auto infl = std::ifstream("data/gse2.txt");
     double yDiff{0};
+    auto [t, x] = ::loadGSE2("data/gse2.txt", samplingRate);
+    /*
     std::vector<double> t;
     std::vector<double> x;
     t.reserve(12000);
@@ -540,12 +583,16 @@ TEST(ServicesScalablePacketCache, Wiggins)
         x.push_back(std::stod(line));
     }   
     infl.close();
+    */
+    EXPECT_EQ(t.size(), 12000);
     EXPECT_EQ(x.size(), 12000);
+    auto [newTimes, yRef] = ::loadInterpolatedGSE2("data/wigint.txt");
+    /*
     std::vector<double> newTimes;
     std::vector<double> yRef;
     newTimes.reserve(14999);
     yRef.reserve(14999);
-    infl = std::ifstream("data/wigint.txt");
+    auto infl = std::ifstream("data/wigint.txt");
     while (std::getline(infl, line))
     {   
         double t, yi; 
@@ -554,6 +601,8 @@ TEST(ServicesScalablePacketCache, Wiggins)
         yRef.push_back(yi);
     }   
     infl.close();
+    */
+    EXPECT_EQ(newTimes.size(), 14999);
     EXPECT_EQ(yRef.size(), 14999);
     // Interpolate this
     /*
@@ -695,7 +744,78 @@ TEST(ServicesScalablePacketCache, Wiggins)
             EXPECT_EQ(gapPtr[i], 0);
         }
     }
- 
 }
+
+TEST(ServicesScalablePacketCache, SingleComponent)
+{
+    const std::string network{"UU"};
+    const std::string station{"KHUT"};
+    const std::string verticalChannel{"ENZ"};
+    const std::string locationCode{"01"};
+    const double samplingRate{200};
+    const double targetSamplingRate{250};
+    const double targetSamplingPeriod = 1/targetSamplingRate;
+    std::chrono::microseconds gapTolerance{55000};
+    auto [t, x] = ::loadGSE2("data/gse2.txt", samplingRate);
+    auto [newTimes, yRef] = ::loadInterpolatedGSE2("data/wigint.txt");
+    EXPECT_EQ(x.size(),        12000);
+    EXPECT_EQ(newTimes.size(), 14999);
+    // Packetize this data
+    auto n = static_cast<int> (x.size());
+    std::vector<UDP::DataPacket> packets;
+    int packetSize = 100;
+    int i0 = 0;
+    double t0 = 1644516968;
+    std::chrono::microseconds t0MuSec{static_cast<int64_t> (std::round(t0*1000000))};
+    double t1 = t0 + (yRef.size() - 1)*targetSamplingPeriod;
+    std::chrono::microseconds t1MuSec{static_cast<int64_t> (std::round(t1*1000000))};
+    for (int i = 0; i < n; ++i)
+    {
+        UDP::DataPacket packet; 
+        auto i1 = std::min(i0 + packetSize, n);
+        auto nCopy = i1 - i0;
+        packet.setNetwork(network);
+        packet.setStation(station);
+        packet.setChannel(verticalChannel);
+        packet.setLocationCode(locationCode);
+        packet.setStartTime(t0 + i0/samplingRate);
+        packet.setSamplingRate(samplingRate);
+        packet.setData(nCopy, &x[i0]);
+        packets.push_back(std::move(packet));
+        i0 = i1;
+        if (i0 == n){break;}
+    }
+    DataResponse response;
+    response.setPackets(packets);
+    response.setReturnCode(DataResponse::ReturnCode::Success); 
+    SingleComponentWaveform waveform(targetSamplingRate, gapTolerance);
+    EXPECT_NEAR(waveform.getNominalSamplingRate(), targetSamplingRate, 1.e-10);
+    EXPECT_EQ(waveform.getGapTolerance(), gapTolerance);
+    EXPECT_NO_THROW(waveform.set(response)); 
+    EXPECT_EQ(waveform.getNetwork(), network);
+    EXPECT_EQ(waveform.getStation(), station);
+    EXPECT_EQ(waveform.getChannel(), verticalChannel);
+    EXPECT_EQ(waveform.getLocationCode(), locationCode);
+    EXPECT_EQ(waveform.getNumberOfSamples(), static_cast<int> (yRef.size()));
+    EXPECT_EQ(waveform.getStartTime(), t0MuSec);
+    EXPECT_EQ(waveform.getEndTime(), t1MuSec);
+
+    const auto &y = waveform.getSignalReference();
+    EXPECT_EQ(y.size(), yRef.size());
+    double yDiff = 0;
+    for (size_t i = 0; i < y.size(); ++i)
+    {
+        yDiff = std::max(yDiff, std::abs(y[i] - yRef[i])); 
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
+ 
+    const auto &gap = waveform.getGapIndicatorReference();
+    EXPECT_EQ(gap.size(), yRef.size());
+    for (const auto &g : gap)
+    {
+        EXPECT_EQ(g, 0);
+    }
+}
+
 
 }
