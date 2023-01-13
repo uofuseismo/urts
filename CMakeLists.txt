@@ -50,6 +50,10 @@ if (${FindEarthworm_FOUND})
       add_compile_definitions(WITH_MSEED)
    endif()
 endif()
+if (${FindSEEDLink_FOUND})
+   message("Will compile SEEDLink")
+   set(BUILD_SEEDLINK TRUE)
+endif()
 add_compile_definitions(URTS_SRC)
 
 set(VERSION_SRC
@@ -89,8 +93,13 @@ if (${BUILD_EW})
        src/broadcasts/external/earthworm/traceBuf2.cpp
        src/broadcasts/external/earthworm/waveRing.cpp)
 endif()
+if (${BUILD_SEEDLINK})
+   set(SEEDLINK_SRC
+       src/broadcasts/external/seedlink/client.cpp
+       src/broadcasts/external/seedlink/clientOptions.cpp)
+endif()
 
-add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${EARTHWORM_SRC})
+add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
@@ -110,6 +119,10 @@ if (${BUILD_EW})
        target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
     endif()
 endif()
+if (${BUILD_SEEDLINK})
+   target_include_directories(urts PRIVATE ${SEEDLINK_INCLUDE_DIR})
+   target_link_libraries(urts PRIVATE ${SEEDLINK_LIBRARY})
+endif()
 
 ##########################################################################################
 #                                         Unit Tests                                     #
@@ -123,6 +136,9 @@ set(TEST_SRC
     )
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
+endif()
+if (${BUILD_SEEDLINK})
+   set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/seedlink.cpp)
 endif()
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
