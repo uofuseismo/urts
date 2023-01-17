@@ -70,9 +70,14 @@ public:
     /// @{
 
     /// @brief Sets the pick time.
-    /// @param[in] time  The time (UTC) of the arrival.  This is measured in
-    ///                  microseconds since the epoch (Jan 1 1970).
-    void setTime(std::chrono::microseconds &time) noexcept;
+    /// @param[in] time  The time (UTC) of the pick.  This is measured in
+    ///                  seconds since the epoch (Jan 1, 1970).
+    /// @note This time will be rounded to the nearest microsecond.
+    void setTime(double time) noexcept;
+    /// @brief Sets the pick time.
+    /// @param[in] time  The time (UTC) of the pick.  This is measured in
+    ///                  microseconds since the epoch (Jan 1, 1970).
+    void setTime(const std::chrono::microseconds &time) noexcept;
     /// @result The time (UTC) of the pick in microseconds since the epoch.
     /// @throws std::runtime_error if \c haveTime() is false.
     [[nodiscard]] std::chrono::microseconds getTime() const;

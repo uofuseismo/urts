@@ -392,14 +392,14 @@ void DataPacket::fromCBOR(const uint8_t *data, const size_t length)
         throw std::invalid_argument("data is NULL");
     }
     DataPacket packet;
-    fromCBORMessage(data, length, &packet);
+    ::fromCBORMessage(data, length, &packet);
     *this = std::move(packet);
 }
 
 /// To CBOR
 std::string DataPacket::toCBOR() const
 {
-    auto obj = toJSONObject(*this);
+    auto obj = ::toJSONObject(*this);
     auto message = nlohmann::json::to_cbor(obj);
     std::string result(message.begin(), message.end());
     return result;
