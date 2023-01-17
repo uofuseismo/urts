@@ -13,7 +13,7 @@ class SubscriberOptions::SubscriberOptionsImpl
 public:
     SubscriberOptionsImpl()
     {
-        mOptions.setReceiveHighWaterMark(8192);
+        mOptions.setReceiveHighWaterMark(0); // Picks are relative cheap
         mOptions.setReceiveTimeOut(std::chrono::milliseconds{10});
         UMPS::MessageFormats::Messages messageTypes;
         std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
