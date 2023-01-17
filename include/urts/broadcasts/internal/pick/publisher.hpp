@@ -1,20 +1,20 @@
-#ifndef URTS_BROADCASTS_INTERNAL_DATA_PACKET_PUBLISHER_HPP
-#define URTS_BROADCASTS_INTERNAL_DATA_PACKET_PUBLISHER_HPP
+#ifndef URTS_BROADCASTS_INTERNAL_PICK_PUBLISHER_HPP
+#define URTS_BROADCASTS_INTERNAL_PICK_PUBLISHER_HPP
 #include <memory>
 #include <umps/logging/log.hpp>
 #include <umps/messaging/context.hpp>
 // Forward declarations
-namespace URTS::Broadcasts::Internal::DataPacket
+namespace URTS::Broadcasts::Internal::Pick
 {
- class DataPacket;
+ class Pick;
  class PublisherOptions;
 }
-namespace URTS::Broadcasts::Internal::DataPacket
+namespace URTS::Broadcasts::Internal::Pick
 {
-/// @class Publisher "publisher.hpp" "urts/broadcasts/internal/dataPacket/publisher.hpp"
-/// @brief A publisher specialized for sending data packets.
+/// @class Publisher "publisher.hpp" "urts/broadcasts/internal/pick/publisher.hpp"
+/// @brief A publisher specialized for sending picks.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Modules_Broadcasts_Internal_DataPacket
+/// @ingroup Modules_Broadcasts_Internal_Pick
 class Publisher
 {
 public:
@@ -65,7 +65,7 @@ public:
     /// @param[in] message  The message to send.
     /// @throws std::runtime_error if the class is not initialized.
     /// @throws std::invalid_argument if the message cannot be serialized.
-    void send(const DataPacket &message);
+    void send(const Pick &message);
 
     /// @name Destructors
     /// @{

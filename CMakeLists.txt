@@ -65,6 +65,10 @@ set(GENERIC_SRC
     src/broadcasts/internal/dataPacket/subscriber.cpp
     src/broadcasts/internal/dataPacket/subscriberOptions.cpp
     src/broadcasts/internal/pick/pick.cpp
+    src/broadcasts/internal/pick/publisher.cpp
+    src/broadcasts/internal/pick/publisherOptions.cpp 
+    src/broadcasts/internal/pick/subscriber.cpp
+    src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/services/standalone/incrementer/counter.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
