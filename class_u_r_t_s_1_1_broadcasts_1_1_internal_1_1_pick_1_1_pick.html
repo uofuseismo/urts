@@ -158,9 +158,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a98c124d8e6c00fbab5056f69277f5ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a98c124d8e6c00fbab5056f69277f5ed5">More...</a><br /></td></tr>
 <tr class="separator:a98c124d8e6c00fbab5056f69277f5ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Pick Time</div></td></tr>
-<tr class="memitem:aff226dbb86e5456d817b9250cb520bd3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#aff226dbb86e5456d817b9250cb520bd3">setTime</a> (std::chrono::microseconds &amp;time) noexcept</td></tr>
-<tr class="memdesc:aff226dbb86e5456d817b9250cb520bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pick time.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#aff226dbb86e5456d817b9250cb520bd3">More...</a><br /></td></tr>
-<tr class="separator:aff226dbb86e5456d817b9250cb520bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe046fe08436e40c72689069204ffd0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#afe046fe08436e40c72689069204ffd0f">setTime</a> (double time) noexcept</td></tr>
+<tr class="memdesc:afe046fe08436e40c72689069204ffd0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pick time.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#afe046fe08436e40c72689069204ffd0f">More...</a><br /></td></tr>
+<tr class="separator:afe046fe08436e40c72689069204ffd0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a634b4656a0c95c68648d20660f0d2838"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a634b4656a0c95c68648d20660f0d2838">setTime</a> (const std::chrono::microseconds &amp;time) noexcept</td></tr>
+<tr class="memdesc:a634b4656a0c95c68648d20660f0d2838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pick time.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a634b4656a0c95c68648d20660f0d2838">More...</a><br /></td></tr>
+<tr class="separator:a634b4656a0c95c68648d20660f0d2838"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab50ad14dcba10987f8442a3ceee33cae"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab50ad14dcba10987f8442a3ceee33cae">getTime</a> () const</td></tr>
 <tr class="separator:ab50ad14dcba10987f8442a3ceee33cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75b2b1b112f857ad1f8c433c9585909f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a75b2b1b112f857ad1f8c433c9585909f">haveTime</a> () const noexcept</td></tr>
@@ -1377,8 +1380,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aff226dbb86e5456d817b9250cb520bd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff226dbb86e5456d817b9250cb520bd3">&#9670;&nbsp;</a></span>setTime()</h2>
+<a id="a634b4656a0c95c68648d20660f0d2838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a634b4656a0c95c68648d20660f0d2838">&#9670;&nbsp;</a></span>setTime() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1389,7 +1392,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setTime </td>
           <td>(</td>
-          <td class="paramtype">std::chrono::microseconds &amp;&#160;</td>
+          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
           <td class="paramname"><em>time</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1404,10 +1407,45 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Sets the pick time. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td>The time (UTC) of the arrival. This is measured in microseconds since the epoch (Jan 1 1970). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td>The time (UTC) of the pick. This is measured in microseconds since the epoch (Jan 1, 1970). </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="afe046fe08436e40c72689069204ffd0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe046fe08436e40c72689069204ffd0f">&#9670;&nbsp;</a></span>setTime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setTime </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the pick time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td>The time (UTC) of the pick. This is measured in seconds since the epoch (Jan 1, 1970). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This time will be rounded to the nearest microsecond. </dd></dl>
 
 </div>
 </div>
@@ -1455,7 +1493,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Pick</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html">Pick</a></li>
-    <li class="footer">Generated on Fri Jan 13 2023 23:38:17 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Tue Jan 17 2023 17:58:21 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
