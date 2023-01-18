@@ -48,6 +48,11 @@ var annotated_dup =
             [ "SingleComponentWaveform", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform" ],
             [ "ThreeComponentWaveform", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform" ],
             [ "WigginsInterpolator", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator" ]
+          ] ],
+          [ "UNetDetector", null, [
+            [ "ThreeComponent", null, [
+              [ "PreprocessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_request" ]
+            ] ]
           ] ]
         ] ],
         [ "Standalone", null, [
