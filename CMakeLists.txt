@@ -93,6 +93,7 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/threeComponentWaveform.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
+    src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
     )
 if (${BUILD_EW})
    set(EARTHWORM_SRC

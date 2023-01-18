@@ -2,29 +2,29 @@
 #define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_REQUEST_HPP
 #include <memory>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::UNetDetector
+namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {
 /// @brief Requests a waveform snippet be pre-processed.
 /// @note Typically you would use a service request that will pre-process and
 ///       apply the model as that is more efficient.
-class ThreeComponentPreproccessingRequest : public UMPS::MessageFormats::IMessage
+class PreprocessingRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    ThreeComponentPreprocessingRequest(); 
+    PreprocessingRequest();
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
-    ThreeComponentPreprocessingRequest(const ThreeComponentPreprocessingRequest &request);
+    PreprocessingRequest(const PreprocessingRequest &request);
     /// @brief Move constructor.
     /// @param[in,out] request  The request from which to initialize this class.
     ///                         On exit, request's behavior is undefined.
-    ThreeComponentPreprocessingRequest(ThreeComponentPreprocessingRequest &&request) noexcept;
+    PreprocessingRequest(PreprocessingRequest &&request) noexcept;
     /// @}
 
-    /// @name Signals to Process 
+    /// @name Signals to Process
     /// @{
 
     /// @brief Sets the signals on the vertical, north, and east channels that
@@ -37,8 +37,33 @@ public:
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
                                     const std::vector<double> &eastSignal);
+    /// @brief Sets the signals on the vertical, north, and east channels that
+    ///        will be pre-processed.
+    /// @param[in,out] verticalSignal  The signal on the vertical channel.
+    ///                                On exit, verticalSignal's behavior is
+    ///                                undefined.
+    /// @param[in,out] northSignal     The signal on the north (1) channel.
+    ///                                On exit, northSignal's behavior is
+    ///                                undefined.
+    /// @param[in,out] eastSignal      The signal on the east (2) channel.
+    ///                                On exit, eastSignal's behavior is
+    ///                                undefined.
+    /// @throws std::invalid_argument the signals are not the same size
+    ///         or empty.
+    void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
+                                    std::vector<double> &&northSignal,
+                                    std::vector<double> &&eastSignal);
+    /// @result The vertical signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    [[nodiscard]] std::vector<double> getVerticalSignal() const;
+    /// @result The north signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    [[nodiscard]] std::vector<double> getNorthSignal() const;
+    /// @result The east signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    [[nodiscard]] std::vector<double> getEastSignal() const;
     /// @result True indicates the signals were set.
-    [[nodisard]] bool haveSignals() const noexcept;
+    [[nodiscard]] bool haveSignals() const noexcept;
     /// @}
 
 
@@ -51,7 +76,7 @@ public:
     void setSamplingRate(double samplingRate);
     /// @result The sampling rate of the signal.
     /// @note By default this is 100 Hz.
-    [[nodiscard]] getSamplingRate() const noexcept;
+    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
     /// @name Request Identifier
@@ -60,7 +85,7 @@ public:
     /// @brief Sets a request identifier.
     /// @param[in] identifier  The request identifier.  The service will return
     ///                        this number in a successful response. 
-    void setIdentifier(int64_t identifier);
+    void setIdentifier(int64_t identifier) noexcept;
     /// @note
     [[nodiscard]] int64_t getIdentifier() const noexcept;
     /// @}
@@ -92,7 +117,7 @@ public:
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
     /// @result A copy of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
-    /// @result An uninitialized instance of this class. 
+    /// @result An uninitialized instance of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
     /// @}
 
@@ -101,9 +126,9 @@ public:
     /// @{
 
     /// @result A deep copy of the request.
-    ThreeComponentPreprocessingRequest& operator=(const ThreeComponentPreprocessingRequest &request);
+    PreprocessingRequest& operator=(const PreprocessingRequest &request);
     /// @result The memory moved from the request to this.
-    ThreeComponentPreprocessingRequest& operator=(ThreeComponentPreprocessingRequest &&request) noexcept;
+    PreprocessingRequest& operator=(PreprocessingRequest &&request) noexcept;
     /// @}
 
     /// @name Destructors
@@ -112,11 +137,11 @@ public:
     /// @brief 
     void clear() noexcept;
     /// @brief Destructor.
-    ~PreprocessingRequest();
+    ~PreprocessingRequest() override;
     /// @} 
 private:
-    class PreproccessingRequestImpl;
-    std::unique_ptr<PreproccessingRequestImpl> pImpl;
+    class RequestImpl;
+    std::unique_ptr<RequestImpl> pImpl;
 };
 }
 #endif
