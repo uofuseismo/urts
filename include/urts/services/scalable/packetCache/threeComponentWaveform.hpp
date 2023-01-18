@@ -113,13 +113,26 @@ public:
     /// @result The end time (UTC) of the signal since the epoch.
     [[nodiscard]] std::chrono::microseconds getEndTime() const noexcept;
 
-    /// @result The interpolated signal.
-    [[nodiscard]] std::vector<double> getSignal() const noexcept;
-    /// @result A pointer to the interpolated signal.  This is an array whose
-    ///         dimension is [\c getNumberOfSamples].
+    /// @result The interpolated signal on the vertical channel.
+    [[nodiscard]] std::vector<double> getVerticalSignal() const noexcept;
+    /// @result A reference to the interpolated signal on the vertical channel.
     /// @note This exists for performance reasons.  When possible use
-    ///       \c getSignal().
-    [[nodiscard]] const std::vector<double> &getSignalReference() const noexcept;
+    ///       \c getVerticalSignal().
+    [[nodiscard]] const std::vector<double> &getVerticalSignalReference() const noexcept;
+
+    /// @result The interpolated signal on the north channel.
+    [[nodiscard]] std::vector<double> getNorthSignal() const noexcept;
+    /// @result A reference to the interpolated signal on the north channel.
+    /// @note This exists for performance reasons.  When possible use
+    ///       \c getNorthSignal().
+    [[nodiscard]] const std::vector<double> &getNorthSignalReference() const noexcept;
+
+    /// @result The interpolated signal on the east channel.
+    [[nodiscard]] std::vector<double> getEastSignal() const noexcept;
+    /// @result A reference to the interpolated signal on the east channel.
+    /// @note This exists for performance reasons.  When possible use
+    ///       \c getEastSignal().
+    [[nodiscard]] const std::vector<double> &getEastSignalReference() const noexcept;
 
     /// @result An array of true/false that indicates whether or not the 
     ///         interpolated signal fell between packet endpoints.   

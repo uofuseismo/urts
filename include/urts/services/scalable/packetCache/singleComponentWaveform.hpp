@@ -112,8 +112,7 @@ public:
 
     /// @result The interpolated signal.
     [[nodiscard]] std::vector<double> getSignal() const noexcept;
-    /// @result A pointer to the interpolated signal.  This is an array whose
-    ///         dimension is [\c getNumberOfSamples].
+    /// @result A reference to the interpolated signal.
     /// @note This exists for performance reasons.  When possible use
     ///       \c getSignal().
     [[nodiscard]] const std::vector<double> &getSignalReference() const noexcept;

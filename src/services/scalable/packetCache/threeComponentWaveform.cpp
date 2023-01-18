@@ -16,6 +16,7 @@ public:
     SingleComponentWaveform mVerticalComponent; // Vertical component
     SingleComponentWaveform mNorthComponent; // North or 1 component
     SingleComponentWaveform mEastComponent; // East or 2 component
+    std::vector<int8_t> mGapIndicator;
 };
 
 /// Constructor
@@ -44,6 +45,7 @@ void ThreeComponentWaveform::clearSignal() noexcept
     pImpl->mVerticalComponent.clearSignal();
     pImpl->mNorthComponent.clearSignal();
     pImpl->mEastComponent.clearSignal();
+    pImpl->mGapIndicator.clear();
 }
 
 /// Reset class
@@ -397,4 +399,33 @@ void ThreeComponentWaveform::set(const DataResponse &verticalComponent,
         throw std::runtime_error(
             "Vertical/north/east component have different start times");
     }
+    // Now compute the gap pointer
+    auto nSamples = getNumberOfSamples();
+    pImpl->mGapIndicator.resize(nSamples);
+    auto *__restrict__ mGapPointer = pImpl->mGapIndicator.data();
+    const auto *__restrict__ zGapPointer
+        = pImpl->mVerticalComponent.getGapIndicatorReference().data();
+    const auto *__restrict__ nGapPointer
+        = pImpl->mNorthComponent.getGapIndicatorReference().data();
+    const auto *__restrict__ eGapPointer
+        = pImpl->mEastComponent.getGapIndicatorReference().data();  
+    for (int i = 0; i < nSamples; ++i)
+    {
+        mGapPointer[i] = 0;
+        if (zGapPointer[i] == 1){mGapPointer[i] = 1;}
+        if (nGapPointer[i] == 1){mGapPointer[i] = 1;}
+        if (eGapPointer[i] == 1){mGapPointer[i] = 1;}
+    } 
+}
+
+/// Gap indicator
+std::vector<int8_t> ThreeComponentWaveform::getGapIndicator() const noexcept
+{
+    return pImpl->mGapIndicator;
+}
+
+const std::vector<int8_t>
+&ThreeComponentWaveform::getGapIndicatorReference() const noexcept
+{
+    return pImpl->mGapIndicator;
 }

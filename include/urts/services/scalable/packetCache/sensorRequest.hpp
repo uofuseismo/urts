@@ -57,7 +57,7 @@ public:
     /// @name Message Properties
     /// @{
 
-    /// @brief Converts the packet class to a string message.
+    /// @brief Converts this class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
