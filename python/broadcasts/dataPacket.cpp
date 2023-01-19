@@ -13,14 +13,14 @@
 #include "dataPacket.hpp"
 
 using namespace URTS::Python::Broadcasts::Internal::DataPacket;
-namespace UPBDataPacket = URTS::Broadcasts::Internal::DataPacket;
+namespace UDataPacket = URTS::Broadcasts::Internal::DataPacket;
 
 ///--------------------------------------------------------------------------///
 ///                               Data Packet                                ///
 ///--------------------------------------------------------------------------///
 /// Constructor
 DataPacket::DataPacket() :
-    pImpl(std::make_unique<UPBDataPacket::DataPacket> ()) 
+    pImpl(std::make_unique<UDataPacket::DataPacket> ()) 
 {
 }
 
@@ -31,7 +31,7 @@ DataPacket::DataPacket(const DataPacket &packet)
 }
 
 /// Construct from native class
-DataPacket::DataPacket(const UPBDataPacket::DataPacket &packet)
+DataPacket::DataPacket(const UDataPacket::DataPacket &packet)
 {
     *this = packet;
 }
@@ -46,14 +46,14 @@ DataPacket::DataPacket(DataPacket &&packet) noexcept
 DataPacket& DataPacket::operator=(const DataPacket &packet)
 {
     if (&packet == this){return *this;}
-    pImpl = std::make_unique<UPBDataPacket::DataPacket> (*packet.pImpl);
+    pImpl = std::make_unique<UDataPacket::DataPacket> (*packet.pImpl);
     return *this;
 }
 
 /// Copy from native class
-DataPacket& DataPacket::operator=(const UPBDataPacket::DataPacket &packet)
+DataPacket& DataPacket::operator=(const UDataPacket::DataPacket &packet)
 {
-    pImpl = std::make_unique<UPBDataPacket::DataPacket> (packet);
+    pImpl = std::make_unique<UDataPacket::DataPacket> (packet);
     return *this;
 }
 
@@ -65,13 +65,13 @@ DataPacket& DataPacket::operator=(DataPacket &&packet) noexcept
     return *this;
 }
 
-const UPBDataPacket::DataPacket&
+const UDataPacket::DataPacket&
 DataPacket::getNativeClassReference() const noexcept
 {
     return *pImpl;
 }
 
-UPBDataPacket::DataPacket
+UDataPacket::DataPacket
 DataPacket::getNativeClass() const noexcept
 {
     return *pImpl;
@@ -178,7 +178,7 @@ void DataPacket::fromBaseClass(UMPS::MessageFormats::IMessage &message)
                                     + " but given: "
                                     + message.getMessageType());
     }   
-    pImpl = UMPS::MessageFormats::static_unique_pointer_cast<UPBDataPacket::DataPacket> (message.clone());
+    pImpl = UMPS::MessageFormats::static_unique_pointer_cast<UDataPacket::DataPacket> (message.clone());
 }
 
 std::unique_ptr<UMPS::Python::MessageFormats::IMessage> DataPacket::clone(
@@ -190,7 +190,7 @@ std::unique_ptr<UMPS::Python::MessageFormats::IMessage> DataPacket::clone(
                                     + " but got: " + message->getMessageType());
     }   
     auto copy = UMPS::MessageFormats::static_unique_pointer_cast
-                <UPBDataPacket::DataPacket> (message->clone());
+                <UDataPacket::DataPacket> (message->clone());
     return std::make_unique<DataPacket> (*copy);
 }
 
@@ -228,7 +228,7 @@ DataPacket::~DataPacket() = default;
 ///                               Data Packet Publisher                      ///
 ///--------------------------------------------------------------------------///
 Publisher::Publisher() :
-    mPublisher(std::make_unique<UPBDataPacket::Publisher> ())
+    mPublisher(std::make_unique<UDataPacket::Publisher> ())
 {
 }
 
@@ -236,7 +236,7 @@ Publisher::Publisher(
     UMPS::Python::Messaging::Context &context)
 {
     auto umpsContext = context.getSharedPointer();
-    mPublisher = std::make_unique<UPBDataPacket::Publisher> (umpsContext);
+    mPublisher = std::make_unique<UDataPacket::Publisher> (umpsContext);
 }
 
 Publisher::~Publisher() = default;
@@ -246,7 +246,7 @@ Publisher::~Publisher() = default;
 ///--------------------------------------------------------------------------///
 
 Subscriber::Subscriber() :
-    mSubscriber(std::make_unique<UPBDataPacket::Subscriber> ()) 
+    mSubscriber(std::make_unique<UDataPacket::Subscriber> ()) 
 {
 }
 
@@ -254,7 +254,7 @@ Subscriber::Subscriber(
     UMPS::Python::Messaging::Context &context)
 {
     auto umpsContext = context.getSharedPointer();
-    mSubscriber = std::make_unique<UPBDataPacket::Subscriber> (umpsContext);
+    mSubscriber = std::make_unique<UDataPacket::Subscriber> (umpsContext);
 }
 
 Subscriber::~Subscriber() = default;

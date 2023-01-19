@@ -1,6 +1,7 @@
 #ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_REQUEST_HPP
 #define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_REQUEST_HPP
 #include <memory>
+#include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {

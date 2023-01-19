@@ -93,8 +93,11 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/threeComponentWaveform.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
-    src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
     )
+#if (${UUSS_MLMODELS})
+    set(UUSS_SRC
+        src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp)
+#endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC
        src/broadcasts/external/earthworm/traceBuf2.cpp
@@ -106,7 +109,7 @@ if (${BUILD_SEEDLINK})
        src/broadcasts/external/seedlink/clientOptions.cpp)
 endif()
 
-add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
+add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${UUSS_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
@@ -142,6 +145,9 @@ set(TEST_SRC
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
+#if (${UUSS_MLMODELS})
+   set(TEST_SRC ${TEST_SRC} ../testing/services/scalable/uNetDetector/threeComponent.cpp)
+#endif()
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
 endif()
@@ -227,7 +233,9 @@ if (WRAP_PYTHON)
    add_library(urtspy MODULE
                python/urtspy.cpp
                python/broadcasts.cpp
-               python/broadcasts/dataPacket.cpp)
+               python/broadcasts/dataPacket.cpp
+               python/services.cpp
+               python/services/scalable/packetCache.cpp)
    set_target_properties(urtspy PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
