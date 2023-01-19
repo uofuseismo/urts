@@ -40,7 +40,7 @@ public:
         mReplier
             = std::make_unique<URouterDealer::Reply> (responseContext, mLogger);
     }
-    // Respond to data requests
+    // Respond to processing requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
@@ -48,7 +48,12 @@ public:
         // Get data
         mLogger->debug("Request received");
         PreprocessingRequest preprocessingRequest;
-        if (messageType == preprocessingRequest)
+        if (messageType == processingRequest.getMessageType())
+        {
+            mLogger->debug("Processing request received");
+
+        }
+        else if (messageType == preprocessingRequest.getMessageType())
         {
             mLogger->debug("Preprocessing request received");
             PreprocessingResponse response;
@@ -58,7 +63,38 @@ public:
             }
             catch (const std::exception &e)
             {
+                mLogger->error("Failed to upnack pre-processing request: "
+                             + std::string{e.what()});
                 response.setResponse(PreprocessingResponse::InvalidMessage);
+                return response.clone();
+            }
+            // Ensure the signals are set
+            if (!response.haveSignals())
+            {
+                response.setResponse(PreprocessingResponse::InvalidMessage);
+                return response.clone();
+            }
+            // Process the data
+            try
+            {
+                const auto vertical = request.getVerticalSignalReference();
+                const auto north    = request.getNorthSignalReference();
+                const auto east     = request.getEastSignalReference();
+                // Process data
+                std::vector<double> verticalResult;
+                std::vector<double> northResult;
+                std::vector<double> eastResult;
+                // Set data on response
+                response.setSamplingRate(mTargetSamplingRate);
+                response.setVerticalNorthEastSignal(std::move(verticalResult),
+                                                    std::move(northResult),
+                                                    std::move(eastResult));
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to preprocess data: "
+                             + std::string{e.what()});
+                response.setResponse(PreprocessingResponse::AlgorithmFailure);
                 return response.clone();
             }
             response.setResponse(PreprocessingResponse::Success);
@@ -70,5 +106,7 @@ public:
         response.setDetails("Unhandled message type");
         return response.clone();
     }
-
+///private:
+    class UModels::ProcessData mPreprocess;
+    const double mTargetSamplingRate{UModels::ProcessData::getTargetSamplingRate()};
 };

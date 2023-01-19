@@ -9,6 +9,7 @@ namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 /// @brief Requests a waveform snippet be pre-processed.
 /// @note Typically you would use a service request that will pre-process and
 ///       apply the model as that is more efficient.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class PreprocessingRequest : public UMPS::MessageFormats::IMessage
 {
 public:

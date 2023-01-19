@@ -1,16 +1,14 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {
-/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
-/// @brief Response from a waveform snippet preprocessing request.
-/// @note Typically you would use an inference request which can preprocess
-///       and apply the model as that is more efficient.
+/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
+/// @brief The probability of each sample corresponding to a phase arrival.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class PreprocessingResponse : public UMPS::MessageFormats::IMessage
+class InferenceResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @brief Defines the service's return code.
@@ -25,56 +23,34 @@ public:
     /// @{
 
     /// @brief Constructor.
-    PreprocessingResponse();
+    InferenceResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    PreprocessingResponse(const PreprocessingResponse &response);
+    InferenceResponse(const InferenceResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] response  The response from which to initialize this class.
     ///                         On exit, response's behavior is undefined.
-    PreprocessingResponse(PreprocessingResponse &&response) noexcept;
+    InferenceResponse(InferenceResponse &&response) noexcept;
     /// @}
 
-    /// @name Processed Signals
+    /// @name Probability Signals
     /// @{
 
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
-    /// @param[in] verticalSignal  The signal on the vertical channel.
-    /// @param[in] northSignal     The signal on the north (1) channel.
-    /// @param[in] eastSignal      The signal on the east (2) channel.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
-    void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
-                                    const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal);
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
-    /// @param[in,out] verticalSignal  The signal on the vertical channel.
-    ///                                On exit, verticalSignal's behavior is
-    ///                                undefined.
-    /// @param[in,out] northSignal     The signal on the north (1) channel.
-    ///                                On exit, northSignal's behavior is
-    ///                                undefined.
-    /// @param[in,out] eastSignal      The signal on the east (2) channel.
-    ///                                On exit, eastSignal's behavior is
-    ///                                undefined.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
-    void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
-                                    std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal);
-    /// @result The vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getVerticalSignal() const;
-    /// @result The north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getNorthSignal() const;
-    /// @result The east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getEastSignal() const;
+    /// @brief Sets the posterior probability signal.
+    /// @param[in] probabilitySignal  The probability of each sample 
+    ///                               corresponding to a phase arrival.
+    void setProbabilitySignal(const std::vector<float> &probabilitySignal);
+    /// @brief Sets the posterior probabiltiy signal.
+    /// @param[in,out] probabilitySignal  The probability of each sample
+    ///                                   corresponding to a phase arrival.
+    ///                                   On exit, probabilitySignal's behavior
+    ///                                   is undefined.
+    void setVerticalNorthEastSignal(std::vector<float> &&probabilitySignal);
+    /// @result The probability signal.
+    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
+    [[nodiscard]] std::vector<float> getProbabilitySignal() const;
     /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveSignals() const noexcept;
+    [[nodiscard]] bool haveProbabilitySignal() const noexcept;
     /// @}
 
     /// @name Return Code
@@ -149,9 +125,9 @@ public:
     /// @{
 
     /// @result A deep copy of the response.
-    PreprocessingResponse& operator=(const PreprocessingResponse &response);
+    InferenceResponse& operator=(const InferenceResponse &response);
     /// @result The memory moved from the response to this.
-    PreprocessingResponse& operator=(PreprocessingResponse &&response) noexcept;
+    InferenceResponse& operator=(InferenceResponse &&response) noexcept;
     /// @}
 
     /// @name Destructors
@@ -160,7 +136,7 @@ public:
     /// @brief 
     void clear() noexcept;
     /// @brief Destructor.
-    ~PreprocessingResponse() override;
+    ~InferenceResponse() override;
     /// @} 
 private:
     class ResponseImpl;

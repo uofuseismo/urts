@@ -1,45 +1,39 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {
-/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
-/// @brief Response from a waveform snippet preprocessing request.
-/// @note Typically you would use an inference request which can preprocess
-///       and apply the model as that is more efficient.
-/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class PreprocessingResponse : public UMPS::MessageFormats::IMessage
+class 
+}
+namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {
-public:
-    /// @brief Defines the service's return code.
-    enum ReturnCode
-    {
-        Success = 0,          /*!< The signals were successfully pre-processed. */
-        InvalidMessage = 1,   /*!< The request message was invalid. */
-        AlgorithmFailure = 2  /*!< The pre-processing algorithm failed. */
-    };
+/// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
+/// @brief Requests inference be performed on a waveform snippet.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+class InferenceRequest : public UMPS::MessageFormats::IMessage
+{
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    PreprocessingResponse();
+    InferenceRequest();
     /// @brief Copy constructor.
-    /// @param[in] response  The response from which to initialize this class.
-    PreprocessingResponse(const PreprocessingResponse &response);
+    /// @param[in] request  The request from which to initialize this class.
+    InferenceRequest(const InferenceRequest &request);
     /// @brief Move constructor.
-    /// @param[in,out] response  The response from which to initialize this class.
-    ///                         On exit, response's behavior is undefined.
-    PreprocessingResponse(PreprocessingResponse &&response) noexcept;
+    /// @param[in,out] request  The request from which to initialize this class.
+    ///                         On exit, request's behavior is undefined.
+    InferenceRequest(InferenceRequest &&request) noexcept;
     /// @}
 
-    /// @name Processed Signals
+    /// @name Signals to Process
     /// @{
 
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
+    /// @brief Sets the signals on the vertical, north, and east channels that
+    ///        will be pre-processed.
     /// @param[in] verticalSignal  The signal on the vertical channel.
     /// @param[in] northSignal     The signal on the north (1) channel.
     /// @param[in] eastSignal      The signal on the east (2) channel.
@@ -48,8 +42,8 @@ public:
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
                                     const std::vector<double> &eastSignal);
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
+    /// @brief Sets the signals on the vertical, north, and east channels that
+    ///        will be pre-processed.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
@@ -73,43 +67,48 @@ public:
     /// @result The east signal.
     /// @throws std::runtime_error if \c haveSignals() is false.
     [[nodiscard]] std::vector<double> getEastSignal() const;
+
+    /// @result A reference to the vertical signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @note This exists for performance reasons.  You should use
+    ///       \c getVerticalSignal(). 
+    [[nodiscard]] const std::vector<double> &getVerticalSignalReference() const;
+    /// @result A reference to the north signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @note This exists for performance reasons.  You should use
+    ///       \c getNorthSignal(). 
+    [[nodiscard]] const std::vector<double> &getNorthSignalReference() const;
+    /// @result A reference to the east signal.
+    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @note This exists for performance reasons.  You should use
+    ///       \c getEastSignal(). 
+    [[nodiscard]] const std::vector<double> &getEastSignalReference() const;
+
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
     /// @}
 
-    /// @name Return Code
-    /// @{
-
-    /// @brief Sets the return code.
-    /// @param[in] returnCode  The return code.
-    void setReturnCode(ReturnCode returnCode) noexcept;
-    /// @result The return code.
-    /// @throws std::runtime_error if \c haveReturnCode() is false.
-    [[nodiscard]] ReturnCode getReturnCode() const;
-    /// @result True indicates the return code was set.
-    [[nodiscard]] bool haveReturnCode() const noexcept;
-    /// @}
 
     /// @name Sampling Rate
     /// @{
 
-    /// @brief Sets the sampling rate of the processed signals.
-    /// @param[in] samplingRate  The sampling rate of the signal in Hz.
+    /// @brief Sets the sampling rate of the signals to be processed.
+    /// @param[in] samplingRate  The sampling rate of the signals in Hz.
     /// @throws std::invalid_argument if the sampling rate is not positive.
     void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the processed signals.
+    /// @result The sampling rate of the signal.
     /// @note By default this is 100 Hz.
     [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
-    /// @name Response Identifier
+    /// @name Request Identifier
     /// @{
 
-    /// @brief Sets a response identifier.
-    /// @param[in] identifier  The response identifier.  The service will return
+    /// @brief Sets a request identifier.
+    /// @param[in] identifier  The request identifier.  The service will return
     ///                        this number in a successful response. 
     void setIdentifier(int64_t identifier) noexcept;
-    /// @result The response identifier.
+    /// @note
     [[nodiscard]] int64_t getIdentifier() const noexcept;
     /// @}
 
@@ -148,10 +147,10 @@ public:
     /// @name Operators
     /// @{
 
-    /// @result A deep copy of the response.
-    PreprocessingResponse& operator=(const PreprocessingResponse &response);
-    /// @result The memory moved from the response to this.
-    PreprocessingResponse& operator=(PreprocessingResponse &&response) noexcept;
+    /// @result A deep copy of the request.
+    InferenceRequest& operator=(const InferenceRequest &request);
+    /// @result The memory moved from the request to this.
+    InferenceRequest& operator=(InferenceRequest &&request) noexcept;
     /// @}
 
     /// @name Destructors
@@ -160,11 +159,11 @@ public:
     /// @brief 
     void clear() noexcept;
     /// @brief Destructor.
-    ~PreprocessingResponse() override;
+    ~InferenceRequest() override;
     /// @} 
 private:
-    class ResponseImpl;
-    std::unique_ptr<ResponseImpl> pImpl;
+    class RequestImpl;
+    std::unique_ptr<RequestImpl> pImpl;
 };
 }
 #endif
