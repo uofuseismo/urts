@@ -15,6 +15,8 @@ var hierarchy =
       [ "URTS::Services::Scalable::PacketCache::DataResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html", null ],
       [ "URTS::Services::Scalable::PacketCache::SensorRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_request.html", null ],
       [ "URTS::Services::Scalable::PacketCache::SensorResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_sensor_response.html", null ],
+      [ "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_request.html", null ],
+      [ "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html", null ],
       [ "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_request.html", null ],
       [ "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_response.html", null ],
       [ "URTS::Services::Standalone::Incrementer::IncrementRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html", null ],

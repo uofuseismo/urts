@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tracebuf2_20waveform_20ring_658',['TraceBuf2 Waveform Ring',['../group___modules___broadcasts___external___earthworm___wave_ring.html',1,'']]]
+  ['tracebuf2_20waveform_20ring_674',['TraceBuf2 Waveform Ring',['../group___modules___broadcasts___external___earthworm___wave_ring.html',1,'']]]
 ];

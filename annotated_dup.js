@@ -51,6 +51,8 @@ var annotated_dup =
           ] ],
           [ "UNetDetector", null, [
             [ "ThreeComponent", null, [
+              [ "InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_request" ],
+              [ "InferenceResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response" ],
               [ "PreprocessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_request" ],
               [ "PreprocessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_preprocessing_response" ]
             ] ]

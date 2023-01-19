@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse" name="URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse">
+<area shape="rect" id="node1" title="The probability of each sample corresponding to a phase arrival." alt="" coords="5,95,244,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="35,5,214,47"/>
+</map>
