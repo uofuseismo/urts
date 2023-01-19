@@ -47,6 +47,23 @@ public:
     {
         // Get data
         mLogger->debug("Request received");
+        PreprocessingRequest preprocessingRequest;
+        if (messageType == preprocessingRequest)
+        {
+            mLogger->debug("Preprocessing request received");
+            PreprocessingResponse response;
+            try
+            {
+                preprocessingRequest.fromMessage(messageContents, length);
+            }
+            catch (const std::exception &e)
+            {
+                response.setResponse(PreprocessingResponse::InvalidMessage);
+                return response.clone();
+            }
+            response.setResponse(PreprocessingResponse::Success);
+            response.clone();
+        }
         // Send something back so they don't wait forever
         mLogger->error("Unhandled message type: " + messageType);
         UMPS::MessageFormats::Failure response;

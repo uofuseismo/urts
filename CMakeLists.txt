@@ -96,7 +96,8 @@ set(GENERIC_SRC
     )
 #if (${UUSS_MLMODELS})
     set(UUSS_SRC
-        src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp)
+        src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
+        src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp)
 #endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC
