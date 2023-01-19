@@ -10,7 +10,7 @@ namespace URTS::Broadcasts::Internal::DataPacket
 }
 namespace URTS::Broadcasts::External::Earthworm
 {
-/// @name TraceBuf2 "traceBuf2.hpp" "urts/broadcasts/external/earthworm/traceBuf2.hpp"
+/// @class TraceBuf2 "traceBuf2.hpp" "urts/broadcasts/external/earthworm/traceBuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @ingroup Modules_Broadcasts_External_Earthworm_WaveRing

@@ -9,13 +9,12 @@ class DataRequest;
 }
 namespace URTS::Services::Scalable::PacketCache
 {
-/// @name BulkDataRequst "bulkDataRequest.hpp" "urts/services/scalable/packetCache/bulkDataRequest.hpp"
+/// @name BulkDataRequest "bulkDataRequest.hpp" "urts/services/scalable/packetCache/bulkDataRequest.hpp"
 /// @brief This is a request message for querying the packetCache for multiple
 ///        sensors.
 /// @note Since the underlying messaging is asynchronous it is to your advantage
 ///       to provide your request a unique identifier since the requests are
 ///       not required to filled in the order that they are put on the wire.
-/// @sa BulkDataResponse
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class BulkDataRequest : public UMPS::MessageFormats::IMessage
 {

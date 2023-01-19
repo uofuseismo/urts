@@ -11,7 +11,6 @@ namespace URTS::Services::Scalable::PacketCache
 {
 /// @name BulkDataResponse "bulkDataResponse.hpp" "urts/services/scalable/packetCache/bulkDataResponse.hpp"
 /// @brief This represents the data response for multiple sensors.
-/// @sa BulkDataRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class BulkDataResponse : public UMPS::MessageFormats::IMessage
 {

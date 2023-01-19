@@ -4,14 +4,13 @@
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::PacketCache
 {
-/// @name DataRequst "dataRequest.hpp" "urts/services/scalable/packetCache/dataRequest.hpp"
+/// @name DataRequest "dataRequest.hpp" "urts/services/scalable/packetCache/dataRequest.hpp"
 /// @brief This is a request message for querying the packetCache.  A query
 ///        consists of a network, station, channel, location code, and 
 ///        optionally a start time and end time.
 /// @note Since the underlying messaging is asynchronous it is to your advantage
 ///       to provide your request a unique identifier since the requests are
 ///       not required to filled in the order that they are put on the wire.
-/// @sa DataResponse
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class DataRequest : public UMPS::MessageFormats::IMessage
 {

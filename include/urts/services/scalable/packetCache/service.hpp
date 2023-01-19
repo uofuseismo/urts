@@ -18,8 +18,9 @@ namespace URTS::Services::Scalable::PacketCache
 }
 namespace URTS::Services::Scalable::PacketCache
 {
-/// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/packetCache/serviceOptions.hpp"
-/// @brief The options that define the backend packet cache service.
+/// @class Service "service.hpp" "urts/services/scalable/packetCache/service.hpp"
+/// @brief This class reads data packets from the publisher broadcast, stores
+///        those packets in a capped collection, and replies to data requests.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Service
 {

@@ -11,7 +11,6 @@ namespace URTS::Services::Scalable::PacketCache
 {
 /// @name DataResponse "dataResponse.hpp" "urts/services/scalable/packetCache/dataResponse.hpp"
 /// @brief This represents the packet data for a sensor.
-/// @sa DataRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class DataResponse : public UMPS::MessageFormats::IMessage
 {
