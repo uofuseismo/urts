@@ -26,8 +26,8 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_compone
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#ad7db1f881222a5b030be7dc1d889c286", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#a3d58c98769c051ea300518116ee09d01", null ],
     [ "setProbabilitySignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#ac5c6bd3bed606b5a9ac0ceae78d1981e", null ],
+    [ "setProbabilitySignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#a6575a297222a0e8cce20fba6be141d5d", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#ab7a616b7de5e3baa21990bf1bd7d4902", null ],
     [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#af53b8e789d9297ff100c5eed500284bf", null ],
-    [ "setVerticalNorthEastSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#a011af26e07ef034897f4cbb5a8ab800d", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_u_net_detector_1_1_three_component_1_1_inference_response.html#adfe463dcad751fd1d7fda1b0bfe12003", null ]
 ];
