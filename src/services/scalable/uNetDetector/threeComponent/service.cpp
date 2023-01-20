@@ -8,7 +8,10 @@
 #include <umps/messageFormats/failure.hpp>
 //#include "urts/services/scalable/uNetDetector/threeComponent/service.hpp"
 //#include "urts/services/scalable/uNetDetector/threeComponent/serviceOptions.hpp"
+#include "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
+#include "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
 #include "urts/services/scalable/uNetDetector/threeComponent/preprocessingRequest.hpp"
+#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
 /*
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
 #include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
@@ -30,7 +33,7 @@ public:
                 const std::shared_ptr<UMPS::Logging::ILog> &logger = nullptr)
     {
         if (logger == nullptr)
-        {   
+        {
             mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
@@ -45,15 +48,29 @@ public:
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
     {
-        // Get data
         mLogger->debug("Request received");
-        PreprocessingRequest preprocessingRequest;
-        if (messageType == processingRequest.getMessageType())
+        // Inference
+        InferenceRequest inferenceRequest;
+        if (messageType == inferenceRequest.getMessageType())
         {
-            mLogger->debug("Processing request received");
-
+            mLogger->debug("Inference request received");
+            InferenceResponse response;
+            try
+            {
+                inferenceRequest.fromMessage(messageContents, length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to upnack preprocessing request: "
+                             + std::string{e.what()});
+                response.setResponse(InferenceResponse::InvalidMessage);
+                return response.clone();
+            }
+            return response.clone();
         }
-        else if (messageType == preprocessingRequest.getMessageType())
+        // Preprocessing
+        PreprocessingRequest preprocessingRequest;
+        if (messageType == preprocessingRequest.getMessageType())
         {
             mLogger->debug("Preprocessing request received");
             PreprocessingResponse response;
@@ -63,7 +80,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to upnack pre-processing request: "
+                mLogger->error("Failed to upnack preprocessing request: "
                              + std::string{e.what()});
                 response.setResponse(PreprocessingResponse::InvalidMessage);
                 return response.clone();
@@ -100,13 +117,16 @@ public:
             response.setResponse(PreprocessingResponse::Success);
             response.clone();
         }
-        // Send something back so they don't wait forever
+        // No idea -> Send something back so they don't wait forever
         mLogger->error("Unhandled message type: " + messageType);
         UMPS::MessageFormats::Failure response;
         response.setDetails("Unhandled message type");
         return response.clone();
     }
 ///private:
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::unique_ptr<URouterDealer::Reply> mReplier{nullptr};
     class UModels::ProcessData mPreprocess;
     const double mTargetSamplingRate{UModels::ProcessData::getTargetSamplingRate()};
+    const int mMinimumSignalLength{1008};
 };

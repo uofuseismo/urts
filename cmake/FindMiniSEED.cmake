@@ -21,6 +21,6 @@ find_library(MINISEED_LIBRARY
             )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FindMiniSEED
+find_package_handle_standard_args(MiniSEED
                                   DEFAULT_MSG MINISEED_INCLUDE_DIR MINISEED_LIBRARY)
 mark_as_advanced(MINISEED_INCLUDE_DIR MINISEED_LIBRARY)

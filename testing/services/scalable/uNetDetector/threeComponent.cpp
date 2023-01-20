@@ -1,4 +1,5 @@
 #include <vector>
+#include "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
 #include "urts/services/scalable/uNetDetector/threeComponent/preprocessingRequest.hpp"
 #include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
 #include <gtest/gtest.h>
@@ -99,6 +100,41 @@ TEST(ServicesScalableUNetDetectorThreeComponent, PreprocessingResponse)
     EXPECT_EQ(response.getIdentifier(), 0);
     EXPECT_EQ(response.getMessageType(),
               "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingResponse");
+    EXPECT_FALSE(response.haveReturnCode());
+}
+
+TEST(ServicesScalableUNetDetectorThreeComponent, InferenceResponse)
+{
+    const std::vector<float> probabilitySignal{1, 2, 3, 4, 5}; 
+    const double samplingRate{250};
+    const int64_t identifier{5024};
+    const InferenceResponse::ReturnCode
+        returnCode{InferenceResponse::ReturnCode::Success};
+    InferenceResponse response;
+
+    EXPECT_NO_THROW(response.setSamplingRate(samplingRate));
+    EXPECT_NO_THROW(response.setProbabilitySignal(probabilitySignal));
+    response.setIdentifier(identifier);
+    response.setReturnCode(returnCode);
+
+    InferenceResponse copy;
+    EXPECT_NO_THROW(copy.fromMessage(response.toMessage()));
+    EXPECT_EQ(copy.getIdentifier(), identifier);
+    EXPECT_EQ(copy.getReturnCode(), returnCode);
+    EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
+    EXPECT_TRUE(copy.haveProbabilitySignal());
+    auto p = copy.getProbabilitySignal();
+    EXPECT_EQ(probabilitySignal.size(), p.size());
+    for (int i = 0; i < static_cast<int> (p.size()); ++i)
+    {   
+        EXPECT_NEAR(probabilitySignal.at(i), p.at(i), 1.e-7);
+    }
+
+    response.clear();
+    EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
+    EXPECT_EQ(response.getIdentifier(), 0); 
+    EXPECT_EQ(response.getMessageType(),
+              "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 

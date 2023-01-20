@@ -23,5 +23,5 @@ find_library(EARTHWORM_UTILITY_LIBRARY
                    /usr/local/lib64)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FindEarthworm DEFAULT_MSG EARTHWORM_INCLUDE_DIR EARTHWORM_UTILITY_LIBRARY EARTHWORM_MT_LIBRARY)
+find_package_handle_standard_args(Earthworm DEFAULT_MSG EARTHWORM_INCLUDE_DIR EARTHWORM_UTILITY_LIBRARY EARTHWORM_MT_LIBRARY)
 mark_as_advanced(EARTHWORM_INCLUDE_DIR EARTHWORM_UTILITY_LIBRARY EARTHWORM_MT_LIBRARY)

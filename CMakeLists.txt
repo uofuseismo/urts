@@ -20,20 +20,19 @@ configure_file(${CMAKE_SOURCE_DIR}/include/private/organization.hpp.in
                ${CMAKE_SOURCE_DIR}/include/private/organization.hpp)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-include(CheckCXXCompilerFlag)
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(SOCI REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GTest REQUIRED)
 # Optional
-set(FindMiniSEED_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
-set(FindEarthworm_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
-set(FindSEEDLink_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
-find_package(FindEarthworm)
-find_package(FindSEEDLink CONFIG)
-if (${FindEarthworm_FOUND})
-   find_package(FindMiniSEED CONFIG)
+#set(FindMiniSEED_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
+#set(FindEarthworm_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
+#set(FindSEEDLink_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
+find_package(Earthworm)
+find_package(SEEDLink)
+if (${Earthworm_FOUND})
+   find_package(MiniSEED)
 endif()
 
 set(BUILD_EW FALSE)
@@ -97,6 +96,8 @@ set(GENERIC_SRC
     )
 #if (${UUSS_MLMODELS})
     set(UUSS_SRC
+        #src/services/scalable/uNetDetector/threeComponent/inferenceRequest.cpp
+        src/services/scalable/uNetDetector/threeComponent/inferenceResponse.cpp
         src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
         src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp)
 #endif()

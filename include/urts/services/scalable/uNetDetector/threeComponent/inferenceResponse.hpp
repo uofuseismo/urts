@@ -45,7 +45,7 @@ public:
     ///                                   corresponding to a phase arrival.
     ///                                   On exit, probabilitySignal's behavior
     ///                                   is undefined.
-    void setVerticalNorthEastSignal(std::vector<float> &&probabilitySignal);
+    void setProbabilitySignal(std::vector<float> &&probabilitySignal);
     /// @result The probability signal.
     /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
     [[nodiscard]] std::vector<float> getProbabilitySignal() const;
