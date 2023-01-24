@@ -31,9 +31,14 @@ find_package(GTest REQUIRED)
 #set(FindSEEDLink_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
 find_package(Earthworm)
 find_package(SEEDLink)
+find_package(UUSSMLModels)
 if (${Earthworm_FOUND})
    find_package(MiniSEED)
 endif()
+if (${UUSSMLModels_FOUND})
+   message("Enabling UUSS_MLMODELS")
+   set(UUSS_MLMODELS TRUE)
+endif() 
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
@@ -94,13 +99,13 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
-#if (${UUSS_MLMODELS})
+if (${UUSS_MLMODELS})
     set(UUSS_SRC
         #src/services/scalable/uNetDetector/threeComponent/inferenceRequest.cpp
         src/services/scalable/uNetDetector/threeComponent/inferenceResponse.cpp
         src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
         src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp)
-#endif()
+endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC
        src/broadcasts/external/earthworm/traceBuf2.cpp
@@ -136,6 +141,10 @@ if (${BUILD_SEEDLINK})
    target_include_directories(urts PRIVATE ${SEEDLINK_INCLUDE_DIR})
    target_link_libraries(urts PRIVATE ${SEEDLINK_LIBRARY})
 endif()
+if (${UUSS_MLMODELS})
+   target_include_directories(urts PRIVATE ${UUSSMLModels_INCLUDE_DIR})
+   target_link_libraries(urts PRIVATE ${UUSSMLModels_LIBRARY})
+endif()
 
 ##########################################################################################
 #                                         Unit Tests                                     #
@@ -148,9 +157,10 @@ set(TEST_SRC
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
-#if (${UUSS_MLMODELS})
-   set(TEST_SRC ${TEST_SRC} ../testing/services/scalable/uNetDetector/threeComponent.cpp)
-#endif()
+if (${UUSS_MLMODELS})
+   set(TEST_SRC ${TEST_SRC}
+       testing/services/scalable/uNetDetector/threeComponent.cpp)
+endif()
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
 endif()

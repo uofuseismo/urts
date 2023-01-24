@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
 #include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingResponse"
@@ -60,7 +61,9 @@ public:
     std::vector<double> mVerticalSignal;
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
-    double mSamplingRate{100};
+    double mSamplingRate{
+     UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getSamplingRate()
+    };  
     int64_t mIdentifier{0};
     PreprocessingResponse::ReturnCode mReturnCode;
     bool mHaveSignals{false};
