@@ -42,7 +42,7 @@ endif()
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
-if (${FindEarthworm_FOUND})
+if (${Earthworm_FOUND})
    message("Will compile Earthworm")
    set(BUILD_EW TRUE)
    if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
