@@ -44,7 +44,7 @@ InferenceResponse
        static_cast<InferenceResponse::ReturnCode> (
          obj["ReturnCode"].get<int> ()
     ));
-    std::vector<float> probabilitySignal = obj["ProbabilitySignal"];
+    std::vector<double> probabilitySignal = obj["ProbabilitySignal"];
     result.setProbabilitySignal(std::move(probabilitySignal));
     return result;
 }
@@ -54,7 +54,7 @@ InferenceResponse
 class InferenceResponse::ResponseImpl
 {
 public:
-    std::vector<float> mProbabilitySignal;
+    std::vector<double> mProbabilitySignal;
     double mSamplingRate{100};
     int64_t mIdentifier{0};
     InferenceResponse::ReturnCode mReturnCode;
@@ -158,7 +158,7 @@ bool InferenceResponse::haveReturnCode() const noexcept
 }
 
 /// Set signals
-void InferenceResponse::setProbabilitySignal(const std::vector<float> &signal)
+void InferenceResponse::setProbabilitySignal(const std::vector<double> &signal)
 {
     if (signal.empty())
     {
@@ -168,7 +168,7 @@ void InferenceResponse::setProbabilitySignal(const std::vector<float> &signal)
     pImpl->mHaveProbabilitySignal = true;
 }
 
-void InferenceResponse::setProbabilitySignal(std::vector<float> &&signal)
+void InferenceResponse::setProbabilitySignal(std::vector<double> &&signal)
 {
     if (signal.empty())
     {
@@ -178,7 +178,7 @@ void InferenceResponse::setProbabilitySignal(std::vector<float> &&signal)
     pImpl->mHaveProbabilitySignal = true;
 }
 
-std::vector<float> InferenceResponse::getProbabilitySignal() const
+std::vector<double> InferenceResponse::getProbabilitySignal() const
 {
     if (!haveProbabilitySignal())
     {

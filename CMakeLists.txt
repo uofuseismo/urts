@@ -101,10 +101,11 @@ set(GENERIC_SRC
     )
 if (${UUSS_MLMODELS})
     set(UUSS_SRC
-        #src/services/scalable/uNetDetector/threeComponent/inferenceRequest.cpp
+        src/services/scalable/uNetDetector/threeComponent/inferenceRequest.cpp
         src/services/scalable/uNetDetector/threeComponent/inferenceResponse.cpp
         src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
-        src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp)
+        src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp
+        src/services/scalable/uNetDetector/threeComponent/service.cpp)
 endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC

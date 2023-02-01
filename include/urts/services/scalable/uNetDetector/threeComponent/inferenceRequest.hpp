@@ -5,12 +5,8 @@
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
 {
-class 
-}
-namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
-{
 /// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
-/// @brief Requests inference be performed on a waveform snippet.
+/// @brief Requests inference be performed on a pre-processed waveform snippet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceRequest : public UMPS::MessageFormats::IMessage
 {
@@ -33,17 +29,17 @@ public:
     /// @{
 
     /// @brief Sets the signals on the vertical, north, and east channels that
-    ///        will be pre-processed.
+    ///        will be used inference.
     /// @param[in] verticalSignal  The signal on the vertical channel.
     /// @param[in] northSignal     The signal on the north (1) channel.
     /// @param[in] eastSignal      The signal on the east (2) channel.
     /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
+    ///         or at least \c getMinimumSignalLength().
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
                                     const std::vector<double> &eastSignal);
     /// @brief Sets the signals on the vertical, north, and east channels that
-    ///        will be pre-processed.
+    ///        will be used for inference.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
@@ -54,7 +50,7 @@ public:
     ///                                On exit, eastSignal's behavior is
     ///                                undefined.
     /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
+    ///         or at least \c getMinimumSignalLength().
     void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
                                     std::vector<double> &&northSignal,
                                     std::vector<double> &&eastSignal);
@@ -86,19 +82,10 @@ public:
 
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
-    /// @}
-
-
-    /// @name Sampling Rate
-    /// @{
-
-    /// @brief Sets the sampling rate of the signals to be processed.
-    /// @param[in] samplingRate  The sampling rate of the signals in Hz.
-    /// @throws std::invalid_argument if the sampling rate is not positive.
-    void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the signal.
-    /// @note By default this is 100 Hz.
-    [[nodiscard]] double getSamplingRate() const noexcept;
+    /// @result The minimum signal length. 
+    [[nodiscard]] static int getMinimumSignalLength() noexcept;
+    /// @result The sampling rate of the input signals in Hz.
+    [[nodiscard]] static double getSamplingRate() noexcept;
     /// @}
 
     /// @name Request Identifier

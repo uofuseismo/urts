@@ -14,9 +14,9 @@ public:
     /// @brief Defines the service's return code.
     enum ReturnCode
     {
-        Success = 0,          /*!< The signals were successfully pre-processed. */
-        InvalidMessage = 1,   /*!< The request message was invalid. */
-        AlgorithmFailure = 2  /*!< The pre-processing algorithm failed. */
+        Success = 0,           /*!< Inference was successfully performed on the signals. */
+        InvalidMessage = 1,    /*!< The request message was invalid. */
+        AlgorithmFailure = 2   /*!< The inference algorithm failed. */
     };
 public:
     /// @name Constructors
@@ -39,16 +39,16 @@ public:
     /// @brief Sets the posterior probability signal.
     /// @param[in] probabilitySignal  The probability of each sample 
     ///                               corresponding to a phase arrival.
-    void setProbabilitySignal(const std::vector<float> &probabilitySignal);
+    void setProbabilitySignal(const std::vector<double> &probabilitySignal);
     /// @brief Sets the posterior probabiltiy signal.
     /// @param[in,out] probabilitySignal  The probability of each sample
     ///                                   corresponding to a phase arrival.
     ///                                   On exit, probabilitySignal's behavior
     ///                                   is undefined.
-    void setProbabilitySignal(std::vector<float> &&probabilitySignal);
+    void setProbabilitySignal(std::vector<double> &&probabilitySignal);
     /// @result The probability signal.
     /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
-    [[nodiscard]] std::vector<float> getProbabilitySignal() const;
+    [[nodiscard]] std::vector<double> getProbabilitySignal() const;
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveProbabilitySignal() const noexcept;
     /// @}
