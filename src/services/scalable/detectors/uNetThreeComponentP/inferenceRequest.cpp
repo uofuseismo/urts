@@ -2,12 +2,12 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetDetectorP::InferenceRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::UNetDetector::ThreeComponent;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentP;
 
 namespace

@@ -8,12 +8,12 @@
 #include <umps/messaging/routerDealer/reply.hpp>
 #include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <umps/messageFormats/failure.hpp>
-#include "urts/services/scalable/uNetDetector/threeComponent/service.hpp"
-//#include "urts/services/scalable/uNetDetector/threeComponent/serviceOptions.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingRequest.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
+//#include "urts/services/scalable/uNetDetector/threeComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 /*
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
 #include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
@@ -26,7 +26,7 @@
 */
 
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
-using namespace URTS::Services::Scalable::UNetDetector::ThreeComponent;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 namespace UModels = UUSSMLModels::Detectors::UNetThreeComponentP;
 
 class Service::ServiceImpl

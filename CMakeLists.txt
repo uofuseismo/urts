@@ -101,11 +101,11 @@ set(GENERIC_SRC
     )
 if (${UUSS_MLMODELS})
     set(UUSS_SRC
-        src/services/scalable/uNetDetector/threeComponent/inferenceRequest.cpp
-        src/services/scalable/uNetDetector/threeComponent/inferenceResponse.cpp
-        src/services/scalable/uNetDetector/threeComponent/preprocessingRequest.cpp
-        src/services/scalable/uNetDetector/threeComponent/preprocessingResponse.cpp
-        src/services/scalable/uNetDetector/threeComponent/service.cpp)
+        src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/service.cpp)
 endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC
@@ -160,7 +160,7 @@ set(TEST_SRC
     )
 if (${UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
-       testing/services/scalable/uNetDetector/threeComponent.cpp)
+       testing/services/scalable/detectors/uNetThreeComponentP.cpp)
 endif()
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)

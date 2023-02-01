@@ -1,11 +1,11 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_PREPROCESSING_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
-/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
+/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 /// @brief Response from a waveform snippet preprocessing request.
 /// @note Typically you would use an inference request which can preprocess
 ///       and apply the model as that is more efficient.

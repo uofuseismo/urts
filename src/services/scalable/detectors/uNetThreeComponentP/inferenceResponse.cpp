@@ -1,12 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::UNetDetector::ThreeComponent;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 
 namespace
 {

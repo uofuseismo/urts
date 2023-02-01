@@ -1,25 +1,23 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
-#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::PreprocessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::UNetDetector::ThreeComponent;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 
 namespace
 {
 
-std::string toCBORObject(const PreprocessingResponse &message)
+std::string toCBORObject(const PreprocessingRequest &message)
 {
     nlohmann::json obj;
     obj["MessageType"] = message.getMessageType();
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
-    obj["ReturnCode"] = static_cast<int> (message.getReturnCode());
     if (!message.haveSignals()){throw std::runtime_error("Signals not set");}
     obj["VerticalSignal"] = message.getVerticalSignal();
     obj["NorthSignal"] = message.getNorthSignal();
@@ -29,21 +27,17 @@ std::string toCBORObject(const PreprocessingResponse &message)
     return result;
 }
 
-PreprocessingResponse
+PreprocessingRequest
     fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
-    PreprocessingResponse result;
+    PreprocessingRequest result;
     if (obj["MessageType"] != result.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
     }
     result.setSamplingRate(obj["SamplingRate"].get<double> ());
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
-    result.setReturnCode(
-       static_cast<PreprocessingResponse::ReturnCode> (
-         obj["ReturnCode"].get<int> ()
-    ));
     std::vector<double> vertical = obj["VerticalSignal"];
     std::vector<double> north = obj["NorthSignal"];
     std::vector<double> east = obj["EastSignal"];
@@ -55,71 +49,66 @@ PreprocessingResponse
 
 }
 
-class PreprocessingResponse::ResponseImpl
+class PreprocessingRequest::RequestImpl
 {
 public:
     std::vector<double> mVerticalSignal;
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
-    double mSamplingRate{
-     UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getSamplingRate()
-    };  
+    double mSamplingRate{100};
     int64_t mIdentifier{0};
-    PreprocessingResponse::ReturnCode mReturnCode;
     bool mHaveSignals{false};
-    bool mHaveReturnCode{false};
 };
 
 /// Constructor
-PreprocessingResponse::PreprocessingResponse() :
-    pImpl(std::make_unique<ResponseImpl> ())
+PreprocessingRequest::PreprocessingRequest() :
+    pImpl(std::make_unique<RequestImpl> ())
 {
 }
 
 /// Copy constructor
-PreprocessingResponse::PreprocessingResponse(
-    const PreprocessingResponse &response)
+PreprocessingRequest::PreprocessingRequest(const PreprocessingRequest &request)
 {
-    *this = response;
+    *this = request;
 }
 
 /// Move constructor
-PreprocessingResponse::PreprocessingResponse(
-    PreprocessingResponse &&response) noexcept
+PreprocessingRequest::PreprocessingRequest(
+    PreprocessingRequest &&request) noexcept
 {
-    *this = std::move(response);
+    *this = std::move(request);
 }
 
 /// Copy assignment
-PreprocessingResponse& PreprocessingResponse::operator=(
-    const PreprocessingResponse &response)
+PreprocessingRequest& PreprocessingRequest::operator=(
+    const PreprocessingRequest &request)
 {
-    if (&response == this){return *this;}
-    pImpl = std::make_unique<ResponseImpl> (*response.pImpl);
+    if (&request == this){return *this;}
+    pImpl = std::make_unique<RequestImpl> (*request.pImpl);
     return *this;
 }
 
 /// Move assignment
-PreprocessingResponse& PreprocessingResponse::operator=(
-    PreprocessingResponse &&response) noexcept
+PreprocessingRequest& PreprocessingRequest::operator=(
+    PreprocessingRequest &&request) noexcept
 {
-    if (&response == this){return *this;}
-    pImpl = std::move(response.pImpl);
+    if (&request == this){return *this;}
+    pImpl = std::move(request.pImpl);
     return *this;
 }
 
 /// Release memory and reset class
-void PreprocessingResponse::clear() noexcept
+void PreprocessingRequest::clear() noexcept
 {
-    pImpl = std::make_unique<ResponseImpl> ();
+    pImpl = std::make_unique<RequestImpl> ();
 }
 
 /// Destructor
-PreprocessingResponse::~PreprocessingResponse()
+PreprocessingRequest::~PreprocessingRequest()
     = default;
 
 /// Sampling rate
-void PreprocessingResponse::setSamplingRate(
+void PreprocessingRequest::setSamplingRate(
     const double samplingRate)
 {
     if (samplingRate <= 0)
@@ -129,44 +118,25 @@ void PreprocessingResponse::setSamplingRate(
     pImpl->mSamplingRate = samplingRate;
 }
 
-double PreprocessingResponse::getSamplingRate() const noexcept
+double PreprocessingRequest::getSamplingRate() const noexcept
 {
     return pImpl->mSamplingRate;
 }
 
 /// Identifier
-void PreprocessingResponse::setIdentifier(
+void PreprocessingRequest::setIdentifier(
     const int64_t identifier) noexcept
 {
     pImpl->mIdentifier = identifier;
 }
 
-int64_t PreprocessingResponse::getIdentifier() const noexcept
+int64_t PreprocessingRequest::getIdentifier() const noexcept
 {
     return pImpl->mIdentifier;
 }
 
-/// Return code
-void PreprocessingResponse::setReturnCode(
-    const PreprocessingResponse::ReturnCode returnCode) noexcept
-{
-    pImpl->mReturnCode = returnCode;
-    pImpl->mHaveReturnCode = true;
-}
-
-PreprocessingResponse::ReturnCode PreprocessingResponse::getReturnCode() const
-{
-    if (!haveReturnCode()){throw std::runtime_error("Return code not set");}
-    return pImpl->mReturnCode;
-}
-
-bool PreprocessingResponse::haveReturnCode() const noexcept
-{
-    return pImpl->mHaveReturnCode;
-}
-
 /// Set signals
-void PreprocessingResponse::setVerticalNorthEastSignal(
+void PreprocessingRequest::setVerticalNorthEastSignal(
     const std::vector<double> &vertical,
     const std::vector<double> &north,
     const std::vector<double> &east)
@@ -185,7 +155,7 @@ void PreprocessingResponse::setVerticalNorthEastSignal(
     pImpl->mHaveSignals = true;
 }
 
-void PreprocessingResponse::setVerticalNorthEastSignal(
+void PreprocessingRequest::setVerticalNorthEastSignal(
     std::vector<double> &&vertical,
     std::vector<double> &&north,
     std::vector<double> &&east)
@@ -204,55 +174,76 @@ void PreprocessingResponse::setVerticalNorthEastSignal(
     pImpl->mHaveSignals = true;
 }
 
-std::vector<double> PreprocessingResponse::getVerticalSignal() const
+std::vector<double> PreprocessingRequest::getVerticalSignal() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
     return pImpl->mVerticalSignal;
 }
 
-std::vector<double> PreprocessingResponse::getNorthSignal() const
+std::vector<double> PreprocessingRequest::getNorthSignal() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
     return pImpl->mNorthSignal;
 }
 
-std::vector<double> PreprocessingResponse::getEastSignal() const
+std::vector<double> PreprocessingRequest::getEastSignal() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
     return pImpl->mEastSignal;
 }
 
-bool PreprocessingResponse::haveSignals() const noexcept
+const std::vector<double>
+&PreprocessingRequest::getVerticalSignalReference() const
+{
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mVerticalSignal;
+}
+
+const std::vector<double>
+&PreprocessingRequest::getNorthSignalReference() const
+{   
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mNorthSignal;
+}
+
+const std::vector<double>
+&PreprocessingRequest::getEastSignalReference() const
+{   
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mEastSignal;
+}
+
+bool PreprocessingRequest::haveSignals() const noexcept
 {
     return pImpl->mHaveSignals;
 }
 
 /// Message type
-std::string PreprocessingResponse::getMessageType() const noexcept
+std::string PreprocessingRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
 
 /// Message version
 std::string
-PreprocessingResponse::getMessageVersion() const noexcept
+PreprocessingRequest::getMessageVersion() const noexcept
 {
     return MESSAGE_VERSION;
 }
 
 ///  Convert message
-std::string PreprocessingResponse::toMessage() const
+std::string PreprocessingRequest::toMessage() const
 {
     return ::toCBORObject(*this);
 }
 
-void PreprocessingResponse::fromMessage(const std::string &message)
+void PreprocessingRequest::fromMessage(const std::string &message)
 {
     if (message.empty()){throw std::invalid_argument("Message is empty");}
     fromMessage(message.data(), message.size());
 }
 
-void PreprocessingResponse::fromMessage(
+void PreprocessingRequest::fromMessage(
     const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -261,18 +252,18 @@ void PreprocessingResponse::fromMessage(
 
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    PreprocessingResponse::clone() const
+    PreprocessingRequest::clone() const
 {
     std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<PreprocessingResponse> (*this);
+        = std::make_unique<PreprocessingRequest> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    PreprocessingResponse::createInstance() const noexcept
+    PreprocessingRequest::createInstance() const noexcept
 {
     std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<PreprocessingResponse> (); 
+        = std::make_unique<PreprocessingRequest> (); 
     return result;
 }

@@ -1,16 +1,16 @@
 #include <vector>
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceRequest.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingRequest.hpp"
-#include "urts/services/scalable/uNetDetector/threeComponent/preprocessingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
-using namespace URTS::Services::Scalable::UNetDetector::ThreeComponent;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 
-TEST(ServicesScalableUNetDetectorThreeComponent, PreprocessingRequest)
+TEST(ServicesScalableDetectorsUNetThreeComponentP, PreprocessingRequest)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
     const std::vector<double> north{6, 7, 8, 9, 10};
@@ -58,10 +58,10 @@ TEST(ServicesScalableUNetDetectorThreeComponent, PreprocessingRequest)
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingRequest");
+              "URTS::Services::Scalable::Detectors::UNetThreeComponentP::PreprocessingRequest");
 }
 
-TEST(ServicesScalableUNetDetectorThreeComponent, PreprocessingResponse)
+TEST(ServicesScalableDetectorsUNetThreeComponentP, PreprocessingResponse)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
     const std::vector<double> north{6, 7, 8, 9, 10};
@@ -100,11 +100,11 @@ TEST(ServicesScalableUNetDetectorThreeComponent, PreprocessingResponse)
     EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(response.getIdentifier(), 0);
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::UNetDetector::ThreeComponent::PreprocessingResponse");
+              "URTS::Services::Scalable::Detectors::UNetThreeComponentP::PreprocessingResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 
-TEST(ServicesScalableUNetDetectorThreeComponent, InferenceRequest)
+TEST(ServicesScalableDetectorsUNetThreeComponentP, InferenceRequest)
 {
     std::vector<double> vertical(1008 + 128);
     std::vector<double> north(1008 + 128);
@@ -154,11 +154,11 @@ TEST(ServicesScalableUNetDetectorThreeComponent, InferenceRequest)
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceRequest");
+              "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest");
 }
                                                                                               
 
-TEST(ServicesScalableUNetDetectorThreeComponent, InferenceResponse)
+TEST(ServicesScalableDetectorsUNetThreeComponentP, InferenceResponse)
 {
     const std::vector<double> probabilitySignal{1, 2, 3, 4, 5}; 
     const double samplingRate{250};
@@ -189,7 +189,7 @@ TEST(ServicesScalableUNetDetectorThreeComponent, InferenceResponse)
     EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(response.getIdentifier(), 0); 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::UNetDetector::ThreeComponent::InferenceResponse");
+              "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 

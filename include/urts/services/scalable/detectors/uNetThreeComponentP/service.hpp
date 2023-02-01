@@ -1,5 +1,5 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_SERVICE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_SERVICE_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_HPP
 #include <memory>
 namespace UMPS
 {
@@ -12,11 +12,11 @@ namespace UMPS
   class Context;
  }
 }
-namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
  class ServiceOptions;
 }
-namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
 /// @class Service "service.hpp" "urts/services/scalable/uNetDetector/threeComponent.hpp"
 /// @brief Runs the three-component UNet detector service.

@@ -1,11 +1,11 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::UNetDetector::ThreeComponent
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/uNetDetector/threeComponent/inferenceResponse.hpp"
+/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 /// @brief The probability of each sample corresponding to a phase arrival.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceResponse : public UMPS::MessageFormats::IMessage
