@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest" name="URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest">
+<area shape="rect" id="node1" title="Requests inference be performed on a pre&#45;processed waveform snippet." alt="" coords="5,95,252,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="39,5,218,47"/>
+</map>
