@@ -321,6 +321,7 @@ public:
     /// @brief Reads EW messages and publishes them to an URTS broadcast
     void run()
     {
+        constexpr uint64_t zero{0};
         if (!mWaveRing->isConnected())
         {
             throw std::runtime_error("Wave ring not yet connected");
@@ -331,6 +332,7 @@ public:
         }
         mWaveRing->flush();
         mLogger->debug("Earthworm broadcast thread is starting");
+        mNumberOfPacketsSent = 0;
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
@@ -352,7 +354,6 @@ public:
             //     = mWaveRing->getTraceBuf2MessagesReference();
             auto traceBuf2Messages = mWaveRing->moveTraceBuf2Messages();
             // Now broadcast the tracebufs as datapacket messages
-            mNumberOfPacketsSent = 0;
             //for (int iMessage = 0; iMessage < nMessages; ++iMessage)
             //for (auto &traceBuf2Message : traceBuf2MessagesReference)
             for (auto &traceBuf2Message : traceBuf2Messages)
@@ -366,6 +367,8 @@ public:
                     auto dataPacket = traceBuf2Message.moveToDataPacket();
                     mPacketPublisher->send(dataPacket);
                     //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Don't baby zmq
+                    mNumberOfPacketsSent
+                        = std::min(zero, std::numeric_limits<uint64_t>::max());
                     mNumberOfPacketsSent = mNumberOfPacketsSent + 1;
                 }
                 catch (const std::exception &e)
