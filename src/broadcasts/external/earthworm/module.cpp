@@ -65,7 +65,7 @@ namespace
     std::string commands;
     commands = "Commands:\n";
     commands = commands + "   quit         Exits the program.\n";
-    commands = commands + "   packetsSent  Number of packets sent.\n";
+    commands = commands + "   packetsSent  Number of packets sent in last minute.\n";
     commands = commands + "   help         Displays this message.\n";
     return commands;
 }
@@ -321,7 +321,6 @@ public:
     /// @brief Reads EW messages and publishes them to an URTS broadcast
     void run()
     {
-        constexpr uint64_t zero{0};
         if (!mWaveRing->isConnected())
         {
             throw std::runtime_error("Wave ring not yet connected");
@@ -332,7 +331,9 @@ public:
         }
         mWaveRing->flush();
         mLogger->debug("Earthworm broadcast thread is starting");
+        int numberOfPacketsSent = 0;
         mNumberOfPacketsSent = 0;
+        auto packetMonitorStart = std::chrono::high_resolution_clock::now();
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
@@ -367,10 +368,7 @@ public:
                     auto dataPacket = traceBuf2Message.moveToDataPacket();
                     mPacketPublisher->send(dataPacket);
                     //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Don't baby zmq
-                    mNumberOfPacketsSent
-                        = std::min(mNumberOfPacketsSent,
-                                   std::numeric_limits<uint64_t>::max());
-                    mNumberOfPacketsSent = mNumberOfPacketsSent + 1;
+                    numberOfPacketsSent = numberOfPacketsSent + 1;
                 }
                 catch (const std::exception &e)
                 {
@@ -388,6 +386,15 @@ public:
             else
             {
                 startClock = endClock;
+            }
+            // Update my packets sent counter
+            duration = std::chrono::duration_cast<std::chrono::seconds>
+                       (endClock - packetMonitorStart);
+            if (duration > std::chrono::seconds {60})
+            {
+                mNumberOfPacketsSent = numberOfPacketsSent;
+                numberOfPacketsSent = 0;
+                packetMonitorStart = endClock; 
             }
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
@@ -462,8 +469,8 @@ public:
             }
             else if (command == "packetsSent")
             {
-                mLogger->debug("Issuing nMessages command...");
-                response.setResponse("Number of packets sent: "
+                mLogger->debug("Issuing packetsSent command...");
+                response.setResponse("Number of packets sent in last minute: "
                                    + std::to_string(mNumberOfPacketsSent));
                 response.setReturnCode(
                     USC::CommandResponse::ReturnCode::InvalidCommand);
@@ -504,7 +511,7 @@ public:
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
-    uint64_t mNumberOfPacketsSent{0};
+    int mNumberOfPacketsSent{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
