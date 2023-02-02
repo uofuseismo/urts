@@ -512,7 +512,7 @@ std::vector<TraceBuf2<double>> WaveRing::moveTraceBuf2Messages() noexcept
     auto result = std::move(pImpl->mTraceBuf2Messages);
     std::vector<TraceBuf2<double>> newMessages;
     pImpl->mTraceBuf2Messages = newMessages;
-    return pImpl->mTraceBuf2Messages;
+    return result;
 }
 
 int WaveRing::getNumberOfTraceBuf2Messages() const noexcept
