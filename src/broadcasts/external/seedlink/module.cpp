@@ -194,7 +194,7 @@ std::unique_ptr<URTS::Broadcasts::External::Earthworm::WaveRing>
                 + options.mEarthwormWaveRingName);
     return earthwormWaveRing;
 }
-
+*/
 
 //----------------------------------------------------------------------------//
 /// @brief Reads packets from the wave ring then brodcasts them to UMPS.
@@ -206,24 +206,24 @@ public:
     BroadcastPackets(
         const std::string &moduleName, 
         std::unique_ptr<UDP::Publisher> &&packetPublisher,
-        std::unique_ptr<URTS::Broadcasts::External::Earthworm::WaveRing>
-             &&waveRing,
+        std::unique_ptr<URTS::Broadcasts::External::SEEDLink::Client>
+             &&seedLink,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mPacketPublisher(std::move(packetPublisher)),
-        mWaveRing(std::move(waveRing)),
+        mSEEDLinkClient(std::move(seedLink)),
         mLogger(logger)
     {
-        if (mWaveRing == nullptr)
+        if (mSEEDLinkClient == nullptr)
         {
-            throw std::invalid_argument("Wave ring is NULL");
+            throw std::invalid_argument("SEEDLink clien is NULL");
         }
         if (mPacketPublisher == nullptr)
         {
             throw std::invalid_argument("Packet publisher is NULL");
         }
-        if (!mWaveRing->isConnected())
+        if (!mSEEDLinkClient->isConnected())
         {
-            throw std::invalid_argument("Wave ring reader not connected");
+            throw std::invalid_argument("SEEDLink client not connected");
         }
         if (!mPacketPublisher->isInitialized())
         {
@@ -272,7 +272,7 @@ public:
     /// @brief Gets the process name.
     [[nodiscard]] std::string getName() const noexcept override
     {
-        return "BroadcastPackets";
+        return "BroadcastSEEDLinkPackets";
     }
     /// @brief Stops the process.
     void stop() override
@@ -307,15 +307,14 @@ public:
     /// @brief Reads EW messages and publishes them to an URTS broadcast
     void run()
     {
-        if (!mWaveRing->isConnected())
+        if (!mSEEDLinkClient->isConnected())
         {
-            throw std::runtime_error("Wave ring not yet connected");
+            throw std::runtime_error("SEEDLink client not yet connected");
         }
         if (!mPacketPublisher->isInitialized())
         { 
             throw std::runtime_error("Publisher not yet initialized");
         }
-        mWaveRing->flush();
         mLogger->debug("Earthworm broadcast thread is starting");
         while (keepRunning())
         {
@@ -323,7 +322,7 @@ public:
             // Read from the earthworm ring
             try
             {
-                mWaveRing->read();
+                //mWaveRing->read();
             }
             catch (const std::exception &e)
             {
@@ -331,6 +330,7 @@ public:
                              + std::string(e.what()));
                 continue;
             }
+/*
             auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
             auto traceBuf2MessagesPtr
                 = mWaveRing->getTraceBuf2MessagesPointer();
@@ -352,6 +352,7 @@ public:
                     mLogger->error(e.what());
                 }
             }
+*/
             auto endClock = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::seconds>
                             (endClock - startClock);
@@ -359,6 +360,10 @@ public:
             {
                 auto wait = mBroadcastInterval - duration;
                 std::this_thread::sleep_for(wait);
+            }
+            else
+            {
+                startClock = endClock;
             }
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
@@ -462,15 +467,14 @@ public:
     mutable std::mutex mMutex;
     std::thread mBroadcastThread;
     std::unique_ptr<UDP::Publisher> mPacketPublisher{nullptr};
-    std::unique_ptr<URTS::Broadcasts::External::Earthworm::WaveRing>
-         mWaveRing{nullptr};
+    std::unique_ptr<URTS::Broadcasts::External::SEEDLink::Client>
+         mSEEDLinkClient{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
-*/
 
 ///--------------------------------------------------------------------------///
 ///                                 Main Function                            ///
@@ -511,7 +515,6 @@ int main(int argc, char *argv[])
     // This module only needs one context.  There's not much data to move.
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
     // Initialize the various processes
-/*
     logger->info("Initializing processes...");
     UMPS::Modules::ProcessManager processManager(logger);
     try
@@ -545,6 +548,7 @@ int main(int argc, char *argv[])
         packetPublisherOptions.setZAPOptions(programOptions.mZAPOptions);
         packetPublisher->initialize(packetPublisherOptions);
 
+/*
         constexpr bool flushRing{true};
         auto earthwormReader = createEarthwormWaveRingReader(programOptions,
                                                              logger,
@@ -577,6 +581,7 @@ int main(int argc, char *argv[])
 
         processManager.insert(std::move(remoteReplier));
         processManager.insert(std::move(broadcastProcess)); 
+*/
     }
     catch (const std::exception &e)
     {
@@ -584,6 +589,7 @@ int main(int argc, char *argv[])
         logger->error(e.what());
         return EXIT_FAILURE;
     }
+/*
     // Start the modules
     logger->info("Starting processes...");
     try
