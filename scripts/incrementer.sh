@@ -14,7 +14,7 @@ DURATION=10
 # Name displayed by the init script
 NAME="Incrementer Service"
 
-# Define the executable
+# Define the configuration file 
 ARGS="--ini=${CONFIG_FILE}"
 
 ACTION=$1

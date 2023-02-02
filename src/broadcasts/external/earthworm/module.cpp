@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <string>
 #include <chrono>
 #include <thread>
 #include <filesystem>
@@ -63,8 +64,9 @@ namespace
 {
     std::string commands;
     commands = "Commands:\n";
-    commands = commands + "   quit   Exits the program.\n";
-    commands = commands + "   help   Displays this message.\n";
+    commands = commands + "   quit         Exits the program.\n";
+    commands = commands + "   packetsSent  Number of packets sent.\n";
+    commands = commands + "   help         Displays this message.\n";
     return commands;
 }
 
@@ -350,7 +352,7 @@ public:
             //     = mWaveRing->getTraceBuf2MessagesReference();
             auto traceBuf2Messages = mWaveRing->moveTraceBuf2Messages();
             // Now broadcast the tracebufs as datapacket messages
-            int nSent = 0;
+            mNumberOfPacketsSent = 0;
             //for (int iMessage = 0; iMessage < nMessages; ++iMessage)
             //for (auto &traceBuf2Message : traceBuf2MessagesReference)
             for (auto &traceBuf2Message : traceBuf2Messages)
@@ -364,7 +366,7 @@ public:
                     auto dataPacket = traceBuf2Message.moveToDataPacket();
                     mPacketPublisher->send(dataPacket);
                     //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Don't baby zmq
-                    nSent = nSent + 1;
+                    mNumberOfPacketsSent = mNumberOfPacketsSent + 1;
                 }
                 catch (const std::exception &e)
                 {
@@ -450,6 +452,14 @@ public:
                 response.setReturnCode(
                     USC::CommandResponse::ReturnCode::Success);
             }
+            else if (command == "packetsSent")
+            {
+                mLogger->debug("Issuing nMessages command...");
+                response.setResponse("Number of packets sent: "
+                                   + std::to_string(mNumberOfPacketsSent));
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::InvalidCommand);
+            }
             else
             {
                 response.setResponse(getInputOptions());
@@ -486,6 +496,7 @@ public:
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
+    uint64_t mNumberOfPacketsSent{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };

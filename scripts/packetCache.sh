@@ -14,8 +14,8 @@ DURATION=10
 # Name displayed by the init script
 NAME="PacketCache Service"
 
-# Define the executable
-ARGS="--ini=${CONFIG_FILE}"
+# Define the configuration file AND instance
+ARGS="--ini=${CONFIG_FILE} --instance=0"
 
 ACTION=$1
 EXIT_STATUS=$(urts "${ACTION}" "${EXECUTABLE}" "${ARGS}" "${NAME}" "${DURATION}" ${WORKDIR})
