@@ -74,7 +74,7 @@ void Subscriber::initialize(const SubscriberOptions &options)
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
     if (pImpl->mLogger != nullptr)
     {
-        pImpl->mLogger->debug("Data packet subscriber connecting to: "
+        pImpl->mLogger->debug("Data packet subscriber connecting to "
                            + options.getAddress());
     }
     UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
