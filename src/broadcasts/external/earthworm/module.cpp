@@ -368,7 +368,8 @@ public:
                     mPacketPublisher->send(dataPacket);
                     //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Don't baby zmq
                     mNumberOfPacketsSent
-                        = std::min(zero, std::numeric_limits<uint64_t>::max());
+                        = std::min(mNumberOfPacketsSent,
+                                   std::numeric_limits<uint64_t>::max());
                     mNumberOfPacketsSent = mNumberOfPacketsSent + 1;
                 }
                 catch (const std::exception &e)
