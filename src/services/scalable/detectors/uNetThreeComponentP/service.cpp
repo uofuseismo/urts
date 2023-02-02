@@ -15,10 +15,6 @@
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 /*
-#include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
-#include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
-#include "urts/services/scalable/packetCache/sensorRequest.hpp"
-#include "urts/services/scalable/packetCache/sensorResponse.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriber.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
@@ -28,6 +24,83 @@
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 namespace UModels = UUSSMLModels::Detectors::UNetThreeComponentP;
+
+namespace
+{
+
+/*
+template<typename U>
+void evaluateModel(const std::vector<U> &vertical,
+                   const std::vector<U> &north,
+                   const std::vector<U> &east,
+                   const UModels::Inference &inference,
+                   InferenceResponse *response,
+                   std::shared_ptr<UMPS::Logging::ILog> &logger)
+{
+    try
+    {
+        auto probabilitySignal
+            = inference.predictProbability(vertical, north, east);
+        response->setProbabilitySignal(std::move(probabilitySignal));
+        response->setReturnCode(InferenceResponse::Success);
+    }
+    catch (const std::exception &e)
+    {
+        if (logger != nullptr)
+        {
+            logger->error("Failed to evaluate model.  Failed with "
+                        + std::string{e.what()});
+        }
+        response->setReturnCode(InferenceResponse::AlgorithmFailure);
+    }
+}
+
+void evaluateModel(const InferenceRequest &request,
+                   const UModels::Inference &inference,
+                   InferenceResponse *response,
+                   std::shared_ptr<UMPS::Logging::ILog> &logger)
+{
+    const auto &vertical = request.getVerticalSignalReference();
+    const auto &north    = request.getNorthSignalReference();
+    const auto &east     = request.getEastSignalReference();
+    evaluateModel(vertical, north, east, inference, response, logger);
+}
+
+std::unique_ptr<UMPS::MessageFormats::IMessage>
+preprocessSignal(const PreprocessingRequest &request,
+                 UModels::Preprocessing &preprocess,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger)
+{
+    const auto &vertical = request.getVerticalSignalReference();
+    const auto &north    = request.getNorthSignalReference();
+    const auto &east     = request.getEastSignalReference();
+    // Process data
+    auto [verticalResult, northResult, eastResult]
+         = preprocess.process(vertical, north, east);
+    // Set data on response
+    PreprocessingResponse response;
+    response.setSamplingRate(UModels::Preprocessing::getTargetSamplingRate());
+    try
+    {
+        response.setVerticalNorthEastSignal(std::move(verticalResult),
+                                            std::move(northResult),
+                                            std::move(eastResult));
+        response.setReturnCode(PreprocessingResponse::Success);
+    }
+    catch (const std::exception &e)
+    {
+        if (logger != nullptr)
+        {
+            logger->error("Failed to perform preprocessing.  Failed with: "
+                        + std::string{e.what()});
+        }
+        response.setReturnCode(PreprocessingResponse::AlgorithmFailure); 
+    }
+    return response.clone();
+}
+*/
+ 
+}
 
 class Service::ServiceImpl
 {
@@ -86,17 +159,16 @@ public:
                     = inferenceRequest.getNorthSignalReference();
                 const auto &east
                     = inferenceRequest.getEastSignalReference();
-                // Perform inference
-                auto probabilitySignal
-                    = mInference.predictProbability(vertical, north, east);
-                response.setProbabilitySignal(std::move(probabilitySignal));
+                    auto probabilitySignal
+                        = mInference.predictProbability(vertical, north, east);
+                    response.setProbabilitySignal(std::move(probabilitySignal));
+                response.setReturnCode(InferenceResponse::Success);
             }
-            catch (const std::exception &e)
+            catch (const std::exception &e) 
             {
-                mLogger->error("Failed to perform inference on data: "
+                mLogger->error("Failed to evaluate model.  Failed with "
                              + std::string{e.what()});
                 response.setReturnCode(InferenceResponse::AlgorithmFailure);
-                return response.clone();
             }
             return response.clone();
         }
@@ -163,8 +235,12 @@ public:
     std::unique_ptr<URouterDealer::Reply> mReplier{nullptr};
     UModels::Preprocessing mPreprocess;
     UModels::Inference mInference;
-    const double mTargetSamplingRate{UModels::Preprocessing::getTargetSamplingRate()};
-    const int mMinimumSignalLength{1008};
+    const double mTargetSamplingRate{
+        UModels::Preprocessing::getTargetSamplingRate()
+    };
+    const int mMinimumSignalLength{
+        UModels::Inference::getMinimumSignalLength()
+    };
 };
 
 /// Constructor

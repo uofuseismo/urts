@@ -143,7 +143,7 @@ public:
     /// @name Destructors
     /// @{
 
-    /// @brief 
+    /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~InferenceRequest() override;

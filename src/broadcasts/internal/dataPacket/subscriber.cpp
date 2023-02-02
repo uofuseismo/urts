@@ -18,13 +18,15 @@ class Subscriber::SubscriberImpl
 {
 public:
     SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                   std::shared_ptr<UMPS::Logging::ILog> logger)
+                   std::shared_ptr<UMPS::Logging::ILog> logger) :
+        mLogger(logger)
     {
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataPacketMessageType
             = std::make_unique<DataPacket> (); 
         mMessageTypes.add(dataPacketMessageType);
     }
+    std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions mOptions;
     UMPS::MessageFormats::Messages mMessageTypes;
@@ -70,6 +72,11 @@ Subscriber& Subscriber::operator=(Subscriber &&subscriber) noexcept
 void Subscriber::initialize(const SubscriberOptions &options)
 {
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
+    if (pImpl->mLogger != nullptr)
+    {
+        pImpl->mLogger->debug("Data packet subscriber connecting to: "
+                           + options.getAddress());
+    }
     UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
     subscriberOptions.setAddress(options.getAddress());
     subscriberOptions.setZAPOptions(options.getZAPOptions());
@@ -79,6 +86,10 @@ void Subscriber::initialize(const SubscriberOptions &options)
     //auto subscriberOptions = pImpl->mOptions.getSubscriberOptions();
     pImpl->mSubscriber->initialize(subscriberOptions);
     pImpl->mOptions = options;
+    if (pImpl->mLogger != nullptr)
+    {
+        pImpl->mLogger->debug("Data packet subscriber connected!");
+    }
 }
 
 /// Initialized?
