@@ -384,6 +384,10 @@ public:
                 auto wait = mBroadcastInterval - duration;
                 std::this_thread::sleep_for(wait);
             }
+            else
+            {
+                startClock = endClock;
+            }
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
     }
