@@ -113,16 +113,22 @@ TEST(ServicesScalableDetectorsUNetThreeComponentP, InferenceRequest)
     std::fill(north.begin(), north.end(), 2);
     std::fill(east.begin(), east.end(), 3);
     const int64_t identifier{1026};
+    auto fixedWindow = InferenceRequest::InferenceStrategy::FixedWindow;
+    auto slidingWindow = InferenceRequest::InferenceStrategy::SlidingWindow;
     InferenceRequest request;
 
     EXPECT_EQ(request.getMinimumSignalLength(), 1008);
-    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east));
+    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east,
+                                                       fixedWindow));
+    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east,
+                                                       slidingWindow));
     request.setIdentifier(identifier);
 
     InferenceRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), 100, 1.e-14);
+    EXPECT_EQ(copy.getInferenceStrategy(), slidingWindow);
     EXPECT_TRUE(copy.haveSignals());
     const auto vr = copy.getVerticalSignalReference();
     const auto nr = copy.getNorthSignalReference();

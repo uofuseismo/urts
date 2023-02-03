@@ -1,7 +1,9 @@
-#include <array>
+#include <thread>
 #include <mutex>
 #include <cmath>
 #include <string>
+#include <cstring>
+#include <queue>
 #include <umps/logging/standardOut.hpp>
 #include </usr/local/include/libmseed.h>
 #include <libslink.h>
@@ -96,7 +98,7 @@ UDataPacket::DataPacket
         }
         throw std::runtime_error(
              "Insufficient data.  Number of additional bytes estimated is "
-           + std::to_string(returnValue));
+            + std::to_string(returnValue));
     }
     return dataPacket;
 }
@@ -106,71 +108,102 @@ class Client::ClientImpl
 {
 public:
     ClientImpl(std::shared_ptr<UMPS::Logging::ILog> logger = nullptr) :
-        ClientImpl(512, logger)
-    {
-    }
-    ClientImpl(const int seedLinkRecordSize,
-              std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
-        }
-        if (seedLinkRecordSize == 128 ||
-            seedLinkRecordSize == 256 ||
-            seedLinkRecordSize == 512)
-        {
-            mSEEDLinkRecordSize = 512;
-        }
-        else
-        {
-            throw std::invalid_argument(
-                "SEEDLink record size must be 128, 256, or 512");
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
     }
     /// Destructor
     ~ClientImpl()
     {
+        stop();
         disconnect();
     }
     /// Terminate the SEED link client connection
     void disconnect()
     {
-        if (mSEEDLinkConnection)
+        if (mSEEDLinkConnection != nullptr)
         {
             if (mSEEDLinkConnection->link != -1)
             {
                 sl_disconnect(mSEEDLinkConnection);
             }
+            if (mUseStateFile)
+            {
+                sl_savestate(mSEEDLinkConnection, mStateFile.c_str());
+            }
+            sl_freeslcd(mSEEDLinkConnection);
             mSEEDLinkConnection = nullptr;
         }
     }
-    /// Connect to the SEED link client
-    void connect()
-    {
-        disconnect();
-        mSEEDLinkConnection = sl_newslcd();
-    }
-    /// Terminate SEEDLink connection
+    /// Sends a terminate command to the SEEDLink connection
     void terminate()
     {
-        if (!mSEEDLinkConnection->terminate)
+        if (mSEEDLinkConnection != nullptr)
         {
             sl_terminate(mSEEDLinkConnection);
         }
     }
-    /// Gets the latest packets from the SEEDLink server.
-    void getPackets()
+    /// Toggles this as running or not running
+    void setRunning(const bool running)
     {
-        std::vector<UDataPacket::DataPacket> dataPackets;
-        dataPackets.reserve(std::max(1024, mMaxPacketsRead));
-        SLpacket *seedLinkPacket{nullptr};
-        while (true)
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        // Terminate the session
+        if (!running && mKeepRunning && mSEEDLinkConnection != nullptr)
         {
-            auto returnValue = sl_collect_nb_size(mSEEDLinkConnection,
-                                                  &seedLinkPacket,
-                                                  mSEEDLinkRecordSize);
+            sl_terminate(mSEEDLinkConnection);
+        }
+        mKeepRunning = running;
+    }
+    /// Keep running?
+    [[nodiscard]] bool keepRunning() const noexcept
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mKeepRunning;
+    }
+    /// Stops the service
+    void stop()
+    {
+        setRunning(false); // Issues terminate command
+        if (mSEEDLinkReaderThread.joinable()){mSEEDLinkReaderThread.join();}
+    }
+    /// Starts the service
+    void start()
+    {
+        stop(); // Ensure module is stopped
+        if (mInitialized)
+        {
+            throw std::runtime_error("SEEDLink client not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the SEEDLink broadcast thread...");
+        mSEEDLinkReaderThread = std::thread(&ClientImpl::scrapePackets,
+                                            this);
+    }
+    /// Gets the latest packets from the SEEDLink server and puts them in the
+    /// internal queue for shipping off to the data broadcast.
+    void scrapePackets()
+    {
+        // Reset the queue
+        clearQueue();
+        // Recover state
+        if (mUseStateFile)
+        {
+            if (!sl_recoverstate(mSEEDLinkConnection, mStateFile.c_str()))
+            {
+                 mLogger->warn("Failed to recover state");
+            }
+        }
+        // Now start scraping
+        SLpacket *seedLinkPacket{nullptr};
+        int updateStateFile{0};
+        while (keepRunning())
+        {
+            // Block until a packet is received.  Alternatively, an external
+            // thread can terminate the broadcast.  In this case we will quit.
+            auto returnValue = sl_collect(mSEEDLinkConnection, &seedLinkPacket);
             // Deal with packet
             if (returnValue == SLPACKET)
             {
@@ -184,36 +217,75 @@ public:
                     try
                     {
                         auto packet = miniSEEDToDataPacket(miniSEEDRecord,
-                                                           mSEEDLinkRecordSize);
-                        dataPackets.push_back(std::move(packet));
+                                                           mSEEDRecordSize);
+                        addPacket(std::move(packet));
                     }
                     catch (const std::exception &e)
                     {
                         mLogger->error("Skipping packet.  Unpacking failed with: "
                                      + std::string(e.what()));
                     }
+                    if (mUseStateFile)
+                    {
+                        if (updateStateFile > mStateFileUpdateInterval)
+                        {
+                            sl_savestate(mSEEDLinkConnection,
+                                         mStateFile.c_str());
+                            updateStateFile = 0;
+                        }
+                    }
                 }
+            }
+            else if (returnValue == SLTERMINATE)
+            {
+                mLogger->debug("SEEDLink terminate request received");
+                break;
             }
             else
             {
-                break;
+                mLogger->warn("Unhandled SEEDLink return value: "
+                            + std::to_string(returnValue));
+                continue;
             }
         }
-        // Now put the data into
-        auto nRead = static_cast<int> (dataPackets.size());
-        if (nRead > 0)
-        {
-            std::lock_guard<std::mutex> lock(mMutex);
-            mDataPackets = std::move(dataPackets); 
-            mMaxPacketsRead = std::max(nRead, mMaxPacketsRead);
-        }
     }
+    /// Update the queue
+    void addPacket(UDataPacket::DataPacket &&dataPacket)
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        if (mDataPackets.size() > mMaximumQueueSize)
+        {
+            mDataPackets.pop();
+        }
+        mDataPackets.push(std::move(dataPacket));
+    }
+    /// Reset queue
+    void clearQueue()
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        std::queue<UDataPacket::DataPacket> ().swap(mDataPackets);
+    }
+    /// Get the latest batch of packets
+    [[nodiscard]] std::vector<UDataPacket::DataPacket> getPackets()
+    {
+        std::vector<UDataPacket::DataPacket> result;
+        std::lock_guard<std::mutex> lock(mMutex);
+        result.reserve(mDataPackets.size());
+        while (!mDataPackets.empty())
+        {
+            result.push_back(std::move(mDataPackets.front()));
+            mDataPackets.pop();
+        }
+        return result;
+    } 
 //private:
     mutable std::mutex mMutex;
+    std::thread mSEEDLinkReaderThread;
     SLCD *mSEEDLinkConnection{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr}; 
     ClientOptions mOptions;
-    std::vector<UDataPacket::DataPacket> mDataPackets;
+    std::queue<UDataPacket::DataPacket> mDataPackets;
+    /*
     const std::array<std::string, 10> PacketType{ "Data",
                                                   "Detection",
                                                   "Calibration",
@@ -224,9 +296,15 @@ public:
                                                   "Info",
                                                   "Info (terminated)",
                                                   "KeepAlive" };
-    int mSEEDLinkRecordSize{512};
+    */
+    std::string mStateFile;
+    int mSEEDRecordSize{512};
     int mMaxPacketsRead{0};
-    bool mConnected{false};
+    int mStateFileUpdateInterval{100};
+    size_t mMaximumQueueSize{8192};
+    bool mInitialized{false};
+    bool mUseStateFile{false};
+    bool mKeepRunning{true};
 };
     
 /// Constructor
@@ -235,11 +313,63 @@ Client::Client() :
 {
 }
 
+/// Constructor with logger
+Client::Client(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ClientImpl> (logger))
+{
+}
+
 /// Constructor
 Client::~Client() = default;
 
-/// Is connected?
-bool Client::isConnected() const noexcept
+/// Is initialized?
+bool Client::isInitialized() const noexcept
 {
-    return pImpl->mConnected;
+    return pImpl->mInitialized;
+}
+
+/// Connect
+void Client::initialize(const ClientOptions &options)
+{
+    pImpl->disconnect(); // Hangup first
+    pImpl->clearQueue(); // Release queue
+    pImpl->mInitialized = false;
+    // Create a new instance
+    pImpl->mSEEDLinkConnection = sl_newslcd();
+    // Set the connection string
+    auto address = options.getAddress();
+    auto port = options.getPort();
+    auto seedLinkAddress = address +  ":" + std::to_string(port);
+    pImpl->mLogger->debug("Connecting to SEEDLink server "
+                        + seedLinkAddress + "...");
+    pImpl->mSEEDLinkConnection->sladdr = strdup(seedLinkAddress.c_str());
+    // Set the record size and state file
+    pImpl->mSEEDRecordSize = options.getSEEDRecordSize();
+    if (options.haveStateFile())
+    { 
+        pImpl->mStateFile = options.getStateFile();
+        pImpl->mStateFileUpdateInterval = options.getStateFileUpdateInterval();
+        pImpl->mUseStateFile = true;
+    }
+    // Queue size
+    pImpl->mMaximumQueueSize = options.getMaximumInternalQueueSize();
+    // TODO selectors
+    pImpl->mOptions = options;
+    pImpl->mInitialized = true;
+}
+
+/// Start the reader
+void Client::start()
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("SEED Link client not initialized");
+    }
+    pImpl->start();
+}
+
+/// Stop the reader
+void Client::stop()
+{
+    pImpl->stop();
 }

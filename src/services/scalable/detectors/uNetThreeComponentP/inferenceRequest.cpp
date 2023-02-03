@@ -4,7 +4,7 @@
 #include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetDetectorP::InferenceRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
@@ -23,6 +23,8 @@ std::string toCBORObject(const InferenceRequest &message)
     obj["VerticalSignal"] = message.getVerticalSignal();
     obj["NorthSignal"] = message.getNorthSignal();
     obj["EastSignal"] = message.getEastSignal();
+    obj["InferenceStrategy"]
+        = static_cast<int> (message.getInferenceStrategy());
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -38,12 +40,16 @@ InferenceRequest
         throw std::invalid_argument("Message has invalid message type");
     }
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
+    auto strategy
+        = static_cast<InferenceRequest::InferenceStrategy>
+          (obj["InferenceStrategy"].get<int> ());
     std::vector<double> vertical = obj["VerticalSignal"];
     std::vector<double> north = obj["NorthSignal"];
     std::vector<double> east = obj["EastSignal"];
     result.setVerticalNorthEastSignal(std::move(vertical),
                                       std::move(north),
-                                      std::move(east));
+                                      std::move(east),
+                                      strategy);
     return result;
 }
 
@@ -57,6 +63,8 @@ public:
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
     int64_t mIdentifier{0};
+    InferenceRequest::InferenceStrategy mInferenceStrategy{
+        InferenceRequest::InferenceStrategy::SlidingWindow};
     bool mHaveSignals{false};
 };
 
@@ -131,40 +139,64 @@ int64_t InferenceRequest::getIdentifier() const noexcept
 void InferenceRequest::setVerticalNorthEastSignal(
     std::vector<double> &&vertical,
     std::vector<double> &&north,
-    std::vector<double> &&east)
+    std::vector<double> &&east,
+    const InferenceStrategy strategy)
 {
     if (vertical.size() != north.size() || vertical.size() != east.size())
     {
         throw std::invalid_argument("Signal sizes are inconsistent");
     }
-    if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+    if (strategy == InferenceRequest::InferenceStrategy::SlidingWindow)
     {
-        throw std::invalid_argument("Signals must have length at least: "
-                                  + std::to_string(getMinimumSignalLength()));
+        if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+        {
+            throw std::invalid_argument("Signals must have length at least: "
+                                    + std::to_string(getMinimumSignalLength()));
+        }
+    }
+    else
+    {
+        if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+        {
+            throw std::invalid_argument("Invalid signal length");
+        }
     }
     pImpl->mVerticalSignal = std::move(vertical);
     pImpl->mNorthSignal = std::move(north);
     pImpl->mEastSignal = std::move(east);
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignals = true;
 }
 
 void InferenceRequest::setVerticalNorthEastSignal(
     const std::vector<double> &vertical,
     const std::vector<double> &north,
-    const std::vector<double> &east)
+    const std::vector<double> &east, 
+    const InferenceStrategy strategy)
 {
     if (vertical.size() != north.size() || vertical.size() != east.size())
     {
         throw std::invalid_argument("Signal sizes are inconsistent");
     }
-    if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+    if (strategy == InferenceRequest::InferenceStrategy::SlidingWindow)
     {
-        throw std::invalid_argument("Signals must have length at least: "
-                                  + std::to_string(getMinimumSignalLength()));
+        if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+        {
+            throw std::invalid_argument("Signals must have length at least: "
+                                    + std::to_string(getMinimumSignalLength()));
+        }
+    }
+    else
+    {
+        if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+        {
+            throw std::invalid_argument("Invalid signal length");
+        }
     }
     pImpl->mVerticalSignal = vertical;
     pImpl->mNorthSignal = north;
     pImpl->mEastSignal = east;
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignals = true;
 }
 
@@ -210,6 +242,13 @@ const std::vector<double>
 bool InferenceRequest::haveSignals() const noexcept
 {   
     return pImpl->mHaveSignals;
+}
+
+InferenceRequest::InferenceStrategy
+InferenceRequest::getInferenceStrategy() const
+{
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mInferenceStrategy;
 }
 
 /// Message type

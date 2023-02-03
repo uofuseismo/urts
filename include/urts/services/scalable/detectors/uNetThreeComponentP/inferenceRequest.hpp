@@ -11,6 +11,20 @@ namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 class InferenceRequest : public UMPS::MessageFormats::IMessage
 {
 public:
+    /// @brief Defines the method used to apply the inference utility.
+    ///        Inference can be performed using a sliding window for
+    ///        signals exceeding some minimum length or can be applied
+    ///        for a fixed-sized window.
+    enum class InferenceStrategy
+    {
+        SlidingWindow = 0, /*!< By default a sliding window will be applied
+                                to the input signals.  In this case, the signals
+                                must be at least \c getMiniumumSignalLength(). */ 
+        FixedWindow = 1,   /*!< An inference will be performed on a single 
+                                window.  In this case, the input signals must
+                                be a valid signal length. */
+    };
+public:
     /// @name Constructors
     /// @{
 
@@ -33,11 +47,16 @@ public:
     /// @param[in] verticalSignal  The signal on the vertical channel.
     /// @param[in] northSignal     The signal on the north (1) channel.
     /// @param[in] eastSignal      The signal on the east (2) channel.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or at least \c getMinimumSignalLength().
+    /// @param[in] strategy        The inference strategy.
+    /// @throws std::invalid_argument the signals are not the same size,
+    ///         If the inference strategy is SlidingWindow then the signal
+    ///         must be at least \c getMinimumSignalLength().  If the
+    ///         inference straetgy is FixedWindow then the 
+    ///         \c isValidSignalLength() must be true.
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal);
+                                    const std::vector<double> &eastSignal,
+                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
     /// @brief Sets the signals on the vertical, north, and east channels that
     ///        will be used for inference.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
@@ -49,11 +68,16 @@ public:
     /// @param[in,out] eastSignal      The signal on the east (2) channel.
     ///                                On exit, eastSignal's behavior is
     ///                                undefined.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or at least \c getMinimumSignalLength().
+    /// @param[in] strategy            The inference strategy.
+    /// @throws std::invalid_argument the signals are not the same size,
+    ///         If the inference strategy is SlidingWindow then the signal
+    ///         must be at least \c getMinimumSignalLength().  If the
+    ///         inference straetgy is FixedWindow then the 
+    ///         \c isValidSignalLength() must be true.
     void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
                                     std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal);
+                                    std::vector<double> &&eastSignal,
+                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
     /// @result The vertical signal.
     /// @throws std::runtime_error if \c haveSignals() is false.
     [[nodiscard]] std::vector<double> getVerticalSignal() const;
@@ -82,8 +106,13 @@ public:
 
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
+    /// @result The inference strategy.
+    /// @throws std::invalid_argument if \c haveSignals() is false.
+    [[nodiscard]] InferenceStrategy getInferenceStrategy() const;
     /// @result The minimum signal length. 
     [[nodiscard]] static int getMinimumSignalLength() noexcept;
+    /// @result True indicates this is a valid signal length.
+    [[nodiscard]] bool isValidSignalLength(int nSamples) noexcept;
     /// @result The sampling rate of the input signals in Hz.
     [[nodiscard]] static double getSamplingRate() noexcept;
     /// @}

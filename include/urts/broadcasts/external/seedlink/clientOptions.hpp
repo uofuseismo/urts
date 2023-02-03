@@ -41,6 +41,7 @@ public:
     /// @name Properties
     /// @{
 
+    /// @brief Sets the address of the SEEDLink server.
     /// @param[in] address  The IP address of the SEEDLink server.
     void setAddress(const std::string &address);
     /// @result The IP address of the SEEDLink server.  By default this is
@@ -52,6 +53,46 @@ public:
     void setPort(uint16_t port) noexcept;
     /// @result The port number of the SEEDLink server.  By default this 18000.
     [[nodiscard]] uint16_t getPort() const noexcept;
+
+    /// @brief Packets are read from SEED Link, put onto an internal queue,
+    ///        then sent out via the databroadcast.  This sets the maximum
+    ///        internal queue size.  After this point, the oldest packets
+    ///        are popped from the queue.
+    /// @param[in] maximumQueueSize  The maximum queue size in number of
+    ///                              packets.
+    /// @throws std::invalid_argument if this is not positive.
+    void setMaximumInternalQueueSize(int maximumQueueSize);
+    /// @result The maximum internal queue size in packets.
+    [[nodiscard]] int getMaximumInternalQueueSize() const noexcept;
+
+    /// @brief Sets the SEEDLink client's state file.  The state file
+    ///        contains a list of sequence numbers written during
+    ///        clean shutdown.  When the client resumes these numbers
+    ///        are used to resume data streams.
+    /// @param[in] stateFile  The path to the state file. 
+    /// @throw std::runtime_error if the path to the state cannot be made.
+    void setStateFile(const std::string &stateFile);
+    /// @result The path to the state file.
+    /// @throws std::runtime_error if \c haveStateFile() is false.
+    [[nodiscard]] std::string getStateFile() const; 
+    /// @result True indicates the state file was set.
+    [[nodiscard]] bool haveStateFile() const noexcept;
+
+    /// @brief Controls the interval in which the state file is written.
+    /// @param[in] interval   After this many packets are written the state
+    ///                       file will be updated.
+    void setStateFileUpdateInterval(uint16_t interval) noexcept;
+    /// @result The state file update interval in packets.  The default is 100.
+    [[nodiscard]] uint16_t getStateFileUpdateInterval() const noexcept;
+
+    /// @brief Specifies the size in bytes of the SEED records.
+    ///        Traditionally, this is 512 however RockToSLink may use
+    ///        128 or 256.
+    /// @param[in] recordSize  The SEED record size.
+    /// @throw std::invalid_argument if the record size is not 128, 256, or 512.
+    void setSEEDRecordSize(int recordSize);
+    /// @result The SEED record size in bytes.  By default this is 512.
+    [[nodiscard]] int getSEEDRecordSize() const noexcept;
     /// @}
 
     /// @name Destructors

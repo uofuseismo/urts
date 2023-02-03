@@ -130,16 +130,6 @@ struct ProgramOptions
         mSEEDLinkClientOptions.setPort(
             propertyTree.get<int> ("SEEDLink.port", seedlinkPort)
         );
-/*
-        // Wait after reading
-        mEarthwormWait = propertyTree.get<int> ("Earthworm.wait",
-                                                mEarthwormWait);
-        if (mEarthwormWait < 0)
-        {
-            std::cerr << "Setting wait time to 0" << std::endl;
-            mEarthwormWait = 0;
-        }
-*/
     }
     UAuth::ZAPOptions mZAPOptions;
     URTS::Broadcasts::External::SEEDLink::ClientOptions mSEEDLinkClientOptions;
@@ -173,29 +163,6 @@ std::shared_ptr<UMPS::Logging::ILog>
     return logger;
 }
 
-/*
-/// @brief Create utility to attach to and read from earthworm wave ring
-std::unique_ptr<URTS::Broadcasts::External::Earthworm::WaveRing>
-    createEarthwormWaveRingReader(const ProgramOptions &options,
-                                  std::shared_ptr<UMPS::Logging::ILog> &logger,
-                                  const bool flushRing = true)
-{
-    logger->debug("Attaching to earthworm ring: "
-                + options.mEarthwormWaveRingName);
-    setenv("EW_PARAMS", options.mEarthwormParametersDirectory.c_str(), true);
-    setenv("EW_INSTALLATION", options.mEarthwormInstallation.c_str(), true);
-    auto earthwormWaveRing
-        = std::make_unique<URTS::Broadcasts::External::Earthworm::WaveRing>
-          (logger);
-    earthwormWaveRing->connect(options.mEarthwormWaveRingName,
-                               options.mEarthwormWait);
-    if (flushRing){earthwormWaveRing->flush();}
-    logger->debug("Attach to earthworm ring: "
-                + options.mEarthwormWaveRingName);
-    return earthwormWaveRing;
-}
-*/
-
 //----------------------------------------------------------------------------//
 /// @brief Reads packets from the wave ring then brodcasts them to UMPS.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -215,15 +182,15 @@ public:
     {
         if (mSEEDLinkClient == nullptr)
         {
-            throw std::invalid_argument("SEEDLink clien is NULL");
+            throw std::invalid_argument("SEEDLink client is NULL");
         }
         if (mPacketPublisher == nullptr)
         {
             throw std::invalid_argument("Packet publisher is NULL");
         }
-        if (!mSEEDLinkClient->isConnected())
+        if (!mSEEDLinkClient->isInitialized())
         {
-            throw std::invalid_argument("SEEDLink client not connected");
+            throw std::invalid_argument("SEEDLink client not initialized");
         }
         if (!mPacketPublisher->isInitialized())
         {
@@ -293,10 +260,10 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
-        mLogger->debug("Starting the wave ring broadcast thread...");
+        mLogger->debug("Starting the SEEDLink broadcast thread...");
         mBroadcastThread = std::thread(&BroadcastPackets::run,
                                        this);
-        mLogger->debug("Starting the local command proxy..."); 
+        mLogger->debug("Starting the local command proxy...");
         mLocalCommand->start();
     }
     /// @result True indicates this is running.
@@ -307,9 +274,9 @@ public:
     /// @brief Reads EW messages and publishes them to an URTS broadcast
     void run()
     {
-        if (!mSEEDLinkClient->isConnected())
+        if (!mSEEDLinkClient->isInitialized())
         {
-            throw std::runtime_error("SEEDLink client not yet connected");
+            throw std::runtime_error("SEEDLink client not yet initialized");
         }
         if (!mPacketPublisher->isInitialized())
         { 
@@ -540,6 +507,11 @@ int main(int argc, char *argv[])
                      programOptions.mDataPacketBroadcastName).getAddress();
             programOptions.mBroadcastAddress = packetAddress;
         }
+        // Create the SEEDLink client
+        auto seedLinkClient
+            = std::make_unique<URTS::Broadcasts::External::SEEDLink::Client>
+              (logger);
+        seedLinkClient->initialize(programOptions.mSEEDLinkClientOptions);
         // Create the publisher
         UDP::PublisherOptions packetPublisherOptions;
         auto packetPublisher
@@ -549,17 +521,11 @@ int main(int argc, char *argv[])
         packetPublisher->initialize(packetPublisherOptions);
 
 /*
-        constexpr bool flushRing{true};
-        auto earthwormReader = createEarthwormWaveRingReader(programOptions,
-                                                             logger,
-                                                             flushRing);
-
         auto broadcastProcess 
             = std::make_unique<BroadcastPackets> (programOptions.mModuleName,
                                                   std::move(packetPublisher), 
-                                                  std::move(earthwormReader),
+                                                  std::move(seedLinkClient),
                                                   logger);
- 
         // Create the remote registry
         auto callbackFunction = std::bind(&BroadcastPackets::commandCallback,
                                           &*broadcastProcess,

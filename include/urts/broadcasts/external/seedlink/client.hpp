@@ -46,20 +46,22 @@ public:
     /// @name Connection
     /// @{
 
-    /// @brief Connects the client to the SEEDLink server.
-    /// @throws std::runtime_error if the client cannot connect.
-    void connect(const ClientOptions &options);
+    /// @brief Initializes the SEED Link client.
+    /// @throws std::runtime_error if there are errors during initialization.
+    void initialize(const ClientOptions &options);
     /// @result True indicates that this class is connected to an
     ///         SEEDLink server.
-    [[nodiscard]] bool isConnected() const noexcept;
+    [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
     
-    /// @name Reading
+    /// @name Usage
     /// @{
 
-    /// @brief Reads from the SEEDLink server.
-    /// @throws std::runtime_error if \c isConnected() is false.
-    void read();
+    /// @brief Reads from the SEEDLink server and populates the FIFO queue.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    void start();
+    /// @brief Stops the SEEDLink client.
+    void stop();
     /// @}
 
     /// @name Destructors

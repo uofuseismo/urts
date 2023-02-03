@@ -159,9 +159,22 @@ public:
                     = inferenceRequest.getNorthSignalReference();
                 const auto &east
                     = inferenceRequest.getEastSignalReference();
+                auto strategy = inferenceRequest.getInferenceStrategy();
+                if (strategy ==
+                    InferenceRequest::InferenceStrategy::SlidingWindow) 
+                {
+                    auto probabilitySignal
+                        = mInference.predictProbabilitySlidingWindow(vertical,
+                                                                     north,
+                                                                     east);
+                    response.setProbabilitySignal(std::move(probabilitySignal));
+                }
+                else
+                {
                     auto probabilitySignal
                         = mInference.predictProbability(vertical, north, east);
                     response.setProbabilitySignal(std::move(probabilitySignal));
+                }
                 response.setReturnCode(InferenceResponse::Success);
             }
             catch (const std::exception &e) 
