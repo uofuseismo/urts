@@ -14,6 +14,8 @@ TEST(BroadcastsExternalSEEDLink, ClientOptions)
     const uint16_t port{1540};
     const std::string stateFile{"seedlink.state"};
     const std::string defaultAddress{"rtserve.iris.washington.edu"};
+    const std::chrono::seconds networkTimeOut{3838}; 
+    const std::chrono::seconds reconnectDelay{38};
     const uint16_t defaultPort{18000};
     const uint16_t updateInterval{125};
     const int recordSize{256};
@@ -25,6 +27,8 @@ TEST(BroadcastsExternalSEEDLink, ClientOptions)
     options.setStateFileUpdateInterval(updateInterval);
     EXPECT_NO_THROW(options.setSEEDRecordSize(recordSize));
     EXPECT_NO_THROW(options.setMaximumInternalQueueSize(maxQueueSize));
+    EXPECT_NO_THROW(options.setNetworkTimeOut(networkTimeOut));
+    EXPECT_NO_THROW(options.setNetworkReconnectDelay(reconnectDelay));
 
     ClientOptions copy(options);
     EXPECT_EQ(copy.getAddress(), address);
@@ -33,6 +37,8 @@ TEST(BroadcastsExternalSEEDLink, ClientOptions)
     EXPECT_EQ(copy.getStateFileUpdateInterval(), updateInterval); 
     EXPECT_EQ(copy.getSEEDRecordSize(), recordSize);
     EXPECT_EQ(copy.getMaximumInternalQueueSize(), maxQueueSize);
+    EXPECT_EQ(copy.getNetworkTimeOut(), networkTimeOut);
+    EXPECT_EQ(copy.getNetworkReconnectDelay(), reconnectDelay);
 
     options.clear();
     EXPECT_EQ(options.getAddress(), defaultAddress);
@@ -41,6 +47,8 @@ TEST(BroadcastsExternalSEEDLink, ClientOptions)
     EXPECT_EQ(options.getStateFileUpdateInterval(), 100);
     EXPECT_EQ(options.getSEEDRecordSize(), 512);
     EXPECT_EQ(options.getMaximumInternalQueueSize(), 8192);
+    EXPECT_EQ(options.getNetworkTimeOut(), std::chrono::seconds {600});
+    EXPECT_EQ(options.getNetworkReconnectDelay(), std::chrono::seconds {30});
 }
 
 }

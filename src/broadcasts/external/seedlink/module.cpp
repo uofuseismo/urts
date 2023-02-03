@@ -64,6 +64,7 @@ namespace
     std::string commands;
     commands = "Commands:\n";
     commands = commands + "   quit   Exits the program.\n";
+    commands = commands + "   packetsSent  Number of packets sent in last minute.\n";
     commands = commands + "   help   Displays this message.\n";
     return commands;
 }
@@ -134,8 +135,6 @@ struct ProgramOptions
     UAuth::ZAPOptions mZAPOptions;
     URTS::Broadcasts::External::SEEDLink::ClientOptions mSEEDLinkClientOptions;
     std::string mModuleName{MODULE_NAME};
-    //std::string mEarthwormInstallation{"INST_UNKNOWN"};
-    //std::string mEarthwormWaveRingName{"WAVE_RING"};
     std::string mDataPacketBroadcastName{"DataPacket"};
     std::string mBroadcastAddress{""};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
@@ -245,6 +244,7 @@ public:
     void stop() override
     {
         setRunning(false);
+        mSEEDLinkClient->stop();
         if (mBroadcastThread.joinable()){mBroadcastThread.join();}
         if (mLocalCommand != nullptr)
         {
@@ -260,7 +260,9 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
-        mLogger->debug("Starting the SEEDLink broadcast thread...");
+        mLogger->debug("Starting the SEEDLink client thread...");
+        mSEEDLinkClient->start();
+        mLogger->debug("Starting the broadcast thread...");
         mBroadcastThread = std::thread(&BroadcastPackets::run,
                                        this);
         mLogger->debug("Starting the local command proxy...");
@@ -283,43 +285,37 @@ public:
             throw std::runtime_error("Publisher not yet initialized");
         }
         mLogger->debug("Earthworm broadcast thread is starting");
+        int numberOfPacketsSent = 0;
+        mNumberOfPacketsSent = 0;
+        auto packetMonitorStart = std::chrono::high_resolution_clock::now();
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
             // Read from the earthworm ring
-            try
+            std::vector<UDP::DataPacket> packets;
+            // Send the packets off
+            bool getNextPacket = true;
+            while (getNextPacket)
             {
-                //mWaveRing->read();
-            }
-            catch (const std::exception &e)
-            {
-                mLogger->error("Failed reading wave ring.  Failed with:\n"
-                             + std::string(e.what()));
-                continue;
-            }
-/*
-            auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
-            auto traceBuf2MessagesPtr
-                = mWaveRing->getTraceBuf2MessagesPointer();
-            // Now broadcast the tracebufs as datapacket messages
-            int nSent = 0;
-            for (int iMessage = 0; iMessage < nMessages; ++iMessage)
-            {
-                // Send it
-                try
+                auto packet = mSEEDLinkClient->try_pop();
+                if (packet == nullptr)
                 {
-                    auto dataPacket
-                        = traceBuf2MessagesPtr[iMessage].toDataPacket();
-                    mPacketPublisher->send(dataPacket);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                    nSent = nSent + 1;
+                    getNextPacket = false;
                 }
-                catch (const std::exception &e)
+                else
                 {
-                    mLogger->error(e.what());
+                    try
+                    {
+                        mPacketPublisher->send(*packet);
+                        numberOfPacketsSent = numberOfPacketsSent + 1;
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->error(e.what());
+                    }
                 }
             }
-*/
+            // Update
             auto endClock = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::seconds>
                             (endClock - startClock);
@@ -331,6 +327,15 @@ public:
             else
             {
                 startClock = endClock;
+            }
+            // Update my packets sent counter
+            duration = std::chrono::duration_cast<std::chrono::seconds>
+                       (endClock - packetMonitorStart);
+            if (duration > std::chrono::seconds {60})
+            {
+                mNumberOfPacketsSent = numberOfPacketsSent;
+                numberOfPacketsSent = 0;
+                packetMonitorStart = endClock;
             }
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
@@ -403,6 +408,14 @@ public:
                 response.setReturnCode(
                     USC::CommandResponse::ReturnCode::Success);
             }
+            else if (command == "packetsSent")
+            {
+                mLogger->debug("Issuing packetsSent command...");
+                response.setResponse("Number of packets sent in last minute: "
+                                   + std::to_string(mNumberOfPacketsSent));
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::InvalidCommand);
+            }
             else
             {
                 response.setResponse(getInputOptions());
@@ -439,6 +452,7 @@ public:
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
+    int mNumberOfPacketsSent{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
@@ -512,6 +526,9 @@ int main(int argc, char *argv[])
             = std::make_unique<URTS::Broadcasts::External::SEEDLink::Client>
               (logger);
         seedLinkClient->initialize(programOptions.mSEEDLinkClientOptions);
+#ifndef NDEBUG
+        assert(seedLinkClient->isInitialized());
+#endif
         // Create the publisher
         UDP::PublisherOptions packetPublisherOptions;
         auto packetPublisher
@@ -520,7 +537,6 @@ int main(int argc, char *argv[])
         packetPublisherOptions.setZAPOptions(programOptions.mZAPOptions);
         packetPublisher->initialize(packetPublisherOptions);
 
-/*
         auto broadcastProcess 
             = std::make_unique<BroadcastPackets> (programOptions.mModuleName,
                                                   std::move(packetPublisher), 
@@ -547,7 +563,6 @@ int main(int argc, char *argv[])
 
         processManager.insert(std::move(remoteReplier));
         processManager.insert(std::move(broadcastProcess)); 
-*/
     }
     catch (const std::exception &e)
     {
@@ -555,7 +570,6 @@ int main(int argc, char *argv[])
         logger->error(e.what());
         return EXIT_FAILURE;
     }
-/*
     // Start the modules
     logger->info("Starting processes...");
     try
@@ -573,7 +587,6 @@ int main(int argc, char *argv[])
     processManager.handleMainThread();
     // Done
     logger->info("Exiting...");
-*/
     return EXIT_SUCCESS;
 }
 

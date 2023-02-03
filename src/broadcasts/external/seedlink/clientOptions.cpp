@@ -1,4 +1,5 @@
 #include <string>
+#include <chrono>
 #include <filesystem>
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
 
@@ -9,6 +10,8 @@ class ClientOptions::ClientOptionsImpl
 public:
     std::string mAddress{"rtserve.iris.washington.edu"};
     std::filesystem::path mStateFile;
+    std::chrono::seconds mNetworkTimeOut{600};
+    std::chrono::seconds mNetworkDelay{30};
     int mSEEDRecordSize{512};
     int mMaxQueueSize{8192};
     uint16_t mStateFileInterval{100};
@@ -157,3 +160,33 @@ int ClientOptions::getMaximumInternalQueueSize() const noexcept
 {
     return pImpl->mMaxQueueSize;
 }
+
+/// Network timeout
+void ClientOptions::setNetworkTimeOut(const std::chrono::seconds &timeOut)
+{
+    if (timeOut < std::chrono::seconds {0})
+    {
+        throw std::invalid_argument("Network time-out cannot be negative");
+    }
+    pImpl->mNetworkTimeOut = timeOut;
+}
+
+std::chrono::seconds ClientOptions::getNetworkTimeOut() const noexcept
+{
+    return pImpl->mNetworkTimeOut;
+}
+    
+void ClientOptions::setNetworkReconnectDelay(const std::chrono::seconds &delay)
+{
+    if (delay < std::chrono::seconds {0})
+    {
+        throw std::invalid_argument("Network delay cannot be negative");
+    }
+    pImpl->mNetworkDelay = delay;
+}
+
+std::chrono::seconds ClientOptions::getNetworkReconnectDelay() const noexcept
+{
+    return pImpl->mNetworkDelay;
+}
+

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <thread>
 #include <mutex>
 #include <cmath>
@@ -128,10 +129,12 @@ public:
         {
             if (mSEEDLinkConnection->link != -1)
             {
+std::cout <<"discon" << std::endl;
                 sl_disconnect(mSEEDLinkConnection);
             }
             if (mUseStateFile)
             {
+std::cout << "dump state" << std::endl;
                 sl_savestate(mSEEDLinkConnection, mStateFile.c_str());
             }
             sl_freeslcd(mSEEDLinkConnection);
@@ -143,6 +146,7 @@ public:
     {
         if (mSEEDLinkConnection != nullptr)
         {
+            mLogger->debug("Issuing terminate command to poller");
             sl_terminate(mSEEDLinkConnection);
         }
     }
@@ -151,9 +155,10 @@ public:
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
         // Terminate the session
-        if (!running && mKeepRunning && mSEEDLinkConnection != nullptr)
+        if (!running && mKeepRunning)
         {
-            sl_terminate(mSEEDLinkConnection);
+            mLogger->debug("Issuing terminate command");
+            terminate();
         }
         mKeepRunning = running;
     }
@@ -173,12 +178,12 @@ public:
     void start()
     {
         stop(); // Ensure module is stopped
-        if (mInitialized)
+        if (!mInitialized)
         {
             throw std::runtime_error("SEEDLink client not initialized");
         }
         setRunning(true);
-        mLogger->debug("Starting the SEEDLink broadcast thread...");
+        mLogger->debug("Starting the SEEDLink polling thread...");
         mSEEDLinkReaderThread = std::thread(&ClientImpl::scrapePackets,
                                             this);
     }
@@ -248,6 +253,7 @@ public:
                 continue;
             }
         }
+        mLogger->debug("Thread leaving SEEDLink polling loop");
     }
     /// Update the queue
     void addPacket(UDataPacket::DataPacket &&dataPacket)
@@ -266,7 +272,7 @@ public:
         std::queue<UDataPacket::DataPacket> ().swap(mDataPackets);
     }
     /// Get the latest batch of packets
-    [[nodiscard]] std::vector<UDataPacket::DataPacket> getPackets()
+    [[nodiscard]] std::vector<UDataPacket::DataPacket> getPackets() const
     {
         std::vector<UDataPacket::DataPacket> result;
         std::lock_guard<std::mutex> lock(mMutex);
@@ -278,13 +284,44 @@ public:
         }
         return result;
     } 
+    /// @brief A container with the value at the front of the queue provided
+    ///        that the queue is not empty.  If the queue is not empty then
+    ///        then this value is removed from the front. 
+    /// @result The value at the front of the queue or a nullptr if the queue
+    ///         was empty. 
+    [[nodiscard]] std::shared_ptr<UDataPacket::DataPacket> try_pop()
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        std::shared_ptr<UDataPacket::DataPacket> result;
+        if (mDataPackets.empty())
+        {
+            result = nullptr;
+            return result;
+        }
+        result
+            = std::make_shared<UDataPacket::DataPacket> (mDataPackets.front());
+        mDataPackets.pop();
+        return result;
+    }   
+    /// @result True indicates that the queue is empty.
+    [[nodiscard]] bool empty() const
+    {   
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mDataPackets.empty();
+    }   
+    /// @result The number of elements in the queue.
+    [[nodiscard]] size_t size() const
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mDataPackets.size();
+    }
 //private:
     mutable std::mutex mMutex;
     std::thread mSEEDLinkReaderThread;
     SLCD *mSEEDLinkConnection{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr}; 
     ClientOptions mOptions;
-    std::queue<UDataPacket::DataPacket> mDataPackets;
+    mutable std::queue<UDataPacket::DataPacket> mDataPackets;
     /*
     const std::array<std::string, 10> PacketType{ "Data",
                                                   "Detection",
@@ -304,7 +341,7 @@ public:
     size_t mMaximumQueueSize{8192};
     bool mInitialized{false};
     bool mUseStateFile{false};
-    bool mKeepRunning{true};
+    bool mKeepRunning{false};
 };
     
 /// Constructor
@@ -353,7 +390,40 @@ void Client::initialize(const ClientOptions &options)
     }
     // Queue size
     pImpl->mMaximumQueueSize = options.getMaximumInternalQueueSize();
-    // TODO selectors
+    // TODO selectors (sl_addstream(pImpl->mSEEDLinkConnection, net, sta, streamselect, -1, NULL));
+    // Configure uni-station mode if no streams were specified
+    if (pImpl->mSEEDLinkConnection->streams == nullptr)
+    {
+        const char *selectors{nullptr};
+        constexpr int sequenceNumber{-1};
+        const char *timeStamp{nullptr};
+        sl_setuniparams(pImpl->mSEEDLinkConnection,
+                        selectors, sequenceNumber, timeStamp);
+    }
+    // Time out and reconnect delay
+    auto networkTimeOut
+        = static_cast<int> (options.getNetworkTimeOut().count());
+    pImpl->mSEEDLinkConnection->netto = networkTimeOut;
+    auto reconnectDelay
+        = static_cast<int> (options.getNetworkReconnectDelay().count());
+    pImpl->mSEEDLinkConnection->netdly = reconnectDelay;
+    // Check this worked
+    std::string slSite(256, '\0');
+    std::string slServerID(256, '\0');
+    auto returnCode = sl_ping(pImpl->mSEEDLinkConnection, slServerID.data(), slSite.data());
+    if (returnCode != 0)
+    {
+        if (returnCode ==-1)
+        {
+            pImpl->mLogger->warn("Invalid ping response");
+        }
+        else
+        {
+            pImpl->mLogger->error("Could not connect to server");
+            throw std::runtime_error("Failed to connected");
+        }
+    }
+    // All-good
     pImpl->mOptions = options;
     pImpl->mInitialized = true;
 }
@@ -372,4 +442,27 @@ void Client::start()
 void Client::stop()
 {
     pImpl->stop();
+}
+
+/// Gets the packets
+std::vector<UDataPacket::DataPacket> Client::getPackets() const
+{
+    return pImpl->getPackets();
+}
+
+/// Empty?
+bool Client::empty() const
+{
+    return pImpl->empty();
+}
+
+/// Size
+size_t Client::size() const
+{
+    return pImpl->size();
+}
+
+std::shared_ptr<UDataPacket::DataPacket> Client::try_pop()
+{
+    return pImpl->try_pop();
 }

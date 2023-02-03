@@ -1,5 +1,6 @@
 #ifndef URTS_BROADCASTS_EXTERNAL_SEEDLINK_CLIENT_OPTIONS_HPP
 #define URTS_BROADCASTS_EXTERNAL_SEEDLINK_CLIENT_OPTIONS_HPP
+#include <chrono>
 #include <memory>
 namespace URTS::Broadcasts::External::SEEDLink
 {
@@ -93,6 +94,20 @@ public:
     void setSEEDRecordSize(int recordSize);
     /// @result The SEED record size in bytes.  By default this is 512.
     [[nodiscard]] int getSEEDRecordSize() const noexcept;
+
+    /// @brief After this many seconds elapses the network the SEED Link
+    ///        connection will be reset.
+    /// @param[in] timeOut  The time out in seconds.  If this is 0
+    ///                     then this will be disabled.
+    void setNetworkTimeOut(const std::chrono::seconds &timeOut);
+    /// @result After this many seconds the network connection be reset.
+    ///         By default this is zero.
+    [[nodiscard]] std::chrono::seconds getNetworkTimeOut() const noexcept;
+    /// @brief The network reconnect delay in seconds.
+    /// @param[in] delay  The network re-connect delay in seconds.
+    void setNetworkReconnectDelay(const std::chrono::seconds &timeOut);
+    /// @result The network re-connect delay in seconds.
+    [[nodiscard]] std::chrono::seconds getNetworkReconnectDelay() const noexcept;
     /// @}
 
     /// @name Destructors

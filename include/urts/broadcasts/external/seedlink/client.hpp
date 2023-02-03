@@ -6,9 +6,16 @@ namespace UMPS::Logging
 {
  class ILog;
 }
-namespace URTS::Broadcasts::External::SEEDLink
+namespace URTS::Broadcasts
 {
- class ClientOptions;
+ namespace Internal::DataPacket
+ {
+  class DataPacket;
+ }
+ namespace External::SEEDLink
+ {
+  class ClientOptions;
+ }
 }
 namespace URTS::Broadcasts::External::SEEDLink
 {
@@ -60,6 +67,15 @@ public:
     /// @brief Reads from the SEEDLink server and populates the FIFO queue.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start();
+    /// @result The packets read from the SEEDLink client.
+    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::DataPacket::DataPacket> getPackets() const;
+    /// @result The packet at the front of the queue (i.e., the oldest packet).
+    ///         If NULL then the queue is empty.
+    [[nodiscard]] std::shared_ptr<URTS::Broadcasts::Internal::DataPacket::DataPacket> try_pop();
+    /// @result The size of the queue.
+    [[nodiscard]] size_t size() const;
+    /// @result True indicates the queue is empty.
+    [[nodiscard]] bool empty() const;
     /// @brief Stops the SEEDLink client.
     void stop();
     /// @}
