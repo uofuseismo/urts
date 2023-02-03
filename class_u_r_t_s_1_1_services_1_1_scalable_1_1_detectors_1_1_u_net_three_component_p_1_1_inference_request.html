@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_services_1_1_scalabl
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest Class Reference</div>  </div>
@@ -122,6 +123,14 @@ Collaboration diagram for URTS::Services::Scalable::Detectors::UNetThreeComponen
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a41ff8b0061df2ba92ce95a52e9433dfb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a> { <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64">SlidingWindow</a> = 0
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba717b35602ecd0086be5b924568d3a7db">FixedWindow</a> = 1
+ }</td></tr>
+<tr class="memdesc:a41ff8b0061df2ba92ce95a52e9433dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the method used to apply the inference utility. Inference can be performed using a sliding window for signals exceeding some minimum length or can be applied for a fixed-sized window.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">More...</a><br /></td></tr>
+<tr class="separator:a41ff8b0061df2ba92ce95a52e9433dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Constructors</div></td></tr>
@@ -175,12 +184,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a734a2f56fb117e8850621c0fe025b381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Signals to Process</h2></td></tr>
-<tr class="memitem:a103936c0abdd133fe77f0f9464dcc025"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a103936c0abdd133fe77f0f9464dcc025">setVerticalNorthEastSignal</a> (const std::vector&lt; double &gt; &amp;verticalSignal, const std::vector&lt; double &gt; &amp;northSignal, const std::vector&lt; double &gt; &amp;eastSignal)</td></tr>
-<tr class="memdesc:a103936c0abdd133fe77f0f9464dcc025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signals on the vertical, north, and east channels that will be used inference.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a103936c0abdd133fe77f0f9464dcc025">More...</a><br /></td></tr>
-<tr class="separator:a103936c0abdd133fe77f0f9464dcc025"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ff350b66e8ae30a8386c18375d5dc52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a8ff350b66e8ae30a8386c18375d5dc52">setVerticalNorthEastSignal</a> (std::vector&lt; double &gt; &amp;&amp;verticalSignal, std::vector&lt; double &gt; &amp;&amp;northSignal, std::vector&lt; double &gt; &amp;&amp;eastSignal)</td></tr>
-<tr class="memdesc:a8ff350b66e8ae30a8386c18375d5dc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signals on the vertical, north, and east channels that will be used for inference.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a8ff350b66e8ae30a8386c18375d5dc52">More...</a><br /></td></tr>
-<tr class="separator:a8ff350b66e8ae30a8386c18375d5dc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62b16edb939aa688a2676a5600466cbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a62b16edb939aa688a2676a5600466cbf">setVerticalNorthEastSignal</a> (const std::vector&lt; double &gt; &amp;verticalSignal, const std::vector&lt; double &gt; &amp;northSignal, const std::vector&lt; double &gt; &amp;eastSignal, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a> strategy=<a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64">InferenceStrategy::SlidingWindow</a>)</td></tr>
+<tr class="memdesc:a62b16edb939aa688a2676a5600466cbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signals on the vertical, north, and east channels that will be used inference.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a62b16edb939aa688a2676a5600466cbf">More...</a><br /></td></tr>
+<tr class="separator:a62b16edb939aa688a2676a5600466cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a075b39d13648faf9f35c0a216e83c757"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a075b39d13648faf9f35c0a216e83c757">setVerticalNorthEastSignal</a> (std::vector&lt; double &gt; &amp;&amp;verticalSignal, std::vector&lt; double &gt; &amp;&amp;northSignal, std::vector&lt; double &gt; &amp;&amp;eastSignal, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a> strategy=<a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64">InferenceStrategy::SlidingWindow</a>)</td></tr>
+<tr class="memdesc:a075b39d13648faf9f35c0a216e83c757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signals on the vertical, north, and east channels that will be used for inference.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a075b39d13648faf9f35c0a216e83c757">More...</a><br /></td></tr>
+<tr class="separator:a075b39d13648faf9f35c0a216e83c757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf3cfb881e327a7a0c994774627f1b5f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#aaf3cfb881e327a7a0c994774627f1b5f">getVerticalSignal</a> () const</td></tr>
 <tr class="separator:aaf3cfb881e327a7a0c994774627f1b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01369068a6212fc403e873489fff8879"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a01369068a6212fc403e873489fff8879">getNorthSignal</a> () const</td></tr>
@@ -195,6 +204,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:afd7cd857f351dc97a90c22aef486903f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac15ae05daca43eb4a6d9453631876dd1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#ac15ae05daca43eb4a6d9453631876dd1">haveSignals</a> () const noexcept</td></tr>
 <tr class="separator:ac15ae05daca43eb4a6d9453631876dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9172f81d8167116b1f43d1f3838488bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a9172f81d8167116b1f43d1f3838488bb">getInferenceStrategy</a> () const</td></tr>
+<tr class="separator:a9172f81d8167116b1f43d1f3838488bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb86362a65ae3b085fc9d483bc0b75e3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#afb86362a65ae3b085fc9d483bc0b75e3">isValidSignalLength</a> (int nSamples) noexcept</td></tr>
+<tr class="separator:afb86362a65ae3b085fc9d483bc0b75e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b804f6c7b14e0e5191b6e06a397c0d2"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a3b804f6c7b14e0e5191b6e06a397c0d2">getMinimumSignalLength</a> () noexcept</td></tr>
 <tr class="separator:a3b804f6c7b14e0e5191b6e06a397c0d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af13440d011a7f80b4755b5d97f2574d1"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#af13440d011a7f80b4755b5d97f2574d1">getSamplingRate</a> () noexcept</td></tr>
@@ -203,7 +216,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Requests inference be performed on a pre-processed waveform snippet. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Ben Baker (University of Utah) distributed under the MIT license. </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a41ff8b0061df2ba92ce95a52e9433dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ff8b0061df2ba92ce95a52e9433dfb">&#9670;&nbsp;</a></span>InferenceStrategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest::InferenceStrategy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Defines the method used to apply the inference utility. Inference can be performed using a sliding window for signals exceeding some minimum length or can be applied for a fixed-sized window. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64"></a>SlidingWindow&#160;</td><td class="fielddoc"><p>By default a sliding window will be applied to the input signals. In this case, the signals must be at least <code>getMiniumumSignalLength()</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a41ff8b0061df2ba92ce95a52e9433dfba717b35602ecd0086be5b924568d3a7db"></a>FixedWindow&#160;</td><td class="fielddoc"><p>An inference will be performed on a single window. In this case, the input signals must be a valid signal length. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adf0eb21a9284e37f4c4667e700b8789e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adf0eb21a9284e37f4c4667e700b8789e">&#9670;&nbsp;</a></span>InferenceRequest() <span class="overload">[1/2]</span></h2>
 
@@ -487,6 +531,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a9172f81d8167116b1f43d1f3838488bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9172f81d8167116b1f43d1f3838488bb">&#9670;&nbsp;</a></span>getInferenceStrategy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a> URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest::getInferenceStrategy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The inference strategy. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#ac15ae05daca43eb4a6d9453631876dd1">haveSignals()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a88da84c0c62c912cd20e0cb8145b2392"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88da84c0c62c912cd20e0cb8145b2392">&#9670;&nbsp;</a></span>getMessageType()</h2>
 
@@ -717,6 +785,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="afb86362a65ae3b085fc9d483bc0b75e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb86362a65ae3b085fc9d483bc0b75e3">&#9670;&nbsp;</a></span>isValidSignalLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest::isValidSignalLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nSamples</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True indicates this is a valid signal length. </dd></dl>
+
+</div>
+</div>
 <a id="acdd12ec996d55785c78e442d9eaea229"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acdd12ec996d55785c78e442d9eaea229">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
@@ -798,8 +893,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a103936c0abdd133fe77f0f9464dcc025"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a103936c0abdd133fe77f0f9464dcc025">&#9670;&nbsp;</a></span>setVerticalNorthEastSignal() <span class="overload">[1/2]</span></h2>
+<a id="a62b16edb939aa688a2676a5600466cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62b16edb939aa688a2676a5600466cbf">&#9670;&nbsp;</a></span>setVerticalNorthEastSignal() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -820,7 +915,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
-          <td class="paramname"><em>eastSignal</em>&#160;</td>
+          <td class="paramname"><em>eastSignal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a>&#160;</td>
+          <td class="paramname"><em>strategy</em> = <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64">InferenceStrategy::SlidingWindow</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -836,20 +937,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <tr><td class="paramdir">[in]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">northSignal</td><td>The signal on the north (1) channel. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">eastSignal</td><td>The signal on the east (2) channel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">strategy</td><td>The inference strategy. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size or at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a3b804f6c7b14e0e5191b6e06a397c0d2">getMinimumSignalLength()</a></code>. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a3b804f6c7b14e0e5191b6e06a397c0d2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#afb86362a65ae3b085fc9d483bc0b75e3">isValidSignalLength()</a></code> must be true. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a8ff350b66e8ae30a8386c18375d5dc52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ff350b66e8ae30a8386c18375d5dc52">&#9670;&nbsp;</a></span>setVerticalNorthEastSignal() <span class="overload">[2/2]</span></h2>
+<a id="a075b39d13648faf9f35c0a216e83c757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a075b39d13648faf9f35c0a216e83c757">&#9670;&nbsp;</a></span>setVerticalNorthEastSignal() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -870,7 +972,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; double &gt; &amp;&amp;&#160;</td>
-          <td class="paramname"><em>eastSignal</em>&#160;</td>
+          <td class="paramname"><em>eastSignal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfb">InferenceStrategy</a>&#160;</td>
+          <td class="paramname"><em>strategy</em> = <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba6be0e091023afd88f3791b011cc5af64">InferenceStrategy::SlidingWindow</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -886,12 +994,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <tr><td class="paramdir">[in,out]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. On exit, verticalSignal's behavior is undefined. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">northSignal</td><td>The signal on the north (1) channel. On exit, northSignal's behavior is undefined. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">eastSignal</td><td>The signal on the east (2) channel. On exit, eastSignal's behavior is undefined. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">strategy</td><td>The inference strategy. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size or at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a3b804f6c7b14e0e5191b6e06a397c0d2">getMinimumSignalLength()</a></code>. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a3b804f6c7b14e0e5191b6e06a397c0d2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#afb86362a65ae3b085fc9d483bc0b75e3">isValidSignalLength()</a></code> must be true. </td></tr>
   </table>
   </dd>
 </dl>
@@ -942,7 +1051,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>Detectors</b></li><li class="navelem"><b>UNetThreeComponentP</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html">InferenceRequest</a></li>
-    <li class="footer">Generated on Thu Feb 2 2023 20:52:26 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Feb 3 2023 21:15:20 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

@@ -126,6 +126,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab198c372b28ba6783e783f47a4e4c624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Properties</div></td></tr>
 <tr class="memitem:a7a4ca7ce7d5bd4126db9cdd27ba149fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a7a4ca7ce7d5bd4126db9cdd27ba149fa">setAddress</a> (const std::string &amp;address)</td></tr>
+<tr class="memdesc:a7a4ca7ce7d5bd4126db9cdd27ba149fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the address of the SEEDLink server.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a7a4ca7ce7d5bd4126db9cdd27ba149fa">More...</a><br /></td></tr>
 <tr class="separator:a7a4ca7ce7d5bd4126db9cdd27ba149fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8c5496d43e331758151e8e1bb6da3b7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ab8c5496d43e331758151e8e1bb6da3b7">getAddress</a> () const noexcept</td></tr>
 <tr class="separator:ab8c5496d43e331758151e8e1bb6da3b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,6 +135,28 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a32ed8c4d37adfab19816bdd09b39cbd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8af85505ffd4189805d8a6900e54e9e1"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a8af85505ffd4189805d8a6900e54e9e1">getPort</a> () const noexcept</td></tr>
 <tr class="separator:a8af85505ffd4189805d8a6900e54e9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add686d01dedf3257ab654eec0ad6dcf2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#add686d01dedf3257ab654eec0ad6dcf2">setMaximumInternalQueueSize</a> (int maximumQueueSize)</td></tr>
+<tr class="memdesc:add686d01dedf3257ab654eec0ad6dcf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packets are read from SEED Link, put onto an internal queue, then sent out via the databroadcast. This sets the maximum internal queue size. After this point, the oldest packets are popped from the queue.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#add686d01dedf3257ab654eec0ad6dcf2">More...</a><br /></td></tr>
+<tr class="separator:add686d01dedf3257ab654eec0ad6dcf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad90fa2a38cce80c7893f4f536b8ea49c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ad90fa2a38cce80c7893f4f536b8ea49c">getMaximumInternalQueueSize</a> () const noexcept</td></tr>
+<tr class="separator:ad90fa2a38cce80c7893f4f536b8ea49c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b8c63906f30e68967db0e4c83a6dd85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a8b8c63906f30e68967db0e4c83a6dd85">setStateFile</a> (const std::string &amp;stateFile)</td></tr>
+<tr class="memdesc:a8b8c63906f30e68967db0e4c83a6dd85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the SEEDLink client's state file. The state file contains a list of sequence numbers written during clean shutdown. When the client resumes these numbers are used to resume data streams.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a8b8c63906f30e68967db0e4c83a6dd85">More...</a><br /></td></tr>
+<tr class="separator:a8b8c63906f30e68967db0e4c83a6dd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5634ad0be9e144b97187e1775fc01f4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#af5634ad0be9e144b97187e1775fc01f4">getStateFile</a> () const</td></tr>
+<tr class="separator:af5634ad0be9e144b97187e1775fc01f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda59c842ed987d51e83ae006dd058c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#afda59c842ed987d51e83ae006dd058c1">haveStateFile</a> () const noexcept</td></tr>
+<tr class="separator:afda59c842ed987d51e83ae006dd058c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44dc557d752ffbe4aab00e2c4156ad95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a44dc557d752ffbe4aab00e2c4156ad95">setStateFileUpdateInterval</a> (uint16_t interval) noexcept</td></tr>
+<tr class="memdesc:a44dc557d752ffbe4aab00e2c4156ad95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls the interval in which the state file is written.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a44dc557d752ffbe4aab00e2c4156ad95">More...</a><br /></td></tr>
+<tr class="separator:a44dc557d752ffbe4aab00e2c4156ad95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d595fad008c3d0364ef630af732900"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a85d595fad008c3d0364ef630af732900">getStateFileUpdateInterval</a> () const noexcept</td></tr>
+<tr class="separator:a85d595fad008c3d0364ef630af732900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac62b8ab24a2b3462c5643389fdc18e95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ac62b8ab24a2b3462c5643389fdc18e95">setSEEDRecordSize</a> (int recordSize)</td></tr>
+<tr class="memdesc:ac62b8ab24a2b3462c5643389fdc18e95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies the size in bytes of the SEED records. Traditionally, this is 512 however RockToSLink may use 128 or 256.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ac62b8ab24a2b3462c5643389fdc18e95">More...</a><br /></td></tr>
+<tr class="separator:ac62b8ab24a2b3462c5643389fdc18e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d5cf36b1fac32a2515b23032009dd8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a48d5cf36b1fac32a2515b23032009dd8">getSEEDRecordSize</a> () const noexcept</td></tr>
+<tr class="separator:a48d5cf36b1fac32a2515b23032009dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a2eb00058bd2cc3592b4b3ff2d305d71d"><td class="memItemLeft" align="right" valign="top"><a id="a2eb00058bd2cc3592b4b3ff2d305d71d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a2eb00058bd2cc3592b4b3ff2d305d71d">clear</a> () noexcept</td></tr>
@@ -235,6 +258,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="ad90fa2a38cce80c7893f4f536b8ea49c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90fa2a38cce80c7893f4f536b8ea49c">&#9670;&nbsp;</a></span>getMaximumInternalQueueSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int URTS::Broadcasts::External::SEEDLink::ClientOptions::getMaximumInternalQueueSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The maximum internal queue size in packets. </dd></dl>
+
+</div>
+</div>
 <a id="a8af85505ffd4189805d8a6900e54e9e1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8af85505ffd4189805d8a6900e54e9e1">&#9670;&nbsp;</a></span>getPort()</h2>
 
@@ -258,6 +307,108 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The port number of the SEEDLink server. By default this 18000. </dd></dl>
+
+</div>
+</div>
+<a id="a48d5cf36b1fac32a2515b23032009dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d5cf36b1fac32a2515b23032009dd8">&#9670;&nbsp;</a></span>getSEEDRecordSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int URTS::Broadcasts::External::SEEDLink::ClientOptions::getSEEDRecordSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The SEED record size in bytes. By default this is 512. </dd></dl>
+
+</div>
+</div>
+<a id="af5634ad0be9e144b97187e1775fc01f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5634ad0be9e144b97187e1775fc01f4">&#9670;&nbsp;</a></span>getStateFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string URTS::Broadcasts::External::SEEDLink::ClientOptions::getStateFile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The path to the state file. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#afda59c842ed987d51e83ae006dd058c1">haveStateFile()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a85d595fad008c3d0364ef630af732900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85d595fad008c3d0364ef630af732900">&#9670;&nbsp;</a></span>getStateFileUpdateInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t URTS::Broadcasts::External::SEEDLink::ClientOptions::getStateFileUpdateInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The state file update interval in packets. The default is 100. </dd></dl>
+
+</div>
+</div>
+<a id="afda59c842ed987d51e83ae006dd058c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda59c842ed987d51e83ae006dd058c1">&#9670;&nbsp;</a></span>haveStateFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool URTS::Broadcasts::External::SEEDLink::ClientOptions::haveStateFile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True indicates the state file was set. </dd></dl>
 
 </div>
 </div>
@@ -338,9 +489,43 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Sets the address of the SEEDLink server. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">address</td><td>The IP address of the SEEDLink server. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="add686d01dedf3257ab654eec0ad6dcf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add686d01dedf3257ab654eec0ad6dcf2">&#9670;&nbsp;</a></span>setMaximumInternalQueueSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setMaximumInternalQueueSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maximumQueueSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Packets are read from SEED Link, put onto an internal queue, then sent out via the databroadcast. This sets the maximum internal queue size. After this point, the oldest packets are popped from the queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">maximumQueueSize</td><td>The maximum queue size in number of packets. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this is not positive. </td></tr>
   </table>
   </dd>
 </dl>
@@ -381,6 +566,104 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="ac62b8ab24a2b3462c5643389fdc18e95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac62b8ab24a2b3462c5643389fdc18e95">&#9670;&nbsp;</a></span>setSEEDRecordSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setSEEDRecordSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>recordSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Specifies the size in bytes of the SEED records. Traditionally, this is 512 however RockToSLink may use 128 or 256. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">recordSize</td><td>The SEED record size. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the record size is not 128, 256, or 512. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8b8c63906f30e68967db0e4c83a6dd85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b8c63906f30e68967db0e4c83a6dd85">&#9670;&nbsp;</a></span>setStateFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setStateFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stateFile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the SEEDLink client's state file. The state file contains a list of sequence numbers written during clean shutdown. When the client resumes these numbers are used to resume data streams. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">stateFile</td><td>The path to the state file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the path to the state cannot be made. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a44dc557d752ffbe4aab00e2c4156ad95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44dc557d752ffbe4aab00e2c4156ad95">&#9670;&nbsp;</a></span>setStateFileUpdateInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setStateFileUpdateInterval </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Controls the interval in which the state file is written. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">interval</td><td>After this many packets are written the state file will be updated. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/urts/broadcasts/external/seedlink/<a class="el" href="client_options_8hpp_source.html">clientOptions.hpp</a></li>
 </ul>
@@ -390,7 +673,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>SEEDLink</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a></li>
-    <li class="footer">Generated on Thu Feb 2 2023 20:52:26 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Feb 3 2023 21:15:20 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

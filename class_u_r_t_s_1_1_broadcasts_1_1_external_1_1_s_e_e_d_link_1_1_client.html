@@ -129,15 +129,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1d4e619533e80b0add6c0b659809ba3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a1d4e619533e80b0add6c0b659809ba3e">More...</a><br /></td></tr>
 <tr class="separator:a1d4e619533e80b0add6c0b659809ba3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Connection</div></td></tr>
-<tr class="memitem:a30cf04572d12c560ec66f327284ff2fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a30cf04572d12c560ec66f327284ff2fd">connect</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a> &amp;options)</td></tr>
-<tr class="memdesc:a30cf04572d12c560ec66f327284ff2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects the client to the SEEDLink server.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a30cf04572d12c560ec66f327284ff2fd">More...</a><br /></td></tr>
-<tr class="separator:a30cf04572d12c560ec66f327284ff2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee6a3a7a977a7d8ef8a70c09a4858f67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#aee6a3a7a977a7d8ef8a70c09a4858f67">isConnected</a> () const noexcept</td></tr>
-<tr class="separator:aee6a3a7a977a7d8ef8a70c09a4858f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader">Reading</div></td></tr>
-<tr class="memitem:ac5a6ae8e391b1c52ec96a0799a8118ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ac5a6ae8e391b1c52ec96a0799a8118ab">read</a> ()</td></tr>
-<tr class="memdesc:ac5a6ae8e391b1c52ec96a0799a8118ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads from the SEEDLink server.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ac5a6ae8e391b1c52ec96a0799a8118ab">More...</a><br /></td></tr>
-<tr class="separator:ac5a6ae8e391b1c52ec96a0799a8118ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c0c2a347ad6ca314324e1472be2a85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a81c0c2a347ad6ca314324e1472be2a85">initialize</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a> &amp;options)</td></tr>
+<tr class="memdesc:a81c0c2a347ad6ca314324e1472be2a85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the SEED Link client.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a81c0c2a347ad6ca314324e1472be2a85">More...</a><br /></td></tr>
+<tr class="separator:a81c0c2a347ad6ca314324e1472be2a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b99654a11b72e3e990b81f5d737e946"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a2b99654a11b72e3e990b81f5d737e946">isInitialized</a> () const noexcept</td></tr>
+<tr class="separator:a2b99654a11b72e3e990b81f5d737e946"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Usage</div></td></tr>
+<tr class="memitem:ade32d96156ac66360ccb9f0e6150be94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ade32d96156ac66360ccb9f0e6150be94">start</a> ()</td></tr>
+<tr class="memdesc:ade32d96156ac66360ccb9f0e6150be94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads from the SEEDLink server and populates the FIFO queue.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ade32d96156ac66360ccb9f0e6150be94">More...</a><br /></td></tr>
+<tr class="separator:ade32d96156ac66360ccb9f0e6150be94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac59794ead44761b5720b410d9f9b6d30"><td class="memItemLeft" align="right" valign="top"><a id="ac59794ead44761b5720b410d9f9b6d30"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ac59794ead44761b5720b410d9f9b6d30">stop</a> ()</td></tr>
+<tr class="memdesc:ac59794ead44761b5720b410d9f9b6d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the SEEDLink client. <br /></td></tr>
+<tr class="separator:ac59794ead44761b5720b410d9f9b6d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:af4161bd516a46b6ad3deb36c8f67095c"><td class="memItemLeft" align="right" valign="top"><a id="af4161bd516a46b6ad3deb36c8f67095c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#af4161bd516a46b6ad3deb36c8f67095c">disconnect</a> () noexcept</td></tr>
@@ -221,14 +225,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a30cf04572d12c560ec66f327284ff2fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30cf04572d12c560ec66f327284ff2fd">&#9670;&nbsp;</a></span>connect()</h2>
+<a id="a81c0c2a347ad6ca314324e1472be2a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c0c2a347ad6ca314324e1472be2a85">&#9670;&nbsp;</a></span>initialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void URTS::Broadcasts::External::SEEDLink::Client::connect </td>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::Client::initialize </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a> &amp;&#160;</td>
           <td class="paramname"><em>options</em></td><td>)</td>
@@ -237,18 +241,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Connects the client to the SEEDLink server. </p>
+<p>Initializes the SEED Link client. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>if the client cannot connect. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if there are errors during initialization. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="aee6a3a7a977a7d8ef8a70c09a4858f67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee6a3a7a977a7d8ef8a70c09a4858f67">&#9670;&nbsp;</a></span>isConnected()</h2>
+<a id="a2b99654a11b72e3e990b81f5d737e946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b99654a11b72e3e990b81f5d737e946">&#9670;&nbsp;</a></span>isInitialized()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,7 +261,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool URTS::Broadcasts::External::SEEDLink::Client::isConnected </td>
+          <td class="memname">bool URTS::Broadcasts::External::SEEDLink::Client::isInitialized </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -308,14 +312,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ac5a6ae8e391b1c52ec96a0799a8118ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5a6ae8e391b1c52ec96a0799a8118ab">&#9670;&nbsp;</a></span>read()</h2>
+<a id="ade32d96156ac66360ccb9f0e6150be94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade32d96156ac66360ccb9f0e6150be94">&#9670;&nbsp;</a></span>start()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void URTS::Broadcasts::External::SEEDLink::Client::read </td>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::Client::start </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -323,10 +327,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Reads from the SEEDLink server. </p>
+<p>Reads from the SEEDLink server and populates the FIFO queue. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#aee6a3a7a977a7d8ef8a70c09a4858f67">isConnected()</a></code> is false. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a2b99654a11b72e3e990b81f5d737e946">isInitialized()</a></code> is false. </td></tr>
   </table>
   </dd>
 </dl>
@@ -342,7 +346,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>SEEDLink</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html">Client</a></li>
-    <li class="footer">Generated on Thu Feb 2 2023 20:52:26 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Feb 3 2023 21:15:20 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
