@@ -138,6 +138,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ade32d96156ac66360ccb9f0e6150be94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ade32d96156ac66360ccb9f0e6150be94">start</a> ()</td></tr>
 <tr class="memdesc:ade32d96156ac66360ccb9f0e6150be94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads from the SEEDLink server and populates the FIFO queue.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ade32d96156ac66360ccb9f0e6150be94">More...</a><br /></td></tr>
 <tr class="separator:ade32d96156ac66360ccb9f0e6150be94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae834ad721a4ddcea35b343a9e3c4662c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ae834ad721a4ddcea35b343a9e3c4662c">getPackets</a> () const</td></tr>
+<tr class="separator:ae834ad721a4ddcea35b343a9e3c4662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9291cfe776982647eb82ac649a474d05"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a9291cfe776982647eb82ac649a474d05">try_pop</a> ()</td></tr>
+<tr class="separator:a9291cfe776982647eb82ac649a474d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25a1e9f5c379abdb7d2725b1f8c57ac5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a25a1e9f5c379abdb7d2725b1f8c57ac5">size</a> () const</td></tr>
+<tr class="separator:a25a1e9f5c379abdb7d2725b1f8c57ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbfae91c08868fa49a4a61d1f9f3c0a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#abbfae91c08868fa49a4a61d1f9f3c0a5">empty</a> () const</td></tr>
+<tr class="separator:abbfae91c08868fa49a4a61d1f9f3c0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac59794ead44761b5720b410d9f9b6d30"><td class="memItemLeft" align="right" valign="top"><a id="ac59794ead44761b5720b410d9f9b6d30"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#ac59794ead44761b5720b410d9f9b6d30">stop</a> ()</td></tr>
 <tr class="memdesc:ac59794ead44761b5720b410d9f9b6d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the SEEDLink client. <br /></td></tr>
@@ -225,6 +233,42 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="abbfae91c08868fa49a4a61d1f9f3c0a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbfae91c08868fa49a4a61d1f9f3c0a5">&#9670;&nbsp;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool URTS::Broadcasts::External::SEEDLink::Client::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True indicates the queue is empty. </dd></dl>
+
+</div>
+</div>
+<a id="ae834ad721a4ddcea35b343a9e3c4662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae834ad721a4ddcea35b343a9e3c4662c">&#9670;&nbsp;</a></span>getPackets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>&gt; URTS::Broadcasts::External::SEEDLink::Client::getPackets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The packets read from the SEEDLink client. </dd></dl>
+
+</div>
+</div>
 <a id="a81c0c2a347ad6ca314324e1472be2a85"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a81c0c2a347ad6ca314324e1472be2a85">&#9670;&nbsp;</a></span>initialize()</h2>
 
@@ -312,6 +356,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a25a1e9f5c379abdb7d2725b1f8c57ac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25a1e9f5c379abdb7d2725b1f8c57ac5">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t URTS::Broadcasts::External::SEEDLink::Client::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The size of the queue. </dd></dl>
+
+</div>
+</div>
 <a id="ade32d96156ac66360ccb9f0e6150be94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade32d96156ac66360ccb9f0e6150be94">&#9670;&nbsp;</a></span>start()</h2>
 
@@ -337,6 +399,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a9291cfe776982647eb82ac649a474d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9291cfe776982647eb82ac649a474d05">&#9670;&nbsp;</a></span>try_pop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>&gt; URTS::Broadcasts::External::SEEDLink::Client::try_pop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The packet at the front of the queue (i.e., the oldest packet). If NULL then the queue is empty. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/urts/broadcasts/external/seedlink/<a class="el" href="client_8hpp_source.html">client.hpp</a></li>
 </ul>
@@ -346,7 +426,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>SEEDLink</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html">Client</a></li>
-    <li class="footer">Generated on Fri Feb 3 2023 21:15:20 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Feb 3 2023 23:25:13 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

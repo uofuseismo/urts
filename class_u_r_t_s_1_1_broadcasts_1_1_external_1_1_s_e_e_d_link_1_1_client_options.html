@@ -157,6 +157,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac62b8ab24a2b3462c5643389fdc18e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48d5cf36b1fac32a2515b23032009dd8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a48d5cf36b1fac32a2515b23032009dd8">getSEEDRecordSize</a> () const noexcept</td></tr>
 <tr class="separator:a48d5cf36b1fac32a2515b23032009dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd017095c902e4416644b1e974c615f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a5cd017095c902e4416644b1e974c615f">setNetworkTimeOut</a> (const std::chrono::seconds &amp;timeOut)</td></tr>
+<tr class="memdesc:a5cd017095c902e4416644b1e974c615f"><td class="mdescLeft">&#160;</td><td class="mdescRight">After this many seconds elapses the network the SEED Link connection will be reset.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a5cd017095c902e4416644b1e974c615f">More...</a><br /></td></tr>
+<tr class="separator:a5cd017095c902e4416644b1e974c615f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac16892a36fcfeee3532325b0c8fae150"><td class="memItemLeft" align="right" valign="top">std::chrono::seconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ac16892a36fcfeee3532325b0c8fae150">getNetworkTimeOut</a> () const noexcept</td></tr>
+<tr class="separator:ac16892a36fcfeee3532325b0c8fae150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca45ea0adbb29a9f143be7d7e48043c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#acca45ea0adbb29a9f143be7d7e48043c">setNetworkReconnectDelay</a> (const std::chrono::seconds &amp;timeOut)</td></tr>
+<tr class="memdesc:acca45ea0adbb29a9f143be7d7e48043c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The network reconnect delay in seconds.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#acca45ea0adbb29a9f143be7d7e48043c">More...</a><br /></td></tr>
+<tr class="separator:acca45ea0adbb29a9f143be7d7e48043c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc801892119593b1e50bcc95a33b9dcc"><td class="memItemLeft" align="right" valign="top">std::chrono::seconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#afc801892119593b1e50bcc95a33b9dcc">getNetworkReconnectDelay</a> () const noexcept</td></tr>
+<tr class="separator:afc801892119593b1e50bcc95a33b9dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a2eb00058bd2cc3592b4b3ff2d305d71d"><td class="memItemLeft" align="right" valign="top"><a id="a2eb00058bd2cc3592b4b3ff2d305d71d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a2eb00058bd2cc3592b4b3ff2d305d71d">clear</a> () noexcept</td></tr>
@@ -281,6 +291,58 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The maximum internal queue size in packets. </dd></dl>
+
+</div>
+</div>
+<a id="afc801892119593b1e50bcc95a33b9dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc801892119593b1e50bcc95a33b9dcc">&#9670;&nbsp;</a></span>getNetworkReconnectDelay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::seconds URTS::Broadcasts::External::SEEDLink::ClientOptions::getNetworkReconnectDelay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The network re-connect delay in seconds. </dd></dl>
+
+</div>
+</div>
+<a id="ac16892a36fcfeee3532325b0c8fae150"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac16892a36fcfeee3532325b0c8fae150">&#9670;&nbsp;</a></span>getNetworkTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::seconds URTS::Broadcasts::External::SEEDLink::ClientOptions::getNetworkTimeOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>After this many seconds the network connection be reset. By default this is zero. </dd></dl>
 
 </div>
 </div>
@@ -532,6 +594,58 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="acca45ea0adbb29a9f143be7d7e48043c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca45ea0adbb29a9f143be7d7e48043c">&#9670;&nbsp;</a></span>setNetworkReconnectDelay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setNetworkReconnectDelay </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::seconds &amp;&#160;</td>
+          <td class="paramname"><em>timeOut</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The network reconnect delay in seconds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">delay</td><td>The network re-connect delay in seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5cd017095c902e4416644b1e974c615f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cd017095c902e4416644b1e974c615f">&#9670;&nbsp;</a></span>setNetworkTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::setNetworkTimeOut </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::seconds &amp;&#160;</td>
+          <td class="paramname"><em>timeOut</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>After this many seconds elapses the network the SEED Link connection will be reset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeOut</td><td>The time out in seconds. If this is 0 then this will be disabled. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a32ed8c4d37adfab19816bdd09b39cbd0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a32ed8c4d37adfab19816bdd09b39cbd0">&#9670;&nbsp;</a></span>setPort()</h2>
 
@@ -673,7 +787,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>SEEDLink</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a></li>
-    <li class="footer">Generated on Fri Feb 3 2023 21:15:20 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Feb 3 2023 23:25:13 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
