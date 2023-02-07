@@ -2,9 +2,9 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
-#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
@@ -12,7 +12,7 @@ using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 namespace
 {
 
-std::string toCBORObject(const InferenceResponse &message)
+std::string toCBORObject(const ProcessingResponse &message)
 {
     nlohmann::json obj;
     obj["MessageType"] = message.getMessageType();
@@ -30,11 +30,11 @@ std::string toCBORObject(const InferenceResponse &message)
     return result;
 }
 
-InferenceResponse
+ProcessingResponse
     fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
-    InferenceResponse result;
+    ProcessingResponse result;
     if (obj["MessageType"] != result.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
@@ -42,7 +42,7 @@ InferenceResponse
     result.setSamplingRate(obj["SamplingRate"].get<double> ());
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setReturnCode(
-       static_cast<InferenceResponse::ReturnCode> (
+       static_cast<ProcessingResponse::ReturnCode> (
          obj["ReturnCode"].get<int> ()
     ));
     std::vector<double> probabilitySignal = obj["ProbabilitySignal"];
@@ -52,7 +52,7 @@ InferenceResponse
 
 }
 
-class InferenceResponse::ResponseImpl
+class ProcessingResponse::ResponseImpl
 {
 public:
     std::vector<double> mProbabilitySignal;
@@ -60,34 +60,34 @@ public:
         UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getSamplingRate()
     };
     int64_t mIdentifier{0};
-    InferenceResponse::ReturnCode mReturnCode;
+    ProcessingResponse::ReturnCode mReturnCode;
     bool mHaveProbabilitySignal{false};
     bool mHaveReturnCode{false};
 };
 
 /// Constructor
-InferenceResponse::InferenceResponse() :
+ProcessingResponse::ProcessingResponse() :
     pImpl(std::make_unique<ResponseImpl> ())
 {
 }
 
 /// Copy constructor
-InferenceResponse::InferenceResponse(
-    const InferenceResponse &response)
+ProcessingResponse::ProcessingResponse(
+    const ProcessingResponse &response)
 {
     *this = response;
 }
 
 /// Move constructor
-InferenceResponse::InferenceResponse(
-    InferenceResponse &&response) noexcept
+ProcessingResponse::ProcessingResponse(
+    ProcessingResponse &&response) noexcept
 {
     *this = std::move(response);
 }
 
 /// Copy assignment
-InferenceResponse& InferenceResponse::operator=(
-    const InferenceResponse &response)
+ProcessingResponse& ProcessingResponse::operator=(
+    const ProcessingResponse &response)
 {
     if (&response == this){return *this;}
     pImpl = std::make_unique<ResponseImpl> (*response.pImpl);
@@ -95,8 +95,8 @@ InferenceResponse& InferenceResponse::operator=(
 }
 
 /// Move assignment
-InferenceResponse& InferenceResponse::operator=(
-    InferenceResponse &&response) noexcept
+ProcessingResponse& ProcessingResponse::operator=(
+    ProcessingResponse &&response) noexcept
 {
     if (&response == this){return *this;}
     pImpl = std::move(response.pImpl);
@@ -104,17 +104,17 @@ InferenceResponse& InferenceResponse::operator=(
 }
 
 /// Release memory and reset class
-void InferenceResponse::clear() noexcept
+void ProcessingResponse::clear() noexcept
 {
     pImpl = std::make_unique<ResponseImpl> ();
 }
 
 /// Destructor
-InferenceResponse::~InferenceResponse()
+ProcessingResponse::~ProcessingResponse()
     = default;
 
 /// Sampling rate
-void InferenceResponse::setSamplingRate(
+void ProcessingResponse::setSamplingRate(
     const double samplingRate)
 {
     if (samplingRate <= 0)
@@ -124,44 +124,44 @@ void InferenceResponse::setSamplingRate(
     pImpl->mSamplingRate = samplingRate;
 }
 
-double InferenceResponse::getSamplingRate() const noexcept
+double ProcessingResponse::getSamplingRate() const noexcept
 {
     return pImpl->mSamplingRate;
 }
 
 /// Identifier
-void InferenceResponse::setIdentifier(
+void ProcessingResponse::setIdentifier(
     const int64_t identifier) noexcept
 {
     pImpl->mIdentifier = identifier;
 }
 
-int64_t InferenceResponse::getIdentifier() const noexcept
+int64_t ProcessingResponse::getIdentifier() const noexcept
 {
     return pImpl->mIdentifier;
 }
 
 /// Return code
-void InferenceResponse::setReturnCode(
-    const InferenceResponse::ReturnCode returnCode) noexcept
+void ProcessingResponse::setReturnCode(
+    const ProcessingResponse::ReturnCode returnCode) noexcept
 {
     pImpl->mReturnCode = returnCode;
     pImpl->mHaveReturnCode = true;
 }
 
-InferenceResponse::ReturnCode InferenceResponse::getReturnCode() const
+ProcessingResponse::ReturnCode ProcessingResponse::getReturnCode() const
 {
     if (!haveReturnCode()){throw std::runtime_error("Return code not set");}
     return pImpl->mReturnCode;
 }
 
-bool InferenceResponse::haveReturnCode() const noexcept
+bool ProcessingResponse::haveReturnCode() const noexcept
 {
     return pImpl->mHaveReturnCode;
 }
 
 /// Set signals
-void InferenceResponse::setProbabilitySignal(const std::vector<double> &signal)
+void ProcessingResponse::setProbabilitySignal(const std::vector<double> &signal)
 {
     if (signal.empty())
     {
@@ -171,7 +171,7 @@ void InferenceResponse::setProbabilitySignal(const std::vector<double> &signal)
     pImpl->mHaveProbabilitySignal = true;
 }
 
-void InferenceResponse::setProbabilitySignal(std::vector<double> &&signal)
+void ProcessingResponse::setProbabilitySignal(std::vector<double> &&signal)
 {
     if (signal.empty())
     {
@@ -181,7 +181,7 @@ void InferenceResponse::setProbabilitySignal(std::vector<double> &&signal)
     pImpl->mHaveProbabilitySignal = true;
 }
 
-std::vector<double> InferenceResponse::getProbabilitySignal() const
+std::vector<double> ProcessingResponse::getProbabilitySignal() const
 {
     if (!haveProbabilitySignal())
     {
@@ -190,37 +190,37 @@ std::vector<double> InferenceResponse::getProbabilitySignal() const
     return pImpl->mProbabilitySignal;
 }
 
-bool InferenceResponse::haveProbabilitySignal() const noexcept
+bool ProcessingResponse::haveProbabilitySignal() const noexcept
 {
     return pImpl->mHaveProbabilitySignal;
 }
 
 /// Message type
-std::string InferenceResponse::getMessageType() const noexcept
+std::string ProcessingResponse::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
 
 /// Message version
 std::string
-InferenceResponse::getMessageVersion() const noexcept
+ProcessingResponse::getMessageVersion() const noexcept
 {
     return MESSAGE_VERSION;
 }
 
 ///  Convert message
-std::string InferenceResponse::toMessage() const
+std::string ProcessingResponse::toMessage() const
 {
     return ::toCBORObject(*this);
 }
 
-void InferenceResponse::fromMessage(const std::string &message)
+void ProcessingResponse::fromMessage(const std::string &message)
 {
     if (message.empty()){throw std::invalid_argument("Message is empty");}
     fromMessage(message.data(), message.size());
 }
 
-void InferenceResponse::fromMessage(
+void ProcessingResponse::fromMessage(
     const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -229,18 +229,18 @@ void InferenceResponse::fromMessage(
 
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    InferenceResponse::clone() const
+    ProcessingResponse::clone() const
 {
     std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<InferenceResponse> (*this);
+        = std::make_unique<ProcessingResponse> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    InferenceResponse::createInstance() const noexcept
+    ProcessingResponse::createInstance() const noexcept
 {
     std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<InferenceResponse> (); 
+        = std::make_unique<ProcessingResponse> (); 
     return result;
 }

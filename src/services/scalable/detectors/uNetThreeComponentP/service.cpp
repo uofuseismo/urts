@@ -14,6 +14,8 @@
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
 /*
 #include "urts/broadcasts/internal/dataPacket/subscriber.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
@@ -136,6 +138,7 @@ public:
             {
                 inferenceRequest.fromMessage(
                     reinterpret_cast<const char *> (messageContents), length);
+                response.setIdentifier(inferenceRequest.getIdentifier());
             }
             catch (const std::exception &e)
             {
@@ -195,6 +198,7 @@ public:
             {
                 preprocessingRequest.fromMessage(
                     reinterpret_cast<const char *> (messageContents), length);
+                response.setIdentifier(preprocessingRequest.getIdentifier());
             }
             catch (const std::exception &e)
             {

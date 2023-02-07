@@ -1,18 +1,18 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_REQUEST_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
-/// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
-/// @brief Requests inference be performed on a pre-processed waveform snippet.
+/// @class ProcessingRequest "processingRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
+/// @brief Requests a snippet be preprocessed then inference be performed.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class InferenceRequest : public UMPS::MessageFormats::IMessage
+class ProcessingRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @brief Defines the method used to apply the inference utility.
-    ///        Inference can be performed using a sliding window for
+    ///        Processing can be performed using a sliding window for
     ///        signals exceeding some minimum length or can be applied
     ///        for a fixed-sized window.
     enum class InferenceStrategy
@@ -29,14 +29,14 @@ public:
     /// @{
 
     /// @brief Constructor.
-    InferenceRequest();
+    ProcessingRequest();
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
-    InferenceRequest(const InferenceRequest &request);
+    ProcessingRequest(const ProcessingRequest &request);
     /// @brief Move constructor.
     /// @param[in,out] request  The request from which to initialize this class.
     ///                         On exit, request's behavior is undefined.
-    InferenceRequest(InferenceRequest &&request) noexcept;
+    ProcessingRequest(ProcessingRequest &&request) noexcept;
     /// @}
 
     /// @name Signals to Process
@@ -104,6 +104,13 @@ public:
     ///       \c getEastSignal(). 
     [[nodiscard]] const std::vector<double> &getEastSignalReference() const;
 
+    /// @brief Sets the sampling rate of the signals to be processed.
+    /// @param[in] samplingRate  The nominal sampling rate in Hz.
+    /// @throws std::invalid_argument if the sampling rate is not postiive.
+    void setSamplingRate(double samplingRate);
+    /// @result The nominal sampling rate of the input signals in Hz.
+    ///         By default this is 100 Hz.
+    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
     /// @result The inference strategy.
@@ -113,8 +120,6 @@ public:
     [[nodiscard]] static int getMinimumSignalLength() noexcept;
     /// @result True indicates this is a valid signal length.
     [[nodiscard]] bool isValidSignalLength(int nSamples) noexcept;
-    /// @result The sampling rate of the input signals in Hz.
-    [[nodiscard]] static double getSamplingRate() noexcept;
     /// @}
 
     /// @name Request Identifier
@@ -164,9 +169,9 @@ public:
     /// @{
 
     /// @result A deep copy of the request.
-    InferenceRequest& operator=(const InferenceRequest &request);
+    ProcessingRequest& operator=(const ProcessingRequest &request);
     /// @result The memory moved from the request to this.
-    InferenceRequest& operator=(InferenceRequest &&request) noexcept;
+    ProcessingRequest& operator=(ProcessingRequest &&request) noexcept;
     /// @}
 
     /// @name Destructors
@@ -175,7 +180,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~InferenceRequest() override;
+    ~ProcessingRequest() override;
     /// @} 
 private:
     class RequestImpl;

@@ -1,37 +1,39 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
-/// @brief The probability of each sample in a processed three-component signal
-///        being a P arrival or noise.
+/// @class ProcessingResponse "processingResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
+/// @brief The probability of each sample in an unprocessed three-component
+///        waveform being a P arrival or noise.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class InferenceResponse : public UMPS::MessageFormats::IMessage
+class ProcessingResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @brief Defines the service's return code.
     enum ReturnCode
     {
-        Success = 0,           /*!< Inference was successfully performed on the signals. */
-        InvalidMessage = 1,    /*!< The request message was invalid. */
-        AlgorithmFailure = 2   /*!< The inference algorithm failed. */
+        Success = 0,              /*!< Inference was successfully performed on the signals. */
+        InvalidMessage = 1,       /*!< The request message was invalid. */
+        PreprocessingFailure = 2, /*!< The preprocessing failed. */
+        InferenceFailure = 3      /*!< The inference algorithm failed.  This is likely
+                                       because the input signal was too small.  */
     };
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    InferenceResponse();
+    ProcessingResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    InferenceResponse(const InferenceResponse &response);
+    ProcessingResponse(const ProcessingResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] response  The response from which to initialize this class.
     ///                         On exit, response's behavior is undefined.
-    InferenceResponse(InferenceResponse &&response) noexcept;
+    ProcessingResponse(ProcessingResponse &&response) noexcept;
     /// @}
 
     /// @name Probability Signals
@@ -126,9 +128,9 @@ public:
     /// @{
 
     /// @result A deep copy of the response.
-    InferenceResponse& operator=(const InferenceResponse &response);
+    ProcessingResponse& operator=(const ProcessingResponse &response);
     /// @result The memory moved from the response to this.
-    InferenceResponse& operator=(InferenceResponse &&response) noexcept;
+    ProcessingResponse& operator=(ProcessingResponse &&response) noexcept;
     /// @}
 
     /// @name Destructors
@@ -137,7 +139,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~InferenceResponse() override;
+    ~ProcessingResponse() override;
     /// @} 
 private:
     class ResponseImpl;

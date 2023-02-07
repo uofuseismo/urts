@@ -36,8 +36,8 @@ if (${Earthworm_FOUND} OR ${SEEDLink_FOUND})
    find_package(MiniSEED)
 endif()
 if (${UUSSMLModels_FOUND})
-   message("Enabling UUSS_MLMODELS")
-   set(UUSS_MLMODELS TRUE)
+   message("Enabling UUSS machine-learning models")
+   set(BUILD_UUSS_MLMODELS TRUE)
 endif() 
 
 set(BUILD_EW FALSE)
@@ -100,12 +100,14 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
-if (${UUSS_MLMODELS})
+if (${BUILD_UUSS_MLMODELS})
     set(UUSS_SRC
         src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/service.cpp)
 endif()
 if (${BUILD_EW})
@@ -146,7 +148,7 @@ if (${BUILD_EW})
     target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
     target_compile_definitions(urts PRIVATE WITH_EARTHWORM)
 endif()
-if (${UUSS_MLMODELS})
+if (${BUILD_UUSS_MLMODELS})
    target_include_directories(urts PRIVATE ${UUSSMLModels_INCLUDE_DIR})
    target_link_libraries(urts PRIVATE ${UUSSMLModels_LIBRARY})
 endif()
@@ -162,7 +164,7 @@ set(TEST_SRC
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
-if (${UUSS_MLMODELS})
+if (${BUILD_UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
        testing/services/scalable/detectors/uNetThreeComponentP.cpp)
 endif()
@@ -209,7 +211,7 @@ target_include_directories(packetCache PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
 target_link_libraries(packetCache
-                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)  
+                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
 set(URTS_MODULES incrementer packetCache)
 
@@ -240,6 +242,21 @@ if (${BUILD_SEEDLINK})
                          PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} broadcastSEEDLink)
+endif()
+
+if (${BUILD_UUSS_MLMODELS})
+   add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/module.cpp)
+   set_target_properties(uNetThreeComponentPService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   target_include_directories(uNetThreeComponentPService PRIVATE
+                              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
+   target_link_libraries(uNetThreeComponentPService
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   set(URTS_MODULES ${MODULES} uNetThreeComponentPService)
 endif()
 
 ##########################################################################################
