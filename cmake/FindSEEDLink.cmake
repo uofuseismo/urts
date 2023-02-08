@@ -12,7 +12,7 @@ find_path(SEEDLINK_INCLUDE_DIR
           )
 # Find the library components
 find_library(SEEDLINK_LIBRARY
-             HINTS slink
+             HINTS slink libslink.so
              PATHS $ENV{SEEDLINK_ROOT}/lib/
                    $ENV{SEEDLINK_ROOT}/
                    /usr/local/lib64
