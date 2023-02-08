@@ -1,22 +1,26 @@
-#ifndef URTS_SERVICES_SCALABLE_PACKET_CACHE_SERVICE_OPTIONS_HPP
-#define URTS_SERVICES_SCALABLE_PACKET_CACHE_SERVICE_OPTIONS_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_OPTIONS_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace URTS::Broadcasts::Internal::DataPacket
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
- class SubscriberOptions;
-}
-namespace URTS::Services::Scalable::PacketCache
-{
-/// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/packetCache/serviceOptions.hpp"
-/// @brief The options that define the backend packet cache service.
+/// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/uNetThreeComponentP/serviceOptions.hpp"
+/// @brief The options that define the backend  service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ServiceOptions
 {
+public:
+     /// @brief Some machine-learning frameworks provide options to perform
+     ///        inference on devices other than the CPU.
+     enum class Device
+     {
+        CPU = 0, /*!< By default inference will be done on the CPU device. */
+        GPU = 1  /*!< If available, inference may be performed on the GPU device. */
+     };
 public:
     /// @name Constructors
     /// @{
@@ -56,24 +60,21 @@ public:
     /// @throws std::invalid_argument if the initialization file does not,
     ///         exist cannot be parsed, does not have the specified section,
     ///         or has incorrect information.
-    void parseInitializationFile(const std::string &fileName,
-                                 const std::string &section = "PacketCache");
+    //void parseInitializationFile(const std::string &fileName,
+    //                             const std::string &section = "UNetThreeComponentP");
 
-    /// @name Data Packet Broadcast Subscriber Options
+    /// @name Machine Learning Model Required Options
     /// @{
 
-    /// @brief Sets the data packet broadcast subscriber options.
-    /// @param[in] options  The data packet broadcast subscriber options.
-    /// @throws std::invalid_argument if the address is not set.
-    void setDataPacketSubscriberOptions(
-        const URTS::Broadcasts::Internal::DataPacket::SubscriberOptions &options);
-    /// @result The data packet broadcast subscriber options.
-    /// @throws std::runtime_error if \c haveDataPacketSubscriberOptions()
-    ///         is false.
-    [[nodiscard]] URTS::Broadcasts::Internal::DataPacket::SubscriberOptions
-        getDataPacketSubscriberOptions() const;
-    /// @result True indicates the data packet subscriber options were set.
-    [[nodiscard]] bool haveDataPacketSubscriberOptions() const noexcept;
+    /// @brief Sets the file containing the model weights.
+    /// @param[in] weightFile   The file containing the model weights.
+    /// @throws std::invalid_argument if the weight file does not exist.
+    void setModelWeightsFile(const std::string &weightFile);
+    /// @result The path to the file containing the model weights.
+    /// @throws std::runtime_error if \c haveModelWeightsFile() is false.
+    [[nodiscard]] std::string getModelWeightsFile() const;
+    /// @result True indicates the weight file was set.
+    [[nodiscard]] bool haveModelWeightsFile() const noexcept;
     /// @}
 
     /// @name Replier Required Options
@@ -82,12 +83,12 @@ public:
     /// @brief Sets the replier address to which to connect.
     /// @param[in] address  The address to which this backend service will
     ///                     connect.
-    void setReplierAddress(const std::string &address);
+    void setAddress(const std::string &address);
     /// @result The replier address to which to connect.
     /// @throws std::runtime_error if \c haveBackendAddress() is false.
-    [[nodiscard]] std::string getReplierAddress() const;
+    [[nodiscard]] std::string getAddress() const;
     /// @result True indicates the replier address was set.
-    [[nodiscard]] bool haveReplierAddress() const noexcept;
+    [[nodiscard]] bool haveAddress() const noexcept;
     /// @} 
 
     /// @name Replier Optional Options
@@ -95,10 +96,10 @@ public:
 
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options for the replier.
-    void setReplierZAPOptions(
+    void setZAPOptions(
         const UMPS::Authentication::ZAPOptions &zapOptions) noexcept;
     /// @result The ZAP options.
-    [[nodiscard]] UMPS::Authentication::ZAPOptions getReplierZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
 
     /// @brief To receive replies we poll on a socket.  After this amount of
     ///        time has elapsed the process can proceed and handle other
@@ -109,43 +110,37 @@ public:
     /// @param[in] timeOut  The time to wait for a request before the thread
     ///                     checks other things.
     /// @throws std::invalid_argument if this is negative.
-    void setReplierPollingTimeOut(const std::chrono::milliseconds &timeOut);
+    void setPollingTimeOut(const std::chrono::milliseconds &timeOut);
     /// @result The polling time out.
-    [[nodiscard]] std::chrono::milliseconds getReplierPollingTimeOut() const noexcept;
+    [[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept;
     /// @brief Influences the maximum number of request messages to cache
     ///        on the socket.
     /// @param[in] highWaterMark  The approximate max number of messages to 
     ///                           cache on the socket.  0 will set this to
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
-    void setReplierReceiveHighWaterMark(int highWaterMark);
-    /// @result The high water mark.  The default is 4096.
-    [[nodiscard]] int getReplierReceiveHighWaterMark() const noexcept;
+    void setReceiveHighWaterMark(int highWaterMark);
+    /// @result The high water mark.  The default is 8192.
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
     /// @brief Influences the maximum number of response messages to cache
     ///        on the socket.
     /// @param[in] highWaterMark  The approximate max number of messages to 
     ///                           cache on the socket.  0 will set this to
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
-    void setReplierSendHighWaterMark(int highWaterMark);
-    /// @result The send high water mark.  The default is 8192.
-    [[nodiscard]] int getReplierSendHighWaterMark() const noexcept;
+    void setSendHighWaterMark(int highWaterMark);
+    /// @result The send high water mark.  The default is 0.
+    [[nodiscard]] int getSendHighWaterMark() const noexcept;
     /// @}
 
-    /// @name Capped Collection Options
+    /// @name Machine Learning Model Optional Options
     /// @{
 
-    /// @brief The maximum number of packets that any can be held in
-    ///        by any channel in the packet cache.
-    /// @param[in] maxPackets  The max number of packets a channel can hold.
-    ///                        For example, if the average packet duration is 
-    ///                        two seconds, then maxPackets*2 would give the
-    ///                        approximate temporal duration of this channel. 
-    /// @throws std::invalid_argument if this is not positive.
-    void setMaximumNumberOfPackets(const int maxPackets);
-    /// @result The maximum number of packets that a channel in the packet cache
-    ///         can hold. 
-    [[nodiscard]] int getMaximumNumberOfPackets() const noexcept;
+    /// @brief The sets the device on which to perform inference.
+    /// @param[in] device  The device on which to perform inference.
+    void setDevice(const Device device) noexcept;
+    /// @result The device on which to perform inference.
+    [[nodiscard]] Device getDevice() const noexcept;
     /// @}
 
     /// @name Destructors
@@ -156,7 +151,6 @@ public:
     /// @brief Destructor.
     ~ServiceOptions();
     /// @}
-
 private:
     class ServiceOptionsImpl;
     std::unique_ptr<ServiceOptionsImpl> pImpl;

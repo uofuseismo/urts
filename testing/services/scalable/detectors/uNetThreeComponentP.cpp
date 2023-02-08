@@ -1,10 +1,14 @@
 #include <vector>
+#include <fstream>
+#include <filesystem>
+#include <umps/authentication/zapOptions.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
-//#include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -263,6 +267,96 @@ TEST(ServicesScalableDetectorsUNetThreeComponentP, ProcessingRequest)
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
               "URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingRequest");
+}
+
+TEST(ServicesScalableDetectorsUNetThreeComponentP, ProcessingResponse)
+{
+    const std::vector<double> probabilitySignal{1, 2, 3, 4, 5}; 
+    const double samplingRate{125};
+    const int64_t identifier{5025};
+    const ProcessingResponse::ReturnCode
+        returnCode{ProcessingResponse::ReturnCode::Success};
+    ProcessingResponse response;
+
+    EXPECT_NO_THROW(response.setSamplingRate(samplingRate));
+    EXPECT_NO_THROW(response.setProbabilitySignal(probabilitySignal));
+    response.setIdentifier(identifier);
+    response.setReturnCode(returnCode);
+
+    ProcessingResponse copy;
+    EXPECT_NO_THROW(copy.fromMessage(response.toMessage()));
+    EXPECT_EQ(copy.getIdentifier(), identifier);
+    EXPECT_EQ(copy.getReturnCode(), returnCode);
+    EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
+    EXPECT_TRUE(copy.haveProbabilitySignal());
+    auto p = copy.getProbabilitySignal();
+    EXPECT_EQ(probabilitySignal.size(), p.size());
+    for (int i = 0; i < static_cast<int> (p.size()); ++i)
+    {
+        EXPECT_NEAR(probabilitySignal.at(i), p.at(i), 1.e-7);
+    }
+
+    response.clear();
+    EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
+    EXPECT_EQ(response.getIdentifier(), 0); 
+    EXPECT_EQ(response.getMessageType(),
+              "URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingResponse");
+    EXPECT_FALSE(response.haveReturnCode());
+}
+
+TEST(ServicesScalableDetectorsUNetThreeComponentP, ServiceOptions)
+{
+    const std::string address{"tcp://127.0.0.1:5550"};
+    const int sendHWM{105};
+    const int recvHWM{106};
+    const std::chrono::milliseconds pollTimeOut{145};
+    ServiceOptions::Device device{ServiceOptions::Device::GPU};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    // Create a dumby weights file
+    const std::string weightsFile{"dumbyWeights.onnx"};
+    if (std::filesystem::exists(weightsFile))
+    {
+        std::filesystem::remove(weightsFile);
+    }
+    std::ofstream weightsFileHandle;
+    weightsFileHandle.open(weightsFile);
+    weightsFileHandle.close();
+
+    ServiceOptions options;
+    EXPECT_NO_THROW(options.setModelWeightsFile(weightsFile));
+    options.setDevice(device);
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvHWM));
+    EXPECT_NO_THROW(options.setPollingTimeOut(pollTimeOut));
+    options.setZAPOptions(zapOptions);
+   
+    ServiceOptions copy(options);
+    EXPECT_EQ(copy.getModelWeightsFile(), weightsFile);
+    EXPECT_EQ(copy.getDevice(), device);
+    EXPECT_EQ(copy.getSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(copy.getReceiveHighWaterMark(), recvHWM);
+    EXPECT_EQ(copy.getPollingTimeOut(), pollTimeOut);
+    EXPECT_EQ(copy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+
+    // Clean up  
+    if (std::filesystem::exists(weightsFile))
+    {
+         std::filesystem::remove(weightsFile);
+    }
+
+    options.clear();
+    EXPECT_FALSE(options.haveModelWeightsFile());
+    EXPECT_FALSE(options.haveAddress());
+    EXPECT_EQ(options.getDevice(), ServiceOptions::Device::CPU); 
+    EXPECT_EQ(options.getSendHighWaterMark(), 8192);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 4096);
+    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UMPS::Authentication::SecurityLevel::Grasslands);
 }
 
 }

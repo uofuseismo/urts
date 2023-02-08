@@ -108,7 +108,8 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/service.cpp)
+        src/services/scalable/detectors/uNetThreeComponentP/service.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp)
 endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC

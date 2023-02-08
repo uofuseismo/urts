@@ -9,7 +9,7 @@
 #include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <umps/messageFormats/failure.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
-//#include "urts/services/scalable/uNetDetector/threeComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"

@@ -3,7 +3,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <umps/authentication/zapOptions.hpp>
-#include <umps/authentication/zapOptions.hpp>
 #include "urts/services/scalable/packetCache/serviceOptions.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include "private/isEmpty.hpp"
