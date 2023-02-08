@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['down_691',['Down',['../class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9a0971a3e339e48bd336b7cdc9daf965d7',1,'URTS::Broadcasts::Internal::Pick::Pick']]]
+  ['cpu_717',['CPU',['../class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_service_options.html#a025061e03b78575d6ca158ebd2c56fdea2b55387dd066c5bac646ac61543d152d',1,'URTS::Services::Scalable::Detectors::UNetThreeComponentP::ServiceOptions']]]
 ];

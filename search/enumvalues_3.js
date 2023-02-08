@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fixedwindow_693',['FixedWindow',['../class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a41ff8b0061df2ba92ce95a52e9433dfba717b35602ecd0086be5b924568d3a7db',1,'URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest']]]
+  ['event_719',['Event',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html#ab17199e05a9cbfc17ccbb44acb9b2306a322b1bac9af7e73a09cdd613bea4600b',1,'URTS::Services::Standalone::Incrementer::IncrementRequest']]]
 ];
