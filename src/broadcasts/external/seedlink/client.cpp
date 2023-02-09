@@ -50,6 +50,7 @@ UDataPacket::DataPacket
         }
         else
         {
+            msr3_free(&miniSEEDRecord);
             throw std::runtime_error("Failed to unpack SNCL");
         }
         // Sampling rate
@@ -87,6 +88,7 @@ UDataPacket::DataPacket
             }
             else
             {
+                msr3_free(&miniSEEDRecord);
                 throw std::runtime_error("Unhandled sample type");
             }
         }
@@ -95,12 +97,17 @@ UDataPacket::DataPacket
     {
         if (returnValue < 0)
         {
+            msr3_free(&miniSEEDRecord);
             throw std::runtime_error("libmseed error detected");
         }
+        msr3_free(&miniSEEDRecord);
         throw std::runtime_error(
              "Insufficient data.  Number of additional bytes estimated is "
             + std::to_string(returnValue));
     }
+    // Cleanup
+    msr3_free(&miniSEEDRecord);
+    // Return
     return dataPacket;
 }
 }
@@ -219,7 +226,6 @@ std::cout << "dump state" << std::endl;
 	            //auto sequenceNumber = sl_sequence(seedLinkPacket);
                     auto miniSEEDRecord
                         = reinterpret_cast<char *> (seedLinkPacket->msrecord);
-/*
                     try
                     {
                         auto packet = miniSEEDToDataPacket(miniSEEDRecord,
@@ -231,7 +237,6 @@ std::cout << "dump state" << std::endl;
                         mLogger->error("Skipping packet.  Unpacking failed with: "
                                      + std::string(e.what()));
                     }
-*/
                     if (mUseStateFile)
                     {
                         if (updateStateFile > mStateFileUpdateInterval)
@@ -305,7 +310,7 @@ std::cout << "dump state" << std::endl;
             = std::make_shared<UDataPacket::DataPacket> (mDataPackets.front());
         mDataPackets.pop();
         return result;
-    }   
+    }
     /// @result True indicates that the queue is empty.
     [[nodiscard]] bool empty() const
     {   
@@ -392,7 +397,8 @@ void Client::initialize(const ClientOptions &options)
         pImpl->mUseStateFile = true;
     }
     // Queue size
-    pImpl->mMaximumQueueSize = options.getMaximumInternalQueueSize();
+    pImpl->mMaximumQueueSize
+        = static_cast<size_t> (options.getMaximumInternalQueueSize());
     // TODO selectors (sl_addstream(pImpl->mSEEDLinkConnection, net, sta, streamselect, -1, NULL));
     // Configure uni-station mode if no streams were specified
     if (pImpl->mSEEDLinkConnection->streams == nullptr)
