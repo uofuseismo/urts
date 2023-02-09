@@ -219,6 +219,7 @@ std::cout << "dump state" << std::endl;
 	            //auto sequenceNumber = sl_sequence(seedLinkPacket);
                     auto miniSEEDRecord
                         = reinterpret_cast<char *> (seedLinkPacket->msrecord);
+/*
                     try
                     {
                         auto packet = miniSEEDToDataPacket(miniSEEDRecord,
@@ -230,6 +231,7 @@ std::cout << "dump state" << std::endl;
                         mLogger->error("Skipping packet.  Unpacking failed with: "
                                      + std::string(e.what()));
                     }
+*/
                     if (mUseStateFile)
                     {
                         if (updateStateFile > mStateFileUpdateInterval)
