@@ -34,10 +34,10 @@ UDataPacket::DataPacket
     if (returnValue == 0)
     {
         // SNCL
-        std::string network(8, '\0');
-        std::string station{8, '\0'};
-        std::string channel{8, '\0'};
-        std::string location{8, '\0'};
+        std::string network(16, '\0');
+        std::string station{16, '\0'};
+        std::string channel{16, '\0'};
+        std::string location{16, '\0'};
         returnValue = ms_sid2nslc(miniSEEDRecord->sid,
                                   network.data(), station.data(),
                                   location.data(), channel.data());
@@ -136,14 +136,15 @@ public:
         {
             if (mSEEDLinkConnection->link != -1)
             {
-std::cout <<"discon" << std::endl;
+                mLogger->debug("Disconnecting SEEDLink...");
                 sl_disconnect(mSEEDLinkConnection);
             }
             if (mUseStateFile)
             {
-std::cout << "dump state" << std::endl;
+                mLogger->debug("Saving state prior to disconnect...");
                 sl_savestate(mSEEDLinkConnection, mStateFile.c_str());
             }
+            mLogger->debug("Freeing SEEDLink structure...");
             sl_freeslcd(mSEEDLinkConnection);
             mSEEDLinkConnection = nullptr;
         }
