@@ -15,11 +15,16 @@ public:
     /// @brief Defines the service's return code.
     enum ReturnCode
     {
-        Success = 0,              /*!< Inference was successfully performed on the signals. */
-        InvalidMessage = 1,       /*!< The request message was invalid. */
-        PreprocessingFailure = 2, /*!< The preprocessing failed. */
-        InferenceFailure = 3      /*!< The inference algorithm failed.  This is likely
-                                       because the input signal was too small.  */
+        Success = 0,                 /*!< Inference was successfully performed
+                                          on the signals. */
+        InvalidMessage = 1,          /*!< The request message was invalid. */
+        PreprocessingFailure = 2,    /*!< The preprocessing failed. */
+        ProcessedSignalTooSmall = 3, /*!< After preprocessing the resulting
+                                          signal is too small on which to
+                                          perform inference. */
+        InvalidProcessedSignalLength = 4, /*!< The processed signal has an
+                                               invalid length  .*/
+        InferenceFailure = 5         /*!< The inference algorithm failed.  */
     };
 public:
     /// @name Constructors

@@ -179,10 +179,6 @@ public:
         {
             mQueueToPacketCacheThread.join();
         }
-        if (mResponseThread.joinable())
-        {
-            mResponseThread.join();
-        }
     }
     // Respond to data requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -314,7 +310,6 @@ public:
     mutable std::mutex mMutex;
     std::thread mDataPacketSubscriberThread;
     std::thread mQueueToPacketCacheThread;
-    std::thread mResponseThread;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UDP::Subscriber> mDataPacketSubscriber{nullptr};
     std::unique_ptr<CappedCollection> mCappedCollection{nullptr};
