@@ -16,88 +16,10 @@
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
-//#include "private/threadSafeQueue.hpp"
 
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 namespace UModels = UUSSMLModels::Detectors::UNetThreeComponentP;
-
-namespace
-{
-
-/*
-template<typename U>
-void evaluateModel(const std::vector<U> &vertical,
-                   const std::vector<U> &north,
-                   const std::vector<U> &east,
-                   const UModels::Inference &inference,
-                   InferenceResponse *response,
-                   std::shared_ptr<UMPS::Logging::ILog> &logger)
-{
-    try
-    {
-        auto probabilitySignal
-            = inference.predictProbability(vertical, north, east);
-        response->setProbabilitySignal(std::move(probabilitySignal));
-        response->setReturnCode(InferenceResponse::Success);
-    }
-    catch (const std::exception &e)
-    {
-        if (logger != nullptr)
-        {
-            logger->error("Failed to evaluate model.  Failed with "
-                        + std::string{e.what()});
-        }
-        response->setReturnCode(InferenceResponse::AlgorithmFailure);
-    }
-}
-
-void evaluateModel(const InferenceRequest &request,
-                   const UModels::Inference &inference,
-                   InferenceResponse *response,
-                   std::shared_ptr<UMPS::Logging::ILog> &logger)
-{
-    const auto &vertical = request.getVerticalSignalReference();
-    const auto &north    = request.getNorthSignalReference();
-    const auto &east     = request.getEastSignalReference();
-    evaluateModel(vertical, north, east, inference, response, logger);
-}
-
-std::unique_ptr<UMPS::MessageFormats::IMessage>
-preprocessSignal(const PreprocessingRequest &request,
-                 UModels::Preprocessing &preprocess,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger)
-{
-    const auto &vertical = request.getVerticalSignalReference();
-    const auto &north    = request.getNorthSignalReference();
-    const auto &east     = request.getEastSignalReference();
-    // Process data
-    auto [verticalResult, northResult, eastResult]
-         = preprocess.process(vertical, north, east);
-    // Set data on response
-    PreprocessingResponse response;
-    response.setSamplingRate(UModels::Preprocessing::getTargetSamplingRate());
-    try
-    {
-        response.setVerticalNorthEastSignal(std::move(verticalResult),
-                                            std::move(northResult),
-                                            std::move(eastResult));
-        response.setReturnCode(PreprocessingResponse::Success);
-    }
-    catch (const std::exception &e)
-    {
-        if (logger != nullptr)
-        {
-            logger->error("Failed to perform preprocessing.  Failed with: "
-                        + std::string{e.what()});
-        }
-        response.setReturnCode(PreprocessingResponse::AlgorithmFailure); 
-    }
-    return response.clone();
-}
-*/
- 
-}
 
 class Service::ServiceImpl
 {
@@ -125,7 +47,7 @@ public:
     /// @brief Stops the threads
     void stop()
     {
-        mLogger->debug("UNetThreeComponentP service stopping threads...");
+        mLogger->debug("Inference service stopping threads...");
         setRunning(false);
         if (mReplier != nullptr){mReplier->stop();}
     }
@@ -156,7 +78,7 @@ public:
                  const void *messageContents, const size_t length) noexcept
     {
         mLogger->debug("Request received");
-        //-----------Everything -> Process data then perform inference--------//
+        //-----------Everything: Process data then perform inference----------//
         ProcessingRequest processingRequest;
         if (messageType == processingRequest.getMessageType())
         {
@@ -208,7 +130,7 @@ public:
             if (strategy == ProcessingRequest::InferenceStrategy::SlidingWindow)
             {
                 if (static_cast<int> (verticalProcessed.size()) <
-                    mInference.getMinimumSignalLength())
+                    mInference->getMinimumSignalLength())
                 {
                     mLogger->error("Signal too small to perform inference");
                     response.setReturnCode(
@@ -218,7 +140,7 @@ public:
             }
             else
             {
-                if (!mInference.isValidSignalLength(verticalProcessed.size()))
+                if (!mInference->isValidSignalLength(verticalProcessed.size()))
                 {
                     mLogger->error("Invalid signal length");
                     response.setReturnCode(
@@ -233,17 +155,15 @@ public:
                     ProcessingRequest::InferenceStrategy::SlidingWindow) 
                 {
                     auto probabilitySignal
-                        = mInference.predictProbabilitySlidingWindow(verticalProcessed,
-                                                                     northProcessed,
-                                                                     eastProcessed);
+                        = mInference->predictProbabilitySlidingWindow(
+                             verticalProcessed, northProcessed, eastProcessed);
                     response.setProbabilitySignal(std::move(probabilitySignal));
                 }
                 else
                 {
                     auto probabilitySignal
-                        = mInference.predictProbability(verticalProcessed,
-                                                        northProcessed,
-                                                        eastProcessed);
+                        = mInference->predictProbability(
+                             verticalProcessed, northProcessed, eastProcessed);
                     response.setProbabilitySignal(std::move(probabilitySignal));
                 }
                 response.setReturnCode(ProcessingResponse::ReturnCode::Success);
@@ -295,15 +215,15 @@ public:
                     InferenceRequest::InferenceStrategy::SlidingWindow) 
                 {
                     auto probabilitySignal
-                        = mInference.predictProbabilitySlidingWindow(vertical,
-                                                                     north,
-                                                                     east);
+                        = mInference->predictProbabilitySlidingWindow(vertical,
+                                                                      north,
+                                                                      east);
                     response.setProbabilitySignal(std::move(probabilitySignal));
                 }
                 else
                 {
                     auto probabilitySignal
-                        = mInference.predictProbability(vertical, north, east);
+                        = mInference->predictProbability(vertical, north, east);
                     response.setProbabilitySignal(std::move(probabilitySignal));
                 }
                 response.setReturnCode(InferenceResponse::Success);
@@ -380,9 +300,9 @@ public:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<URouterDealer::Reply> mReplier{nullptr};
+    std::unique_ptr<UModels::Inference> mInference{nullptr};
     UModels::Preprocessing mPreprocess;
-    UModels::Inference mInference;
-    std::thread mResponseThread;
+    ServiceOptions mOptions;
     const double mTargetSamplingRate{
         UModels::Preprocessing::getTargetSamplingRate()
     };
@@ -419,4 +339,70 @@ Service::~Service() = default;
 bool Service::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
+}
+
+/// Running?
+bool Service::isRunning() const noexcept
+{
+    return pImpl->keepRunning();
+}
+
+/// Stop service
+void Service::stop()
+{
+    pImpl->mLogger->debug("Stopping service...");
+    pImpl->stop();
+}
+
+/// Initialize the class
+void Service::initialize(const ServiceOptions &options)
+{
+    if (!options.haveModelWeightsFile())
+    {
+        throw std::invalid_argument("Model weights file not set");
+    }
+    if (!options.haveAddress())
+    {
+        throw std::invalid_argument("Replier address not set");
+    }
+    // Ensure the service is stopped
+    stop(); // Ensure the service is stopped
+    // Initialize the inference engine
+    auto inferenceDevice{UModels::Inference::Device::CPU};
+    if (options.getDevice() == ServiceOptions::Device::GPU)
+    {
+        pImpl->mLogger->debug("Attempting to use GPU...");
+        inferenceDevice = UModels::Inference::Device::GPU;
+    }
+    pImpl->mInference = std::make_unique<UModels::Inference> (inferenceDevice);
+    pImpl->mInference->load(options.getModelWeightsFile(),
+                            UModels::Inference::ModelFormat::ONNX); 
+    // Create the replier
+    pImpl->mLogger->debug("Creating replier...");
+    UMPS::Messaging::RouterDealer::ReplyOptions replierOptions;
+    replierOptions.setAddress(options.getAddress());
+    replierOptions.setZAPOptions(options.getZAPOptions());
+    replierOptions.setPollingTimeOut(options.getPollingTimeOut());
+    replierOptions.setSendHighWaterMark(options.getSendHighWaterMark());
+    replierOptions.setReceiveHighWaterMark(
+        options.getReceiveHighWaterMark());
+    replierOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                         &*this->pImpl,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2,
+                                         std::placeholders::_3));
+    pImpl->mReplier->initialize(replierOptions); 
+    std::this_thread::sleep_for(std::chrono::milliseconds {10});
+    // Initialized?
+    pImpl->mInitialized = pImpl->mInference->isInitialized() &&
+                          pImpl->mReplier->isInitialized();
+    if (pImpl->mInitialized)
+    {
+        pImpl->mLogger->debug("Service initialized!");
+        pImpl->mOptions = options;
+    }
+    else
+    {
+        pImpl->mLogger->error("Failed to initialize service.");
+    }
 }

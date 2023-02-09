@@ -4,10 +4,24 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
+#include <umps/messaging/context.hpp>
+#include <umps/modules/process.hpp>
+#include <umps/modules/processManager.hpp>
+#include <umps/services/connectionInformation/requestorOptions.hpp>
+#include <umps/services/connectionInformation/requestor.hpp>
+#include <umps/services/connectionInformation/details.hpp>
+#include "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
+#include "private/isEmpty.hpp"
 
-#define MODULE_NAME "uNetThreeComponentPService"
+namespace UAuth = UMPS::Authentication;
+namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UNet = URTS::Services::Scalable::Detectors::UNetThreeComponentP;
+
+#define MODULE_NAME "UNetThreeComponentP"
 
 /// @result Gets the command line input options as a string.
 [[nodiscard]] std::string getInputOptions() noexcept
@@ -44,6 +58,115 @@ std::shared_ptr<UMPS::Logging::ILog>
     return logger;
 }
 
+/// @brief Defines the module options.
+struct ProgramOptions
+{
+    /// Constructor with instance defaulting to 0
+    ProgramOptions() :
+       ProgramOptions(0)
+    {
+    }
+    /// Constructor with given instance 
+    explicit ProgramOptions(const int instance)
+    {
+       if (instance < 0)
+       {
+           throw std::invalid_argument("Instance must be positive");
+       } 
+       mInstance = instance;
+    }
+    /// @brief Load the module options from an initialization file.
+    void parseInitializationFile(const std::string &iniFile)
+    {
+        boost::property_tree::ptree propertyTree;
+        boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+        //----------------------------- General ------------------------------//
+        // Module name
+        mModuleName
+            = propertyTree.get<std::string> ("General.moduleName",
+                                             mModuleName);
+        if (mModuleName.empty())
+        {
+            throw std::runtime_error("Module name not defined");
+        }
+        // Verbosity
+        mVerbosity = static_cast<UMPS::Logging::Level>
+                     (propertyTree.get<int> ("General.verbose",
+                                             static_cast<int> (mVerbosity)));
+        // Log file directory
+        mLogFileDirectory
+            = propertyTree.get<std::string> ("General.logFileDirectory",
+                                             mLogFileDirectory.string());
+        if (!mLogFileDirectory.empty() &&
+            !std::filesystem::exists(mLogFileDirectory))
+        {
+            std::cout << "Creating log file directory: "
+                      << mLogFileDirectory << std::endl;
+            if (!std::filesystem::create_directories(mLogFileDirectory))
+            {
+                throw std::runtime_error("Failed to make log directory");
+            }
+        }
+        //-----------------------ML Model Options-----------------------------//
+        auto weightsFile
+            = propertyTree.get<std::string> ("UNetThreeComponentP", "");
+        mServiceOptions.setModelWeightsFile(weightsFile);
+
+        UNet::ServiceOptions::Device device = UNet::ServiceOptions::Device::CPU;
+        auto deviceString
+           = propertyTree.get<std::string> ("UNetThreeComponentP", "cpu");
+        std::transform(deviceString.begin(), deviceString.end(),
+                       deviceString.begin(), ::toupper);
+        if (deviceString == std::string {"GPU"})
+        {
+            device = UNet::ServiceOptions::Device::GPU;
+        }
+        mServiceOptions.setDevice(device);
+        //----------------Backend Service Connection Information--------------//
+        mServiceName
+             = propertyTree.get<std::string>
+               ("UNetThreeComponentP.proxyServiceName", mServiceName);
+    
+        auto backendAddress
+             = propertyTree.get<std::string>
+               ("UNetThreeComponentP.proxyServiceAddress", "");
+        if (!::isEmpty(backendAddress))
+        {
+            mServiceOptions.setAddress(backendAddress);
+        }
+        if (::isEmpty(mServiceName) && ::isEmpty(backendAddress))
+        {
+            throw std::runtime_error("Service backend address indeterminable");
+        }
+        mServiceOptions.setReceiveHighWaterMark(
+            propertyTree.get<int> (
+                "UNetThreeComponentP.proxyServiceReceiveHighWaterMark",
+                mServiceOptions.getReceiveHighWaterMark())
+        );
+        mServiceOptions.setSendHighWaterMark(
+            propertyTree.get<int> (
+                "UNetThreeComponentP.proxyServiceSendHighWaterMark",
+                mServiceOptions.getSendHighWaterMark())
+        );
+        auto pollingTimeOut 
+            = static_cast<int> (mServiceOptions.getPollingTimeOut().count()
+              );
+        pollingTimeOut = propertyTree.get<int> (
+              "PacketCache.proxyServicePollingTimeOut", pollingTimeOut);
+        mServiceOptions.setPollingTimeOut(
+            std::chrono::milliseconds {pollingTimeOut} );
+    }
+//public:
+    UNet::ServiceOptions mServiceOptions;
+    std::string mServiceName{"UNetThreeComponentPService"};
+    std::string mHeartbeatBroadcastName{"Heartbeat"};
+    std::string mModuleName{MODULE_NAME};
+    std::filesystem::path mLogFileDirectory{"/var/log/urts"};
+    UAuth::ZAPOptions mZAPOptions;
+    std::chrono::seconds heartBeatInterval{30};
+    UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
+    int mInstance{0};
+};
 
 int main(int argc, char *argv[])
 {
@@ -62,6 +185,30 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Parse the initialization file
+    ProgramOptions programOptions(instance);
+    try 
+    {
+        programOptions.parseInitializationFile(iniFile);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    // Create the logger
+    constexpr int hour = 0;
+    constexpr int minute = 0;
+    auto logger = createLogger(programOptions.mModuleName,
+                               programOptions.mLogFileDirectory,
+                               programOptions.mVerbosity,
+                               programOptions.mInstance,
+                               hour, minute);
+    // Create a context
+    auto context = std::make_shared<UMPS::Messaging::Context> (1);
+    // Initialize the various processes
+    logger->info("Initializing processes...");
+    UMPS::Modules::ProcessManager processManager(logger);
 
     return EXIT_SUCCESS;
 }
