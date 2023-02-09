@@ -41,6 +41,7 @@ UDataPacket::DataPacket
         returnValue = ms_sid2nslc(miniSEEDRecord->sid,
                                   network.data(), station.data(),
                                   location.data(), channel.data());
+        if (std::string {"  "} == location.substr(0, 2)){location = "--";}
         if (returnValue == 0)
         {
             dataPacket.setNetwork(network);
