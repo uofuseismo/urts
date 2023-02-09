@@ -203,7 +203,7 @@ std::cout << "dump state" << std::endl;
         }
         // Now start scraping
         SLpacket *seedLinkPacket{nullptr};
-        int updateStateFile{0};
+        int updateStateFile{1};
         while (keepRunning())
         {
             // Block until a packet is received.  Alternatively, an external
@@ -240,6 +240,7 @@ std::cout << "dump state" << std::endl;
                                          mStateFile.c_str());
                             updateStateFile = 0;
                         }
+                        updateStateFile = updateStateFile + 1;
                     }
                 }
             }
