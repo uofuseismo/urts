@@ -1,3 +1,4 @@
+#include <mutex>
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -10,9 +11,20 @@
 #include <umps/messaging/context.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
+#include <umps/services/command/availableCommandsRequest.hpp>
+#include <umps/services/command/availableCommandsResponse.hpp>
+#include <umps/services/command/commandRequest.hpp>
+#include <umps/services/command/commandResponse.hpp>
+#include <umps/services/command/service.hpp>
+#include <umps/services/command/serviceOptions.hpp>
+#include <umps/services/command/terminateRequest.hpp>
+#include <umps/services/command/terminateResponse.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
 #include "private/isEmpty.hpp"
@@ -152,7 +164,7 @@ struct ProgramOptions
             = static_cast<int> (mServiceOptions.getPollingTimeOut().count()
               );
         pollingTimeOut = propertyTree.get<int> (
-              "PacketCache.proxyServicePollingTimeOut", pollingTimeOut);
+              "UNetThreeComponentP.proxyServicePollingTimeOut", pollingTimeOut);
         mServiceOptions.setPollingTimeOut(
             std::chrono::milliseconds {pollingTimeOut} );
     }
@@ -167,6 +179,222 @@ struct ProgramOptions
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
     int mInstance{0};
 };
+
+/// The process that manages the machine learning inference engine.
+class InferenceEngine : public UMPS::Modules::IProcess
+{
+public:
+    /// @brief Default constructor.
+    InferenceEngine() = delete;
+    /// @brief Constructor.
+    InferenceEngine(const std::string &moduleName,
+                    std::unique_ptr<UNet::Service> &&inferenceService,
+                    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mInferenceService(std::move(inferenceService)),
+        mLogger(logger)
+    {
+        if (mInferenceService == nullptr)
+        {
+            throw std::invalid_argument("Inference service is NULL");
+        }
+        if (!mInferenceService->isInitialized())
+        {
+            throw std::invalid_argument("Inference service not initialized");
+        }
+        if (mLogger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
+        }
+        // Create local command replier
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(moduleName);
+        localServiceOptions.setCallback(
+            std::bind(&InferenceEngine::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
+
+        mInitialized = true;
+    }
+    /// @brief Destructor.
+    ~InferenceEngine()
+    {   
+        stop();
+    }
+    /// Initialized?
+    [[nodiscard]] bool isInitialized() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mInitialized;
+    }
+    /// @result True indicates this should keep running
+    [[nodiscard]] bool keepRunning() const
+    {
+        std::scoped_lock lock(mMutex);
+        return mKeepRunning; 
+    }
+    /// @result True indicates this is still running
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return keepRunning();
+    }
+    /// @brief Toggles this as running or not running
+    void setRunning(const bool running)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mKeepRunning = running;
+    }
+    /// @brief Stops the process.
+    void stop() override
+    {
+        setRunning(false);
+        if (mInferenceService != nullptr)
+        {
+            if (mInferenceService->isRunning()){mInferenceService->stop();}
+        }
+        if (mLocalCommand != nullptr)
+        {
+            if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        }
+    }
+    /// @brief Starts the process.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Incrementer not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the inference service...");
+        mInferenceService->start();
+        mLogger->debug("Starting the local command proxy...");
+        mLocalCommand->start();
+    }
+    /// @brief Callback for interacting with user 
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
+        commandCallback(const std::string &messageType,
+                        const void *data,
+                        size_t length)
+    {
+        namespace USC = UMPS::Services::Command;
+        mLogger->debug("Command request received");
+        USC::AvailableCommandsRequest availableCommandsRequest;
+        USC::CommandRequest commandRequest;
+        USC::TerminateRequest terminateRequest;
+        if (messageType == availableCommandsRequest.getMessageType())
+        {
+            USC::AvailableCommandsResponse response;
+            response.setCommands(getInputOptions());
+            try
+            {
+                availableCommandsRequest.fromMessage( 
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack commands request");
+            }
+            return response.clone();
+        }
+        else if (messageType == commandRequest.getMessageType())
+        {
+            USC::CommandResponse response;
+            try
+            {
+                commandRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e) 
+            {
+                mLogger->error("Failed to unpack commands request: "
+                             + std::string {e.what()});
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::ApplicationError);
+                return response.clone();
+            }
+            auto command = commandRequest.getCommand();
+/*
+            if (command == "cacheSize")
+            {
+                mLogger->debug("Issuing cacheSize command...");
+                try
+                {
+                    auto cacheSize = std::to_string(
+                        mInferenceService->getTotalNumberOfPackets());
+                    response.setResponse(cacheSize);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error("Error getting cache size: "
+                                 + std::string {e.what()});
+                    response.setResponse("Server error detected");
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::ApplicationError);
+                }
+            }
+            else
+*/
+            {
+                response.setResponse(getInputOptions());
+                if (command != "help")
+                {
+                    mLogger->debug("Invalid command: " + command);
+                    response.setResponse("Invalid command: " + command);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::InvalidCommand);
+                }
+                else
+                {
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
+                }
+            }
+            return response.clone();
+        }
+        else if (messageType == terminateRequest.getMessageType())
+        {
+            mLogger->info("Received terminate request...");
+            USC::TerminateResponse response;
+            try 
+            {
+                terminateRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack terminate request.");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
+            }
+            issueStopCommand();
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
+            return response.clone();
+        }
+        // Return
+        mLogger->error("Unhandled message: " + messageType);
+        USC::AvailableCommandsResponse commandsResponse;
+        commandsResponse.setCommands(getInputOptions());
+        return commandsResponse.clone();
+    }
+private:
+    mutable std::mutex mMutex;
+    std::unique_ptr<UNet::Service> mInferenceService{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
+    std::unique_ptr<UMPS::ProxyServices::Command::Replier>
+        mModuleRegistryReplier{nullptr};
+    bool mKeepRunning{true};
+    bool mInitialized{false};
+};
+
 
 int main(int argc, char *argv[])
 {
