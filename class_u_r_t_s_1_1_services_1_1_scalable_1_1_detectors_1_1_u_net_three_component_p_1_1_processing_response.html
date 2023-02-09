@@ -125,10 +125,15 @@ Collaboration diagram for URTS::Services::Scalable::Detectors::UNetThreeComponen
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a3a03db5ec9eac406f62dfb99a4e050ff"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ff">ReturnCode</a> { <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa300a09d5189c43c5bb219706fb5fdde9">Success</a> = 0
+<tr class="memitem:a3a03db5ec9eac406f62dfb99a4e050ff"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ff">ReturnCode</a> { <br />
+&#160;&#160;<a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa300a09d5189c43c5bb219706fb5fdde9">Success</a> = 0
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffad08cb8840a6cf9fac3777282015909ea">InvalidMessage</a> = 1
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa898fd0172718c5e1a18f24146a905e20">PreprocessingFailure</a> = 2
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa0aaddc834de61ebb9178ebf3dc06c2bd">InferenceFailure</a> = 3
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa827d664f2edd85d9a0e4a36411755bca">ProcessedSignalTooSmall</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa6675604c692d924e84eac00b868a70a1">InvalidProcessedSignalLength</a> = 4
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa0aaddc834de61ebb9178ebf3dc06c2bd">InferenceFailure</a> = 5
+<br />
  }</td></tr>
 <tr class="memdesc:a3a03db5ec9eac406f62dfb99a4e050ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the service's return code.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ff">More...</a><br /></td></tr>
 <tr class="separator:a3a03db5ec9eac406f62dfb99a4e050ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,7 +239,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </td></tr>
 <tr><td class="fieldname"><a id="a3a03db5ec9eac406f62dfb99a4e050ffa898fd0172718c5e1a18f24146a905e20"></a>PreprocessingFailure&#160;</td><td class="fielddoc"><p>The preprocessing failed. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a3a03db5ec9eac406f62dfb99a4e050ffa0aaddc834de61ebb9178ebf3dc06c2bd"></a>InferenceFailure&#160;</td><td class="fielddoc"><p>The inference algorithm failed. This is likely because the input signal was too small. <br  />
+<tr><td class="fieldname"><a id="a3a03db5ec9eac406f62dfb99a4e050ffa827d664f2edd85d9a0e4a36411755bca"></a>ProcessedSignalTooSmall&#160;</td><td class="fielddoc"><p>After preprocessing the resulting signal is too small on which to perform inference. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3a03db5ec9eac406f62dfb99a4e050ffa6675604c692d924e84eac00b868a70a1"></a>InvalidProcessedSignalLength&#160;</td><td class="fielddoc"><p>The processed signal has an invalid length . </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3a03db5ec9eac406f62dfb99a4e050ffa0aaddc834de61ebb9178ebf3dc06c2bd"></a>InferenceFailure&#160;</td><td class="fielddoc"><p>The inference algorithm failed. <br  />
  </p>
 </td></tr>
 </table>
@@ -897,7 +906,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>Detectors</b></li><li class="navelem"><b>UNetThreeComponentP</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html">ProcessingResponse</a></li>
-    <li class="footer">Generated on Wed Feb 8 2023 23:00:42 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Feb 9 2023 18:04:01 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

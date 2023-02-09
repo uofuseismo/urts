@@ -4,6 +4,8 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_compon
       [ "Success", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa300a09d5189c43c5bb219706fb5fdde9", null ],
       [ "InvalidMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffad08cb8840a6cf9fac3777282015909ea", null ],
       [ "PreprocessingFailure", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa898fd0172718c5e1a18f24146a905e20", null ],
+      [ "ProcessedSignalTooSmall", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa827d664f2edd85d9a0e4a36411755bca", null ],
+      [ "InvalidProcessedSignalLength", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa6675604c692d924e84eac00b868a70a1", null ],
       [ "InferenceFailure", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a3a03db5ec9eac406f62dfb99a4e050ffa0aaddc834de61ebb9178ebf3dc06c2bd", null ]
     ] ],
     [ "ProcessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#aa86d6e9dcb2dbf50e8d65b8bfecefd7b", null ],
