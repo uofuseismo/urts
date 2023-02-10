@@ -125,13 +125,24 @@ struct ProgramOptions
             }
         }
         //-----------------------ML Model Options-----------------------------//
-        auto weightsFile
-            = propertyTree.get<std::string> ("UNetThreeComponentP", "");
+        std::string weightsFileGuess
+        {
+            "/usr/local/share/UUSSMLModels/detectorsUNetThreeComponentP.onnx"
+        };
+        std::string weightsFile{""};
+        if (std::filesystem::exists(weightsFileGuess))
+        {
+            weightsFile = weightsFileGuess;
+        }
+        weightsFile
+            = propertyTree.get<std::string> ("UNetThreeComponentP.weightsFile",
+                                             weightsFile);
         mServiceOptions.setModelWeightsFile(weightsFile);
 
         UNet::ServiceOptions::Device device = UNet::ServiceOptions::Device::CPU;
         auto deviceString
-           = propertyTree.get<std::string> ("UNetThreeComponentP", "cpu");
+           = propertyTree.get<std::string> ("UNetThreeComponentP.device",
+                                            "cpu");
         std::transform(deviceString.begin(), deviceString.end(),
                        deviceString.begin(), ::toupper);
         if (deviceString == std::string {"GPU"})
