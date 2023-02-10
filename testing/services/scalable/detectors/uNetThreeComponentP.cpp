@@ -1,7 +1,10 @@
 #include <vector>
+#include <thread>
 #include <fstream>
 #include <filesystem>
 #include <umps/authentication/zapOptions.hpp>
+#include <umps/messaging/routerDealer/proxy.hpp>
+#include <umps/messaging/routerDealer/proxyOptions.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
@@ -9,6 +12,7 @@
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -357,6 +361,77 @@ TEST(ServicesScalableDetectorsUNetThreeComponentP, ServiceOptions)
     EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UMPS::Authentication::SecurityLevel::Grasslands);
+}
+
+///--------------------------------------------------------------------------///
+///                               Communication Test                         ///
+///--------------------------------------------------------------------------///
+const std::string frontendAddress{"tcp://127.0.0.1:5555"};
+const std::string backendAddress{"tcp://127.0.0.1:5556"};
+
+void proxy()
+{
+    UMPS::Messaging::RouterDealer::ProxyOptions options;
+    options.setFrontendAddress(frontendAddress);
+    options.setBackendAddress(backendAddress);
+    UMPS::Messaging::RouterDealer::Proxy proxy;
+    EXPECT_NO_THROW(proxy.initialize(options));
+    std::thread proxyThread(&UMPS::Messaging::RouterDealer::Proxy::start,
+                            &proxy);
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+    EXPECT_TRUE(proxy.isRunning());
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    EXPECT_NO_THROW(proxy.stop());
+    proxyThread.join();
+}
+
+void server()
+{
+    const std::string weightsFile{
+        "/usr/local/share/UUSSMLModels/detectorsUNetThreeComponentP.onnx"
+    };
+    ServiceOptions options;
+    options.setAddress(backendAddress);
+    options.setModelWeightsFile(weightsFile);
+    Service service;
+    EXPECT_NO_THROW(service.initialize(options));
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+    EXPECT_TRUE(service.isInitialized());
+    EXPECT_NO_THROW(service.start());
+    std::this_thread::sleep_for(std::chrono::milliseconds{1100});
+    service.stop();
+}
+
+void client()
+{
+/*
+    RequestorOptions options;
+    options.setAddress(frontendAddress);
+    Requestor client;
+    EXPECT_NO_THROW(client.initialize(options));
+    EXPECT_TRUE(client.isInitialized());
+*/
+/*
+    ItemsRequest itemsRequest;
+    itemsRequest.setIdentifier(1);
+    // Make sure all the items are there
+    auto referenceItems = IncrementRequest::getItemSet(); 
+    auto itemsReply = client.request(itemsRequest);
+    if (itemsReply != nullptr)
+    {   
+        EXPECT_EQ(itemsReply->getReturnCode(),
+                  ItemsResponse::ReturnCode::Success);
+        auto names = itemsReply->getItems();
+        for (const auto &name : referenceItems)
+        {
+            EXPECT_TRUE(names.contains(IncrementRequest::itemToString(name)));
+        }
+    }   
+    else
+    {   
+        EXPECT_TRUE(false);
+    }   
+*/
 }
 
 }

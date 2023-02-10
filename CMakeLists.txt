@@ -97,6 +97,7 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/serviceOptions.cpp
     src/services/scalable/packetCache/singleComponentWaveform.cpp
     src/services/scalable/packetCache/threeComponentWaveform.cpp
+    src/services/scalable/packetCache/requestor.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
