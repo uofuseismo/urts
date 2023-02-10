@@ -9,13 +9,15 @@ WORKDIR=`dirname $0`
 CONFIG_FILE=$(pwd)/pDetector3C.ini
 # Name of executable
 EXECUTABLE=uNetThreeComponentPService
+# Instance of service
+INSTANCE=1
 # Seconds to wait to stop/start a program
 DURATION=10
 # Name displayed by the init script
 NAME="UNetThreeComponent P Detector Service"
 
 # Define the executable
-ARGS="--ini=${CONFIG_FILE}"
+ARGS="--ini=${CONFIG_FILE} --instance=${INSTANCE}"
 
 ACTION=$1
 EXIT_STATUS=$(urts "${ACTION}" "${EXECUTABLE}" "${ARGS}" "${NAME}" "${DURATION}" ${WORKDIR})

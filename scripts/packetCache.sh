@@ -9,13 +9,15 @@ WORKDIR=`dirname $0`
 CONFIG_FILE=$(pwd)/packetCache.ini
 # Name of executable
 EXECUTABLE=packetCache
+# Instance of service
+INSTANCE=1
 # Seconds to wait to stop/start a program
 DURATION=10
 # Name displayed by the init script
 NAME="PacketCache Service"
 
 # Define the configuration file AND instance
-ARGS="--ini=${CONFIG_FILE} --instance=0"
+ARGS="--ini=${CONFIG_FILE} --instance=${INSTANCE}"
 
 ACTION=$1
 EXIT_STATUS=$(urts "${ACTION}" "${EXECUTABLE}" "${ARGS}" "${NAME}" "${DURATION}" ${WORKDIR})
