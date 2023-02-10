@@ -11,11 +11,16 @@
 #include <umps/messaging/context.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
+#include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
+#include <umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
 #include <umps/proxyServices/command/replier.hpp>
 #include <umps/proxyServices/command/replierOptions.hpp>
 #include <umps/proxyServices/command/replierProcess.hpp>
+#include <umps/services/connectionInformation/details.hpp>
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
+#include <umps/services/connectionInformation/socketDetails/dealer.hpp>
 #include <umps/services/connectionInformation/details.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
@@ -170,7 +175,7 @@ struct ProgramOptions
     }
 //public:
     UNet::ServiceOptions mServiceOptions;
-    std::string mServiceName{"UNetThreeComponentPService"};
+    std::string mServiceName{"PDetector3C"};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::string mModuleName{MODULE_NAME};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
@@ -267,7 +272,7 @@ public:
         stop();
         if (!isInitialized())
         {
-            throw std::runtime_error("Incrementer not initialized");
+            throw std::runtime_error("Inference engine not initialized");
         }
         setRunning(true);
         mLogger->debug("Starting the inference service...");
@@ -318,43 +323,18 @@ public:
                 return response.clone();
             }
             auto command = commandRequest.getCommand();
-/*
-            if (command == "cacheSize")
+            response.setResponse(getInputOptions());
+            if (command != "help")
             {
-                mLogger->debug("Issuing cacheSize command...");
-                try
-                {
-                    auto cacheSize = std::to_string(
-                        mInferenceService->getTotalNumberOfPackets());
-                    response.setResponse(cacheSize);
-                    response.setReturnCode(
-                        USC::CommandResponse::ReturnCode::Success);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error("Error getting cache size: "
-                                 + std::string {e.what()});
-                    response.setResponse("Server error detected");
-                    response.setReturnCode(
-                        USC::CommandResponse::ReturnCode::ApplicationError);
-                }
+                mLogger->debug("Invalid command: " + command);
+                response.setResponse("Invalid command: " + command);
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::InvalidCommand);
             }
             else
-*/
             {
-                response.setResponse(getInputOptions());
-                if (command != "help")
-                {
-                    mLogger->debug("Invalid command: " + command);
-                    response.setResponse("Invalid command: " + command);
-                    response.setReturnCode(
-                        USC::CommandResponse::ReturnCode::InvalidCommand);
-                }
-                else
-                {
-                    response.setReturnCode(
-                        USC::CommandResponse::ReturnCode::Success);
-                }
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
             }
             return response.clone();
         }
@@ -437,7 +417,89 @@ int main(int argc, char *argv[])
     // Initialize the various processes
     logger->info("Initializing processes...");
     UMPS::Modules::ProcessManager processManager(logger);
+    try
+    {
+        // Connect to the operator
+        logger->debug("Connecting to uOperator...");
+        const std::string operatorSection{"uOperator"};
+        auto uOperator = UCI::createRequestor(iniFile, operatorSection,
+                                              context, logger);
+        programOptions.mZAPOptions = uOperator->getZAPOptions();
 
+        // Create a heartbeat
+        logger->debug("Creating heartbeat process...");
+        namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+        auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
+                                                            "Heartbeat",
+                                                            context,
+                                                            logger);
+        processManager.insert(std::move(heartbeat));
+
+        // Create the module command replier
+        logger->debug("Creating module registry replier process...");
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        moduleDetails.setInstance(instance);
+
+        // Get the backend service connection details
+        if (!programOptions.mServiceOptions.haveAddress())
+        {
+            auto address = uOperator->getProxyServiceBackendDetails(
+                              programOptions.mServiceName).getAddress();
+            programOptions.mServiceOptions.setAddress(address);
+        }
+        programOptions.mServiceOptions.setZAPOptions(
+            programOptions.mZAPOptions);
+
+        // Create the service and the subsequent process
+        auto inferenceService
+            = std::make_unique<UNet::Service> (context, logger);
+        inferenceService->initialize(programOptions.mServiceOptions);
+        auto inferenceProcess
+           = std::make_unique<::InferenceEngine> (programOptions.mModuleName,
+                                                  std::move(inferenceService),
+                                                  logger);
+
+        // Create the remote replier
+        auto callbackFunction = std::bind(&InferenceEngine::commandCallback,
+                                          &*inferenceProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        auto remoteReplierProcess
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        // Add the remote replier and inference engine
+        processManager.insert(std::move(remoteReplierProcess));
+        processManager.insert(std::move(inferenceProcess));
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // Start the processes
+    logger->info("Starting processes...");
+    try 
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e) 
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // The main thread waits and, when requested, sends a stop to all processes
+    logger->info("Starting main thread...");
+    processManager.handleMainThread();
     return EXIT_SUCCESS;
 }
 

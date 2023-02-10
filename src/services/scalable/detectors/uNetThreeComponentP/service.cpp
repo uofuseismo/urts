@@ -354,6 +354,17 @@ void Service::stop()
     pImpl->stop();
 }
 
+/// Start service
+void Service::start()
+{
+    if (!isInitialized())
+    {   
+        throw std::runtime_error("Inference service not initialized");
+    }   
+    pImpl->mLogger->debug("Starting service...");
+    pImpl->start();
+}
+
 /// Initialize the class
 void Service::initialize(const ServiceOptions &options)
 {
@@ -406,3 +417,4 @@ void Service::initialize(const ServiceOptions &options)
         pImpl->mLogger->error("Failed to initialize service.");
     }
 }
+

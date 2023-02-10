@@ -295,7 +295,7 @@ public:
         stop();
         if (!isInitialized())
         {
-            throw std::runtime_error("Incrementer not initialized");
+            throw std::runtime_error("Packet cache not initialized");
         }
         setRunning(true);
         mLogger->debug("Starting the packet cache service...");
@@ -529,7 +529,7 @@ int main(int argc, char *argv[])
                                           std::placeholders::_1,
                                           std::placeholders::_2,
                                           std::placeholders::_3);
-        auto remoteReplier
+        auto remoteReplierProcess
             = URemoteCommand::createReplierProcess(*uOperator,
                                                    moduleDetails,
                                                    callbackFunction,
@@ -537,8 +537,8 @@ int main(int argc, char *argv[])
                                                    "ModuleRegistry",
                                                    nullptr, // Make new context
                                                    logger);
-        // Add the remote replier and incrementer
-        processManager.insert(std::move(remoteReplier));
+        // Add the remote replier and packet cache
+        processManager.insert(std::move(remoteReplierProcess));
         processManager.insert(std::move(packetCacheProcess));
     }
     catch (const std::exception &e)
