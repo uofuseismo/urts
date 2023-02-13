@@ -429,7 +429,7 @@ void proxy()
                             &proxy);
     std::this_thread::sleep_for(std::chrono::milliseconds{10});
     EXPECT_TRUE(proxy.isRunning());
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     EXPECT_NO_THROW(proxy.stop());
     proxyThread.join();
 }
@@ -444,7 +444,7 @@ void server()
     std::this_thread::sleep_for(std::chrono::milliseconds{10});
     EXPECT_TRUE(service.isInitialized());
     EXPECT_NO_THROW(service.start());
-    std::this_thread::sleep_for(std::chrono::milliseconds{2000});
+    std::this_thread::sleep_for(std::chrono::milliseconds{1500});
     service.stop();
 }
 
