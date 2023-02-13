@@ -109,6 +109,8 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/service.cpp
         src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp)
 endif()
@@ -181,9 +183,11 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES}
+                                             ${UUSSMLModels_LIBRARY})
 target_include_directories(unitTests
                            PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
+                                   ${UUSSMLModels_INCLUDE_DIR}
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
 # Add the tests
