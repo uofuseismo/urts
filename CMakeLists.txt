@@ -20,9 +20,10 @@ configure_file(${CMAKE_SOURCE_DIR}/include/private/organization.hpp.in
                ${CMAKE_SOURCE_DIR}/include/private/organization.hpp)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options date_time REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(SOCI REQUIRED)
+find_package(PostgreSQL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GTest REQUIRED)
 # Optional
@@ -76,6 +77,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/subscriber.cpp
     src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
+    src/database/connection/postgresql.cpp
     src/services/standalone/incrementer/counter.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
     src/services/standalone/incrementer/incrementResponse.cpp
@@ -133,9 +135,11 @@ set_target_properties(urts PROPERTIES
 target_include_directories(urts
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            PUBLIC ${UMPS_INCLUDE_DIR}
+                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS}
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
 target_link_libraries(urts
-                      PRIVATE ${UMPS_LIBRARY} Threads::Threads)
+                      PRIVATE ${UMPS_LIBRARY}
+                              SOCI::soci_postgresql Boost::date_time Threads::Threads)
 if (${BUILD_MSEED})
    target_include_directories(urts PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
    target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
