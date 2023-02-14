@@ -8,7 +8,7 @@ WORKDIR=`dirname $0`
 # Config file
 CONFIG_FILE=$(pwd)/packetCache.ini
 # Name of executable
-EXECUTABLE=packetCache
+EXECUTABLE=packetCacheService
 # Instance of service
 INSTANCE=1
 # Seconds to wait to stop/start a program

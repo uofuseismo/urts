@@ -8,7 +8,7 @@ WORKDIR=`dirname $0`
 # Config file
 CONFIG_FILE=$(pwd)/incrementer.ini
 # Name of executable
-EXECUTABLE=incrementer
+EXECUTABLE=incrementerService
 # Seconds to wait to stop/start a program
 DURATION=10
 # Name displayed by the init script

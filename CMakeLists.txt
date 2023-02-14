@@ -197,32 +197,32 @@ add_test(NAME unitTests
 ##########################################################################################
 #                                            Modules                                     #
 ##########################################################################################
-add_executable(incrementer src/services/standalone/incrementer/module.cpp)
-set_target_properties(incrementer PROPERTIES
+add_executable(incrementerService src/services/standalone/incrementer/serviceModule.cpp)
+set_target_properties(incrementerService PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_include_directories(incrementer PRIVATE
+target_include_directories(incrementerService PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
-target_link_libraries(incrementer
+target_link_libraries(incrementerService
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
-add_executable(packetCache src/services/scalable/packetCache/module.cpp)
-set_target_properties(packetCache PROPERTIES
+add_executable(packetCacheService src/services/scalable/packetCache/serviceModule.cpp)
+set_target_properties(packetCacheService PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_include_directories(packetCache PRIVATE
+target_include_directories(packetCacheService PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
-target_link_libraries(packetCache
+target_link_libraries(packetCacheService
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
-set(URTS_MODULES incrementer packetCache)
+set(URTS_MODULES incrementerService packetCacheService)
 
 if (${BUILD_EW})
-   add_executable(broadcastWaveRing src/broadcasts/external/earthworm/module.cpp)
+   add_executable(broadcastWaveRing src/broadcasts/external/earthworm/broadcastModule.cpp)
    set_target_properties(broadcastWaveRing PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
@@ -236,7 +236,7 @@ if (${BUILD_EW})
    set(URTS_MODULES ${MODULES} broadcastWaveRing)
 endif()
 if (${BUILD_SEEDLINK})
-   add_executable(broadcastSEEDLink src/broadcasts/external/seedlink/module.cpp)
+   add_executable(broadcastSEEDLink src/broadcasts/external/seedlink/broadcastModule.cpp)
    set_target_properties(broadcastSEEDLink PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -251,7 +251,7 @@ if (${BUILD_SEEDLINK})
 endif()
 
 if (${BUILD_UUSS_MLMODELS})
-   add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/module.cpp)
+   add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    set_target_properties(uNetThreeComponentPService PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
