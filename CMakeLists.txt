@@ -25,6 +25,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(SOCI REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Time REQUIRED)
 find_package(GTest REQUIRED)
 # Optional
 #set(FindMiniSEED_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)

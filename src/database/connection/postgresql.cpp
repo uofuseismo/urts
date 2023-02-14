@@ -17,7 +17,9 @@ public:
     std::string mUser{std::string(std::getenv("URTS_AQMS_RDONLY_USER"))};
     std::string mPassword{
         std::string(std::getenv("URTS_AQMS_RDONLY_PASSWORD"))};
-    std::string mDatabaseName;
+    std::string mDatabaseName{
+        std::string(std::getenv("URTS_AQMS_DATABASE"))
+    };
     std::string mAddress{"127.0.0.1"};
     std::string mApplication{"urts"};
     int mPort{5432};
