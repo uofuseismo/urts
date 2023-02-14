@@ -125,6 +125,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a7ed5673a9f793d66d89ecfd2f1921235">URTS::Broadcasts::Internal::DataPacket::SubscriberOptions</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher_options.html#a92c631b65c9fa2790f1847ff3a521685">URTS::Broadcasts::Internal::Pick::PublisherOptions</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber_options.html#a3fb02ff59bedf109a8e945d8fef44f11">URTS::Broadcasts::Internal::Pick::SubscriberOptions</a>
+, <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#af9a2f8a4c623f9b63c92081362b411a7">URTS::Database::Connection::PostgreSQL</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_requestor_options.html#aa00f315e3696f1c720c41780dc1fab5a">URTS::Services::Scalable::Detectors::UNetThreeComponentP::RequestorOptions</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_service_options.html#aad944b2f46449dd102772eb297f69108">URTS::Services::Scalable::Detectors::UNetThreeComponentP::ServiceOptions</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_requestor_options.html#a0cf95f9c04078a2debb9f7a75ef7951c">URTS::Services::Scalable::PacketCache::RequestorOptions</a>
@@ -134,6 +135,9 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>setAlgorithm()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7ad06bf23449c4dfe60eca3688660f8b">URTS::Broadcasts::Internal::Pick::Pick</a>
 </li>
+<li>setApplication()
+: <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#acf9fdccee0d1ea2176cc2d27471a8b0d">URTS::Database::Connection::PostgreSQL</a>
+</li>
 <li>setChannel()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a59fac26fce0bda9a76fdc4c308aa727e">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a8a809948b0b7a7ff17261d556a663d5b">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>
@@ -142,8 +146,11 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ac24ed8bcd96cb57afec485efc206fe02">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
 </li>
 <li>setData()
-: <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a4cf81c859dc32a81cbe33eee1454fa41">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
+: <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a5b55fcc203ca6790b724bf8f66e14795">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#ab80627ab001e1c74a1ed6c3f25691f02">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>
+</li>
+<li>setDatabaseName()
+: <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a7d288d773fc3c42e14ea415b8e2dbdbe">URTS::Database::Connection::PostgreSQL</a>
 </li>
 <li>setDataPacketSubscriberOptions()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html#a74c7b788629630c8b9d72896887d02b3">URTS::Services::Scalable::PacketCache::ServiceOptions</a>
@@ -241,7 +248,10 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#ac6115380bccb734f9c55e7ebdbe802f6">URTS::Services::Scalable::PacketCache::ThreeComponentWaveform</a>
 </li>
 <li>setPackets()
-: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#a9e4f28c5dc6e687c9cb911c3cf9521ad">URTS::Services::Scalable::PacketCache::DataResponse</a>
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html#aee3e175d1dda83316c60b4a004c382f5">URTS::Services::Scalable::PacketCache::DataResponse</a>
+</li>
+<li>setPassword()
+: <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a9fe97ca284e9e7d75f410e62496ceee3">URTS::Database::Connection::PostgreSQL</a>
 </li>
 <li>setPercentile()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_uncertainty_bound.html#a1cc34d4fb8cfdfc71ad125b160f8efd7">URTS::Broadcasts::Internal::Pick::UncertaintyBound</a>
@@ -264,10 +274,11 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 </li>
 <li>setPort()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a32ed8c4d37adfab19816bdd09b39cbd0">URTS::Broadcasts::External::SEEDLink::ClientOptions</a>
+, <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#ab22dbeff1102c2023c9d701ec445b5d4">URTS::Database::Connection::PostgreSQL</a>
 </li>
 <li>setProbabilitySignal()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_response.html#ad04b928178ed2da7499562548ddd7e43">URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceResponse</a>
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a5e898b7a12e505ed34eefa93eadf5295">URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingResponse</a>
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#ae4bf36b104c8ba0ae54aacd9454652a9">URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingResponse</a>
 </li>
 <li>setQuality()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a3a42075dea61b8bcd1e6d86f131632c6">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
@@ -418,7 +429,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 </li>
 <li>Subscriber()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber.html#a2a723a23bcff2e969ca4f9a6bd14ed43">URTS::Broadcasts::Internal::DataPacket::Subscriber</a>
-, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber.html#ad2a0285a16320764106d91e4a2b01511">URTS::Broadcasts::Internal::Pick::Subscriber</a>
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber.html#a88206f022409f356f1f063ca0106b3cc">URTS::Broadcasts::Internal::Pick::Subscriber</a>
 </li>
 <li>SubscriberOptions()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#af56668e1443873b371cd8c03377c3ae5">URTS::Broadcasts::Internal::DataPacket::SubscriberOptions</a>
@@ -443,7 +454,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Feb 14 2023 16:53:49 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Tue Feb 14 2023 19:30:50 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

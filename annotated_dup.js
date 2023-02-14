@@ -30,6 +30,11 @@ var annotated_dup =
           ] ]
         ] ]
       ] ],
+      [ "Database", null, [
+        [ "Connection", null, [
+          [ "PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l" ]
+        ] ]
+      ] ],
       [ "Services", null, [
         [ "Scalable", null, [
           [ "Detectors", null, [
