@@ -128,7 +128,7 @@ public:
 
     /// @result A shared pointer to the session.
     /// @throws std::runtime_error if \c isConnected() is false.
-    soci::session *getSession() const;
+    [[nodiscard]] soci::session *getSession() const;
 
     /// @brief Loads the database connection information from an
     ///        initialization file.
