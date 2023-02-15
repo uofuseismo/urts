@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <cstring>
 #include <soci/soci.h>
@@ -41,8 +40,39 @@ public:
                 mDatabaseName = std::string {databasePtr};
             }
         }
-std::cout << "yo " << mUser << " " << mPassword << " " << mDatabaseName<< std::endl;
     }
+    /*
+    PostgreSQLImpl(const PostgreSQLImpl &impl)
+    {
+        *this = impl;
+    }
+    PostgreSQLImpl& operator=(const PostgreSQLImpl &impl)
+    {
+        if (&impl == this){return *this;}
+        mConnectionString = impl.mConnectionString;
+        mUser = impl.mUser;
+        mPassword = impl.mPassword;
+        mDatabaseName = impl.mDatabaseName;
+        mAddress = impl.mAddress;
+        mApplication = impl.mApplication;
+        mPort = impl.mPort;
+        if (impl.mSession.is_connected())
+        {
+             try
+             {
+                 mSession.open(soci::postgresql, mConnectionString);
+             }
+             catch (const std::exception &e)
+             {
+                 throw std::runtime_error(
+                     "Failed to connect to postgresql with error:\n"
+                    + std::string{e.what()});
+             }
+        }
+        return *this;
+    }
+    */
+//public:
     soci::session mSession;
     void *mSessionPtr{nullptr};
     std::string mConnectionString;
@@ -54,17 +84,35 @@ std::cout << "yo " << mUser << " " << mPassword << " " << mDatabaseName<< std::e
     int mPort{5432};
 };
 
-/// C'tor
+/// Constructor
 PostgreSQL::PostgreSQL() :
     pImpl(std::make_unique<PostgreSQLImpl> ())
 {
 }
 
-/// Move c'tor
+/*
+/// Copy constructor
+PostgreSQL::PostgreSQL(const PostgreSQL &pg)
+{
+    *this = pg;
+}
+*/
+
+/// Move constructor
 PostgreSQL::PostgreSQL(PostgreSQL &&pg) noexcept
 {
     *this = std::move(pg);
 }
+
+/*
+/// Copy assignment
+PostgreSQL& PostgreSQL::operator=(const PostgreSQL &pg)
+{
+    if (&pg == this){return *this;}
+    pImpl = std::make_unique<PostgreSQLImpl> (*pg.pImpl);
+    return *this;
+}
+*/
 
 /// Move assignment
 PostgreSQL& PostgreSQL::operator=(PostgreSQL &&pg) noexcept
@@ -200,14 +248,15 @@ std::string PostgreSQL::getConnectionString() const
     if (!pImpl->mConnectionString.empty()){return pImpl->mConnectionString;}
     if (!haveUser()){throw std::runtime_error("User not set");}
     if (!havePassword()){throw std::runtime_error("Password not set");}
+    auto driver = getDriver();
     auto user = getUser();
     auto password = getPassword();
     auto address = getAddress();
     auto cPort = std::to_string(getPort()); 
     auto dbname = getDatabaseName();
     auto appName = getApplication();
-    pImpl->mConnectionString = //getDriver()
-                             + "postgresql://" + user
+    pImpl->mConnectionString = driver
+                             + "://" + user
                              + ":" + password
                              + "@" + address
                              + ":" + cPort

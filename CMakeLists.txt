@@ -80,7 +80,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
-    src/database/aqms/channelDataTablePollingService.cpp
+    src/database/aqms/channelDataTablePoller.cpp
     src/database/connection/postgresql.cpp
     src/observerPattern/subject.cpp
     src/services/standalone/incrementer/counter.cpp

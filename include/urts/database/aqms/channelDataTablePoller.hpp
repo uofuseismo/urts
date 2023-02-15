@@ -1,5 +1,5 @@
-#ifndef URTS_DATABASE_AQMS_CHANNEL_DATA_TABLE_POLLING_SERVICE_HPP
-#define URTS_DATABASE_AQMS_CHANNEL_DATA_TABLE_POLLING_SERVICE_HPP
+#ifndef URTS_DATABASE_AQMS_CHANNEL_DATA_TABLE_POLLER_HPP
+#define URTS_DATABASE_AQMS_CHANNEL_DATA_TABLE_POLLER_HPP
 #include <memory>
 #include <vector>
 #include <chrono>
@@ -17,11 +17,11 @@ namespace URTS::Database::AQMS
 }
 namespace URTS::Database::AQMS
 {
-/// @class ChannelDataTablePollingService "channelDataTablePollingService.hpp" "urts/database/aqms/ChannelDataTablePollingService.hpp"
-/// @brief A utility service that polls the database and updates channel the
-///        channel information.
+/// @class ChannelDataTablePoller "channelDataTablePoller.hpp" "urts/database/aqms/ChannelDataTablePoller.hpp"
+/// @brief A utility service that polls the database and updates the
+///        channel data.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class ChannelDataTablePollingService
+class ChannelDataTablePoller
 {
 public:
     /// @brief Defines whether or not queries return currently running
@@ -36,18 +36,28 @@ public:
     /// @{
 
     /// @brief Constructor.
-    ChannelDataTablePollingService();
+    ChannelDataTablePoller();
     /// @brief Constructor with given logger.
-    explicit ChannelDataTablePollingService(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit ChannelDataTablePoller(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Initialization
     /// @{
 
     /// @brief Sets a connection to the AQMS database. 
-    void setConnection(std::shared_ptr<URTS::Database::Connection::IConnection> &connection);
-    /// @result True indicates that there is a connection to the AQMS database.
-    [[nodiscard]] bool isConnected() const noexcept;
+    /// @param[in] connection   A connection to the AQMS database.
+    /// @param[in] queryMode    Defines whether the poller will get all channel
+    ///                         data or only open channels.
+    /// @param[in] refreshRate  The poller will query the database
+    ///                         this many seconds.
+    /// @throws std::invalid_argument if the connection->isConnected() is false
+    ///         or the refresh rate is negative.
+    void initialize(std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+                    QueryMode mode = QueryMode::Current,
+                    const std::chrono::seconds &refreshRate = std::chrono::seconds {3600});
+    /// @result True indicates that the poller class is initialized and
+    ///          ready to be started.
+    [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
 
     /// @name Start/Stop Polling Service
@@ -55,8 +65,8 @@ public:
 
     /// @brief Starts a service that continually queries the database
     ///        for the channel data. 
-    void start(const std::chrono::seconds &refreshRate = std::chrono::seconds {3600},
-               QueryMode mode = QueryMode::Current);
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    void start();
     /// @brief Stops the query service.
     void stop();
     /// @result True indicates the service is running.
@@ -80,16 +90,16 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~ChannelDataTablePollingService();
+    ~ChannelDataTablePoller();
     /// @}
 
-    ChannelDataTablePollingService& operator=(const ChannelDataTablePollingService &) = delete;
-    ChannelDataTablePollingService(const ChannelDataTablePollingService &) = delete;
-    ChannelDataTablePollingService(ChannelDataTablePollingService &&) noexcept = delete;
-    ChannelDataTablePollingService& operator=(ChannelDataTablePollingService &&) = delete;
+    ChannelDataTablePoller& operator=(const ChannelDataTablePoller &) = delete;
+    ChannelDataTablePoller(const ChannelDataTablePoller &) = delete;
+    ChannelDataTablePoller(ChannelDataTablePoller &&) noexcept = delete;
+    ChannelDataTablePoller& operator=(ChannelDataTablePoller &&) = delete;
 private:
-    class ChannelDataTablePollingServiceImpl;
-    std::unique_ptr<ChannelDataTablePollingServiceImpl> pImpl;
+    class ChannelDataTablePollerImpl;
+    std::unique_ptr<ChannelDataTablePollerImpl> pImpl;
 };
 }
 #endif

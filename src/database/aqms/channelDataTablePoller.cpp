@@ -3,18 +3,18 @@
 #include <thread>
 #include <condition_variable>
 #include <umps/logging/standardOut.hpp>
-#include "urts/database/aqms/channelDataTablePollingService.hpp"
+#include "urts/database/aqms/channelDataTablePoller.hpp"
 #include "urts/database/aqms/channelDataTable.hpp"
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/connection.hpp"
 
 using namespace URTS::Database::AQMS;
 
-class ChannelDataTablePollingService::ChannelDataTablePollingServiceImpl
+class ChannelDataTablePoller::ChannelDataTablePollerImpl
 {
 public:
     /// Constructor
-    ChannelDataTablePollingServiceImpl(
+    ChannelDataTablePollerImpl(
         std::shared_ptr<UMPS::Logging::ILog> logger) :
         mLogger(logger)
     {
@@ -25,7 +25,7 @@ public:
         mChannelDataTable = std::make_unique<ChannelDataTable> (mLogger);
     }
     /// Destructor
-    ~ChannelDataTablePollingServiceImpl()
+    ~ChannelDataTablePollerImpl()
     {
         stop();
     }
@@ -42,7 +42,7 @@ public:
         stop();
         mLogger->debug("Starting database polling service...");
         setKeepRunning(true);
-        mPollerThread = std::thread(&ChannelDataTablePollingServiceImpl::poll,
+        mPollerThread = std::thread(&ChannelDataTablePollerImpl::poll,
                                     this); 
     }
     /// Poll/Update
@@ -51,6 +51,24 @@ public:
         mLogger->debug("Beginning database polling loop...");
         while (keepRunning())
         {
+            // Update
+            try
+            {
+                if (mQueryMode == QueryMode::Current)
+                {
+                    mLogger->debug("Querying current channel data...");
+                    mChannelDataTable->queryCurrent();
+                }
+                else
+                {
+                    mLogger->debug("Querying all channel data...");
+                    mChannelDataTable->queryAll();
+                }
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->warn("Poller detected query error: " + std::string {e.what()});
+            }
             std::unique_lock<std::mutex> lock(mStopContext);
             mStopCondition.wait_for(lock,
                                     mRefreshRate,
@@ -107,17 +125,10 @@ public:
         mChannelDataTable->setConnection(connection);
         mConnected = mChannelDataTable->isConnected();
     }
-    bool isConnected() const noexcept
+    bool isInitialized() const noexcept
     {
         std::scoped_lock lock(mMutex);
-        return mConnected;
-    }
-    void setOptions(const std::chrono::seconds &refreshRate,
-                    const QueryMode mode)
-    {
-        std::scoped_lock lock(mMutex);
-        mRefreshRate = refreshRate;
-        mQueryMode = mode;
+        return mConnected && mInitialized;
     }
     [[nodiscard]] std::vector<ChannelData>
         getChannelData(const std::string &network,
@@ -146,59 +157,74 @@ public:
     QueryMode mQueryMode{QueryMode::Current};
     bool mKeepRunning{false};
     bool mConnected{false};
+    bool mInitialized{false};
 };
 
 /// C'tor
-ChannelDataTablePollingService::ChannelDataTablePollingService() :
-    pImpl(std::make_unique<ChannelDataTablePollingServiceImpl> (nullptr))
+ChannelDataTablePoller::ChannelDataTablePoller() :
+    pImpl(std::make_unique<ChannelDataTablePollerImpl> (nullptr))
 {
 }
 
-ChannelDataTablePollingService::ChannelDataTablePollingService(
+ChannelDataTablePoller::ChannelDataTablePoller(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ChannelDataTablePollingServiceImpl> (logger))
+    pImpl(std::make_unique<ChannelDataTablePollerImpl> (logger))
 {
 }
 
 /// Destructor
-ChannelDataTablePollingService::~ChannelDataTablePollingService() = default;
+ChannelDataTablePoller::~ChannelDataTablePoller() = default;
 
 /// Set connection
-void ChannelDataTablePollingService::setConnection(
-    std::shared_ptr<URTS::Database::Connection::IConnection> &connection)
+void ChannelDataTablePoller::initialize(
+    std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+    const QueryMode queryMode,
+    const std::chrono::seconds &refreshRate)
 {
+    if (!connection->isConnected())
+    {
+        throw std::invalid_argument("Session not connected");
+    }
+    if (refreshRate.count() < 0)
+    {
+        throw std::invalid_argument("Refresh rate must be positive");
+    }
+    pImpl->mInitialized = false;
     stop();
-    pImpl->setConnection(connection); 
+    // Create the connection
+    pImpl->setConnection(connection);
+    pImpl->mRefreshRate = refreshRate;
+    pImpl->mQueryMode = queryMode;
+    pImpl->mInitialized = true;
 }
 
-/// Connected?
-bool ChannelDataTablePollingService::isConnected() const noexcept
+/// Initialized?
+bool ChannelDataTablePoller::isInitialized() const noexcept
 {
-    return pImpl->isConnected();
+    return pImpl->isInitialized();
 }
 
 /// Stop the service
-void ChannelDataTablePollingService::stop()
+void ChannelDataTablePoller::stop()
 {
     pImpl->stop();
 }
 
 /// Starts the service
-void ChannelDataTablePollingService::start(
-    const std::chrono::seconds &refreshRate,
-    const QueryMode mode)
+void ChannelDataTablePoller::start()
 {
-    if (!isConnected()){throw std::runtime_error("Not connected");}
-    if (refreshRate.count() < 0)
-    {
-        throw std::invalid_argument("Refresh rate must be positive");
-    }
-    pImpl->setOptions(refreshRate, mode);
+    if (!isInitialized()){throw std::runtime_error("Not initialized");}
     pImpl->start();
 }
 
 /// Get result from query
-std::vector<ChannelData> ChannelDataTablePollingService::getChannelData(
+std::vector<ChannelData> ChannelDataTablePoller::getChannelData() const
+{
+    return pImpl->getChannelData();
+}
+
+
+std::vector<ChannelData> ChannelDataTablePoller::getChannelData(
     const std::string &network,
     const std::string &station,
     const std::string &channel,

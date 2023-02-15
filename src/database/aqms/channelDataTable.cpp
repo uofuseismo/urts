@@ -1,3 +1,4 @@
+#include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <string>
@@ -11,7 +12,7 @@
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/postgresql.hpp"
 
-#define COLUMNS "net, sta, seedchan, location, lat, lon, elev, azimuth, dip, samprate, EXTRACT(epoch FROM ondate), EXTRACT(epoch FROM offdate), EXTRACT(epoch FROM lddate) "
+#define COLUMNS "net, sta, seedchan, location, lat, lon, elev, azimuth, dip, samprate, EXTRACT(epoch FROM ondate) as ondate, EXTRACT(epoch FROM offdate) as offdate, EXTRACT(epoch FROM lddate) as lddate "
 
 using namespace URTS::Database::AQMS;
 
@@ -223,7 +224,7 @@ void ChannelDataTable::queryAll()
     }
     if (nRows != 1)
     {
-        pImpl->mLogger->debug("Unhandled case - querying table");
+        pImpl->mLogger->warn("Unhandled case - querying table");
         doQuery = true;
     }
     if (!doQuery && pImpl->mHaveAll)
@@ -241,8 +242,10 @@ void ChannelDataTable::queryAll()
     data.reserve(pImpl->mChannelSpaceEstimate);
     for (auto &it : rows)
     {
-        // Plus 1 deals with truncation of microseconds
-        std::chrono::microseconds thisLoadDate{it.getLoadDate().count() + 1};
+        // Plus 1 second deals with truncation issue when database
+        // performs equality test.
+        std::chrono::microseconds thisLoadDate{it.getLoadDate().count()
+                                             + 1000000};
         pImpl->mMostRecentLoadDate
             = std::max(pImpl->mMostRecentLoadDate, thisLoadDate);
         data.push_back(it);
@@ -278,10 +281,10 @@ void ChannelDataTable::queryCurrent()
         nRows = nRows + 1;
     }   
     if (nRows != 1)
-    {   
-        pImpl->mLogger->debug("Unhandled case - querying table");
+    {
+        pImpl->mLogger->warn("Unhandled case - querying table");
         doQuery = true;
-    }   
+    }
     if (!doQuery && pImpl->mHaveCurrent)
     {   
         pImpl->mLogger->debug("No update detected");
@@ -306,8 +309,10 @@ void ChannelDataTable::queryCurrent()
     data.reserve(pImpl->mChannelSpaceEstimate);
     for (auto &it : rows)
     {
-        // Plus 1 deals with truncation on microseconds
-        std::chrono::microseconds thisLoadDate{it.getLoadDate().count() + 1}; 
+        // Plus 1 second deals with truncation issue when database
+        // performs equality test.
+        std::chrono::microseconds thisLoadDate{it.getLoadDate().count()
+                                             + 1000000}; 
         pImpl->mMostRecentLoadDate
             = std::max(pImpl->mMostRecentLoadDate, thisLoadDate);
         data.push_back(it);
