@@ -28,6 +28,9 @@ var hierarchy =
       [ "URTS::Services::Standalone::Incrementer::ItemsRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_request.html", null ],
       [ "URTS::Services::Standalone::Incrementer::ItemsResponse", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_response.html", null ]
     ] ],
+    [ "URTS::ObserverPattern::IObserver", "class_u_r_t_s_1_1_observer_pattern_1_1_i_observer.html", null ],
+    [ "URTS::ObserverPattern::ISubject", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html", null ],
+    [ "Message", "class_message.html", null ],
     [ "URTS::Database::Connection::PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html", null ],

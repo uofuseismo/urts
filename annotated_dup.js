@@ -39,6 +39,10 @@ var annotated_dup =
           [ "PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l" ]
         ] ]
       ] ],
+      [ "ObserverPattern", null, [
+        [ "IObserver", "class_u_r_t_s_1_1_observer_pattern_1_1_i_observer.html", "class_u_r_t_s_1_1_observer_pattern_1_1_i_observer" ],
+        [ "ISubject", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject" ]
+      ] ],
       [ "Services", null, [
         [ "Scalable", null, [
           [ "Detectors", null, [
@@ -87,5 +91,6 @@ var annotated_dup =
           ] ]
         ] ]
       ] ]
-    ] ]
+    ] ],
+    [ "Message", "class_message.html", null ]
 ];
