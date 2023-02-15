@@ -78,6 +78,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/subscriber.cpp
     src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
+    src/database/aqms/channelData.cpp
     src/database/connection/postgresql.cpp
     src/services/standalone/incrementer/counter.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
@@ -136,10 +137,10 @@ set_target_properties(urts PROPERTIES
 target_include_directories(urts
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            PUBLIC ${UMPS_INCLUDE_DIR}
-                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS}
+                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR}
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
 target_link_libraries(urts
-                      PRIVATE ${UMPS_LIBRARY}
+                      PRIVATE ${UMPS_LIBRARY} ${Time_LIBRARY}
                               SOCI::soci_postgresql Boost::date_time Threads::Threads)
 if (${BUILD_MSEED})
    target_include_directories(urts PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
@@ -168,6 +169,7 @@ endif()
 file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
+    testing/database/aqms.cpp
     testing/broadcasts/internal/dataPacket.cpp
     testing/broadcasts/internal/pick.cpp
     testing/services/standalone/incrementer.cpp
@@ -189,7 +191,7 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES}
-                                             ${UUSSMLModels_LIBRARY})
+                                             ${UUSSMLModels_LIBRARY} ${Time_LIBRARY})
 target_include_directories(unitTests
                            PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
                                    ${UUSSMLModels_INCLUDE_DIR}
@@ -207,8 +209,8 @@ set_target_properties(incrementerService PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_include_directories(incrementerService PRIVATE
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+target_include_directories(incrementerService
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
 target_link_libraries(incrementerService
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
@@ -218,8 +220,8 @@ set_target_properties(packetCacheService PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_include_directories(packetCacheService PRIVATE
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+target_include_directories(packetCacheService
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
 target_link_libraries(packetCacheService
                       PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
@@ -246,8 +248,8 @@ if (${BUILD_SEEDLINK})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO) 
-   target_include_directories(broadcastSEEDLink PRIVATE
-                              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+   target_include_directories(broadcastSEEDLink
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_link_libraries(broadcastSEEDLink
                          PRIVATE urts ${UMPS_LIBRARY}
@@ -256,14 +258,25 @@ if (${BUILD_SEEDLINK})
 endif()
 
 if (${BUILD_UUSS_MLMODELS})
+   add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
+   set_target_properties(mlDetector PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO)
    set_target_properties(uNetThreeComponentPService PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
-   target_include_directories(uNetThreeComponentPService PRIVATE
-                              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+   target_include_directories(mlDetector
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
+   target_include_directories(uNetThreeComponentPService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
+   target_link_libraries(mlDetector
+                         PRIVATE urts ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
