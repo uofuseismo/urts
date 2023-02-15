@@ -2,7 +2,7 @@ var hierarchy =
 [
     [ "URTS::Services::Scalable::PacketCache::CappedCollection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html", null ],
     [ "URTS::Database::AQMS::ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", null ],
-    [ "URTS::Database::AQMS::ChannelDataTablePollingService", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html", null ],
+    [ "URTS::Database::AQMS::ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", null ],
     [ "URTS::Services::Scalable::PacketCache::CircularBuffer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", null ],

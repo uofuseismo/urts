@@ -12,7 +12,7 @@ var NAVTREEINDEX0 =
 "capped_collection_8hpp_source.html":[4,0,0,0,3,0,1,2],
 "channel_data_8hpp_source.html":[4,0,0,0,1,0,0],
 "channel_data_table_8hpp_source.html":[4,0,0,0,1,0,1],
-"channel_data_table_polling_service_8hpp_source.html":[4,0,0,0,1,0,2],
+"channel_data_table_poller_8hpp_source.html":[4,0,0,0,1,0,2],
 "circular_buffer_8hpp_source.html":[4,0,0,0,3,0,1,3],
 "class_message.html":[3,0,1],
 "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html":[2,0,0,1,0,0,0],

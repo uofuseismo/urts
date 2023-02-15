@@ -34,7 +34,7 @@ var annotated_dup =
         [ "AQMS", null, [
           [ "ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data" ],
           [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table" ],
-          [ "ChannelDataTablePollingService", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service" ]
+          [ "ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller" ]
         ] ],
         [ "Connection", null, [
           [ "IConnection", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection" ],
