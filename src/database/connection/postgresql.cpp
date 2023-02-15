@@ -1,4 +1,6 @@
+#include <iostream>
 #include <string>
+#include <cstring>
 #include <soci/soci.h>
 #include <soci/postgresql/soci-postgresql.h>
 #include <boost/program_options.hpp>
@@ -12,14 +14,41 @@ using namespace URTS::Database::Connection;
 class PostgreSQL::PostgreSQLImpl
 {
 public:
+    PostgreSQLImpl()
+    {
+        mSessionPtr = &mSession;
+        const char *userPtr = std::getenv("URTS_AQMS_RDONLY_USER");
+        if (userPtr != nullptr)
+        {
+            if (std::strlen(userPtr) > 0)
+            {
+                mUser = std::string{userPtr};
+            }
+        }
+        const char *passwordPtr = std::getenv("URTS_AQMS_RDONLY_PASSWORD");
+        if (passwordPtr != nullptr)
+        {
+            if (std::strlen(passwordPtr) > 0)
+            {
+                mPassword = std::string{passwordPtr};
+            }
+        }
+        const char *databasePtr = std::getenv("URTS_AQMS_DATABASE_NAME");
+        if (databasePtr != nullptr)
+        {
+            if (std::strlen(databasePtr) > 0)
+            {
+                mDatabaseName = std::string {databasePtr};
+            }
+        }
+std::cout << "yo " << mUser << " " << mPassword << " " << mDatabaseName<< std::endl;
+    }
     soci::session mSession;
+    void *mSessionPtr{nullptr};
     std::string mConnectionString;
-    std::string mUser{std::string(std::getenv("URTS_AQMS_RDONLY_USER"))};
-    std::string mPassword{
-        std::string(std::getenv("URTS_AQMS_RDONLY_PASSWORD"))};
-    std::string mDatabaseName{
-        std::string(std::getenv("URTS_AQMS_DATABASE"))
-    };
+    std::string mUser;
+    std::string mPassword;
+    std::string mDatabaseName;
     std::string mAddress{"127.0.0.1"};
     std::string mApplication{"urts"};
     int mPort{5432};
@@ -209,9 +238,14 @@ bool PostgreSQL::isConnected() const noexcept
     return pImpl->mSession.is_connected();
 }
 
-soci::session *PostgreSQL::getSession() const
+std::uintptr_t PostgreSQL::getSession() const
 {
-    return &pImpl->mSession;
+    return reinterpret_cast<std::uintptr_t> (pImpl->mSessionPtr);
+}
+
+DatabaseType PostgreSQL::getDatabaseType() const noexcept
+{
+    return DatabaseType::PostgreSQL;
 }
 
 /// Load the connection information

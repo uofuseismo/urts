@@ -1,16 +1,13 @@
 #ifndef URTS_DATABASE_CONNECTION_POSTGRESQL_HPP
 #define URTS_DATABASE_CONNECTION_POSTGRESQL_HPP
 #include <memory>
-namespace soci
-{
- class session;
-}
+#include "urts/database/connection/connection.hpp"
 namespace URTS::Database::Connection
 {
 /// @name PostgreSQL "postgresql.hpp" "urts/database/connection/postgresql.hpp"
-/// @brief Defines a PostGresSQL connection.
+/// @brief Defines a PostgreSQL connection.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license. 
-class PostgreSQL
+class PostgreSQL : public URTS::Database::Connection::IConnection
 {
 public:
     /// @name Constructors
@@ -123,12 +120,15 @@ public:
     /// @brief Establishes a connection from the above resources.
     void connect();
     /// @result True indicates the connection was established.
-    [[nodiscard]] bool isConnected() const noexcept;
+    [[nodiscard]] bool isConnected() const noexcept override final;
     /// @}
 
     /// @result A shared pointer to the session.
     /// @throws std::runtime_error if \c isConnected() is false.
-    [[nodiscard]] soci::session *getSession() const;
+    [[nodiscard]] std::uintptr_t getSession() const override final;
+
+    /// @result The database type.
+    [[nodiscard]] DatabaseType getDatabaseType() const noexcept override final;
 
     /// @brief Loads the database connection information from an
     ///        initialization file.
@@ -137,8 +137,9 @@ public:
     ///                      with the requisite connection information.
     /// @throws std::invalid_argument if fileName cannot be found or
     ///         information cannot be found.
-    /// @note The user and password, if not specified, will be extracted
-    ///       from the URTS_AQMS_RDONLY_USER and URTS_AQMS_RDONLY_PASSWORD
+    /// @note The user, password and database name, if not specified, will
+    ///       be extracted from the URTS_AQMS_RDONLY_USER,
+    ///       URTS_AQMS_RDONLY_PASSWORD, and URTS_AQMS_RDONLY_DATABASE_NAME
     ///       environment variables, respectively.
     void parseInitializationFile(const std::string &fileName,
                                  const std::string &section = "AQMSPostgreSQL");
