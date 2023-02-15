@@ -7,6 +7,9 @@ var hierarchy =
     [ "URTS::Broadcasts::External::SEEDLink::Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Counter", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html", null ],
+    [ "URTS::Database::Connection::IConnection", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html", [
+      [ "URTS::Database::Connection::PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", null ]
+    ] ],
     [ "UMPS::MessageFormats::IMessage", null, [
       [ "URTS::Broadcasts::External::Earthworm::TraceBuf2< T >", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html", null ],
       [ "URTS::Broadcasts::Internal::DataPacket::DataPacket", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html", null ],
@@ -29,9 +32,10 @@ var hierarchy =
       [ "URTS::Services::Standalone::Incrementer::ItemsResponse", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_response.html", null ]
     ] ],
     [ "URTS::ObserverPattern::IObserver", "class_u_r_t_s_1_1_observer_pattern_1_1_i_observer.html", null ],
-    [ "URTS::ObserverPattern::ISubject", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html", null ],
+    [ "URTS::ObserverPattern::ISubject", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html", [
+      [ "URTS::Database::AQMS::ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", null ]
+    ] ],
     [ "Message", "class_message.html", null ],
-    [ "URTS::Database::Connection::PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher_options.html", null ],

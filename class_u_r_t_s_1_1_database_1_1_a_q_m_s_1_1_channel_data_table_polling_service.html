@@ -103,6 +103,8 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_database_1_1_a_q_m_s
 
 <p>A utility service that polls the database and updates channel the channel information.  
  <a href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#details">More...</a></p>
+
+<p><code>#include &quot;<a class="el" href="channel_data_table_polling_service_8hpp_source.html">urts/database/aqms/ChannelDataTablePollingService.hpp</a>&quot;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -136,10 +138,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9d43cf8ef7bfa096d36fee7dc65a9b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with given logger. <br /></td></tr>
 <tr class="separator:a9d43cf8ef7bfa096d36fee7dc65a9b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Initialization</div></td></tr>
-<tr class="memitem:a383c5a9062dfa15b1f6639df3c8fd06c"><td class="memItemLeft" align="right" valign="top"><a id="a383c5a9062dfa15b1f6639df3c8fd06c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#a383c5a9062dfa15b1f6639df3c8fd06c">setConnection</a> (std::shared_ptr&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html">URTS::Database::Connection::PostgreSQL</a> &gt; &amp;connection)</td></tr>
-<tr class="memdesc:a383c5a9062dfa15b1f6639df3c8fd06c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a connection to the AQMS database. <br /></td></tr>
-<tr class="separator:a383c5a9062dfa15b1f6639df3c8fd06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac13cfdd3468f204e75332a1762819732"><td class="memItemLeft" align="right" valign="top"><a id="ac13cfdd3468f204e75332a1762819732"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#ac13cfdd3468f204e75332a1762819732">setConnection</a> (std::shared_ptr&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html">URTS::Database::Connection::IConnection</a> &gt; &amp;connection)</td></tr>
+<tr class="memdesc:ac13cfdd3468f204e75332a1762819732"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a connection to the AQMS database. <br /></td></tr>
+<tr class="separator:ac13cfdd3468f204e75332a1762819732"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7759bacb69691e24e9d307cd45ca280"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#ae7759bacb69691e24e9d307cd45ca280">isConnected</a> () const noexcept</td></tr>
 <tr class="separator:ae7759bacb69691e24e9d307cd45ca280"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Start/Stop Polling Service</div></td></tr>
@@ -154,6 +156,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:aed7d3cdeb1144be9c5b5d6403d07b1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac27a4a5acc0cb99e2273fb45d5fc8775"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#ac27a4a5acc0cb99e2273fb45d5fc8775">isRunning</a> () const noexcept</td></tr>
 <tr class="separator:ac27a4a5acc0cb99e2273fb45d5fc8775"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c3de9c03a265cb3b8f818f9ccc2206"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html">ChannelData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#af1c3de9c03a265cb3b8f818f9ccc2206">getChannelData</a> () const</td></tr>
+<tr class="separator:af1c3de9c03a265cb3b8f818f9ccc2206"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf2797647dc12389cbbed8ca0c08c777"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html">ChannelData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html#acf2797647dc12389cbbed8ca0c08c777">getChannelData</a> (const std::string &amp;network, const std::string &amp;station, const std::string &amp;channel, const std::string &amp;locationCode) const</td></tr>
 <tr class="separator:acf2797647dc12389cbbed8ca0c08c777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
@@ -197,8 +201,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="af1c3de9c03a265cb3b8f818f9ccc2206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1c3de9c03a265cb3b8f818f9ccc2206">&#9670;&nbsp;</a></span>getChannelData() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html">ChannelData</a>&gt; URTS::Database::AQMS::ChannelDataTablePollingService::getChannelData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The channel data for all the queried stations. </dd></dl>
+
+</div>
+</div>
 <a id="acf2797647dc12389cbbed8ca0c08c777"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf2797647dc12389cbbed8ca0c08c777">&#9670;&nbsp;</a></span>getChannelData()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#acf2797647dc12389cbbed8ca0c08c777">&#9670;&nbsp;</a></span>getChannelData() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,6 +256,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">network</td><td>The network code to match. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">station</td><td>The station code to match. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">channel</td><td>The channel code to match. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationCode</td><td>The location code to match. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>The channel data matching this network, station, channel, location code. Note, if the QueryMode is ALL then you may get multiple matches that correspond to different epochs. </dd></dl>
 
 </div>
@@ -291,7 +322,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/urts/database/aqms/<a class="el" href="channel_data_8hpp_source.html">channelData.hpp</a></li>
+<li>include/urts/database/aqms/<a class="el" href="channel_data_table_polling_service_8hpp_source.html">channelDataTablePollingService.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -299,7 +330,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Database</b></li><li class="navelem"><b>AQMS</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_polling_service.html">ChannelDataTablePollingService</a></li>
-    <li class="footer">Generated on Wed Feb 15 2023 15:48:33 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Feb 15 2023 18:51:29 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
