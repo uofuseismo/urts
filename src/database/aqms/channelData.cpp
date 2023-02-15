@@ -1,11 +1,11 @@
 #include <iomanip>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <mutex>
 #include <thread>
 #include <soci/soci.h>
 #include <soci/postgresql/soci-postgresql.h>
-#include <time/utc.hpp>
 #include <umps/logging/standardOut.hpp>
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/postgresql.hpp"
@@ -64,19 +64,26 @@ template<> struct soci::type_conversion<ChannelData>
         }
 
         data.setSamplingRate(v.get<double> ("samprate"));
-        auto onDate = ::fromTM(v.get<std::tm> ("ondate"));
-        Time::UTC offDate(2114380800); // 2037
+        double onDate{v.get<double> ("ondate")};
+        double offDate(2114380800); // 2037
         try
         {
-            auto offDate = ::fromTM(v.get<std::tm> ("offdate"));
+            offDate = v.get<double> ("offdate");
         }
         catch (...)
         {
         }
-        data.setOnOffDate(std::pair(onDate, offDate));
-
-        auto loadDate = ::fromTM(v.get<std::tm> ("lddate"));
-        data.setLoadDate(loadDate); 
+        double loadDate{v.get<double> ("lddate")};    
+        // Conversions
+        std::chrono::microseconds
+            onDateMuS{ static_cast<int64_t> (std::round(onDate*1.e6)) };
+        std::chrono::microseconds
+            offDateMuS{ static_cast<int64_t> (std::round(offDate*1.e6)) };
+        std::chrono::microseconds
+            loadDateMuS{ static_cast<int64_t> (std::round(loadDate*1.e6)) };
+        // Set it
+        data.setOnOffDate(std::pair{onDateMuS, offDateMuS});
+        data.setLoadDate(loadDateMuS);
     }   
 };
 
@@ -211,7 +218,7 @@ bool URTS::Database::AQMS::operator!=(
 
 
 ///--------------------------------------------------------------------------///
-///                          Station Data                                    ///
+///                          Channel Data                                    ///
 ///--------------------------------------------------------------------------///
 class ChannelData::ChannelDataImpl
 {
@@ -220,9 +227,9 @@ public:
     std::string mStation;
     std::string mChannel;
     std::string mLocationCode;
-    Time::UTC mOnDate;
-    Time::UTC mOffDate;
-    Time::UTC mLoadDate;
+    std::chrono::microseconds mOnDate{0};
+    std::chrono::microseconds mOffDate{0};
+    std::chrono::microseconds mLoadDate{0};
     double mLatitude{0};
     double mLongitude{0};
     double mElevation{0};
@@ -478,25 +485,28 @@ bool ChannelData::haveDip() const noexcept
 }
 
 /// On/off date
-void ChannelData::setOnOffDate(const std::pair<Time::UTC, Time::UTC> &onOffDate)
+void ChannelData::setOnOffDate(
+    const std::pair<std::chrono::microseconds,
+                    std::chrono::microseconds> &onOffDate)
 {
-    if (onOffDate.first.getEpoch() >= onOffDate.second.getEpoch())
+     
+    if (onOffDate.first >= onOffDate.second)
     {   
         throw std::invalid_argument(
             "onOffDate.first must be less than onOffDate.second");
-    }   
+    }
     pImpl->mOnDate = onOffDate.first;
     pImpl->mOffDate = onOffDate.second;
     pImpl->mHaveOnOffDate = true;
 }
 
-Time::UTC ChannelData::getOnDate() const
+std::chrono::microseconds ChannelData::getOnDate() const
 {
     if (!haveOnOffDate()){throw std::runtime_error("On/off date not set");}
     return pImpl->mOnDate;
 }
 
-Time::UTC ChannelData::getOffDate() const
+std::chrono::microseconds ChannelData::getOffDate() const
 {
     if (!haveOnOffDate()){throw std::runtime_error("On/off date not set");}
     return pImpl->mOffDate;
@@ -508,13 +518,14 @@ bool ChannelData::haveOnOffDate() const noexcept
 }
 
 /// Last modified
-void ChannelData::setLoadDate(const Time::UTC &loadDate) noexcept
+void ChannelData::setLoadDate(
+    const std::chrono::microseconds &loadDateMuS) noexcept
 {
-    pImpl->mLoadDate = loadDate;
+    pImpl->mLoadDate = loadDateMuS;
     pImpl->mHaveLoadDate = true;
 }
 
-Time::UTC ChannelData::getLoadDate() const 
+std::chrono::microseconds ChannelData::getLoadDate() const 
 {
     if (!haveLoadDate())
     {

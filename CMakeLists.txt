@@ -80,6 +80,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/database/aqms/channelData.cpp
     src/database/connection/postgresql.cpp
+    src/observerPattern/subject.cpp
     src/services/standalone/incrementer/counter.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
     src/services/standalone/incrementer/incrementResponse.cpp
@@ -191,7 +192,7 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES}
-                                             ${UUSSMLModels_LIBRARY} ${Time_LIBRARY})
+                                             ${UUSSMLModels_LIBRARY})
 target_include_directories(unitTests
                            PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
                                    ${UUSSMLModels_INCLUDE_DIR}

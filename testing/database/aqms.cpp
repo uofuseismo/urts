@@ -1,7 +1,6 @@
 #include <string>
 #include "urts/database/aqms/channelData.hpp"
 //#include "urts/database/aqms/stationData.hpp"
-#include <time/utc.hpp>
 #include <gtest/gtest.h>
 
 namespace
@@ -56,9 +55,9 @@ TEST(DatabaseAQMS, ChannelData)
     const double elevation = 1833;    
     const double dip =-90;
     const double azimuth = 45;  // Make up a bogus number for testing
-    Time::UTC tOn("2012-01-01T00:00:00");
-    Time::UTC tOff("2021-01-01T00:00:00");
-    Time::UTC loadDate("2012-01-01T00:00:01");
+    std::chrono::microseconds tOn{1325376000000000}; // 2012-01-01T00:00:00
+    std::chrono::microseconds tOff{1609459200000000}; // 2021-01-01T00:00:00
+    std::chrono::microseconds loadDate{1325376001000000}; // 2012-01-01T00:00:01
     ChannelData data;
     data.setNetwork(network);
     data.setStation(station);

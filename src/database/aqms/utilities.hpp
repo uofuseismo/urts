@@ -1,13 +1,16 @@
 #ifndef PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #define PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #include <iostream>
-#include <time/utc.hpp>
+//#include <time/utc.hpp>
 #ifndef NDEBUG
 #include <cassert>
 #endif
 namespace
 {
 
+/*
+[[maybe_unused]]
+[[nodiscard]]
 Time::UTC fromTM(const std::tm &tm)
 {
    Time::UTC result;
@@ -51,6 +54,7 @@ Time::UTC fromTM(const std::tm &tm)
    result.setSecond(second);
    return result;
 }
+*/
 
 [[maybe_unused]]
 [[nodiscard]]

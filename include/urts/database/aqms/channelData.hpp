@@ -3,10 +3,6 @@
 #include <memory>
 #include <vector>
 #include <chrono>
-namespace Time
-{
- class UTC;
-}
 namespace UMPS::Logging
 {
  class ILog;
@@ -199,13 +195,16 @@ public:
     /// @param[in] onOffDate  onOffDate.first is the on date of the station
     ///                       and onOffDate.second is the off date.
     /// @throws std::invalid_argument if onOffDate.first >= onOffDate.second.
-    void setOnOffDate(const std::pair<Time::UTC, Time::UTC> &onOffDate);
-    /// @result The date when this station was turned on.
+    /// @note Times are UTC and specified in microseconds since the epoch.
+    void setOnOffDate(const std::pair<std::chrono::microseconds, std::chrono::microseconds> &onOffDate);
+    /// @result The time (UTC) when this station was turned on in microseconds
+    ///         since the epoch.
     /// @throws std::runtime_error if \c haveOnOffDate() is false.
-    [[nodiscard]] Time::UTC getOnDate() const;
-    /// @result The date when this station may be turned off.
+    [[nodiscard]] std::chrono::microseconds getOnDate() const;
+    /// @result The time (UTC) when this station may be turned off in
+    ///          microseconds since the epoch.
     /// @throws std::runtime_error if \c haveOnOffDate() is false.
-    [[nodiscard]] Time::UTC getOffDate() const;
+    [[nodiscard]] std::chrono::microseconds getOffDate() const;
     /// @result True indicates the on/off date was set.
     [[nodiscard]] bool haveOnOffDate() const noexcept;
     /// @}
@@ -214,10 +213,12 @@ public:
     /// @{
 
     /// @brief Sets the load date of the channel.
-    void setLoadDate(const Time::UTC &loadDate) noexcept;
-    /// @result The channel's load date.
+    /// @param[in] loadDate  The time (UTC) in microseconds since the epoch when
+    ///                      the station was loaded in the database.
+    void setLoadDate(const std::chrono::microseconds &loadDate) noexcept;
+    /// @result The channel's load date (UTC) in micrseconds since the epoch.
     /// @throws std::runtime_error if \c haveLoadDate() is false.
-    [[nodiscard]] Time::UTC getLoadDate() const;
+    [[nodiscard]] std::chrono::microseconds getLoadDate() const;
     /// @result True indicates the load date was set.
     [[nodiscard]] bool haveLoadDate() const noexcept;
     /// @}
