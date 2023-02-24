@@ -1,5 +1,5 @@
-#ifndef URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_UNET_DETECTOR_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
@@ -16,9 +16,9 @@ public:
     /// @brief Defines the service's return code.
     enum ReturnCode
     {
-        Success = 0,          /*!< The signals were successfully pre-processed. */
+        Success = 0,          /*!< The signals were successfully preprocessed. */
         InvalidMessage = 1,   /*!< The request message was invalid. */
-        AlgorithmFailure = 2  /*!< The pre-processing algorithm failed. */
+        AlgorithmFailure = 2  /*!< The preprocessing algorithm failed. */
     };
 public:
     /// @name Constructors
@@ -134,7 +134,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result A message type indicating this is a pick message.
+    /// @result Uniquely defines this message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;

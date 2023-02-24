@@ -1,13 +1,12 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_INFERENCE_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNOneComponentP
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
-/// @brief The probability of each sample in a processed three-component signal
-///        being a P arrival or noise.
+/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/pickers/cnnOneComponentP/inferenceResponse.hpp"
+/// @brief The correction to add to the P pick.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceResponse : public UMPS::MessageFormats::IMessage
 {
@@ -34,24 +33,18 @@ public:
     InferenceResponse(InferenceResponse &&response) noexcept;
     /// @}
 
-    /// @name Probability Signals
+    /// @name Pick Correction
     /// @{
 
-    /// @brief Sets the posterior probability signal.
-    /// @param[in] probabilitySignal  The probability of each sample 
-    ///                               corresponding to a phase arrival.
-    void setProbabilitySignal(const std::vector<double> &probabilitySignal);
-    /// @brief Sets the posterior probabiltiy signal.
-    /// @param[in,out] probabilitySignal  The probability of each sample
-    ///                                   corresponding to a phase arrival.
-    ///                                   On exit, probabilitySignal's behavior
-    ///                                   is undefined.
-    void setProbabilitySignal(std::vector<double> &&probabilitySignal);
-    /// @result The probability signal.
-    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
-    [[nodiscard]] std::vector<double> getProbabilitySignal() const;
-    /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveProbabilitySignal() const noexcept;
+    /// @brief Sets the correction to add to the P pick.
+    /// @param[in] correction  The correction, in seconds, to add to the 
+    ///                        original P pick.
+    void setCorrection(double correction);
+    /// @result The correction to add to the P pick.
+    /// @throws std::runtime_error if \c haveCorrection() is false.
+    [[nodiscard]] double getCorrection() const;
+    /// @result True indicates that the P correction was set.
+    [[nodiscard]] bool haveCorrection() const noexcept;
     /// @}
 
     /// @name Return Code
@@ -65,18 +58,6 @@ public:
     [[nodiscard]] ReturnCode getReturnCode() const;
     /// @result True indicates the return code was set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
-    /// @}
-
-    /// @name Sampling Rate
-    /// @{
-
-    /// @brief Sets the sampling rate of the processed signals.
-    /// @param[in] samplingRate  The sampling rate of the signal in Hz.
-    /// @throws std::invalid_argument if the sampling rate is not positive.
-    void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the processed signals.
-    /// @note By default this is 100 Hz.
-    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
     /// @name Response Identifier
@@ -111,7 +92,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result Uniquely defines this message type.
+    /// @result A message type indicating this is a pick message.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
@@ -120,7 +101,6 @@ public:
     /// @result An uninitialized instance of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
     /// @}
-
 
     /// @name Operators
     /// @{

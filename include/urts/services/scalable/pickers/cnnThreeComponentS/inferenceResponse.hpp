@@ -1,13 +1,12 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_INFERENCE_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_INFERENCE_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
-/// @brief The probability of each sample in a processed three-component signal
-///        being a P arrival or noise.
+/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.hpp"
+/// @brief The correction to add to the S pick.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceResponse : public UMPS::MessageFormats::IMessage
 {
@@ -34,24 +33,18 @@ public:
     InferenceResponse(InferenceResponse &&response) noexcept;
     /// @}
 
-    /// @name Probability Signals
+    /// @name Pick Correction
     /// @{
 
-    /// @brief Sets the posterior probability signal.
-    /// @param[in] probabilitySignal  The probability of each sample 
-    ///                               corresponding to a phase arrival.
-    void setProbabilitySignal(const std::vector<double> &probabilitySignal);
-    /// @brief Sets the posterior probabiltiy signal.
-    /// @param[in,out] probabilitySignal  The probability of each sample
-    ///                                   corresponding to a phase arrival.
-    ///                                   On exit, probabilitySignal's behavior
-    ///                                   is undefined.
-    void setProbabilitySignal(std::vector<double> &&probabilitySignal);
-    /// @result The probability signal.
-    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
-    [[nodiscard]] std::vector<double> getProbabilitySignal() const;
-    /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveProbabilitySignal() const noexcept;
+    /// @brief Sets the correction to add to the S pick.
+    /// @param[in] correction  The correction, in seconds, to add to the 
+    ///                        original S pick.
+    void setCorrection(const double correction);
+    /// @result The correction to add to the S pick.
+    /// @throws std::runtime_error if \c haveCorrection() is false.
+    [[nodiscard]] double getCorrection() const;
+    /// @result True indicates that the S correction was set.
+    [[nodiscard]] bool haveCorrection() const noexcept;
     /// @}
 
     /// @name Return Code

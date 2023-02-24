@@ -1,57 +1,59 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_PROCESSING_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_PROCESSING_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
-/// @brief The probability of each sample in a processed three-component signal
-///        being a P arrival or noise.
+/// @class ProcessingResponse "processingResponse.hpp" "urts/services/scalable/pickers/cnnThreeComponentS/processingResponse.hpp"
+/// @brief Given a three-comopnent waveform with the initial pick centered in
+///        the middle of the waveform this is the correction to add to that pick
+///        in seconds.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class InferenceResponse : public UMPS::MessageFormats::IMessage
+class ProcessingResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @brief Defines the service's return code.
     enum ReturnCode
     {
-        Success = 0,           /*!< Inference was successfully performed on the signals. */
-        InvalidMessage = 1,    /*!< The request message was invalid. */
-        AlgorithmFailure = 2   /*!< The inference algorithm failed. */
+        Success = 0,                 /*!< Inference was successfully performed
+                                          on the signals. */
+        InvalidMessage = 1,          /*!< The request message was invalid. */
+        PreprocessingFailure = 2,    /*!< The preprocessing failed. */
+        ProcessedSignalTooSmall = 3, /*!< After preprocessing the resulting
+                                          signal is too small on which to
+                                          perform inference. */
+        InvalidProcessedSignalLength = 4, /*!< The processed signal has an
+                                               invalid length  .*/
+        InferenceFailure = 5         /*!< The inference algorithm failed.  */
     };
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    InferenceResponse();
+    ProcessingResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    InferenceResponse(const InferenceResponse &response);
+    ProcessingResponse(const ProcessingResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] response  The response from which to initialize this class.
     ///                         On exit, response's behavior is undefined.
-    InferenceResponse(InferenceResponse &&response) noexcept;
+    ProcessingResponse(ProcessingResponse &&response) noexcept;
     /// @}
 
-    /// @name Probability Signals
+    /// @name Pick Correction
     /// @{
 
-    /// @brief Sets the posterior probability signal.
-    /// @param[in] probabilitySignal  The probability of each sample 
-    ///                               corresponding to a phase arrival.
-    void setProbabilitySignal(const std::vector<double> &probabilitySignal);
-    /// @brief Sets the posterior probabiltiy signal.
-    /// @param[in,out] probabilitySignal  The probability of each sample
-    ///                                   corresponding to a phase arrival.
-    ///                                   On exit, probabilitySignal's behavior
-    ///                                   is undefined.
-    void setProbabilitySignal(std::vector<double> &&probabilitySignal);
-    /// @result The probability signal.
-    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
-    [[nodiscard]] std::vector<double> getProbabilitySignal() const;
-    /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveProbabilitySignal() const noexcept;
+    /// @brief Sets the correction to add to the S pick.
+    /// @param[in] correction  The correction, in seconds, to add to the 
+    ///                        original S pick.
+    void setCorrection(double correction);
+    /// @result The correction to add to the S pick.
+    /// @throws std::runtime_error if \c haveCorrection() is false.
+    [[nodiscard]] double getCorrection() const;
+    /// @result True indicates that the S correction was set.
+    [[nodiscard]] bool haveCorrection() const noexcept;
     /// @}
 
     /// @name Return Code
@@ -126,9 +128,9 @@ public:
     /// @{
 
     /// @result A deep copy of the response.
-    InferenceResponse& operator=(const InferenceResponse &response);
+    ProcessingResponse& operator=(const ProcessingResponse &response);
     /// @result The memory moved from the response to this.
-    InferenceResponse& operator=(InferenceResponse &&response) noexcept;
+    ProcessingResponse& operator=(ProcessingResponse &&response) noexcept;
     /// @}
 
     /// @name Destructors
@@ -137,7 +139,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~InferenceResponse() override;
+    ~ProcessingResponse() override;
     /// @} 
 private:
     class ResponseImpl;

@@ -118,7 +118,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result A message type indicating this is a pick message.
+    /// @result Uniquely defines this message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;

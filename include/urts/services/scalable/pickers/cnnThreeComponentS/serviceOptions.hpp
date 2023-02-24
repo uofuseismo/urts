@@ -1,14 +1,14 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_OPTIONS_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_OPTIONS_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_SERVICE_OPTIONS_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_SERVICE_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS
 {
-/// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/serviceOptions.hpp"
+/// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/pickers/cnnThreeComponentS/serviceOptions.hpp"
 /// @brief The options that define the backend service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ServiceOptions
@@ -52,16 +52,6 @@ public:
     /// @result The memory from options moved to this.
     ServiceOptions& operator=(ServiceOptions &&options) noexcept;
     /// @}
-
-    /// @brief Loads the options from an initialization file.
-    /// @param[in] fileName   The name of the initialization file.
-    /// @param[in] section    The section of the initialization file with the
-    ///                       packet cache service options to be parsed.
-    /// @throws std::invalid_argument if the initialization file does not,
-    ///         exist cannot be parsed, does not have the specified section,
-    ///         or has incorrect information.
-    //void parseInitializationFile(const std::string &fileName,
-    //                             const std::string &section = "UNetThreeComponentP");
 
     /// @name Machine Learning Model Required Options
     /// @{

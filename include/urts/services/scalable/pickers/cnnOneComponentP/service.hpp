@@ -1,5 +1,5 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_SERVICE_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_SERVICE_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_SERVICE_HPP
 #include <memory>
 namespace UMPS
 {
@@ -12,14 +12,14 @@ namespace UMPS
   class Context;
  }
 }
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNOneComponentP
 {
  class ServiceOptions;
 }
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNOneComponentP
 {
-/// @class Service "service.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/service.hpp"
-/// @brief Runs the three-component UNet detector service.
+/// @class Service "service.hpp" "urts/services/scalable/pickers/cnnOneComponentP/service.hpp"
+/// @brief Runs the CNN P pick regressor service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Service
 {

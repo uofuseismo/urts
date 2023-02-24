@@ -1,13 +1,12 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_FIRST_MOTION_CLASSIFIERS_CNN_ONE_COMPONENT_P_INFERENCE_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_FIRST_MOTION_CLASSIFIERS_CNN_ONE_COMPONENT_P_INFERENCE_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP
 {
-/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.hpp"
-/// @brief The probability of each sample in a processed three-component signal
-///        being a P arrival or noise.
+/// @class InferenceResponse "inferenceResponse.hpp" "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
+/// @brief The first motion of the P pick.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceResponse : public UMPS::MessageFormats::IMessage
 {
@@ -19,6 +18,13 @@ public:
         InvalidMessage = 1,    /*!< The request message was invalid. */
         AlgorithmFailure = 2   /*!< The inference algorithm failed. */
     };
+    /// @brief Defines the first motion as being up, down, or unknown.
+    enum FirstMotion : int
+    {
+        Up =+1,      /*!< Indicates that the first motion is up. */
+        Down =-1,    /*!< Indicates that the first motion is down. */
+        Unknown = 0  /*!< Indicates taht the first motion is unknown. */
+    }; 
 public:
     /// @name Constructors
     /// @{
@@ -34,24 +40,31 @@ public:
     InferenceResponse(InferenceResponse &&response) noexcept;
     /// @}
 
-    /// @name Probability Signals
+    /// @name Probability
     /// @{
 
-    /// @brief Sets the posterior probability signal.
-    /// @param[in] probabilitySignal  The probability of each sample 
-    ///                               corresponding to a phase arrival.
-    void setProbabilitySignal(const std::vector<double> &probabilitySignal);
-    /// @brief Sets the posterior probabiltiy signal.
-    /// @param[in,out] probabilitySignal  The probability of each sample
-    ///                                   corresponding to a phase arrival.
-    ///                                   On exit, probabilitySignal's behavior
-    ///                                   is undefined.
-    void setProbabilitySignal(std::vector<double> &&probabilitySignal);
-    /// @result The probability signal.
-    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
-    [[nodiscard]] std::vector<double> getProbabilitySignal() const;
-    /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveProbabilitySignal() const noexcept;
+    /// @brief Sets the probability of the first motion being up, down,
+    ///        and unknown.
+    /// @param[in] probability  The probability of the first motion being up,
+    ///                         down, and unkonwn, respectively.
+    /// @throws std::invalid_argument if the probabilities do not sum to unity.
+    void setProbability(const std::tuple<double, double, double> &probability);
+    /// @result The probability that the first motion of the P pick is up, down,
+    ///         and unkonwn.
+    /// @throws std::runtime_error if \c haveProbability() is false.
+    [[nodiscard]] std::tuple<double, double, double> getProbability() const;
+    /// @result True indicates that the probabilty was set.
+    [[nodiscard]] bool haveProbability() const noexcept;
+  
+    /// @brief Sets the predicted class as up, down, or unknown.
+    /// @param[in] firstMotion  The first motion correspondign to this pick.
+    void setClass(const FirstMotion firstMotion) noexcept;
+    /// @result Defines the P pick as having a first motion of up, down,
+    ///         or unknown.
+    /// @throws std::runtime_error if \c haveClass() is false.
+    [[nodiscard]] FirstMotion getClass() const; 
+    /// @result True indicates the class was set.
+    [[nodiscard]] bool haveClass() const noexcept;
     /// @}
 
     /// @name Return Code
@@ -65,18 +78,6 @@ public:
     [[nodiscard]] ReturnCode getReturnCode() const;
     /// @result True indicates the return code was set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
-    /// @}
-
-    /// @name Sampling Rate
-    /// @{
-
-    /// @brief Sets the sampling rate of the processed signals.
-    /// @param[in] samplingRate  The sampling rate of the signal in Hz.
-    /// @throws std::invalid_argument if the sampling rate is not positive.
-    void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the processed signals.
-    /// @note By default this is 100 Hz.
-    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
     /// @name Response Identifier
@@ -111,7 +112,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result Uniquely defines this message type.
+    /// @result Defines the message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
@@ -120,7 +121,6 @@ public:
     /// @result An uninitialized instance of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
     /// @}
-
 
     /// @name Operators
     /// @{

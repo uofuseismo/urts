@@ -1,29 +1,17 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_PROCESSING_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_THREE_COMPONENT_S_PROCESSING_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS
 {
-/// @class ProcessingRequest "processingRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
+/// @class ProcessingRequest "processingRequest.hpp" "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
 /// @brief Requests a snippet be preprocessed then inference be performed.
+///        It is assumed that the initial S pick is near the center of the
+///        window.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProcessingRequest : public UMPS::MessageFormats::IMessage
 {
-public:
-    /// @brief Defines the method used to apply the inference utility.
-    ///        Processing can be performed using a sliding window for
-    ///        signals exceeding some minimum length or can be applied
-    ///        for a fixed-sized window.
-    enum class InferenceStrategy
-    {
-        SlidingWindow = 0, /*!< By default a sliding window will be applied
-                                to the input signals.  In this case, the signals
-                                must be at least \c getMiniumumSignalLength(). */ 
-        FixedWindow = 1,   /*!< An inference will be performed on a single 
-                                window.  In this case, the input signals must
-                                be a valid signal length. */
-    };
 public:
     /// @name Constructors
     /// @{
@@ -47,16 +35,12 @@ public:
     /// @param[in] verticalSignal   The signal on the vertical channel.
     /// @param[in] northSignal      The signal on the north (1) channel.
     /// @param[in] eastSignal       The signal on the east (2) channel.
-    /// @param[in] strategy         The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    /// @throws std::invalid_argument the signals are not the same size
+    ///         or empty.  If the sampling rate is 100 Hz then the signal
+    ///         length should equal \c getMinimumSignalLength().
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
+                                    const std::vector<double> &eastSignal);
     /// @brief Sets the signals on the vertical, north, and east channels
     ///        on which inference will be performed.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
@@ -68,16 +52,12 @@ public:
     /// @param[in,out] eastSignal      The signal on the east (2) channel.
     ///                                On exit, eastSignal's behavior is
     ///                                undefined.
-    /// @param[in] strategy            The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    /// @throws std::invalid_argument the signals are not the same size
+    ///         or empty.  If the sampling rate is 100 Hz then the signal
+    ///         length should equal \c getMinimumSignalLength().
     void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
                                     std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
+                                    std::vector<double> &&eastSignal);
     /// @result The vertical signal.
     /// @throws std::runtime_error if \c haveSignals() is false.
     [[nodiscard]] std::vector<double> getVerticalSignal() const;
@@ -113,13 +93,8 @@ public:
     [[nodiscard]] double getSamplingRate() const noexcept;
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
-    /// @result The inference strategy.
-    /// @throws std::invalid_argument if \c haveSignals() is false.
-    [[nodiscard]] InferenceStrategy getInferenceStrategy() const;
-    /// @result The minimum signal length. 
-    [[nodiscard]] static int getMinimumSignalLength() noexcept;
-    /// @result True indicates this is a valid signal length.
-    [[nodiscard]] bool isValidSignalLength(int nSamples) noexcept;
+    /// @result The expected signal length assuming a sampling rate of 100 Hz. 
+    [[nodiscard]] static int getExpectedSignalLength() noexcept;
     /// @}
 
     /// @name Request Identifier

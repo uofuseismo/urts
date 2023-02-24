@@ -6,7 +6,7 @@
 namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
 /// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
-/// @brief Requests inference be performed on a pre-processed waveform snippet.
+/// @brief Requests inference be performed on a preprocessed waveform snippet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceRequest : public UMPS::MessageFormats::IMessage
 {
@@ -149,7 +149,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result A message type indicating this is a pick message.
+    /// @result Uniquely defines this message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;

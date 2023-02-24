@@ -1,29 +1,17 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PROCESSING_REQUEST_HPP
+#ifndef URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_PROCESSING_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_PICKERS_CNN_ONE_COMPONENT_P_PROCESSING_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Pickers::CNNOneComponentP
 {
-/// @class ProcessingRequest "processingRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/processingRequest.hpp"
+/// @class ProcessingRequest "processingRequest.hpp" "urts/services/scalable/pickers/cnnComponentP/processingRequest.hpp"
 /// @brief Requests a snippet be preprocessed then inference be performed.
+/// @note It is assumed that the pick to be refined is at the center of the
+///       window.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProcessingRequest : public UMPS::MessageFormats::IMessage
 {
-public:
-    /// @brief Defines the method used to apply the inference utility.
-    ///        Processing can be performed using a sliding window for
-    ///        signals exceeding some minimum length or can be applied
-    ///        for a fixed-sized window.
-    enum class InferenceStrategy
-    {
-        SlidingWindow = 0, /*!< By default a sliding window will be applied
-                                to the input signals.  In this case, the signals
-                                must be at least \c getMiniumumSignalLength(). */ 
-        FixedWindow = 1,   /*!< An inference will be performed on a single 
-                                window.  In this case, the input signals must
-                                be a valid signal length. */
-    };
 public:
     /// @name Constructors
     /// @{
@@ -42,67 +30,32 @@ public:
     /// @name Signals to Process
     /// @{
 
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
+    /// @brief Sets the signal on the vertical channel which will be 
+    ///        preprocessed then passed to the inference engine.
     /// @param[in] verticalSignal   The signal on the vertical channel.
-    /// @param[in] northSignal      The signal on the north (1) channel.
-    /// @param[in] eastSignal       The signal on the east (2) channel.
-    /// @param[in] strategy         The inference strategy.
     /// @throws std::invalid_argument the signals are not the same size,
     ///         If the inference strategy is SlidingWindow then the signal
     ///         must be at least \c getMinimumSignalLength().  If the
     ///         inference straetgy is FixedWindow then the 
     ///         \c isValidSignalLength() must be true.
-    void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
-                                    const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
+    void setVerticalSignal(const std::vector<double> &verticalSignal);
+    /// @brief Sets the signal on the vertical channel which will be
+    ///        preprocessed then passed to the inference engine.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
-    /// @param[in,out] northSignal     The signal on the north (1) channel.
-    ///                                On exit, northSignal's behavior is
-    ///                                undefined.
-    /// @param[in,out] eastSignal      The signal on the east (2) channel.
-    ///                                On exit, eastSignal's behavior is
-    ///                                undefined.
-    /// @param[in] strategy            The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
-    void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
-                                    std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
+    /// @throws std::invalid_argument Provided the sampling rate is 100
+    ///         Hz then the signal should be \c getExpectedSignalLength().
+    void setVerticalSignal(std::vector<double> &&verticalSignal);
     /// @result The vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @throws std::runtime_error if \c haveSignal() is false.
     [[nodiscard]] std::vector<double> getVerticalSignal() const;
-    /// @result The north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getNorthSignal() const;
-    /// @result The east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getEastSignal() const;
 
     /// @result A reference to the vertical signal.
     /// @throws std::runtime_error if \c haveSignals() is false.
     /// @note This exists for performance reasons.  You should use
     ///       \c getVerticalSignal(). 
     [[nodiscard]] const std::vector<double> &getVerticalSignalReference() const;
-    /// @result A reference to the north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    /// @note This exists for performance reasons.  You should use
-    ///       \c getNorthSignal(). 
-    [[nodiscard]] const std::vector<double> &getNorthSignalReference() const;
-    /// @result A reference to the east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    /// @note This exists for performance reasons.  You should use
-    ///       \c getEastSignal(). 
-    [[nodiscard]] const std::vector<double> &getEastSignalReference() const;
 
     /// @brief Sets the sampling rate of the signals to be processed.
     /// @param[in] samplingRate  The nominal sampling rate in Hz.
@@ -111,15 +64,10 @@ public:
     /// @result The nominal sampling rate of the input signals in Hz.
     ///         By default this is 100 Hz.
     [[nodiscard]] double getSamplingRate() const noexcept;
-    /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveSignals() const noexcept;
-    /// @result The inference strategy.
-    /// @throws std::invalid_argument if \c haveSignals() is false.
-    [[nodiscard]] InferenceStrategy getInferenceStrategy() const;
-    /// @result The minimum signal length. 
-    [[nodiscard]] static int getMinimumSignalLength() noexcept;
-    /// @result True indicates this is a valid signal length.
-    [[nodiscard]] bool isValidSignalLength(int nSamples) noexcept;
+    /// @result True indicates the signal was set.
+    [[nodiscard]] bool haveSignal() const noexcept;
+    /// @result The expected signal length (assuming a 100 Hz signal). 
+    [[nodiscard]] static int getExpectedSignalLength() noexcept;
     /// @}
 
     /// @name Request Identifier
@@ -154,7 +102,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result Uniquely defines this message type.
+    /// @result A message type indicating this is a pick message.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
