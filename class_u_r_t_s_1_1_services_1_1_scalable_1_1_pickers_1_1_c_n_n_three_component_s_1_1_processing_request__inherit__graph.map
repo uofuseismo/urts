@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest" name="URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest">
+<area shape="rect" id="node1" title="Requests a snippet be preprocessed then inference be performed. It is assumed that the initial S pick..." alt="" coords="5,95,239,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="33,5,211,47"/>
+</map>

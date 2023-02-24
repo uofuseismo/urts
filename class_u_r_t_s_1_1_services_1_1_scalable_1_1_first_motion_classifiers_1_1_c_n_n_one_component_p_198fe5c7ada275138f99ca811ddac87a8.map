@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse" name="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse">
+<area shape="rect" id="node1" title="Given a vertical waveform with the P pick centered in the middle of the waveform this will infer the ..." alt="" coords="5,95,315,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="71,5,249,47"/>
+</map>

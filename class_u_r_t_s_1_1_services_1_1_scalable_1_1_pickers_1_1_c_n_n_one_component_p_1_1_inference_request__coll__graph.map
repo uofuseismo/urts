@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceRequest" name="URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceRequest">
+<area shape="rect" id="node1" title="Requests inference be performed on a preprocessed waveform snippet. It is assumed the initial pick es..." alt="" coords="5,95,228,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="27,5,206,47"/>
+</map>

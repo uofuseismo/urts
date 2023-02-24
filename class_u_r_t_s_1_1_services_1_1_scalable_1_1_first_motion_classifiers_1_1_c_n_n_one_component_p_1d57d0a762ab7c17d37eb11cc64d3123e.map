@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest" name="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest">
+<area shape="rect" id="node1" title="Requests inference be performed on a preprocessed waveform snippet. It is assumed the P pick is at th..." alt="" coords="5,95,296,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="61,5,240,47"/>
+</map>
