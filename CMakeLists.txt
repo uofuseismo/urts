@@ -119,7 +119,18 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
         src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/service.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp)
+        src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/service.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
+        )
 endif()
 if (${BUILD_EW})
    set(EARTHWORM_SRC
@@ -180,7 +191,8 @@ set(TEST_SRC
     )
 if (${BUILD_UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
-       testing/services/scalable/detectors/uNetThreeComponentP.cpp)
+       testing/services/scalable/detectors/uNetThreeComponentP.cpp
+       testing/services/scalable/detectors/uNetThreeComponentS.cpp)
 endif()
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
@@ -263,6 +275,7 @@ endif()
 if (${BUILD_UUSS_MLMODELS})
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
+   add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -271,16 +284,26 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
+   set_target_properties(uNetThreeComponentSService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_include_directories(uNetThreeComponentPService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
+   target_include_directories(uNetThreeComponentSService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
    target_link_libraries(mlDetector
                          PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_link_libraries(uNetThreeComponentSService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} uNetThreeComponentPService)

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS
 {
 /// @class ProcessingResponse "processingResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentS/processingResponse.hpp"
 /// @brief The probability of each sample in an unprocessed three-component

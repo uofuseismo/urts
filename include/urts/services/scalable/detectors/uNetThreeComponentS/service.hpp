@@ -12,11 +12,11 @@ namespace UMPS
   class Context;
  }
 }
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS
 {
  class ServiceOptions;
 }
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS
 {
 /// @class Service "service.hpp" "urts/services/scalable/detectors/uNetThreeComponentS/service.hpp"
 /// @brief Runs the three-component UNet detector service.

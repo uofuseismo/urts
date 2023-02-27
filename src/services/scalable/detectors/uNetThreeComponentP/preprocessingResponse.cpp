@@ -8,6 +8,7 @@
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
+namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentP;
 
 namespace
 {
@@ -61,9 +62,7 @@ public:
     std::vector<double> mVerticalSignal;
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
-    double mSamplingRate{
-     UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getSamplingRate()
-    };  
+    double mSamplingRate{MLModels::Inference::getSamplingRate()};  
     int64_t mIdentifier{0};
     PreprocessingResponse::ReturnCode mReturnCode;
     bool mHaveSignals{false};
