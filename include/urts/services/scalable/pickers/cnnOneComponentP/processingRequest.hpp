@@ -33,26 +33,25 @@ public:
     /// @brief Sets the signal on the vertical channel which will be 
     ///        preprocessed then passed to the inference engine.
     /// @param[in] verticalSignal   The signal on the vertical channel.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    /// @throws std::invalid_argument if the sampling rate is the default
+    ///         and the signal length is not \c getExpectedSignalLength()
+    ///         or the signal is empty.
     void setVerticalSignal(const std::vector<double> &verticalSignal);
     /// @brief Sets the signal on the vertical channel which will be
     ///        preprocessed then passed to the inference engine.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
-    /// @throws std::invalid_argument Provided the sampling rate is 100
-    ///         Hz then the signal should be \c getExpectedSignalLength().
+    /// @throws std::invalid_argument if the sampling rate is the default
+    ///         and the signal length is not \c getExpectedSignalLength()
+    ///         or the signal is empty.
     void setVerticalSignal(std::vector<double> &&verticalSignal);
     /// @result The vertical signal.
     /// @throws std::runtime_error if \c haveSignal() is false.
     [[nodiscard]] std::vector<double> getVerticalSignal() const;
 
     /// @result A reference to the vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @throws std::runtime_error if \c haveSignal() is false.
     /// @note This exists for performance reasons.  You should use
     ///       \c getVerticalSignal(). 
     [[nodiscard]] const std::vector<double> &getVerticalSignalReference() const;

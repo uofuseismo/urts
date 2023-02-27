@@ -110,6 +110,12 @@ set(GENERIC_SRC
     )
 if (${BUILD_UUSS_MLMODELS})
     set(UUSS_SRC
+        src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp

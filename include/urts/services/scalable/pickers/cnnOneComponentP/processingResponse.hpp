@@ -48,7 +48,7 @@ public:
     /// @brief Sets the correction to add to the P pick.
     /// @param[in] correction  The correction, in seconds, to add to the 
     ///                        original P pick.
-    void setCorrection(double correction);
+    void setCorrection(double correction) noexcept;
     /// @result The correction to add to the P pick.
     /// @throws std::runtime_error if \c haveCorrection() is false.
     [[nodiscard]] double getCorrection() const;
