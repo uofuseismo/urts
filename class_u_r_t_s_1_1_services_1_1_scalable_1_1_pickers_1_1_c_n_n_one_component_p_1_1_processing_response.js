@@ -27,7 +27,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_
     [ "haveReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#ab3d3ab03e24b0cbafd28d1bcea002a72", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a56002ba1810598c4d1a36d4941f442a8", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a7b724b878e4f749d9708bb85f5f431f7", null ],
-    [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a880c38295ca7a4e2a036c16c23c47f17", null ],
+    [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a37f7b5748fbffff9b0a1c2c044d5a4eb", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a1f436c461a93dede088f7f081393ef36", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a22d61f9ff5cb4a95562d73242d147473", null ],
     [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a9bcd9f77e5f3c72e066d4593f74de9e1", null ],
