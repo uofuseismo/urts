@@ -58,13 +58,13 @@ public:
   
     /// @brief Sets the predicted class as up, down, or unknown.
     /// @param[in] firstMotion  The first motion correspondign to this pick.
-    void setClass(const FirstMotion firstMotion) noexcept;
+    void setFirstMotion(const FirstMotion firstMotion) noexcept;
     /// @result Defines the P pick as having a first motion of up, down,
     ///         or unknown.
-    /// @throws std::runtime_error if \c haveClass() is false.
-    [[nodiscard]] FirstMotion getClass() const; 
-    /// @result True indicates the class was set.
-    [[nodiscard]] bool haveClass() const noexcept;
+    /// @throws std::runtime_error if \c haveFirstMotion() is false.
+    [[nodiscard]] FirstMotion getFirstMotion() const; 
+    /// @result True indicates the first motion was set.
+    [[nodiscard]] bool haveFirstMotion() const noexcept;
     /// @}
 
     /// @name Return Code

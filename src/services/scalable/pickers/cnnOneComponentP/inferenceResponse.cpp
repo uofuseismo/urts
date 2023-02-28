@@ -139,7 +139,7 @@ bool InferenceResponse::haveReturnCode() const noexcept
     return pImpl->mHaveReturnCode;
 }
 
-/// Set signals
+/// Correction
 void InferenceResponse::setCorrection(const double correction) noexcept
 {
     pImpl->mCorrection = correction;

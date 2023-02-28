@@ -139,7 +139,7 @@ bool ProcessingResponse::haveReturnCode() const noexcept
     return pImpl->mHaveReturnCode;
 }
 
-/// Set signals
+/// Correction
 void ProcessingResponse::setCorrection(const double correction) noexcept
 {
     pImpl->mCorrection = correction;

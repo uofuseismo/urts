@@ -1,10 +1,10 @@
 #include <string>
 #include <chrono>
 #include <umps/authentication/zapOptions.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestorOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
 namespace UAuth = UMPS::Authentication;
 
 class RequestorOptions::RequestorOptionsImpl

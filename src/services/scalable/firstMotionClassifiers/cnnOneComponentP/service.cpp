@@ -1,25 +1,25 @@
 #include <mutex>
 #include <thread>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/preprocessing.hpp>
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/preprocessing.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
 #include <umps/messaging/routerDealer/reply.hpp>
 #include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <umps/messageFormats/failure.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/service.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/serviceOptions.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
 
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace UModels = UUSSMLModels::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+namespace UModels = UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP;
 
 class Service::ServiceImpl
 {
@@ -126,8 +126,20 @@ public:
             }
             try
             {
-                 auto correction = mInference->predict(verticalProcessed);
-                 response.setCorrection(correction);
+                auto threshold = processingRequest.getThreshold();
+                auto probabilities
+                    = mInference->predictProbability(verticalProcessed);
+                auto firstMotion
+                    = UModels::convertProbabilityToClass(
+                          std::get<0> (probabilities),
+                          std::get<1> (probabilities),
+                          std::get<2> (probabilities),
+                          threshold);
+                response.setProbability(probabilities);
+                response.setFirstMotion(
+                    static_cast<ProcessingResponse::FirstMotion> (firstMotion)
+                );
+                response.setReturnCode(ProcessingResponse::Success);
             }
             catch (const std::exception &e) 
             {
@@ -167,8 +179,19 @@ public:
             {
                 const auto &vertical
                     = inferenceRequest.getVerticalSignalReference();
-                auto correction = mInference->predict(vertical);
-                response.setCorrection(correction);
+                auto threshold = inferenceRequest.getThreshold();
+                auto probabilities = mInference->predictProbability(vertical);
+                auto firstMotion
+                    = UModels::convertProbabilityToClass(
+                          std::get<0> (probabilities),
+                          std::get<1> (probabilities),
+                          std::get<2> (probabilities),
+                          threshold);
+                response.setProbability(probabilities);
+                response.setFirstMotion(
+                    static_cast<InferenceResponse::FirstMotion> (firstMotion)
+                );
+                response.setReturnCode(InferenceResponse::Success);
             }
             catch (const std::exception &e) 
             {

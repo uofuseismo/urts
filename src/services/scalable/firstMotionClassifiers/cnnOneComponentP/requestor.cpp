@@ -6,16 +6,16 @@
 #include <umps/messaging/routerDealer/requestOptions.hpp>
 #include <umps/messaging/routerDealer/request.hpp>
 #include <umps/authentication/zapOptions.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestor.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestorOptions.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.hpp"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UMF = UMPS::MessageFormats;

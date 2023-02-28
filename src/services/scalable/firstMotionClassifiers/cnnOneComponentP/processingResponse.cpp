@@ -1,14 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::FirstmotionClassifiers::CNNOneComponentP::ProcessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
 
 namespace
 {
@@ -20,11 +18,19 @@ std::string toCBORObject(const ProcessingResponse &message)
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     obj["ReturnCode"] = static_cast<int> (message.getReturnCode());
-    if (!message.haveCorrection())
-    {   
-        throw std::runtime_error("Pick correction not set");
-    }   
-    obj["Correction"] = message.getCorrection();
+    if (!message.haveFirstMotion())
+    {
+        throw std::runtime_error("First motion not set");
+    }
+    if (!message.haveProbability())
+    {
+        throw std::runtime_error("Posterior probability not set");
+    }
+    obj["FirstMotion"] = static_cast<int> (message.getFirstMotion());
+    auto p = message.getProbability(); 
+    obj["ProbabilityUp"] = std::get<0> (p);
+    obj["ProbabilityDown"] = std::get<1> (p);
+    obj["ProbabilityUnknown"] = std::get<2> (p);
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -41,10 +47,17 @@ ProcessingResponse
     }
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setReturnCode(
-       static_cast<ProcessingResponse::ReturnCode> (
-         obj["ReturnCode"].get<int> ()
+        static_cast<ProcessingResponse::ReturnCode> (
+            obj["ReturnCode"].get<int> ()
     ));
-    result.setCorrection(obj["Correction"].get<double> ());
+    auto pUp = obj["ProbabilityUp"].get<double> ();
+    auto pDown = obj["ProbabilityDown"].get<double> ();
+    auto pUnknown = obj["ProbabilityUnknown"].get<double> ();
+    result.setProbability(std::tuple {pUp, pDown, pUnknown});
+    result.setFirstMotion(
+       static_cast<ProcessingResponse::FirstMotion>
+          (obj["FirstMotion"].get<int> ())
+    );
     return result;
 }
 
@@ -53,10 +66,13 @@ ProcessingResponse
 class ProcessingResponse::ResponseImpl
 {
 public:
-    double mCorrection{0};
+    std::tuple<double, double, double> mPosteriorProbability{0, 0, 1}; 
     int64_t mIdentifier{0};
+    ProcessingResponse::FirstMotion
+        mFirstMotion{ProcessingResponse::FirstMotion::Unknown};
     ProcessingResponse::ReturnCode mReturnCode;
-    bool mHaveCorrection{false};
+    bool mHavePosteriorProbability{false};
+    bool mHaveFirstMotion{false};
     bool mHaveReturnCode{false};
 };
 
@@ -139,25 +155,63 @@ bool ProcessingResponse::haveReturnCode() const noexcept
     return pImpl->mHaveReturnCode;
 }
 
-/// Set signals
-void ProcessingResponse::setCorrection(const double correction) noexcept
+/// Posterior probability
+void ProcessingResponse::setProbability(const std::tuple<double, double, double> &probability)
 {
-    pImpl->mCorrection = correction;
-    pImpl->mHaveCorrection = true;
-}
-
-double ProcessingResponse::getCorrection() const
-{
-    if (!haveCorrection())
-    {
-        throw std::runtime_error("Pick correction not set");
+    auto pUp = std::get<0> (probability);
+    auto pDown = std::get<1> (probability);
+    auto pUnknown = std::get<2> (probability); 
+    if (std::abs(pUp + pDown + pUnknown) - 1 > 1.e-5)
+    {   
+        throw std::invalid_argument("Probabilities do not sum to unity");
     }
-    return pImpl->mCorrection;
+    if (pUp < 0 || pUp > 1)
+    {   
+        throw std::invalid_argument("pUp out of bounds [0,1]");
+    }
+    if (pDown < 0 || pDown > 1)
+    {   
+        throw std::invalid_argument("pDown out of bounds [0,1]");
+    }
+    if (pUnknown < 0 || pUnknown > 1)
+    {   
+        throw std::invalid_argument("pUnknown out of bounds [0,1]");
+    }
+    pImpl->mPosteriorProbability = probability;
+    pImpl->mHavePosteriorProbability = true;
 }
 
-bool ProcessingResponse::haveCorrection() const noexcept
+std::tuple<double, double, double> ProcessingResponse::getProbability() const
 {
-    return pImpl->mHaveCorrection;
+    if (!haveProbability())
+    {   
+        throw std::runtime_error("Probabilities not set");
+    }   
+    return pImpl->mPosteriorProbability;
+}
+
+bool ProcessingResponse::haveProbability() const noexcept
+{
+    return pImpl->mHavePosteriorProbability;
+}
+
+/// First motion
+void ProcessingResponse::setFirstMotion(
+    const ProcessingResponse::FirstMotion firstMotion) noexcept
+{
+    pImpl->mFirstMotion = firstMotion;
+    pImpl->mHaveFirstMotion = true;
+}
+
+ProcessingResponse::FirstMotion ProcessingResponse::getFirstMotion() const
+{
+    if (!haveFirstMotion()){throw std::runtime_error("First motion not set");}
+    return pImpl->mFirstMotion;
+}
+
+bool ProcessingResponse::haveFirstMotion() const noexcept
+{
+    return pImpl->mHaveFirstMotion;
 }
 
 /// Message type

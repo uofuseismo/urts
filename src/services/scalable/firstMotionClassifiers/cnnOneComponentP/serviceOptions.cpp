@@ -2,10 +2,10 @@
 #include <string>
 #include <filesystem>
 #include <umps/authentication/zapOptions.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
 namespace UAuth = UMPS::Authentication;
 
 class ServiceOptions::ServiceOptionsImpl

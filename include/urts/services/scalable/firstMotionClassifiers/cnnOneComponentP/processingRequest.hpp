@@ -69,6 +69,24 @@ public:
     [[nodiscard]] static int getExpectedSignalLength() noexcept;
     /// @}
 
+    /// @name Probability Threshold
+    /// @{
+
+    /// @brief Defines the probability threshold above which an up or down
+    ///        probability must exceed to actually be classified as up or down.
+    /// @param[in] threshold  The probability threshold.  If an up or down
+    ///                       first motion is larger than the unknown 
+    ///                       probability and exceeds this value then the
+    ///                       first motion will be assigned to whichever is
+    ///                       larger; probability up or probability down.
+    ///                       Otherwise, the probability will be unknown.
+    /// @throws std::invalid_argument if the threshold is not in the
+    ///         range [0,1].
+    void setThreshold(double threshold);
+    /// @result The probability threhsold.  By default this is 1/3.
+    [[nodiscard]] double getThreshold() const noexcept;
+    /// @}
+
     /// @name Request Identifier
     /// @{
 

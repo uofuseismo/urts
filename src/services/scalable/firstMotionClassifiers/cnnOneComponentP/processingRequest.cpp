@@ -1,14 +1,14 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+namespace MLModels = UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP;
 
 namespace
 {
@@ -20,6 +20,7 @@ std::string toCBORObject(const ProcessingRequest &message)
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
+    obj["Threshold"] = message.getThreshold();
     if (!message.haveSignal()){throw std::runtime_error("Signal not set");}
     obj["VerticalSignal"] = message.getVerticalSignal();
     auto v = nlohmann::json::to_cbor(obj);
@@ -38,6 +39,7 @@ ProcessingRequest
     }
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setSamplingRate(obj["SamplingRate"].get<double> ());
+    result.setThreshold(obj["Threshold"].get<double> ());
     std::vector<double> vertical = obj["VerticalSignal"];
     result.setVerticalSignal(std::move(vertical));
     return result;
@@ -51,6 +53,7 @@ class ProcessingRequest::RequestImpl
 public:
     std::vector<double> mVerticalSignal;
     int64_t mIdentifier{0};
+    double mThreshold{1.0/3.0};
     double mSamplingRate{MLModels::Inference::getSamplingRate()};
     bool mHaveSignal{false};
 };
@@ -199,6 +202,21 @@ const std::vector<double>
 bool ProcessingRequest::haveSignal() const noexcept
 {   
     return pImpl->mHaveSignal;
+}
+
+/// Probability threshold
+void ProcessingRequest::setThreshold(const double threshold)
+{
+    if (threshold < 0 || threshold > 1)
+    {
+        throw std::invalid_argument("Threshold must be in range [0,1]");
+    }
+    pImpl->mThreshold = threshold;
+}
+
+double ProcessingRequest::getThreshold() const noexcept
+{
+    return pImpl->mThreshold;
 }
 
 /// Message type

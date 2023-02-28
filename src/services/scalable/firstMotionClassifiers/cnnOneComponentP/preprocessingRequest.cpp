@@ -1,14 +1,14 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.hpp"
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+namespace MLModels = UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP;
 
 namespace
 {

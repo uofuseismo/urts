@@ -19,6 +19,7 @@ std::string toCBORObject(const InferenceRequest &message)
     obj["MessageType"] = message.getMessageType();
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
+    obj["Threshold"] = message.getThreshold();
     if (!message.haveSignal()){throw std::runtime_error("Signal not set");}
     obj["VerticalSignal"] = message.getVerticalSignal();
     auto v = nlohmann::json::to_cbor(obj);
@@ -35,6 +36,7 @@ InferenceRequest
     {
         throw std::invalid_argument("Message has invalid message type");
     }
+    result.setThreshold(obj["Threshold"].get<double> ());
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     std::vector<double> vertical = obj["VerticalSignal"];
     result.setVerticalSignal(std::move(vertical));
@@ -49,6 +51,7 @@ class InferenceRequest::RequestImpl
 public:
     std::vector<double> mVerticalSignal;
     int64_t mIdentifier{0};
+    double mThreshold{1./3.};
     bool mHaveSignal{false};
 };
 
@@ -161,6 +164,21 @@ const std::vector<double>
 bool InferenceRequest::haveSignal() const noexcept
 {
     return pImpl->mHaveSignal;
+}
+
+/// Probability threshold
+void InferenceRequest::setThreshold(const double threshold)
+{
+    if (threshold < 0 || threshold > 1)
+    {
+        throw std::invalid_argument("Threshold must be in range [0,1]");
+    }
+    pImpl->mThreshold = threshold;
+}
+
+double InferenceRequest::getThreshold() const noexcept
+{
+    return pImpl->mThreshold;
 }
 
 /// Message type
