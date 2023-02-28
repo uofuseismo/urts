@@ -92,18 +92,6 @@ public:
     [[nodiscard]] bool haveReturnCode() const noexcept;
     /// @}
 
-    /// @name Sampling Rate
-    /// @{
-
-    /// @brief Sets the sampling rate of the processed signals.
-    /// @param[in] samplingRate  The sampling rate of the signal in Hz.
-    /// @throws std::invalid_argument if the sampling rate is not positive.
-    void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the processed signals.
-    /// @note By default this is 100 Hz.
-    [[nodiscard]] double getSamplingRate() const noexcept;
-    /// @}
-
     /// @name Response Identifier
     /// @{
 
