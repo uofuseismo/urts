@@ -128,6 +128,7 @@ public:
             {
                  auto correction = mInference->predict(verticalProcessed);
                  response.setCorrection(correction);
+                 response.setReturnCode(ProcessingResponse::Success);
             }
             catch (const std::exception &e) 
             {
@@ -169,6 +170,7 @@ public:
                     = inferenceRequest.getVerticalSignalReference();
                 auto correction = mInference->predict(vertical);
                 response.setCorrection(correction);
+                response.setReturnCode(InferenceResponse::Success);
             }
             catch (const std::exception &e) 
             {
@@ -215,15 +217,14 @@ public:
                 // Set data on response
                 response.setSamplingRate(mTargetSamplingRate);
                 response.setVerticalSignal(std::move(verticalResult));
+                response.setReturnCode(PreprocessingResponse::Success);
             }
             catch (const std::exception &e)
             {
                 mLogger->error("Failed to preprocess data: "
                              + std::string{e.what()});
                 response.setReturnCode(PreprocessingResponse::AlgorithmFailure);
-                return response.clone();
             }
-            response.setReturnCode(PreprocessingResponse::Success);
             return response.clone();
         }
         // No idea -> Send something back so they don't wait forever
