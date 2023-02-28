@@ -19,7 +19,6 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_componen
     [ "getMessageType", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#ade27eaa2338cd1c2d3141d25a50a8b28", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#aa79299ba484a508ca42910d6dc744b5d", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#a470ff95f3ef38e44981b48a5addf8120", null ],
-    [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#afdee440a0a5ff68e093f6dca5503d5d5", null ],
     [ "haveCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#ad2cd656ba9cf17ef6d28b2e60d336902", null ],
     [ "haveReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#a60a2f7bfae1c1de2aa23ac4053424090", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#acae89fc3215772775aafa044a5a4b6ae", null ],
@@ -27,6 +26,5 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_componen
     [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#acc4202e521e2b07f11e28fdabaa1d0b4", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#a1bf631f91922c2ca3db74e9e80591749", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#a5b11d8f504f07543402593f67d431c8b", null ],
-    [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#aa9c6a33f362156a9c4eabd707a739aed", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_response.html#af135ed40ecdc589a678c839cbf1693e9", null ]
 ];

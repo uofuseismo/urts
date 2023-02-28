@@ -28,7 +28,6 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a33ec63687b7ccaff2decab12af7bdfcb", null ],
     [ "getProbability", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a7e2fb1fec6c7372fd22eff0980469c50", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a932ac33d9500a6bb91209dc0ff384265", null ],
-    [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a05b6fe9fc2c466712d13d0151964fd63", null ],
     [ "haveClass", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#aa07b9b950338bf6c52e435ad1916d97f", null ],
     [ "haveProbability", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#aa1df9ba6dbc8500faf82aede9c8b39fb", null ],
     [ "haveReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a8627fb5824434508c0fc3eaf24781b82", null ],
@@ -38,6 +37,5 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#af7e2b6b27fb9fade29ca40e5625be90c", null ],
     [ "setProbability", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#aa8dc130a2790aea435b445f620e690da", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a520d1b269d19e231ee8afefdce47eafe", null ],
-    [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a8c54cd4007cb65ea4ffadd8dd06d4046", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a52237ac7d2ed25689365490acd2045f7", null ]
 ];

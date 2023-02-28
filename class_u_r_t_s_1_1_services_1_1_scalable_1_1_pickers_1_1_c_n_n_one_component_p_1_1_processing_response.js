@@ -22,7 +22,6 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_
     [ "getMessageType", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a738a8db740918ad7012604fa85f6dcdb", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a9d5ae0a2521cbf3d8d553552e78ad51c", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#ac8c4233615cd9dc2f80c524ad45e116b", null ],
-    [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#ac898a0848c346e84af4df74cc1dcd824", null ],
     [ "haveCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a939c4310c76e2b24ce98a9063f1a205d", null ],
     [ "haveReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#ab3d3ab03e24b0cbafd28d1bcea002a72", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a56002ba1810598c4d1a36d4941f442a8", null ],
@@ -30,6 +29,5 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_
     [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a37f7b5748fbffff9b0a1c2c044d5a4eb", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a1f436c461a93dede088f7f081393ef36", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a22d61f9ff5cb4a95562d73242d147473", null ],
-    [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a9bcd9f77e5f3c72e066d4593f74de9e1", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a12f309dc7716f5ffd6d3831386825984", null ]
 ];

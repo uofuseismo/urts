@@ -1,11 +1,5 @@
 var NAVTREEINDEX10 =
 {
-"group___modules___broadcasts___external___earthworm___wave_ring.html":[2,0,0,1,0,0],
-"group___modules___broadcasts___internal.html":[2,0,0,0],
-"group___modules___broadcasts___internal___data_packet.html":[2,0,0,0,0],
-"group___modules___services.html":[2,1],
-"group___modules___services___scalable.html":[2,1,2],
-"group___modules___services___scalable.html#Proxy":[2,1,2,0],
 "group___modules___services___standalone.html":[2,1,0],
 "group___modules___services___u_u_s_s___scalable.html":[2,1,3],
 "group___modules___services___u_u_s_s___standalone.html":[2,1,1],
@@ -13,8 +7,8 @@ var NAVTREEINDEX10 =
 "hierarchy.html":[3,2],
 "increment_request_8hpp_source.html":[4,0,0,0,3,1,0,1],
 "increment_response_8hpp_source.html":[4,0,0,0,3,1,0,2],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "items_request_8hpp_source.html":[4,0,0,0,3,1,0,3],
 "items_response_8hpp_source.html":[4,0,0,0,3,1,0,4],
 "modules.html":[2],
