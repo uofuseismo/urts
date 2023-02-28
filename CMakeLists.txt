@@ -116,6 +116,10 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
         src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
         src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
+        src/services/scalable/pickers/cnnOneComponentP/service.cpp
+        src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
@@ -136,6 +140,7 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentS/service.cpp
         src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
         )
 endif()
 if (${BUILD_EW})
@@ -198,7 +203,8 @@ set(TEST_SRC
 if (${BUILD_UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
        testing/services/scalable/detectors/uNetThreeComponentP.cpp
-       testing/services/scalable/detectors/uNetThreeComponentS.cpp)
+       testing/services/scalable/detectors/uNetThreeComponentS.cpp
+       testing/services/scalable/pickers/cnnOneComponentP.cpp)
 endif()
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
