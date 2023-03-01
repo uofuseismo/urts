@@ -13,6 +13,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n
     [ "getMessageType", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a8c20b2dc80cd689d2979c67f9a88206b", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#aa1db8daa45307c684e2d170ea8a64121", null ],
     [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a873fbb410fff8535151e1c4762ea598d", null ],
+    [ "getThreshold", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a26dc95408887f47b2d0109ac8bbd7ac5", null ],
     [ "getVerticalSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ad31d7bd58f71b92cd606d36c5cbadd9e", null ],
     [ "getVerticalSignalReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a4df49439c85590c5960c0524ff429047", null ],
     [ "haveSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ae3e0f1c6879c872d8e984c7ba7d4ada7", null ],
@@ -20,6 +21,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a0521b68b648a8e91fb96a2d94dd141f9", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#abb40a1c0e1e2f0c1d129ee92c0e4dc15", null ],
     [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a90bbb1fb4d096c2021c7d27f5f001e62", null ],
+    [ "setThreshold", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ae11c4a29609231852af1f7a516758789", null ],
     [ "setVerticalSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a6befbf1b012b2f96808f5ebbaa0bcfc4", null ],
     [ "setVerticalSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#afa87c4a5044a9c8f94d48b7b6f904603", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a485e110a36d9eef4a22499d1317e80cd", null ]

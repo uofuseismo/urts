@@ -165,10 +165,6 @@ $(document).ready(function(){initNavTree('functions_func_s.html',''); initResiza
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html#a2907e6cad7e2ddab0b8b34d62209932e">URTS::Services::Scalable::PacketCache::DataRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ac24ed8bcd96cb57afec485efc206fe02">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
 </li>
-<li>setClass()
-: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_inference_response.html#a64746f89ddc045409fc6f9b5c68101ba">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceResponse</a>
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#ae5992c1887edc5ea34d434527ba03bea">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse</a>
-</li>
 <li>setConnection()
 : <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#a96277b36d9b5df7558af24c93310f731">URTS::Database::AQMS::ChannelDataTable</a>
 </li>
@@ -200,6 +196,10 @@ $(document).ready(function(){initNavTree('functions_func_s.html',''); initResiza
 </li>
 <li>setElevation()
 : <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html#a48c0894667a7886fb3387fc733ea8919">URTS::Database::AQMS::ChannelData</a>
+</li>
+<li>setFirstMotion()
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_inference_response.html#ac87743353ec818e2f7b8c1574a21f761">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceResponse</a>
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#a9398065359e4ad04459eac923072d1a9">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse</a>
 </li>
 <li>setGapTolerance()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ab90620b8d10ae4cf265466b38da10472">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
@@ -499,7 +499,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html',''); initResiza
 </li>
 <li>setStartTime()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a9b14c850ada804a3d136a6008aee7f48">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
-, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a453ae089c2657de29648f17e7fe49b85">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a9955ae9cfc7afc99b2090184b6d68926">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>
 </li>
 <li>setStateFile()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a8b8c63906f30e68967db0e4c83a6dd85">URTS::Broadcasts::External::SEEDLink::ClientOptions</a>
@@ -521,6 +521,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html',''); initResiza
 </li>
 <li>setThreshold()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_inference_request.html#aa144ce2be019086d54af62d284ed0b1f">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest</a>
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ae11c4a29609231852af1f7a516758789">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest</a>
 </li>
 <li>setTime()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#afe046fe08436e40c72689069204ffd0f">URTS::Broadcasts::Internal::Pick::Pick</a>
@@ -625,7 +626,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html',''); initResiza
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Feb 28 2023 20:21:54 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 1 2023 14:44:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

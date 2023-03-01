@@ -135,6 +135,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac94b76105238e8d63366059bac5d25c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ac94b76105238e8d63366059bac5d25c9">ProcessingRequest</a> (<a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html">ProcessingRequest</a> &amp;&amp;request) noexcept</td></tr>
 <tr class="memdesc:ac94b76105238e8d63366059bac5d25c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ac94b76105238e8d63366059bac5d25c9">More...</a><br /></td></tr>
 <tr class="separator:ac94b76105238e8d63366059bac5d25c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Probability Threshold</div></td></tr>
+<tr class="memitem:ae11c4a29609231852af1f7a516758789"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ae11c4a29609231852af1f7a516758789">setThreshold</a> (double threshold)</td></tr>
+<tr class="memdesc:ae11c4a29609231852af1f7a516758789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the probability threshold above which an up or down probability must exceed to actually be classified as up or down.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#ae11c4a29609231852af1f7a516758789">More...</a><br /></td></tr>
+<tr class="separator:ae11c4a29609231852af1f7a516758789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26dc95408887f47b2d0109ac8bbd7ac5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a26dc95408887f47b2d0109ac8bbd7ac5">getThreshold</a> () const noexcept</td></tr>
+<tr class="separator:a26dc95408887f47b2d0109ac8bbd7ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Request Identifier</div></td></tr>
 <tr class="memitem:abb40a1c0e1e2f0c1d129ee92c0e4dc15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#abb40a1c0e1e2f0c1d129ee92c0e4dc15">setIdentifier</a> (int64_t identifier) noexcept</td></tr>
 <tr class="memdesc:abb40a1c0e1e2f0c1d129ee92c0e4dc15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a request identifier.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#abb40a1c0e1e2f0c1d129ee92c0e4dc15">More...</a><br /></td></tr>
@@ -537,6 +543,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a26dc95408887f47b2d0109ac8bbd7ac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26dc95408887f47b2d0109ac8bbd7ac5">&#9670;&nbsp;</a></span>getThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest::getThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The probability threhsold. By default this is 1/3. </dd></dl>
+
+</div>
+</div>
 <a id="ad31d7bd58f71b92cd606d36c5cbadd9e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad31d7bd58f71b92cd606d36c5cbadd9e">&#9670;&nbsp;</a></span>getVerticalSignal()</h2>
 
@@ -726,6 +758,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="ae11c4a29609231852af1f7a516758789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae11c4a29609231852af1f7a516758789">&#9670;&nbsp;</a></span>setThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest::setThreshold </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines the probability threshold above which an up or down probability must exceed to actually be classified as up or down. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">threshold</td><td>The probability threshold. If an up or down first motion is larger than the unknown probability and exceeds this value then the first motion will be assigned to whichever is larger; probability up or probability down. Otherwise, the probability will be unknown. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the threshold is not in the range [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a6befbf1b012b2f96808f5ebbaa0bcfc4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6befbf1b012b2f96808f5ebbaa0bcfc4">&#9670;&nbsp;</a></span>setVerticalSignal() <span class="overload">[1/2]</span></h2>
 
@@ -834,7 +898,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>FirstMotionClassifiers</b></li><li class="navelem"><b>CNNOneComponentP</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html">ProcessingRequest</a></li>
-    <li class="footer">Generated on Tue Feb 28 2023 20:21:54 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 1 2023 14:44:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
