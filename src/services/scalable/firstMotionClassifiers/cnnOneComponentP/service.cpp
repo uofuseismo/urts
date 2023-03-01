@@ -164,7 +164,7 @@ public:
                           std::get<1> (probabilities),
                           std::get<2> (probabilities),
                           threshold);
-                response.setProbability(probabilities);
+                response.setProbabilities(probabilities);
                 response.setFirstMotion(
                     static_cast<ProcessingResponse::FirstMotion> (firstMotion)
                 );
@@ -216,7 +216,7 @@ public:
                           std::get<1> (probabilities),
                           std::get<2> (probabilities),
                           threshold);
-                response.setProbability(probabilities);
+                response.setProbabilities(probabilities);
                 response.setFirstMotion(
                     static_cast<InferenceResponse::FirstMotion> (firstMotion)
                 );

@@ -1,14 +1,14 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
+#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
+#include "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
+namespace MLModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 namespace
 {
@@ -20,9 +20,10 @@ std::string toCBORObject(const ProcessingRequest &message)
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
-    obj["Threshold"] = message.getThreshold();
-    if (!message.haveSignal()){throw std::runtime_error("Signal not set");}
+    if (!message.haveSignals()){throw std::runtime_error("Signals not set");}
     obj["VerticalSignal"] = message.getVerticalSignal();
+    obj["NorthSignal"] = message.getNorthSignal();
+    obj["EastSignal"] = message.getEastSignal();
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -39,9 +40,12 @@ ProcessingRequest
     }
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setSamplingRate(obj["SamplingRate"].get<double> ());
-    result.setThreshold(obj["Threshold"].get<double> ());
     std::vector<double> vertical = obj["VerticalSignal"];
-    result.setVerticalSignal(std::move(vertical));
+    std::vector<double> north = obj["NorthSignal"];
+    std::vector<double> east = obj["EastSignal"];
+    result.setVerticalNorthEastSignal(std::move(vertical),
+                                      std::move(north),
+                                      std::move(east));
     return result;
 }
 
@@ -52,10 +56,11 @@ class ProcessingRequest::RequestImpl
 {
 public:
     std::vector<double> mVerticalSignal;
+    std::vector<double> mNorthSignal;
+    std::vector<double> mEastSignal;
     int64_t mIdentifier{0};
-    double mThreshold{1.0/3.0};
     double mSamplingRate{MLModels::Inference::getSamplingRate()};
-    bool mHaveSignal{false};
+    bool mHaveSignals{false};
 };
 
 /// Constructor
@@ -136,8 +141,15 @@ double ProcessingRequest::getSamplingRate() const noexcept
 }
 
 /// Set signals
-void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
+void ProcessingRequest::setVerticalNorthEastSignal(
+    std::vector<double> &&vertical,
+    std::vector<double> &&north,
+    std::vector<double> &&east)
 {
+    if (vertical.size() != north.size() || vertical.size() != east.size())
+    {   
+        throw std::invalid_argument("Inconsistent signal sizes");
+    }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
     if (vertical.empty())
@@ -154,11 +166,20 @@ void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
         throw std::invalid_argument("Signal time is too short");
     }
     pImpl->mVerticalSignal = std::move(vertical);
-    pImpl->mHaveSignal = true;
+    pImpl->mNorthSignal = std::move(north);
+    pImpl->mEastSignal = std::move(east);
+    pImpl->mHaveSignals = true;
 }
 
-void ProcessingRequest::setVerticalSignal(const std::vector<double> &vertical)
+void ProcessingRequest::setVerticalNorthEastSignal(
+    const std::vector<double> &vertical,
+    const std::vector<double> &north,
+    const std::vector<double> &east)
 {
+    if (vertical.size() != north.size() || vertical.size() != east.size())
+    {
+        throw std::invalid_argument("Inconsistent signal sizes");
+    }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
     if (vertical.empty())
@@ -175,40 +196,53 @@ void ProcessingRequest::setVerticalSignal(const std::vector<double> &vertical)
         throw std::invalid_argument("Signal time is too short");
     }
     pImpl->mVerticalSignal = vertical;
-    pImpl->mHaveSignal = true;
+    pImpl->mNorthSignal = north;
+    pImpl->mEastSignal = east;
+    pImpl->mHaveSignals = true;
 }
 
 std::vector<double> ProcessingRequest::getVerticalSignal() const
 {
-    if (!haveSignal()){throw std::runtime_error("Signal not set");}
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
     return pImpl->mVerticalSignal;
+}
+
+std::vector<double> ProcessingRequest::getNorthSignal() const
+{
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mNorthSignal;
+}
+
+std::vector<double> ProcessingRequest::getEastSignal() const
+{
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mEastSignal;
 }
 
 const std::vector<double>
 &ProcessingRequest::getVerticalSignalReference() const
 {
-    if (!haveSignal()){throw std::runtime_error("Signal not set");}
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
     return pImpl->mVerticalSignal;
 }
 
-bool ProcessingRequest::haveSignal() const noexcept
+const std::vector<double>
+&ProcessingRequest::getNorthSignalReference() const
 {   
-    return pImpl->mHaveSignal;
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mNorthSignal;
 }
 
-/// Probability threshold
-void ProcessingRequest::setThreshold(const double threshold)
-{
-    if (threshold < 0 || threshold > 1)
-    {
-        throw std::invalid_argument("Threshold must be in range [0,1]");
-    }
-    pImpl->mThreshold = threshold;
+const std::vector<double>
+&ProcessingRequest::getEastSignalReference() const
+{   
+    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    return pImpl->mEastSignal;
 }
 
-double ProcessingRequest::getThreshold() const noexcept
+bool ProcessingRequest::haveSignals() const noexcept
 {
-    return pImpl->mThreshold;
+    return pImpl->mHaveSignals;
 }
 
 /// Message type

@@ -137,31 +137,18 @@ void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
 {
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    if (std::abs(getSamplingRate() - MLModels::Inference::getSamplingRate()) 
-        < 1.e-5)
+    if (vertical.empty())
     {
-        if (static_cast<int> (vertical.size()) !=
-            ProcessingRequest::getExpectedSignalLength())
-        {
-            throw std::invalid_argument("Signal length should be: "
-                + std::to_string(ProcessingRequest::getExpectedSignalLength()));
-        }
+        throw std::invalid_argument("Signals cannot be empty");
     }
-    else
+    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    double expectedDuration
+        = (MLModels::Inference::getExpectedSignalLength() - 1)
+         *expectedSamplingPeriod;
+    double signalDuration = (vertical.size() - 1)/getSamplingRate();
+    if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
     {
-        if (vertical.empty())
-        {
-            throw std::invalid_argument("Signals cannot be empty");
-        }
-        auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
-        double expectedDuration
-            = (MLModels::Inference::getExpectedSignalLength() - 1)
-             *expectedSamplingPeriod;
-        double signalDuration = (vertical.size() - 1)/getSamplingRate();
-        if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
-        {
-            throw std::invalid_argument("Signal time is too short");
-        }
+        throw std::invalid_argument("Signal time is too short");
     }
     pImpl->mVerticalSignal = std::move(vertical);
     pImpl->mHaveSignal = true;
@@ -171,22 +158,18 @@ void ProcessingRequest::setVerticalSignal(const std::vector<double> &vertical)
 {
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    if (std::abs(getSamplingRate() - MLModels::Inference::getSamplingRate()) 
-        < 1.e-5)
+    if (vertical.empty())
     {
-        if (static_cast<int> (vertical.size()) !=
-            ProcessingRequest::getExpectedSignalLength())
-        {
-            throw std::invalid_argument("Signal length should be: "
-                + std::to_string(ProcessingRequest::getExpectedSignalLength()));
-        }
+        throw std::invalid_argument("Signals cannot be empty");
     }
-    else
-    {
-        if (vertical.empty())
-        {
-            throw std::invalid_argument("Signals cannot be empty");
-        }
+    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    double expectedDuration
+        = (MLModels::Inference::getExpectedSignalLength() - 1)
+         *expectedSamplingPeriod;
+    double signalDuration = (vertical.size() - 1)/getSamplingRate();
+    if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
+    {   
+        throw std::invalid_argument("Signal time is too short");
     }
     pImpl->mVerticalSignal = vertical;
     pImpl->mHaveSignal = true;

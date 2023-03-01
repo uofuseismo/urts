@@ -48,13 +48,13 @@ public:
     /// @param[in] probability  The probability of the first motion being up,
     ///                         down, and unkonwn, respectively.
     /// @throws std::invalid_argument if the probabilities do not sum to unity.
-    void setProbability(const std::tuple<double, double, double> &probability);
+    void setProbabilities(const std::tuple<double, double, double> &probability);
     /// @result The probability that the first motion of the P pick is up, down,
     ///         and unkonwn.
-    /// @throws std::runtime_error if \c haveProbability() is false.
-    [[nodiscard]] std::tuple<double, double, double> getProbability() const;
+    /// @throws std::runtime_error if \c haveProbabilities() is false.
+    [[nodiscard]] std::tuple<double, double, double> getProbabilities() const;
     /// @result True indicates that the probabilty was set.
-    [[nodiscard]] bool haveProbability() const noexcept;
+    [[nodiscard]] bool haveProbabilities() const noexcept;
   
     /// @brief Sets the predicted class as up, down, or unknown.
     /// @param[in] firstMotion  The first motion correspondign to this pick.

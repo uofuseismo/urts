@@ -5,65 +5,81 @@
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/messaging/routerDealer/proxy.hpp>
 #include <umps/messaging/routerDealer/proxyOptions.hpp>
-#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
-#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/preprocessing.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.hpp"
+#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
+#include <uussmlmodels/pickers/cnnThreeComponentS/preprocessing.hpp>
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/processingResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/requestorOptions.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/requestor.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/serviceOptions.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/service.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
-using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingRequest)
+TEST(ServicesScalablePickersCNNThreeComponentS, PreprocessingRequest)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
+    const std::vector<double> north{11, 12, 13, 14, 15};
+    const std::vector<double> east{-1, -2, -3, -4, -5};    
     const double samplingRate{50};
     const int64_t identifier{5021};
     PreprocessingRequest request;
 
     EXPECT_NO_THROW(request.setSamplingRate(samplingRate));
-    EXPECT_NO_THROW(request.setVerticalSignal(vertical));
+    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east));
     request.setIdentifier(identifier);
  
     PreprocessingRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
-    EXPECT_TRUE(copy.haveSignal());
+    EXPECT_TRUE(copy.haveSignals());
     const auto vr = copy.getVerticalSignalReference();
+    const auto nr = copy.getNorthSignalReference();
+    const auto er = copy.getEastSignalReference();
     EXPECT_EQ(vertical.size(), vr.size()); 
+    EXPECT_EQ(north.size(),    nr.size());
+    EXPECT_EQ(east.size(),     er.size());
     for (int i = 0; i < static_cast<int> (vr.size()); ++i)
     {
         EXPECT_NEAR(vertical.at(i), vr.at(i), 1.e-14);
+        EXPECT_NEAR(north.at(i),    nr.at(i), 1.e-14);
+        EXPECT_NEAR(east.at(i),     er.at(i), 1.e-14);
     }
 
     auto v = copy.getVerticalSignal();
+    auto n = copy.getNorthSignal();
+    auto e = copy.getEastSignal();
     EXPECT_EQ(vertical.size(), v.size()); 
+    EXPECT_EQ(north.size(),    n.size());
+    EXPECT_EQ(east.size(),     e.size());
     for (int i = 0; i < static_cast<int> (v.size()); ++i)
     {   
         EXPECT_NEAR(vertical.at(i), v.at(i), 1.e-14);
+        EXPECT_NEAR(north.at(i),    n.at(i), 1.e-14);
+        EXPECT_NEAR(east.at(i),     e.at(i), 1.e-14);
     } 
 
     request.clear();
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest");
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::PreprocessingRequest");
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingResponse)
+TEST(ServicesScalablePickersCNNThreeComponentS, PreprocessingResponse)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
+    const std::vector<double> north{11, 12, 13, 14, 15};
+    const std::vector<double> east{-1, -2, -3, -4, -5};    
     const double samplingRate{50};
     const int64_t identifier{5021};
     const PreprocessingResponse::ReturnCode
@@ -71,7 +87,7 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingRespon
     PreprocessingResponse response;
 
     EXPECT_NO_THROW(response.setSamplingRate(samplingRate));
-    EXPECT_NO_THROW(response.setVerticalSignal(vertical));
+    EXPECT_NO_THROW(response.setVerticalNorthEastSignal(vertical, north, east));
     response.setIdentifier(identifier);
     response.setReturnCode(returnCode);
 
@@ -80,7 +96,7 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingRespon
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_EQ(copy.getReturnCode(), returnCode);
     EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
-    EXPECT_TRUE(copy.haveSignal());
+    EXPECT_TRUE(copy.haveSignals());
     auto v = copy.getVerticalSignal();
     EXPECT_EQ(vertical.size(), v.size());
     for (int i = 0; i < static_cast<int> (v.size()); ++i)
@@ -92,167 +108,173 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingRespon
     EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(response.getIdentifier(), 0);
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingResponse");
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::PreprocessingResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, InferenceRequest)
+TEST(ServicesScalablePickersCNNThreeComponentS, InferenceRequest)
 {
-    const double threshold{0.5};
-    std::vector<double> vertical(400);
+    std::vector<double> vertical(600);
+    std::vector<double> north(600);
+    std::vector<double> east(600);
     std::fill(vertical.begin(), vertical.end(), 1);
+    std::fill(north.begin(),    north.end(),    2);
+    std::fill(east.begin(),     east.end(),     3);
     const int64_t identifier{1026};
     InferenceRequest request;
 
-    EXPECT_EQ(request.getExpectedSignalLength(), 400);
-    EXPECT_NO_THROW(request.setThreshold(threshold));
-    EXPECT_NO_THROW(request.setVerticalSignal(vertical));
+    EXPECT_EQ(request.getExpectedSignalLength(), 600);
+    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east));
     request.setIdentifier(identifier);
 
     InferenceRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
-    EXPECT_NEAR(copy.getThreshold(), threshold, 1.e-12);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), 100, 1.e-14);
-    EXPECT_TRUE(copy.haveSignal());
+    EXPECT_TRUE(copy.haveSignals());
     const auto vr = copy.getVerticalSignalReference();
+    const auto nr = copy.getNorthSignalReference();
+    const auto er = copy.getEastSignalReference();
     EXPECT_EQ(vertical.size(), vr.size());
+    EXPECT_EQ(north.size(),    nr.size());
+    EXPECT_EQ(east.size(),     er.size());
     for (int i = 0; i < static_cast<int> (vr.size()); ++i)
     {
         EXPECT_NEAR(vertical.at(i), vr.at(i), 1.e-14);
+        EXPECT_NEAR(north.at(i),    nr.at(i), 1.e-14);
+        EXPECT_NEAR(east.at(i),     er.at(i), 1.e-14);
     }
 
     auto v = copy.getVerticalSignal();
+    auto n = copy.getNorthSignal();
+    auto e = copy.getEastSignal();
     EXPECT_EQ(vertical.size(), v.size());
+    EXPECT_EQ(north.size(),    n.size());
+    EXPECT_EQ(east.size(),     e.size());
     for (int i = 0; i < static_cast<int> (v.size()); ++i)
     {
         EXPECT_NEAR(vertical.at(i), v.at(i), 1.e-14);
+        EXPECT_NEAR(north.at(i),    n.at(i), 1.e-14);
+        EXPECT_NEAR(east.at(i),     e.at(i), 1.e-14);
     }
 
     request.clear();
-    EXPECT_NEAR(request.getThreshold(), 1.0/3.0, 1.e-14);
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
-    EXPECT_FALSE(request.haveSignal());
+    EXPECT_FALSE(request.haveSignals());
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest");
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::InferenceRequest");
 }
                                                                                               
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, InferenceResponse)
+
+TEST(ServicesScalablePickersCNNThreeComponentS, InferenceResponse)
 {
+    const double correction{-0.3};
     const int64_t identifier{5024};
-    const std::tuple<double, double, double> probabilities{0.1, 0.5, 0.4};
-    const InferenceResponse::FirstMotion
-        firstMotion{InferenceResponse::FirstMotion::Down};
     const InferenceResponse::ReturnCode
         returnCode{InferenceResponse::ReturnCode::Success};
     InferenceResponse response;
 
-    EXPECT_NO_THROW(response.setProbabilities(probabilities));
+    EXPECT_NO_THROW(response.setCorrection(correction));
     response.setIdentifier(identifier);
-    response.setFirstMotion(firstMotion);
     response.setReturnCode(returnCode);
 
     InferenceResponse copy;
     EXPECT_NO_THROW(copy.fromMessage(response.toMessage()));
-    EXPECT_EQ(copy.getFirstMotion(), firstMotion);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_EQ(copy.getReturnCode(), returnCode);
-    EXPECT_TRUE(copy.haveProbabilities());
-    auto pBack = copy.getProbabilities();
-    EXPECT_NEAR(std::get<0> (pBack), std::get<0> (probabilities), 1.e-14);
-    EXPECT_NEAR(std::get<1> (pBack), std::get<1> (probabilities), 1.e-14);
-    EXPECT_NEAR(std::get<2> (pBack), std::get<2> (probabilities), 1.e-14);
+    EXPECT_TRUE(copy.haveCorrection());
+    EXPECT_NEAR(copy.getCorrection(), correction, 1.e-7);
 
     response.clear();
     EXPECT_EQ(response.getIdentifier(), 0); 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceResponse");
-    EXPECT_FALSE(response.haveProbabilities());
-    EXPECT_FALSE(response.haveFirstMotion());
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::InferenceResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ProcessingRequest)
+
+TEST(ServicesScalablePickersCNNThreeComponentS, ProcessingRequest)
 {
-    const double threshold{0.5};
-    std::vector<double> vertical(400);
+    std::vector<double> vertical(600);
+    std::vector<double> north(600);
+    std::vector<double> east(600);
     std::fill(vertical.begin(), vertical.end(), 1); 
+    std::fill(north.begin(),    north.end(),    2); 
+    std::fill(east.begin(),     east.end(),     3); 
     const int64_t identifier{1026};
     const double samplingRate{50};
     ProcessingRequest request;
 
-    EXPECT_EQ(request.getExpectedSignalLength(), 400);
-    EXPECT_NO_THROW(request.setThreshold(threshold));
+    EXPECT_EQ(request.getExpectedSignalLength(), 600);
     EXPECT_NO_THROW(request.setSamplingRate(samplingRate));
-    EXPECT_NO_THROW(request.setVerticalSignal(vertical));
+    EXPECT_NO_THROW(request.setVerticalNorthEastSignal(vertical, north, east));
     request.setIdentifier(identifier);
 
     ProcessingRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
-    EXPECT_NEAR(copy.getThreshold(), threshold, 1.e-12);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
-    EXPECT_TRUE(copy.haveSignal());
+    EXPECT_TRUE(copy.haveSignals());
     const auto vr = copy.getVerticalSignalReference();
+    const auto nr = copy.getNorthSignalReference();
+    const auto er = copy.getEastSignalReference();
     EXPECT_EQ(vertical.size(), vr.size());
+    EXPECT_EQ(north.size(),    nr.size());
+    EXPECT_EQ(east.size(),     er.size());
     for (int i = 0; i < static_cast<int> (vr.size()); ++i)
     {
         EXPECT_NEAR(vertical.at(i), vr.at(i), 1.e-14);
     }
 
     auto v = copy.getVerticalSignal();
+    auto n = copy.getNorthSignal();
+    auto e = copy.getEastSignal();
     EXPECT_EQ(vertical.size(), v.size());
+    EXPECT_EQ(north.size(),    n.size());
+    EXPECT_EQ(east.size(),     e.size());
     for (int i = 0; i < static_cast<int> (v.size()); ++i)
     {
         EXPECT_NEAR(vertical.at(i), v.at(i), 1.e-14);
+        EXPECT_NEAR(north.at(i),    n.at(i), 1.e-14);
+        EXPECT_NEAR(east.at(i),     e.at(i), 1.e-14);
     }
 
     request.clear();
-    EXPECT_NEAR(request.getThreshold(), 1./3., 1.e-14);
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
-    EXPECT_FALSE(request.haveSignal());
+    EXPECT_FALSE(request.haveSignals());
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest");
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest");
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ProcessingResponse)
+TEST(ServicesScalablePickersCNNThreeComponentS, ProcessingResponse)
 {
+    const double correction{0.3};
     const int64_t identifier{5025};
-    const std::tuple<double, double, double> probabilities{0.1, 0.5, 0.4};
-    const ProcessingResponse::FirstMotion
-        firstMotion{ProcessingResponse::FirstMotion::Down};
     const ProcessingResponse::ReturnCode
         returnCode{ProcessingResponse::ReturnCode::Success};
     ProcessingResponse response;
 
-    EXPECT_NO_THROW(response.setProbabilities(probabilities));
+    EXPECT_NO_THROW(response.setCorrection(correction));
     response.setIdentifier(identifier);
-    response.setFirstMotion(firstMotion);
     response.setReturnCode(returnCode);
 
     ProcessingResponse copy;
     EXPECT_NO_THROW(copy.fromMessage(response.toMessage()));
-    EXPECT_EQ(copy.getFirstMotion(), firstMotion);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_EQ(copy.getReturnCode(), returnCode);
-    EXPECT_TRUE(copy.haveProbabilities());
-    auto pBack = copy.getProbabilities();
-    EXPECT_NEAR(std::get<0> (pBack), std::get<0> (probabilities), 1.e-14);
-    EXPECT_NEAR(std::get<1> (pBack), std::get<1> (probabilities), 1.e-14);
-    EXPECT_NEAR(std::get<2> (pBack), std::get<2> (probabilities), 1.e-14);
+    EXPECT_TRUE(copy.haveCorrection());
+    EXPECT_NEAR(copy.getCorrection(), correction, 1.e-7);
 
     response.clear();
     EXPECT_EQ(response.getIdentifier(), 0); 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse");
-    EXPECT_FALSE(response.haveProbabilities());
-    EXPECT_FALSE(response.haveFirstMotion());
+              "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ServiceOptions)
+TEST(ServicesScalablePickersCNNThreeComponentS, ServiceOptions)
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int sendHWM{105};
@@ -307,7 +329,7 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ServiceOptions)
               UMPS::Authentication::SecurityLevel::Grasslands);
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, RequestorOptions)
+TEST(ServicesScalablePickersCNNThreeComponentS, RequestorOptions)
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int sendHWM{105};
@@ -347,16 +369,16 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, RequestorOptions)
 ///--------------------------------------------------------------------------///
 ///                               Communication Test                         ///
 ///--------------------------------------------------------------------------///
+/*
 const std::string frontendAddress{"tcp://127.0.0.1:5555"};
 const std::string backendAddress{"tcp://127.0.0.1:5556"};
 const std::string weightsFile{
-    "/usr/local/share/UUSSMLModels/firstMotionClassifiersCNNOneComponentP.onnx"
+    "/usr/local/share/UUSSMLModels/pickersCNNThreeComponentS.onnx"
 }; 
 std::vector<double> zProcRef;
-std::vector<double> verticalLong(405, 0);
-std::vector<double> vertical(400, 0); 
-std::tuple<double, double, double> probabilitiesReference;
-int firstMotionReference{0};
+std::vector<double> verticalLong(605, 0);
+std::vector<double> vertical(600, 0); 
+double correctionReference{0};
 
 void proxy()
 {
@@ -428,15 +450,8 @@ void client()
     if (inferenceResponse != nullptr)
     {
         EXPECT_EQ(inferenceResponse->getIdentifier(), 3);
-        auto pBack = inferenceResponse->getProbabilities();
-        EXPECT_NEAR(std::get<0> (pBack),
-                    std::get<0> (probabilitiesReference), 1.e-14);
-        EXPECT_NEAR(std::get<1> (pBack),
-                    std::get<1> (probabilitiesReference), 1.e-14);
-        EXPECT_NEAR(std::get<2> (pBack),
-                    std::get<2> (probabilitiesReference), 1.e-14);
-        EXPECT_EQ(static_cast<int> (inferenceResponse->getFirstMotion()),
-                  firstMotionReference);
+        auto correction = inferenceResponse->getCorrection();
+        EXPECT_NEAR(correction, correctionReference, 1.e-7);
     }
     // Lastly - do it all
     ProcessingRequest processingRequest;
@@ -447,31 +462,21 @@ void client()
     if (inferenceResponse != nullptr)
     {   
         EXPECT_EQ(processingResponse->getIdentifier(), 4);
-        auto pBack = processingResponse->getProbabilities();
-        EXPECT_NEAR(std::get<0> (pBack),
-                    std::get<0> (probabilitiesReference), 1.e-14);
-        EXPECT_NEAR(std::get<1> (pBack),
-                    std::get<1> (probabilitiesReference), 1.e-14);
-        EXPECT_NEAR(std::get<2> (pBack),
-                    std::get<2> (probabilitiesReference), 1.e-14);
-        EXPECT_EQ(static_cast<int> (processingResponse->getFirstMotion()),
-                  firstMotionReference);
+        auto correction = processingResponse->getCorrection();
+        EXPECT_NEAR(correction, correctionReference, 1.e-7);
     }
 }
 
-TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, Service)
+TEST(ServicesScalablePickersCNNThreeComponentS, Service)
 {
     // Do this manually
     {
-        UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP::Preprocessing
-            preprocessing;
-        UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP::Inference
-            inference;
+        UUSSMLModels::Pickers::CNNThreeComponentS::Preprocessing preprocessing;
+        UUSSMLModels::Pickers::CNNThreeComponentS::Inference inference;
         EXPECT_NO_THROW(inference.load(weightsFile));
 
         zProcRef = preprocessing.process(vertical);
-        probabilitiesReference = inference.predictProbability(zProcRef);
-        firstMotionReference = static_cast<int> (inference.predict(zProcRef));
+        correctionReference = inference.predict(zProcRef);
     }
     // Start the proxy
     auto proxyThread = std::thread(proxy);
@@ -488,5 +493,6 @@ TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, Service)
     serverThread.join();
     proxyThread.join();
 }
+*/
 
 }

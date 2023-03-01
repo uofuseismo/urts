@@ -22,12 +22,12 @@ std::string toCBORObject(const InferenceResponse &message)
     {
         throw std::runtime_error("First motion not set");
     }
-    if (!message.haveProbability())
+    if (!message.haveProbabilities())
     {
-        throw std::runtime_error("Posterior probability not set");
+        throw std::runtime_error("Posterior probabilities not set");
     }
     obj["FirstMotion"] = static_cast<int> (message.getFirstMotion());
-    auto p = message.getProbability();
+    auto p = message.getProbabilities();
     obj["ProbabilityUp"] = std::get<0> (p);
     obj["ProbabilityDown"] = std::get<1> (p);
     obj["ProbabilityUnknown"] = std::get<2> (p);
@@ -53,7 +53,7 @@ InferenceResponse
     auto pUp = obj["ProbabilityUp"].get<double> ();
     auto pDown = obj["ProbabilityDown"].get<double> ();
     auto pUnknown = obj["ProbabilityUnknown"].get<double> ();
-    result.setProbability(std::tuple {pUp, pDown, pUnknown});
+    result.setProbabilities(std::tuple {pUp, pDown, pUnknown});
     result.setFirstMotion(
        static_cast<InferenceResponse::FirstMotion>
           (obj["FirstMotion"].get<int> ())
@@ -66,12 +66,12 @@ InferenceResponse
 class InferenceResponse::ResponseImpl
 {
 public:
-    std::tuple<double, double, double> mPosteriorProbability{0, 0, 1};
+    std::tuple<double, double, double> mPosteriorProbabilities{0, 0, 1};
     int64_t mIdentifier{0};
     InferenceResponse::FirstMotion
         mFirstMotion{InferenceResponse::FirstMotion::Unknown};
     InferenceResponse::ReturnCode mReturnCode;
-    bool mHavePosteriorProbability{false};
+    bool mHavePosteriorProbabilities{false};
     bool mHaveFirstMotion{false};
     bool mHaveReturnCode{false};
 };
@@ -156,7 +156,8 @@ bool InferenceResponse::haveReturnCode() const noexcept
 }
 
 /// Posterior probability
-void InferenceResponse::setProbability(const std::tuple<double, double, double> &probability)
+void InferenceResponse::setProbabilities(
+    const std::tuple<double, double, double> &probability)
 {
     auto pUp = std::get<0> (probability);
     auto pDown = std::get<1> (probability);
@@ -177,22 +178,22 @@ void InferenceResponse::setProbability(const std::tuple<double, double, double> 
     {
         throw std::invalid_argument("pUnknown out of bounds [0,1]");
     }
-    pImpl->mPosteriorProbability = probability;
-    pImpl->mHavePosteriorProbability = true;
+    pImpl->mPosteriorProbabilities = probability;
+    pImpl->mHavePosteriorProbabilities = true;
 }
 
-std::tuple<double, double, double> InferenceResponse::getProbability() const
+std::tuple<double, double, double> InferenceResponse::getProbabilities() const
 {
-    if (!haveProbability())
+    if (!haveProbabilities())
     {
         throw std::runtime_error("Probabilities not set");
     }
-    return pImpl->mPosteriorProbability;
+    return pImpl->mPosteriorProbabilities;
 }
 
-bool InferenceResponse::haveProbability() const noexcept
+bool InferenceResponse::haveProbabilities() const noexcept
 {
-    return pImpl->mHavePosteriorProbability;
+    return pImpl->mHavePosteriorProbabilities;
 }
 
 /// First motion
