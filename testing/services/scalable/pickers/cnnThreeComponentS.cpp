@@ -369,15 +369,20 @@ TEST(ServicesScalablePickersCNNThreeComponentS, RequestorOptions)
 ///--------------------------------------------------------------------------///
 ///                               Communication Test                         ///
 ///--------------------------------------------------------------------------///
-/*
 const std::string frontendAddress{"tcp://127.0.0.1:5555"};
 const std::string backendAddress{"tcp://127.0.0.1:5556"};
 const std::string weightsFile{
     "/usr/local/share/UUSSMLModels/pickersCNNThreeComponentS.onnx"
 }; 
 std::vector<double> zProcRef;
+std::vector<double> nProcRef;
+std::vector<double> eProcRef;
 std::vector<double> verticalLong(605, 0);
 std::vector<double> vertical(600, 0); 
+std::vector<double> northLong(605, 1); 
+std::vector<double> north(600, 1); 
+std::vector<double> eastLong(605, 2); 
+std::vector<double> east(600, 2); 
 double correctionReference{0};
 
 void proxy()
@@ -424,27 +429,34 @@ void client()
     PreprocessingRequest preprocessingRequest;
     preprocessingRequest.setIdentifier(2);
     EXPECT_NO_THROW(preprocessingRequest.setSamplingRate(samplingRate));
-    EXPECT_NO_THROW(preprocessingRequest.setVerticalSignal(vertical));
+    EXPECT_NO_THROW(preprocessingRequest.setVerticalNorthEastSignal(
+                    vertical, north, east));
     std::unique_ptr<PreprocessingResponse> preprocessingResponse{nullptr};
     EXPECT_NO_THROW(preprocessingResponse
         = client.request(preprocessingRequest));
     std::vector<double> zProc;
+    std::vector<double> nProc;
+    std::vector<double> eProc;
     if (preprocessingResponse != nullptr)
     {
         EXPECT_EQ(preprocessingResponse->getIdentifier(), 2);
         zProc = preprocessingResponse->getVerticalSignal();
+        nProc = preprocessingResponse->getNorthSignal();
+        eProc = preprocessingResponse->getEastSignal();
         EXPECT_EQ(zProc.size(), zProcRef.size());
         double error = 0;
         for (int i = 0; i < static_cast<int> (zProc.size()); ++i)
         {
             error = std::max(error, std::abs(zProc.at(i) - zProcRef.at(i)));
+            error = std::max(error, std::abs(nProc.at(i) - nProcRef.at(i)));
+            error = std::max(error, std::abs(eProc.at(i) - eProcRef.at(i)));
         } 
         EXPECT_NEAR(error, 0, 1.e-7);
     }
     // Follow on with an inference test
     InferenceRequest inferenceRequest;
     inferenceRequest.setIdentifier(3);
-    inferenceRequest.setVerticalSignal(zProcRef);
+    inferenceRequest.setVerticalNorthEastSignal(zProcRef, nProcRef, eProcRef);
     std::unique_ptr<InferenceResponse> inferenceResponse{nullptr};
     EXPECT_NO_THROW(inferenceResponse = client.request(inferenceRequest));
     if (inferenceResponse != nullptr)
@@ -456,7 +468,7 @@ void client()
     // Lastly - do it all
     ProcessingRequest processingRequest;
     processingRequest.setIdentifier(4);
-    processingRequest.setVerticalSignal(vertical);
+    processingRequest.setVerticalNorthEastSignal(vertical, north, east);
     std::unique_ptr<ProcessingResponse> processingResponse{nullptr};
     EXPECT_NO_THROW(processingResponse = client.request(processingRequest));
     if (inferenceResponse != nullptr)
@@ -475,8 +487,11 @@ TEST(ServicesScalablePickersCNNThreeComponentS, Service)
         UUSSMLModels::Pickers::CNNThreeComponentS::Inference inference;
         EXPECT_NO_THROW(inference.load(weightsFile));
 
-        zProcRef = preprocessing.process(vertical);
-        correctionReference = inference.predict(zProcRef);
+        auto proc = preprocessing.process(vertical, north, east);
+        zProcRef = std::get<0> (proc);
+        nProcRef = std::get<1> (proc);
+        eProcRef = std::get<2> (proc);
+        correctionReference = inference.predict(zProcRef, nProcRef, eProcRef);
     }
     // Start the proxy
     auto proxyThread = std::thread(proxy);
@@ -486,13 +501,12 @@ TEST(ServicesScalablePickersCNNThreeComponentS, Service)
     // Let the clients rip
     std::this_thread::sleep_for(std::chrono::milliseconds {500});
     auto clientThread1 = std::thread(client);
-    auto clientThread2 = std::thread(client);
+//    auto clientThread2 = std::thread(client);
 
     clientThread1.join();
-    clientThread2.join();
+    //clientThread2.join();
     serverThread.join();
     proxyThread.join();
 }
-*/
 
 }

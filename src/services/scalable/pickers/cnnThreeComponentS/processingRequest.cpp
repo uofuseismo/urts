@@ -150,12 +150,12 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     {   
         throw std::invalid_argument("Inconsistent signal sizes");
     }
-    /// Try to head off a problem.  Can still be tricked by setting the signal
-    /// then the sampling rate.
     if (vertical.empty())
     {
         throw std::invalid_argument("Signals cannot be empty");
     }
+    /// Try to head off a problem.  Can still be tricked by setting the signal
+    /// then the sampling rate.
     auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
     double expectedDuration
         = (MLModels::Inference::getExpectedSignalLength() - 1)
@@ -176,16 +176,17 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     const std::vector<double> &north,
     const std::vector<double> &east)
 {
+
     if (vertical.size() != north.size() || vertical.size() != east.size())
     {
         throw std::invalid_argument("Inconsistent signal sizes");
     }
-    /// Try to head off a problem.  Can still be tricked by setting the signal
-    /// then the sampling rate.
     if (vertical.empty())
     {
         throw std::invalid_argument("Signals cannot be empty");
     }
+    /// Try to head off a problem.  Can still be tricked by setting the signal
+    /// then the sampling rate.
     auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
     double expectedDuration
         = (MLModels::Inference::getExpectedSignalLength() - 1)

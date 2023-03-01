@@ -21,7 +21,7 @@ std::string toCBORObject(const PreprocessingResponse &message)
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
     obj["ReturnCode"] = static_cast<int> (message.getReturnCode());
-    if (!message.haveSignals()){throw std::runtime_error("Signal not set");}
+    if (!message.haveSignals()){throw std::runtime_error("Signals not set");}
     obj["VerticalSignal"] = message.getVerticalSignal();
     obj["NorthSignal"] = message.getNorthSignal();
     obj["EastSignal"] = message.getEastSignal();

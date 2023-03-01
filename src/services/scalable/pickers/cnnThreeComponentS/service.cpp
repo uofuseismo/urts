@@ -115,8 +115,8 @@ public:
                     = processingRequest.getEastSignalReference();
                 auto samplingRate = processingRequest.getSamplingRate();
                 // Process data
-                processedSignals  = mPreprocess.process(vertical, north, east,
-                                                        samplingRate);
+                processedSignals = mPreprocess.process(vertical, north, east,
+                                                       samplingRate);
             }
             catch (const std::exception &e)
             {
@@ -234,9 +234,9 @@ public:
                 const auto &vertical
                     = inferenceRequest.getVerticalSignalReference();
                 const auto &north
-                    = processingRequest.getNorthSignalReference();
+                    = inferenceRequest.getNorthSignalReference();
                 const auto &east
-                    = processingRequest.getEastSignalReference();
+                    = inferenceRequest.getEastSignalReference();
                 auto correction = mInference->predict(vertical, north, east);
                 response.setCorrection(correction);
                 response.setReturnCode(InferenceResponse::Success);
@@ -263,7 +263,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to upnack preprocessing request: "
+                mLogger->error("Failed to unpack preprocessing request: "
                              + std::string{e.what()});
                 response.setReturnCode(PreprocessingResponse::InvalidMessage);
                 return response.clone();
@@ -280,9 +280,9 @@ public:
                 const auto &vertical
                     = preprocessingRequest.getVerticalSignalReference();
                 const auto &north
-                    = processingRequest.getNorthSignalReference();
+                    = preprocessingRequest.getNorthSignalReference();
                 const auto &east
-                    = processingRequest.getEastSignalReference();
+                    = preprocessingRequest.getEastSignalReference();
                 auto samplingRate = preprocessingRequest.getSamplingRate();
                 // Process data
                 auto [verticalResult, northResult, eastResult]

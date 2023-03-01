@@ -148,9 +148,9 @@ void PreprocessingRequest::setVerticalNorthEastSignal(
         throw std::invalid_argument("Signal is empty");
     }
     if (vertical.size() != north.size() || vertical.size() != east.size())
-    {   
+    {
         throw std::invalid_argument("Inconsistent signal lengths");
-    }   
+    }
     pImpl->mVerticalSignal = std::move(vertical);
     pImpl->mNorthSignal = std::move(north);
     pImpl->mEastSignal = std::move(east);
