@@ -310,6 +310,8 @@ if (${BUILD_UUSS_MLMODELS})
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
+   add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
+   add_executable(sPickRegressorService src/services/scalable/pickers/cnnThreeComponentS/serviceModule.cpp)
    add_executable(firstMotionClassifierService src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceModule.cpp)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
@@ -320,6 +322,14 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
    set_target_properties(uNetThreeComponentSService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   set_target_properties(pPickRegressorService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   set_target_properties(sPickRegressorService PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO) 
@@ -336,6 +346,12 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(uNetThreeComponentSService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
+   target_include_directories(pPickRegressorService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
+   target_include_directories(sPickRegressorService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
    target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
@@ -348,11 +364,19 @@ if (${BUILD_UUSS_MLMODELS})
    target_link_libraries(uNetThreeComponentSService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
+   target_link_libraries(pPickRegressorService
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_link_libraries(sPickRegressorService
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
    target_link_libraries(firstMotionClassifierService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} uNetThreeComponentPService
                                uNetThreeComponentSService
+                               pPickRegressorService
+                               sPickRegressorService
                                firstMotionClassifierService)
 endif()
 

@@ -30,15 +30,15 @@
 #include <umps/services/command/serviceOptions.hpp>
 #include <umps/services/command/terminateRequest.hpp>
 #include <umps/services/command/terminateResponse.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.hpp"
+#include "urts/services/scalable/pickers/cnnOneComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/pickers/cnnOneComponentP/service.hpp"
 #include "private/isEmpty.hpp"
 
 namespace UAuth = UMPS::Authentication;
 namespace UCI = UMPS::Services::ConnectionInformation;
-namespace FM = URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+namespace PPicker = URTS::Services::Scalable::Pickers::CNNOneComponentP;
 
-#define MODULE_NAME "FirstMotionClassifier"
+#define MODULE_NAME "PPickRegressorService"
 
 /// @result Gets the command line input options as a string.
 [[nodiscard]] std::string getInputOptions() noexcept
@@ -127,7 +127,7 @@ struct ProgramOptions
         //-----------------------ML Model Options-----------------------------//
         std::string weightsFileGuess
         {
-            "/usr/local/share/UUSSMLModels/detectorsFirstMotionClassifier.onnx"
+            "/usr/local/share/UUSSMLModels/pickersPPickRegressor.onnx"
         };
         std::string weightsFile{""};
         if (std::filesystem::exists(weightsFileGuess))
@@ -135,29 +135,30 @@ struct ProgramOptions
             weightsFile = weightsFileGuess;
         }
         weightsFile
-            = propertyTree.get<std::string> ("FirstMotionClassifier.weightsFile",
+            = propertyTree.get<std::string> ("PPickRegressor.weightsFile",
                                              weightsFile);
         mServiceOptions.setModelWeightsFile(weightsFile);
 
-        FM::ServiceOptions::Device device = FM::ServiceOptions::Device::CPU;
+        PPicker::ServiceOptions::Device device
+            = PPicker::ServiceOptions::Device::CPU;
         auto deviceString
-           = propertyTree.get<std::string> ("FirstMotionClassifier.device",
-                                            "cpu");
+            = propertyTree.get<std::string> ("PPickRegressor.device",
+                                             "cpu");
         std::transform(deviceString.begin(), deviceString.end(),
                        deviceString.begin(), ::toupper);
         if (deviceString == std::string {"GPU"})
         {
-            device = FM::ServiceOptions::Device::GPU;
+            device = PPicker::ServiceOptions::Device::GPU;
         }
         mServiceOptions.setDevice(device);
         //----------------Backend Service Connection Information--------------//
         mServiceName
              = propertyTree.get<std::string>
-               ("FirstMotionClassifier.proxyServiceName", mServiceName);
+               ("PPickRegressor.proxyServiceName", mServiceName);
     
         auto backendAddress
              = propertyTree.get<std::string>
-               ("FirstMotionClassifier.proxyServiceAddress", "");
+               ("PPickRegressor.proxyServiceAddress", "");
         if (!::isEmpty(backendAddress))
         {
             mServiceOptions.setAddress(backendAddress);
@@ -168,26 +169,25 @@ struct ProgramOptions
         }
         mServiceOptions.setReceiveHighWaterMark(
             propertyTree.get<int> (
-                "FirstMotionClassifier.proxyServiceReceiveHighWaterMark",
+                "PPickRegressor.proxyServiceReceiveHighWaterMark",
                 mServiceOptions.getReceiveHighWaterMark())
         );
         mServiceOptions.setSendHighWaterMark(
             propertyTree.get<int> (
-                "FirstMotionClassifier.proxyServiceSendHighWaterMark",
+                "PPickRegressor.proxyServiceSendHighWaterMark",
                 mServiceOptions.getSendHighWaterMark())
         );
         auto pollingTimeOut 
             = static_cast<int> (mServiceOptions.getPollingTimeOut().count()
               );
         pollingTimeOut = propertyTree.get<int> (
-              "FirstMotionClassifier.proxyServicePollingTimeOut",
-               pollingTimeOut);
+              "PPickRegressor.proxyServicePollingTimeOut", pollingTimeOut);
         mServiceOptions.setPollingTimeOut(
             std::chrono::milliseconds {pollingTimeOut} );
     }
 //public:
-    FM::ServiceOptions mServiceOptions;
-    std::string mServiceName{"FirstMotionClassifier"};
+    PPicker::ServiceOptions mServiceOptions;
+    std::string mServiceName{"PPickRegressor"};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::string mModuleName{MODULE_NAME};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
@@ -205,7 +205,7 @@ public:
     InferenceEngine() = delete;
     /// @brief Constructor.
     InferenceEngine(const std::string &moduleName,
-                    std::unique_ptr<FM::Service> &&inferenceService,
+                    std::unique_ptr<PPicker::Service> &&inferenceService,
                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mInferenceService(std::move(inferenceService)),
         mLogger(logger)
@@ -378,7 +378,7 @@ public:
     }
 private:
     mutable std::mutex mMutex;
-    std::unique_ptr<FM::Service> mInferenceService{nullptr};
+    std::unique_ptr<PPicker::Service> mInferenceService{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::unique_ptr<UMPS::ProxyServices::Command::Replier>
@@ -466,7 +466,7 @@ int main(int argc, char *argv[])
 
         // Create the service and the subsequent process
         auto inferenceService
-            = std::make_unique<FM::Service> (context, logger);
+            = std::make_unique<PPicker::Service> (context, logger);
         inferenceService->initialize(programOptions.mServiceOptions);
         auto inferenceProcess
            = std::make_unique<::InferenceEngine> (programOptions.mModuleName,
@@ -525,11 +525,11 @@ std::pair<std::string, int> parseCommandLineOptions(int argc, char *argv[])
     std::string iniFile;
     boost::program_options::options_description desc(
 R"""(
-This service classifies the first-motion of a P arrival as up, down, or unknown.
-This is a scalable service so it is likely that the user will have multiple 
-instances running simultaneously so as to satisfy the overall application's
-inference needs.  Example usage:
-    firstMotionService --ini=cnnFirstMotionService.ini --instance=1
+The pPickRegressorService regressor allows a module to improve an initial P
+pick.  This is a scalable service so it is likely that the user will have
+multiple instances running simultaneously so as to satisfy the overall
+application's inference needs.  Example usage:
+    pRegressorService --ini=pRegressor.ini --instance=0
 Allowed options)""");
     desc.add_options()
         ("help", "Produces this help message")
