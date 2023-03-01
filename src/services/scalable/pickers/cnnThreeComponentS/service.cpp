@@ -1,29 +1,28 @@
-#include <iostream>
 #include <mutex>
 #include <thread>
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
-#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/preprocessing.hpp>
+#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
+#include <uussmlmodels/pickers/cnnThreeComponentS/preprocessing.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
 #include <umps/messaging/routerDealer/reply.hpp>
 #include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <umps/messageFormats/failure.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/service.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/serviceOptions.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/processingResponse.hpp"
 
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
-using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
-namespace UModels = UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
+namespace UModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 class Service::ServiceImpl
 {
@@ -102,14 +101,22 @@ public:
                 return response.clone();
             }
             // Process the data
-            std::vector<double> verticalProcessed;
+            // Process the data
+            std::tuple<std::vector<double>,
+                       std::vector<double>,
+                       std::vector<double>> processedSignals;
             try
             {
                 const auto &vertical
                     = processingRequest.getVerticalSignalReference();
+                const auto &north
+                    = processingRequest.getNorthSignalReference();
+                const auto &east
+                    = processingRequest.getEastSignalReference();
                 auto samplingRate = processingRequest.getSamplingRate();
                 // Process data
-                verticalProcessed = mPreprocess.process(vertical, samplingRate);
+                processedSignals  = mPreprocess.process(vertical, north, east,
+                                                        samplingRate);
             }
             catch (const std::exception &e)
             {
@@ -118,14 +125,23 @@ public:
                 response.setReturnCode(ProcessingResponse::PreprocessingFailure);
                 return response.clone();
             }
-            // Check resulting signal lengths
+            // Extract signals
+            auto verticalProcessed = std::move(std::get<0> (processedSignals));
+            auto northProcessed    = std::move(std::get<1> (processedSignals));
+            auto eastProcessed     = std::move(std::get<2> (processedSignals));
+            // Ensure signals have same size
+#ifndef NDEBUG
+            assert(verticalProcessed.size() == northProcessed.size());
+            assert(verticalProcessed.size() == eastProcessed.size());
+#endif
+            // Deal with potentially long signal
             auto nSamples = static_cast<int> (verticalProcessed.size());
             if (nSamples != mExpectedSignalLength)
             {
-                
+    
                 if (nSamples < mExpectedSignalLength)
                 {
-                    mLogger->error("Signal too small after processing");
+                    mLogger->error("Signals too small after processing");
                     response.setReturnCode(
                     ProcessingResponse::ReturnCode::InvalidProcessedSignalLength
                     );
@@ -134,7 +150,8 @@ public:
                 else
                 {
                     // This signal is a bit too long.  Trim it so the pick which
-                    // should be at the center is in the center.
+                    // should be at the center is in the center.  Note, we have
+                    // already ensured the signals have the same size.
                     auto halfWindow
                         = static_cast<int> (mExpectedSignalLength/2);
                     auto halfIndex = static_cast<int> (nSamples/2);
@@ -143,33 +160,40 @@ public:
 #ifndef DEBUG
                     assert(i2 - i1 == mExpectedSignalLength);
 #endif
-                    std::vector<double> tempSignal(mExpectedSignalLength);
-                    std::copy(verticalProcessed.data() + i1,
-                              verticalProcessed.data() + i2,
-                              tempSignal.data()); 
-                    verticalProcessed = std::move(tempSignal);
+                    std::vector<double> tempSignalVertical(mExpectedSignalLength);
+                    std::copy(verticalProcessed.data() + i1, 
+                              verticalProcessed.data() + i2, 
+                              tempSignalVertical.data()); 
+                    verticalProcessed = std::move(tempSignalVertical);
+
+                    std::vector<double> tempSignalNorth(mExpectedSignalLength);
+                    std::copy(northProcessed.data() + i1, 
+                              northProcessed.data() + i2, 
+                              tempSignalNorth.data()); 
+                    northProcessed = std::move(tempSignalNorth);
+
+                    std::vector<double> tempSignalEast(mExpectedSignalLength);
+                    std::copy(eastProcessed.data() + i1,   
+                              eastProcessed.data() + i2,   
+                              tempSignalEast.data());
+                    eastProcessed = std::move(tempSignalEast);
 #ifndef NDEBUG
                     assert(static_cast<int> (verticalProcessed.size()) ==
+                           mExpectedSignalLength);
+                    assert(static_cast<int> (northProcessed.size()) ==
+                           mExpectedSignalLength);
+                    assert(static_cast<int> (eastProcessed.size()) ==
                            mExpectedSignalLength);
 #endif
                 }
             }
             try
             {
-                auto threshold = processingRequest.getThreshold();
-                auto probabilities
-                    = mInference->predictProbability(verticalProcessed);
-                auto firstMotion
-                    = UModels::convertProbabilityToClass(
-                          std::get<0> (probabilities),
-                          std::get<1> (probabilities),
-                          std::get<2> (probabilities),
-                          threshold);
-                response.setProbabilities(probabilities);
-                response.setFirstMotion(
-                    static_cast<ProcessingResponse::FirstMotion> (firstMotion)
-                );
-                response.setReturnCode(ProcessingResponse::Success);
+                 auto correction = mInference->predict(verticalProcessed,
+                                                       northProcessed,
+                                                       eastProcessed);
+                 response.setCorrection(correction);
+                 response.setReturnCode(ProcessingResponse::Success);
             }
             catch (const std::exception &e) 
             {
@@ -199,7 +223,7 @@ public:
                 return response.clone();
             }
             // Ensure the signals are set
-            if (!inferenceRequest.haveSignal())
+            if (!inferenceRequest.haveSignals())
             {
                 response.setReturnCode(InferenceResponse::InvalidMessage);
                 return response.clone();
@@ -209,18 +233,12 @@ public:
             {
                 const auto &vertical
                     = inferenceRequest.getVerticalSignalReference();
-                auto threshold = inferenceRequest.getThreshold();
-                auto probabilities = mInference->predictProbability(vertical);
-                auto firstMotion
-                    = UModels::convertProbabilityToClass(
-                          std::get<0> (probabilities),
-                          std::get<1> (probabilities),
-                          std::get<2> (probabilities),
-                          threshold);
-                response.setProbabilities(probabilities);
-                response.setFirstMotion(
-                    static_cast<InferenceResponse::FirstMotion> (firstMotion)
-                );
+                const auto &north
+                    = processingRequest.getNorthSignalReference();
+                const auto &east
+                    = processingRequest.getEastSignalReference();
+                auto correction = mInference->predict(vertical, north, east);
+                response.setCorrection(correction);
                 response.setReturnCode(InferenceResponse::Success);
             }
             catch (const std::exception &e) 
@@ -251,7 +269,7 @@ public:
                 return response.clone();
             }
             // Ensure the signals are set
-            if (!preprocessingRequest.haveSignal())
+            if (!preprocessingRequest.haveSignals())
             {
                 response.setReturnCode(PreprocessingResponse::InvalidMessage);
                 return response.clone();
@@ -261,22 +279,27 @@ public:
             {
                 const auto &vertical
                     = preprocessingRequest.getVerticalSignalReference();
+                const auto &north
+                    = processingRequest.getNorthSignalReference();
+                const auto &east
+                    = processingRequest.getEastSignalReference();
                 auto samplingRate = preprocessingRequest.getSamplingRate();
                 // Process data
-                auto verticalResult
-                    = mPreprocess.process(vertical, samplingRate);
+                auto [verticalResult, northResult, eastResult]
+                    = mPreprocess.process(vertical, north, east, samplingRate);
                 // Set data on response
                 response.setSamplingRate(mTargetSamplingRate);
-                response.setVerticalSignal(std::move(verticalResult));
+                response.setVerticalNorthEastSignal(std::move(verticalResult),
+                                                    std::move(northResult),
+                                                    std::move(eastResult));
+                response.setReturnCode(PreprocessingResponse::Success);
             }
             catch (const std::exception &e)
             {
                 mLogger->error("Failed to preprocess data: "
                              + std::string{e.what()});
                 response.setReturnCode(PreprocessingResponse::AlgorithmFailure);
-                return response.clone();
             }
-            response.setReturnCode(PreprocessingResponse::Success);
             return response.clone();
         }
         // No idea -> Send something back so they don't wait forever

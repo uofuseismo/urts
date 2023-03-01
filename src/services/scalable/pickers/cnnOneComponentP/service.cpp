@@ -148,7 +148,8 @@ public:
                               tempSignal.data()); 
                     verticalProcessed = std::move(tempSignal);
 #ifndef NDEBUG
-                    assert(verticalProcessed.size() == mExpectedSignalLength);
+                    assert(static_cast<int> (verticalProcessed.size()) ==
+                           mExpectedSignalLength);
 #endif
                 }
             }

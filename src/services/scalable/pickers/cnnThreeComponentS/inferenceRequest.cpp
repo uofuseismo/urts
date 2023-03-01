@@ -137,7 +137,7 @@ void InferenceRequest::setVerticalNorthEastSignal(
     {
         throw std::invalid_argument("Signal sizes are inconsistent");
     }
-    if (vertical.size() != getExpectedSignalLength())
+    if (static_cast<int> (vertical.size()) != getExpectedSignalLength())
     {
         throw std::invalid_argument("Signals size must equal "
                                   + std::to_string(getExpectedSignalLength()));
