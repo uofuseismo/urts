@@ -221,10 +221,10 @@ set(TEST_SRC
     )
 if (${BUILD_UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
-#      testing/services/scalable/detectors/uNetThreeComponentP.cpp
-#      testing/services/scalable/detectors/uNetThreeComponentS.cpp
-#      testing/services/scalable/firstMotionClassifiers/cnnOneComponentP.cpp 
-#      testing/services/scalable/pickers/cnnOneComponentP.cpp
+       testing/services/scalable/detectors/uNetThreeComponentP.cpp
+       testing/services/scalable/detectors/uNetThreeComponentS.cpp
+       testing/services/scalable/firstMotionClassifiers/cnnOneComponentP.cpp 
+       testing/services/scalable/pickers/cnnOneComponentP.cpp
        testing/services/scalable/pickers/cnnThreeComponentS.cpp
 )
 endif()
