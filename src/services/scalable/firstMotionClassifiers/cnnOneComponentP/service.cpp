@@ -1,5 +1,9 @@
+#include <iostream>
 #include <mutex>
 #include <thread>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
 #include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/preprocessing.hpp>
 #include <umps/authentication/zapOptions.hpp>
@@ -115,14 +119,39 @@ public:
                 return response.clone();
             }
             // Check resulting signal lengths
-            if (static_cast<int> (verticalProcessed.size()) != 
-                UModels::Inference::getExpectedSignalLength())
+            auto nSamples = static_cast<int> (verticalProcessed.size());
+            if (nSamples != mExpectedSignalLength)
             {
-                mLogger->error("Invalid signal length after processing");
-                response.setReturnCode(
+                
+                if (nSamples < mExpectedSignalLength)
+                {
+                    mLogger->error("Signal too small after processing");
+                    response.setReturnCode(
                     ProcessingResponse::ReturnCode::InvalidProcessedSignalLength
-                );
-                return response.clone();
+                    );
+                    return response.clone();
+                }
+                else
+                {
+                    // This signal is a bit too long.  Trim it so the pick which
+                    // should be at the center is in the center.
+                    auto halfWindow
+                        = static_cast<int> (mExpectedSignalLength/2);
+                    auto halfIndex = static_cast<int> (nSamples/2);
+                    int i1 = std::max(0, halfIndex - halfWindow);
+                    int i2 = i1 + mExpectedSignalLength;
+#ifndef DEBUG
+                    assert(i2 - i1 == mExpectedSignalLength);
+#endif
+                    std::vector<double> tempSignal(mExpectedSignalLength);
+                    std::copy(verticalProcessed.data() + i1,
+                              verticalProcessed.data() + i2,
+                              tempSignal.data()); 
+                    verticalProcessed = std::move(tempSignal);
+#ifndef NDEBUG
+                    assert(verticalProcessed.size() == mExpectedSignalLength);
+#endif
+                }
             }
             try
             {

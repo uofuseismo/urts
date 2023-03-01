@@ -5,26 +5,26 @@
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/messaging/routerDealer/proxy.hpp>
 #include <umps/messaging/routerDealer/proxyOptions.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/preprocessing.hpp>
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestorOptions.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestor.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/serviceOptions.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/service.hpp"
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
+#include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/preprocessing.hpp>
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
-using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
 
-TEST(ServicesScalablePickersCNNOneComponentP, PreprocessingRequest)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingRequest)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
     const double samplingRate{50};
@@ -58,10 +58,10 @@ TEST(ServicesScalablePickersCNNOneComponentP, PreprocessingRequest)
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingRequest");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest");
 }
 
-TEST(ServicesScalablePickersCNNOneComponentP, PreprocessingResponse)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, PreprocessingResponse)
 {
     const std::vector<double> vertical{1, 2, 3, 4, 5};
     const double samplingRate{50};
@@ -92,23 +92,26 @@ TEST(ServicesScalablePickersCNNOneComponentP, PreprocessingResponse)
     EXPECT_NEAR(response.getSamplingRate(), 100, 1.e-14);
     EXPECT_EQ(response.getIdentifier(), 0);
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingResponse");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
 
-TEST(ServicesScalablePickersCNNOneComponentP, InferenceRequest)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, InferenceRequest)
 {
+    const double threshold{0.5};
     std::vector<double> vertical(400);
     std::fill(vertical.begin(), vertical.end(), 1);
     const int64_t identifier{1026};
     InferenceRequest request;
 
     EXPECT_EQ(request.getExpectedSignalLength(), 400);
+    EXPECT_NO_THROW(request.setThreshold(threshold));
     EXPECT_NO_THROW(request.setVerticalSignal(vertical));
     request.setIdentifier(identifier);
 
     InferenceRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
+    EXPECT_NEAR(copy.getThreshold(), threshold, 1.e-12);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), 100, 1.e-14);
     EXPECT_TRUE(copy.haveSignal());
@@ -127,23 +130,26 @@ TEST(ServicesScalablePickersCNNOneComponentP, InferenceRequest)
     }
 
     request.clear();
+    EXPECT_NEAR(request.getThreshold(), 1.0/3.0, 1.e-14);
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_FALSE(request.haveSignal());
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceRequest");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest");
 }
                                                                                               
-
-TEST(ServicesScalablePickersCNNOneComponentP, InferenceResponse)
+/*
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, InferenceResponse)
 {
-    const double correction{-0.3};
+    const double threshold{0.45};
     const int64_t identifier{5024};
+    const std::tuple<double, double, double> probabilities{0.1, 0.5, 0.4};
     const InferenceResponse::ReturnCode
         returnCode{InferenceResponse::ReturnCode::Success};
     InferenceResponse response;
 
-    EXPECT_NO_THROW(response.setCorrection(correction));
+    EXPECT_NO_THROW(response.setProbabilities(probabilities));
+    
     response.setIdentifier(identifier);
     response.setReturnCode(returnCode);
 
@@ -157,13 +163,14 @@ TEST(ServicesScalablePickersCNNOneComponentP, InferenceResponse)
     response.clear();
     EXPECT_EQ(response.getIdentifier(), 0); 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceResponse");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
+*/
 
-
-TEST(ServicesScalablePickersCNNOneComponentP, ProcessingRequest)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ProcessingRequest)
 {
+    const double threshold{0.5};
     std::vector<double> vertical(400);
     std::fill(vertical.begin(), vertical.end(), 1); 
     const int64_t identifier{1026};
@@ -171,12 +178,14 @@ TEST(ServicesScalablePickersCNNOneComponentP, ProcessingRequest)
     ProcessingRequest request;
 
     EXPECT_EQ(request.getExpectedSignalLength(), 400);
+    EXPECT_NO_THROW(request.setThreshold(threshold));
     EXPECT_NO_THROW(request.setSamplingRate(samplingRate));
     EXPECT_NO_THROW(request.setVerticalSignal(vertical));
     request.setIdentifier(identifier);
 
     ProcessingRequest copy;
     EXPECT_NO_THROW(copy.fromMessage(request.toMessage()));
+    EXPECT_NEAR(copy.getThreshold(), threshold, 1.e-12);
     EXPECT_EQ(copy.getIdentifier(), identifier);
     EXPECT_NEAR(copy.getSamplingRate(), samplingRate, 1.e-14);
     EXPECT_TRUE(copy.haveSignal());
@@ -195,14 +204,16 @@ TEST(ServicesScalablePickersCNNOneComponentP, ProcessingRequest)
     }
 
     request.clear();
+    EXPECT_NEAR(request.getThreshold(), 1./3., 1.e-14);
     EXPECT_NEAR(request.getSamplingRate(), 100, 1.e-14);
     EXPECT_FALSE(request.haveSignal());
     EXPECT_EQ(request.getIdentifier(), 0);
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingRequest");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest");
 }
 
-TEST(ServicesScalablePickersCNNOneComponentP, ProcessingResponse)
+/*
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ProcessingResponse)
 {
     const double correction{0.3};
     const int64_t identifier{5025};
@@ -224,11 +235,12 @@ TEST(ServicesScalablePickersCNNOneComponentP, ProcessingResponse)
     response.clear();
     EXPECT_EQ(response.getIdentifier(), 0); 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingResponse");
+              "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse");
     EXPECT_FALSE(response.haveReturnCode());
 }
+*/
 
-TEST(ServicesScalablePickersCNNOneComponentP, ServiceOptions)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, ServiceOptions)
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int sendHWM{105};
@@ -283,7 +295,7 @@ TEST(ServicesScalablePickersCNNOneComponentP, ServiceOptions)
               UMPS::Authentication::SecurityLevel::Grasslands);
 }
 
-TEST(ServicesScalablePickersCNNOneComponentP, RequestorOptions)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, RequestorOptions)
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int sendHWM{105};
@@ -320,13 +332,14 @@ TEST(ServicesScalablePickersCNNOneComponentP, RequestorOptions)
               zapOptions.getSecurityLevel());
 }
 
+/*
 ///--------------------------------------------------------------------------///
 ///                               Communication Test                         ///
 ///--------------------------------------------------------------------------///
 const std::string frontendAddress{"tcp://127.0.0.1:5555"};
 const std::string backendAddress{"tcp://127.0.0.1:5556"};
 const std::string weightsFile{
-    "/usr/local/share/UUSSMLModels/pickersCNNOneComponentP.onnx"
+    "/usr/local/share/UUSSMLModels/firstMotionClassifiersCNNOneComponentP.onnx"
 }; 
 std::vector<double> zProcRef;
 std::vector<double> verticalLong(405, 0);
@@ -420,12 +433,14 @@ void client()
     }
 }
 
-TEST(ServicesScalablePickersCNNOneComponentP, Service)
+TEST(ServicesScalableFirstMotionClassifiersCNNOneComponentP, Service)
 {
     // Do this manually
     {
-        UUSSMLModels::Pickers::CNNOneComponentP::Preprocessing preprocessing;
-        UUSSMLModels::Pickers::CNNOneComponentP::Inference inference;
+        UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP::Preprocessing
+            preprocessing;
+        UUSSMLModels::FirstMotionClassifiers::CNNOneComponentP::Inference
+            inference;
         EXPECT_NO_THROW(inference.load(weightsFile));
 
         zProcRef = preprocessing.process(vertical);
@@ -446,5 +461,6 @@ TEST(ServicesScalablePickersCNNOneComponentP, Service)
     serverThread.join();
     proxyThread.join();
 }
+*/
 
 }

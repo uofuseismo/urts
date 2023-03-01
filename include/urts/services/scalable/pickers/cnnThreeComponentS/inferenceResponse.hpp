@@ -39,7 +39,7 @@ public:
     /// @brief Sets the correction to add to the S pick.
     /// @param[in] correction  The correction, in seconds, to add to the 
     ///                        original S pick.
-    void setCorrection(const double correction);
+    void setCorrection(const double correction) noexcept;
     /// @result The correction to add to the S pick.
     /// @throws std::runtime_error if \c haveCorrection() is false.
     [[nodiscard]] double getCorrection() const;
@@ -101,7 +101,6 @@ public:
     /// @result An uninitialized instance of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
     /// @}
-
 
     /// @name Operators
     /// @{

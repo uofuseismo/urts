@@ -48,7 +48,7 @@ public:
     /// @brief Sets the correction to add to the S pick.
     /// @param[in] correction  The correction, in seconds, to add to the 
     ///                        original S pick.
-    void setCorrection(double correction);
+    void setCorrection(double correction) noexcept;
     /// @result The correction to add to the S pick.
     /// @throws std::runtime_error if \c haveCorrection() is false.
     [[nodiscard]] double getCorrection() const;
@@ -67,18 +67,6 @@ public:
     [[nodiscard]] ReturnCode getReturnCode() const;
     /// @result True indicates the return code was set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
-    /// @}
-
-    /// @name Sampling Rate
-    /// @{
-
-    /// @brief Sets the sampling rate of the processed signals.
-    /// @param[in] samplingRate  The sampling rate of the signal in Hz.
-    /// @throws std::invalid_argument if the sampling rate is not positive.
-    void setSamplingRate(double samplingRate);
-    /// @result The sampling rate of the processed signals.
-    /// @note By default this is 100 Hz.
-    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
     /// @name Response Identifier

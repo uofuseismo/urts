@@ -110,16 +110,6 @@ set(GENERIC_SRC
     )
 if (${BUILD_UUSS_MLMODELS})
     set(UUSS_SRC
-        src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
-        src/services/scalable/pickers/cnnOneComponentP/service.cpp
-        src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
@@ -141,6 +131,28 @@ if (${BUILD_UUSS_MLMODELS})
         src/services/scalable/detectors/uNetThreeComponentS/service.cpp
         src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.cpp
+        src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
+        src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
+        src/services/scalable/pickers/cnnOneComponentP/service.cpp
+        src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
+        src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
+        src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
+        src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp
         )
 endif()
 if (${BUILD_EW})
@@ -204,6 +216,7 @@ if (${BUILD_UUSS_MLMODELS})
    set(TEST_SRC ${TEST_SRC}
        testing/services/scalable/detectors/uNetThreeComponentP.cpp
        testing/services/scalable/detectors/uNetThreeComponentS.cpp
+       testing/services/scalable/firstMotionClassifiers/cnnOneComponentP.cpp 
        testing/services/scalable/pickers/cnnOneComponentP.cpp)
 endif()
 if (${BUILD_EW})
@@ -288,6 +301,7 @@ if (${BUILD_UUSS_MLMODELS})
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
+   add_executable(firstMotionClassifierService src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceModule.cpp)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -300,6 +314,10 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO) 
+   set_target_properties(firstMotionClassifierService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
@@ -307,6 +325,9 @@ if (${BUILD_UUSS_MLMODELS})
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_include_directories(uNetThreeComponentSService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
+   target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_link_libraries(mlDetector
@@ -318,7 +339,12 @@ if (${BUILD_UUSS_MLMODELS})
    target_link_libraries(uNetThreeComponentSService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
-   set(URTS_MODULES ${MODULES} uNetThreeComponentPService)
+   target_link_libraries(firstMotionClassifierService
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   set(URTS_MODULES ${MODULES} uNetThreeComponentPService
+                               uNetThreeComponentSService
+                               firstMotionClassifierService)
 endif()
 
 ##########################################################################################

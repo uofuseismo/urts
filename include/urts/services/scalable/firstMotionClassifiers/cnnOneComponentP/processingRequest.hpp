@@ -32,19 +32,16 @@ public:
     /// @brief Sets the signal on the vertical channel which will be 
     ///        preprocessed then passed to the inference engine.
     /// @param[in] verticalSignal   The signal on the vertical channel.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    ///         at least \c getExpectedSignalLength() - 1)
+    ///                / \c getSamplingRate() duration.
     void setVerticalSignal(const std::vector<double> &verticalSignal);
     /// @brief Sets the signal on the vertical channel which will be
     ///        preprocessed then passed to the inference engine.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
-    /// @throws std::invalid_argument Provided the sampling rate is 100
-    ///         Hz then the signal should be \c getExpectedSignalLength().
+    ///         at least \c getExpectedSignalLength() - 1)
+    ///                / \c getSamplingRate() duration.
     void setVerticalSignal(std::vector<double> &&verticalSignal);
     /// @result The vertical signal.
     /// @throws std::runtime_error if \c haveSignal() is false.

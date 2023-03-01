@@ -153,6 +153,15 @@ void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
         {
             throw std::invalid_argument("Signals cannot be empty");
         }
+        auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+        double expectedDuration
+            = (MLModels::Inference::getExpectedSignalLength() - 1)
+             *expectedSamplingPeriod;
+        double signalDuration = (vertical.size() - 1)/getSamplingRate();
+        if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
+        {
+            throw std::invalid_argument("Signal time is too short");
+        }
     }
     pImpl->mVerticalSignal = std::move(vertical);
     pImpl->mHaveSignal = true;
