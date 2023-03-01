@@ -751,7 +751,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if the sampling rate is the default and the signal length is not <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a4c5caee47537cf9387ce55e6813fab70">getExpectedSignalLength()</a></code> or the signal is empty. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>if the signal's duration is not at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a4c5caee47537cf9387ce55e6813fab70">getExpectedSignalLength()</a></code> - 1) / <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a97391c1ba991ea6976357e70abfc1006">getSamplingRate()</a></code> duration. </td></tr>
   </table>
   </dd>
 </dl>
@@ -777,13 +777,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Sets the signal on the vertical channel which will be preprocessed then passed to the inference engine. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. On exit, verticalSignal's behavior is undefined. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if the sampling rate is the default and the signal length is not <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a4c5caee47537cf9387ce55e6813fab70">getExpectedSignalLength()</a></code> or the signal is empty. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. On exit, verticalSignal's behavior is undefined. at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a4c5caee47537cf9387ce55e6813fab70">getExpectedSignalLength()</a></code> - 1) / <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a97391c1ba991ea6976357e70abfc1006">getSamplingRate()</a></code> duration. </td></tr>
   </table>
   </dd>
 </dl>
@@ -834,7 +828,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>Pickers</b></li><li class="navelem"><b>CNNOneComponentP</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html">ProcessingRequest</a></li>
-    <li class="footer">Generated on Wed Mar 1 2023 14:44:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 1 2023 18:32:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

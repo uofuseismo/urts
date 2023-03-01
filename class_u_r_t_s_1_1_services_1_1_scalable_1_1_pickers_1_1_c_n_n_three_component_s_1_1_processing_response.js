@@ -22,14 +22,12 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_componen
     [ "getMessageType", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a664c9b1c3b6caacf5b2373bd09e63032", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a361fa34fdf9550ab706b3618271ce07c", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a896dbe74762a0a8e5dd24da0ff275dd9", null ],
-    [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#aa7038e572e9838042c27cff92118217b", null ],
     [ "haveCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a0f0f8d28fa1bbfa32a600d90d657bc7c", null ],
     [ "haveReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#aed0dc73efacbf8957a927981d9add454", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a83c5c3edab0e992e4848b2305cc5360e", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#ab1e49acdc3e61e44325c2a4363128dda", null ],
-    [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a3683b8249dde776af5b767615cdd9857", null ],
+    [ "setCorrection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a46424c3f14817455bcaab7064ee261e1", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#ac1e24ed9c83bca213fdd2ab42ed670e6", null ],
     [ "setReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a0cf484a3a99948a8c5ceac710a66fccb", null ],
-    [ "setSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a85c98620729c46dde93d5251d2837320", null ],
     [ "toMessage", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html#a9423a5482a974d58df3c4b4b371bdf21", null ]
 ];

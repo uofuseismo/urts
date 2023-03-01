@@ -809,13 +809,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Sets the signal on the vertical channel which will be preprocessed then passed to the inference engine. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code>getMinimumSignalLength()</code>. If the inference straetgy is FixedWindow then the <code>isValidSignalLength()</code> must be true. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a83037ea1946d3eb5583e60ce8d683f89">getExpectedSignalLength()</a></code> - 1) / <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a873fbb410fff8535151e1c4762ea598d">getSamplingRate()</a></code> duration. </td></tr>
   </table>
   </dd>
 </dl>
@@ -841,13 +835,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Sets the signal on the vertical channel which will be preprocessed then passed to the inference engine. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. On exit, verticalSignal's behavior is undefined. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>Provided the sampling rate is 100 Hz then the signal should be <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a83037ea1946d3eb5583e60ce8d683f89">getExpectedSignalLength()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">verticalSignal</td><td>The signal on the vertical channel. On exit, verticalSignal's behavior is undefined. at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a83037ea1946d3eb5583e60ce8d683f89">getExpectedSignalLength()</a></code> - 1) / <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a873fbb410fff8535151e1c4762ea598d">getSamplingRate()</a></code> duration. </td></tr>
   </table>
   </dd>
 </dl>
@@ -898,7 +886,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>FirstMotionClassifiers</b></li><li class="navelem"><b>CNNOneComponentP</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html">ProcessingRequest</a></li>
-    <li class="footer">Generated on Wed Mar 1 2023 14:44:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 1 2023 18:32:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
