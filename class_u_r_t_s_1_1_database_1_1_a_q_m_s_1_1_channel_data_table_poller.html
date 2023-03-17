@@ -138,11 +138,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6d1645a32c557e95bbae487e07325c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with given logger. <br /></td></tr>
 <tr class="separator:a6d1645a32c557e95bbae487e07325c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Initialization</div></td></tr>
-<tr class="memitem:aa796072c22e21742d61d21596dae94d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#aa796072c22e21742d61d21596dae94d9">initialize</a> (std::shared_ptr&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html">URTS::Database::Connection::IConnection</a> &gt; &amp;connection, <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#ab19e3a49a3a9f83221905517cab17bd1">QueryMode</a> mode=<a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#ab19e3a49a3a9f83221905517cab17bd1a222a267cc5778206b253be35ee3ddab5">QueryMode::Current</a>, const std::chrono::seconds &amp;refreshRate=std::chrono::seconds {3600})</td></tr>
-<tr class="memdesc:aa796072c22e21742d61d21596dae94d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a connection to the AQMS database.  <a href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#aa796072c22e21742d61d21596dae94d9">More...</a><br /></td></tr>
-<tr class="separator:aa796072c22e21742d61d21596dae94d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a459bdaa8fd13f07e7ab35490f965e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#a2a459bdaa8fd13f07e7ab35490f965e5">initialize</a> (std::shared_ptr&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html">URTS::Database::Connection::IConnection</a> &gt; &amp;connection, <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#ab19e3a49a3a9f83221905517cab17bd1">QueryMode</a> mode=<a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#ab19e3a49a3a9f83221905517cab17bd1a222a267cc5778206b253be35ee3ddab5">QueryMode::Current</a>, const std::chrono::seconds &amp;pollingInterval=std::chrono::seconds {3600})</td></tr>
+<tr class="memdesc:a2a459bdaa8fd13f07e7ab35490f965e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a connection to the AQMS database.  <a href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#a2a459bdaa8fd13f07e7ab35490f965e5">More...</a><br /></td></tr>
+<tr class="separator:a2a459bdaa8fd13f07e7ab35490f965e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd9b83a6acbe6d745766d7f0e117e222"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#acd9b83a6acbe6d745766d7f0e117e222">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:acd9b83a6acbe6d745766d7f0e117e222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1096df00204c4a2f61524f4a8ee8f3f"><td class="memItemLeft" align="right" valign="top">std::chrono::seconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#aa1096df00204c4a2f61524f4a8ee8f3f">getPollingInterval</a> () const noexcept</td></tr>
+<tr class="separator:aa1096df00204c4a2f61524f4a8ee8f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Start/Stop Polling Service</div></td></tr>
 <tr class="memitem:a16410523905a4ce6b20c84f59947304c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#a16410523905a4ce6b20c84f59947304c">start</a> ()</td></tr>
 <tr class="memdesc:a16410523905a4ce6b20c84f59947304c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts a service that continually queries the database for the channel data.  <a href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#a16410523905a4ce6b20c84f59947304c">More...</a><br /></td></tr>
@@ -266,8 +268,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aa796072c22e21742d61d21596dae94d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa796072c22e21742d61d21596dae94d9">&#9670;&nbsp;</a></span>initialize()</h2>
+<a id="aa1096df00204c4a2f61524f4a8ee8f3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1096df00204c4a2f61524f4a8ee8f3f">&#9670;&nbsp;</a></span>getPollingInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::seconds URTS::Database::AQMS::ChannelDataTablePoller::getPollingInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The database polling interval. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#acd9b83a6acbe6d745766d7f0e117e222">isInitialized()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2a459bdaa8fd13f07e7ab35490f965e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a459bdaa8fd13f07e7ab35490f965e5">&#9670;&nbsp;</a></span>initialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,7 +322,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::chrono::seconds &amp;&#160;</td>
-          <td class="paramname"><em>refreshRate</em> = <code>std::chrono::seconds&#160;{3600}</code>&#160;</td>
+          <td class="paramname"><em>pollingInterval</em> = <code>std::chrono::seconds&#160;{3600}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -303,7 +337,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">connection</td><td>A connection to the AQMS database. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queryMode</td><td>Defines whether the poller will get all channel data or only open channels. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">refreshRate</td><td>The poller will query the database this many seconds. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pollingInterval</td><td>The poller will query the database this many seconds. </td></tr>
   </table>
   </dd>
 </dl>
@@ -402,7 +436,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Database</b></li><li class="navelem"><b>AQMS</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html">ChannelDataTablePoller</a></li>
-    <li class="footer">Generated on Fri Mar 17 2023 20:32:02 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Mar 17 2023 20:33:16 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
