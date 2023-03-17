@@ -1,5 +1,6 @@
 #ifndef URTS_DATABASE_AQMS_CHANNEL_DATA_HPP
 #define URTS_DATABASE_AQMS_CHANNEL_DATA_HPP
+#include <ostream>
 #include <memory>
 #include <vector>
 #include <chrono>
@@ -241,5 +242,10 @@ private:
 /// @result True indicates the channel data classes are not equal.
 [[nodiscard]] bool operator!=(const ChannelData &lhs,
                               const ChannelData &rhs);
+/// @brief Outputs a channel as a JSON object.
+/// @param[in] os           An output stream object.
+/// @param[in] channelData  The channel data.
+/// @return A formatted channelData JSON string.
+std::ostream& operator<<(std::ostream &os, const ChannelData &channelData);
 }
 #endif

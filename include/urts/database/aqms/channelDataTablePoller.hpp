@@ -45,19 +45,22 @@ public:
     /// @{
 
     /// @brief Sets a connection to the AQMS database. 
-    /// @param[in] connection   A connection to the AQMS database.
-    /// @param[in] queryMode    Defines whether the poller will get all channel
-    ///                         data or only open channels.
-    /// @param[in] refreshRate  The poller will query the database
-    ///                         this many seconds.
+    /// @param[in] connection       A connection to the AQMS database.
+    /// @param[in] queryMode        Defines whether the poller will get all
+    ///                             channel data or only open channels.
+    /// @param[in] pollingInterval  The poller will query the database
+    ///                             this many seconds.
     /// @throws std::invalid_argument if the connection->isConnected() is false
     ///         or the refresh rate is negative.
     void initialize(std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
                     QueryMode mode = QueryMode::Current,
-                    const std::chrono::seconds &refreshRate = std::chrono::seconds {3600});
+                    const std::chrono::seconds &pollingInterval = std::chrono::seconds {3600});
     /// @result True indicates that the poller class is initialized and
     ///          ready to be started.
     [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result The database polling interval.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::chrono::seconds getPollingInterval() const noexcept;
     /// @}
 
     /// @name Start/Stop Polling Service
