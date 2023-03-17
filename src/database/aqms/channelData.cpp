@@ -1,5 +1,6 @@
 #include <string>
 #include <chrono>
+#include <nlohmann/json.hpp>
 #include <umps/logging/standardOut.hpp>
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/postgresql.hpp"
@@ -463,5 +464,53 @@ bool ChannelData::haveLoadDate() const noexcept
 void ChannelData::clear() noexcept
 {
     pImpl = std::make_unique<ChannelDataImpl> ();
+}
+
+/// Print
+std::ostream& 
+URTS::Database::AQMS::operator<<(std::ostream &os, const ChannelData &data)
+{
+    nlohmann::json obj;
+    if (data.haveNetwork())
+    {
+        obj["Network"] = data.getNetwork();
+    }
+    if (data.haveStation())
+    {
+        obj["Station"] = data.getStation();
+    }   
+    if (data.haveChannel())
+    {
+        obj["Channel"] = data.getChannel();
+    }   
+    if (data.haveLocationCode())
+    {   
+        obj["LocationCode"] = data.getLocationCode();
+    }
+    if (data.haveSamplingRate())
+    {
+        obj["SamplingRate"] = data.getSamplingRate();
+    }   
+    if (data.haveLatitude())
+    {
+        obj["Latitude"] = data.getLatitude();
+    }
+    if (data.haveLongitude())
+    {
+        obj["Longitude"] = data.getLongitude();
+    }
+    if (data.haveElevation())
+    {
+        obj["Elevation"] = data.getElevation();
+    }
+    if (data.haveDip())
+    {
+        obj["Dip"] = data.getDip();
+    }
+    if (data.haveAzimuth())
+    {
+        obj["Azimuth"] = data.getAzimuth();
+    }
+    return os << obj.dump(4);
 }
 

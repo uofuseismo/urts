@@ -186,7 +186,7 @@ public:
                  const void *messageContents, const size_t length) noexcept
     {
         // Get data
-        mLogger->debug("Request received");
+        mLogger->info("Request received");
         DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
