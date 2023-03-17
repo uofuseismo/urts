@@ -71,7 +71,7 @@ public:
             }
             std::unique_lock<std::mutex> lock(mStopContext);
             mStopCondition.wait_for(lock,
-                                    mRefreshRate,
+                                    mPollingInterval,
                                     [this]
                                     {
                                         return !keepRunning();
@@ -85,7 +85,7 @@ public:
             auto now = std::chrono::system_clock::now().time_since_epoch();
             auto nowSeconds
                 = std::chrono::duration_cast<std::chrono::seconds> (now);
-            auto nextQueryTime = mLastQuery + mRefreshRate;
+            auto nextQueryTime = mLastQuery + mPollingInterval;
             if (nowSeconds > nextQueryTime)
             {
                 mLogger->debug("Querying channel data...");
@@ -152,7 +152,7 @@ public:
     std::condition_variable mStopCondition;
     std::unique_ptr<ChannelDataTable> mChannelDataTable{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::chrono::seconds mRefreshRate{3600};
+    std::chrono::seconds mPollingInterval{3600};
     //std::chrono::seconds mLastQuery;
     QueryMode mQueryMode{QueryMode::Current};
     bool mKeepRunning{false};
@@ -179,13 +179,13 @@ ChannelDataTablePoller::~ChannelDataTablePoller() = default;
 void ChannelDataTablePoller::initialize(
     std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
     const QueryMode queryMode,
-    const std::chrono::seconds &refreshRate)
+    const std::chrono::seconds &pollingInterval)
 {
     if (!connection->isConnected())
     {
         throw std::invalid_argument("Session not connected");
     }
-    if (refreshRate.count() < 0)
+    if (pollingInterval.count() < 0)
     {
         throw std::invalid_argument("Refresh rate must be positive");
     }
@@ -193,7 +193,7 @@ void ChannelDataTablePoller::initialize(
     stop();
     // Create the connection
     pImpl->setConnection(connection);
-    pImpl->mRefreshRate = refreshRate;
+    pImpl->mPollingInterval = pollingInterval;
     pImpl->mQueryMode = queryMode;
     pImpl->mInitialized = true;
 }
@@ -233,3 +233,8 @@ std::vector<ChannelData> ChannelDataTablePoller::getChannelData(
     return pImpl->getChannelData(network, station, channel, locationCode);
 }
 
+/// Polling interval
+std::chrono::seconds ChannelDataTablePoller::getPollingInterval() const noexcept
+{
+    return pImpl->mPollingInterval;
+}
