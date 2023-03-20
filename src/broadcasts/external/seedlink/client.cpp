@@ -1,5 +1,5 @@
-#include <iostream>
 #include <thread>
+#include <array>
 #include <mutex>
 #include <cmath>
 #include <string>
@@ -34,20 +34,29 @@ UDataPacket::DataPacket
     if (returnValue == 0)
     {
         // SNCL
-        std::string network(16, '\0');
-        std::string station{16, '\0'};
-        std::string channel{16, '\0'};
-        std::string location{16, '\0'};
+        std::array<char, 64> networkWork;
+        std::array<char, 64> stationWork;
+        std::array<char, 64> channelWork;
+        std::array<char, 64> locationWork;
+        std::fill(networkWork.begin(),  networkWork.end(), '\0');
+        std::fill(stationWork.begin(),  stationWork.end(), '\0');
+        std::fill(channelWork.begin(),  channelWork.end(), '\0'); 
+        std::fill(locationWork.begin(), locationWork.end(), '\0');
         returnValue = ms_sid2nslc(miniSEEDRecord->sid,
-                                  network.data(), station.data(),
-                                  location.data(), channel.data());
+                                  networkWork.data(), stationWork.data(),
+                                  locationWork.data(), channelWork.data());
+        std::string network{networkWork.data()};
+        std::string station{stationWork.data()};
+        std::string channel{channelWork.data()};
+        std::string location{locationWork.data()};
+        if (locationWork[0] == '\0'){location = "--";}
         if (std::string {"  "} == location.substr(0, 2)){location = "--";}
         if (returnValue == 0)
         {
             dataPacket.setNetwork(network);
             dataPacket.setStation(station);
             dataPacket.setChannel(channel);
-            dataPacket.setLocationCode(location); 
+            dataPacket.setLocationCode(location);
         }
         else
         {
