@@ -338,7 +338,7 @@ void ThreeComponentWaveform::set(const DataResponse &verticalComponent,
     auto network = verticalPacketsReference.at(0).getNetwork();
     auto station = verticalPacketsReference.at(0).getStation();
     auto channel = verticalPacketsReference.at(0).getChannel();
-    auto locationCode = verticalPacketsReference.at(0).getStation();
+    auto locationCode = verticalPacketsReference.at(0).getLocationCode();
     if (network != northPacketsReference.at(0).getNetwork() ||
         network != eastPacketsReference.at(0).getNetwork())
     {
@@ -428,4 +428,23 @@ const std::vector<int8_t>
 &ThreeComponentWaveform::getGapIndicatorReference() const noexcept
 {
     return pImpl->mGapIndicator;
+}
+
+/// Signal references
+const std::vector<double> 
+&ThreeComponentWaveform::getVerticalSignalReference() const noexcept
+{
+    return pImpl->mVerticalComponent.getSignalReference();
+}
+
+const std::vector<double> 
+&ThreeComponentWaveform::getNorthSignalReference() const noexcept
+{
+    return pImpl->mNorthComponent.getSignalReference();
+}
+
+const std::vector<double> 
+&ThreeComponentWaveform::getEastSignalReference() const noexcept
+{
+    return pImpl->mEastComponent.getSignalReference();
 }

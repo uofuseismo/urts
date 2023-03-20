@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <umps/messageFormats/message.hpp>
 #include <umps/messageFormats/messages.hpp>

@@ -418,11 +418,11 @@ int main(int argc, char *argv[])
     // Create the logger
     constexpr int hour = 0;
     constexpr int minute = 0;
-    auto logger = createLogger(programOptions.mModuleName,
-                               programOptions.mLogFileDirectory,
-                               programOptions.mVerbosity,
-                               programOptions.mInstance,
-                               hour, minute);
+    auto logger = ::createLogger(programOptions.mModuleName,
+                                 programOptions.mLogFileDirectory,
+                                 programOptions.mVerbosity,
+                                 programOptions.mInstance,
+                                 hour, minute);
     // Create a context
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
     // Initialize the various processes

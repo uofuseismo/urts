@@ -57,6 +57,11 @@ public:
     /// @result The probability signal.
     /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
     [[nodiscard]] std::vector<double> getProbabilitySignal() const;
+    /// @result A reference to the probability signal.
+    /// @throws std::runtime_error if \c haveProbabilitySignal() is false.
+    /// @note This exists for performance reasons.  It is recommended to use
+    ///       \c getProbabilitySignal().
+    [[nodiscard]] const std::vector<double> &getProbabilitySignalReference() const;
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveProbabilitySignal() const noexcept;
     /// @}

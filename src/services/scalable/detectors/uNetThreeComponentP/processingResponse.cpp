@@ -184,9 +184,19 @@ std::vector<double> ProcessingResponse::getProbabilitySignal() const
 {
     if (!haveProbabilitySignal())
     {
-        throw std::runtime_error("Probability signals not set");
+        throw std::runtime_error("Probability signal not set");
     }
     return pImpl->mProbabilitySignal;
+}
+
+const std::vector<double>
+&ProcessingResponse::getProbabilitySignalReference() const
+{
+    if (!haveProbabilitySignal())
+    {
+        throw std::runtime_error("Probability signal not set");
+    }
+    return *&pImpl->mProbabilitySignal;
 }
 
 bool ProcessingResponse::haveProbabilitySignal() const noexcept

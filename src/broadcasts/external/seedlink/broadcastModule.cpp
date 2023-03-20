@@ -439,7 +439,6 @@ public:
             mLogger->error("Unhandled message type: " + messageType);
         }
         // Return
-        mLogger->error("Unhandled message: " + messageType);
         USC::AvailableCommandsResponse commandsResponse; 
         commandsResponse.setCommands(getInputOptions());
         return commandsResponse.clone();
