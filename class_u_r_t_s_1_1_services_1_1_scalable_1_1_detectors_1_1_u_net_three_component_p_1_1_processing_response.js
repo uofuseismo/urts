@@ -21,6 +21,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_compon
     [ "getMessageType", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a130fe399616085fd314a3f3bc4eaedba", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a1eee9f0432f8132302c5152d6eb360a0", null ],
     [ "getProbabilitySignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#ae7c3679312a33ca078e41fa6332582e8", null ],
+    [ "getProbabilitySignalReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a20920cc8e79620116a3976639aa78c5a", null ],
     [ "getReturnCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#ac55410378e6048564b530d8fda5394cd", null ],
     [ "getSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#aef0b41cc808d34badb643c6d0372a091", null ],
     [ "haveProbabilitySignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html#a4ea4672761e576d07664e25def36874e", null ],

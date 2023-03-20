@@ -160,6 +160,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a144407e451e749b5b6c58583fd57735f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea227e088ca1a303621e7063e5e3de9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html#a5ea227e088ca1a303621e7063e5e3de9">getProbabilitySignal</a> () const</td></tr>
 <tr class="separator:a5ea227e088ca1a303621e7063e5e3de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79422c8f1473ff25d2b7b01b7b7f94da"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html#a79422c8f1473ff25d2b7b01b7b7f94da">getProbabilitySignalReference</a> () const</td></tr>
+<tr class="separator:a79422c8f1473ff25d2b7b01b7b7f94da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87f6ee0f98b5ce769c34ad68f575fc56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html#a87f6ee0f98b5ce769c34ad68f575fc56">haveProbabilitySignal</a> () const noexcept</td></tr>
 <tr class="separator:a87f6ee0f98b5ce769c34ad68f575fc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Return Code</div></td></tr>
@@ -560,6 +562,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a79422c8f1473ff25d2b7b01b7b7f94da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79422c8f1473ff25d2b7b01b7b7f94da">&#9670;&nbsp;</a></span>getProbabilitySignalReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;double&gt;&amp; URTS::Services::Scalable::Detectors::UNetThreeComponentS::ProcessingResponse::getProbabilitySignalReference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A reference to the probability signal. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html#a87f6ee0f98b5ce769c34ad68f575fc56">haveProbabilitySignal()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This exists for performance reasons. It is recommended to use <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html#a5ea227e088ca1a303621e7063e5e3de9">getProbabilitySignal()</a></code>. </dd></dl>
+
+</div>
+</div>
 <a id="ac2be8b351997c49302f7abc7a1145cb1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac2be8b351997c49302f7abc7a1145cb1">&#9670;&nbsp;</a></span>getReturnCode()</h2>
 
@@ -906,7 +933,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>Detectors</b></li><li class="navelem"><b>UNetThreeComponentS</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_response.html">ProcessingResponse</a></li>
-    <li class="footer">Generated on Mon Mar 20 2023 15:34:06 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Mon Mar 20 2023 21:51:19 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
