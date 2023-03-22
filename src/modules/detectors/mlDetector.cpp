@@ -62,10 +62,12 @@
 #include "urts/services/scalable/packetCache/threeComponentWaveform.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
-#include "threeComponentStations.hpp"
+//#include "threeComponentStations.hpp"
 #include "threeComponentChannelData.hpp"
-#include "threeComponentDataRequestItem.hpp"
+//#include "threeComponentDataRequestItem.hpp"
+#include "threeComponentDataItem.hpp"
 #include "getNow.hpp"
+#include "threadSafeState.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "private/threadSafeBoundedQueue.hpp"
 #include "private/isEmpty.hpp"
@@ -78,7 +80,7 @@ template<typename T>
 struct ThreeComponentProcessingRequest
 {
     explicit ThreeComponentProcessingRequest(
-        const ::ThreeComponentDataRequestItem &dataRequest)
+        const ::ThreeComponentDataItem &dataRequest)
     {
         mNetwork = dataRequest.mChannelData.getNetwork();
         mProbabilityPacket.setNetwork(dataRequest.mChannelData.getNetwork());
@@ -875,6 +877,8 @@ public:
         }
         mLogger->debug("Starting the packet cache query thread...");
         mPacketCacheThread = std::thread(&Detector::queryWaveforms, this);
+        mLogger->debug("Starting the task manager thread...");
+        mTaskManagerThread = std::thread(&Detector::createTasks, this); 
         mLogger->debug("Starting the local command proxy..."); 
         mLocalCommand->start();
     }
@@ -887,6 +891,7 @@ public:
         if (mInference3CSThread.joinable()){mInference3CSThread.join();}
         if (mInference1CPThread.joinable()){mInference1CPThread.join();}
         if (mPacketCacheThread.joinable()){mPacketCacheThread.join();}
+        if (mTaskManagerThread.joinable()){mTaskManagerThread.join();}
         if (mLocalCommand != nullptr)
         {
             if (mLocalCommand->isRunning()){mLocalCommand->stop();}
@@ -1005,7 +1010,7 @@ const double detectorSamplingRate = 100;
             {
                 for (const auto &threeComponentSensor : threeComponentSensors)
                 {
-                    ::ThreeComponentDataRequestItem
+                    ::ThreeComponentDataItem
                         item(threeComponentSensor,
                              detectorWindowDuration,
                              mProgramOptions.mGapTolerance,
@@ -1013,12 +1018,17 @@ const double detectorSamplingRate = 100;
                              centerWindowStart,
                              centerWindowEnd,
                              detectorSamplingRate);
-                    m3CDataRequestItems.push_back(std::move(item));
+                    m3CPSDataItems.insert(std::pair{item.getHash(), item});
                 }
             }
         }
         else
         {
+#ifndef NDEBUG
+assert(false);
+#endif
+        }
+/*
 int pCenterWindowStart = 254; 
 int pCenterWindowEnd = 754; 
 const double pDetectorSamplingRate = 100; 
@@ -1029,7 +1039,7 @@ const double sDetectorSamplingRate = 100;
             {
                 for (const auto &threeComponentSensor : threeComponentSensors)
                 {
-                    ::ThreeComponentDataRequestItem
+                    ::ThreeComponentDataItem
                         item(threeComponentSensor,
                              detectorWindowDuration,
                              mProgramOptions.mGapTolerance,
@@ -1044,7 +1054,7 @@ const double sDetectorSamplingRate = 100;
             {
                 for (const auto &threeComponentSensor : threeComponentSensors)
                 {
-                    ::ThreeComponentDataRequestItem
+                    ::ThreeComponentDatatem
                         item(threeComponentSensor,
                              detectorWindowDuration,
                              mProgramOptions.mGapTolerance,
@@ -1060,6 +1070,42 @@ const double sDetectorSamplingRate = 100;
         {
             mLogger->warn("1c p detector not done");
         }
+*/
+    }
+    /// @brief This is the manager thread.  It basically monitors the pipeline.
+    void createTasks()
+    {
+        updateChannelLists();
+        while (keepRunning())
+        {
+            for (auto &dataItem : m3CPSDataItems)
+            {
+                if (dataItem.second.getState() ==
+                    ::ThreadSafeState::State::ReadyToQueryData)
+                {
+                    dataItem.second.setState(::ThreadSafeState::State::QueryData);
+                    mDataQueryBoundedQueue.push(dataItem.first);
+                }
+                else if (dataItem.second.getState() ==
+                         ::ThreadSafeState::State::ReadyForInferencing)
+                {
+                    dataItem.second.setState(
+                        ::ThreadSafeState::State::InferencePS);
+                }
+                else if (dataItem.second.getState() ==
+                         ::ThreadSafeState::State::ReadyForBroadcasting)
+                {
+                    
+                }
+            }
+            for (auto it = m3CPSDataItems.begin(); it != m3CPSDataItems.end(); ++it)
+            {
+                if (it->second.getState() == ::ThreadSafeState::State::Destroy)
+                {
+                    m3CPSDataItems.erase(it);
+                }
+            }
+        }
     }
     /// @brief This queries signals from the packet cache.
     void queryWaveforms()
@@ -1070,34 +1116,27 @@ const double sDetectorSamplingRate = 100;
         while (keepRunning())
         {
             auto t0MicroSeconds = ::getNow();
-            if (mPS3CInputsAreEqual)
+            auto hash = mDataQueryBoundedQueue.try_pop();
+            if (hash == nullptr){continue;}  
+            auto dataItemIterator = m3CPSDataItems.find(*hash);
+            if (dataItemIterator == m3CPSDataItems.end())
             {
-                if (mRun3CPDetector || mRun3CSDetector)
-                {
-                    for (auto &requestItem : m3CDataRequestItems)
-                    {
-                        try
-                        {
-                            requestItem.queryPacketCache(*mPacketCacheRequestor);
-                        }
-                        catch (const std::exception &e)
-                        {
-                            mLogger->debug(std::string {e.what()});
-                            continue;
-                        }
-                    }
-                }
+                mLogger->warn("Data item no longer exists in map");
+                continue;
             }
-            else
+            try
             {
-                if (mRun3CPDetector)
-                {
-                }
-                if (mRun3CSDetector)
-                {
-                }
+                dataItemIterator->second.queryPacketCache(*mPacketCacheRequestor);
+if (dataItemIterator->second.getState() == ::ThreadSafeState::State::ReadyForInferencing)
+{
+std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
+}
             }
-            
+            catch (const std::exception &e)
+            {
+                mLogger->debug("Query failed with: " + std::string {e.what()});
+                dataItemIterator->second.setState(::ThreadSafeState::State::ReadyToQueryData);
+            }
         }
     }
     /// @brief Stitch the waveforms together.
@@ -1108,6 +1147,7 @@ const double sDetectorSamplingRate = 100;
                        ProcessingResponse::ReturnCode::Success;
         while (keepRunning())
         {
+/*
             auto request = m3CPProcessingRequestQueue.try_pop();
             if (request != nullptr)
             {
@@ -1128,6 +1168,7 @@ const double sDetectorSamplingRate = 100;
                     mLogger->error(e.what());
                 }
             }
+*/
         }
     }
     /// @brief Inference engine for S 3C waveforms.
@@ -1136,6 +1177,7 @@ const double sDetectorSamplingRate = 100;
         auto success = UDetectors::UNetThreeComponentS::ProcessingResponse::ReturnCode::Success;
         while (keepRunning())
         {
+/*
             auto request = m3CSProcessingRequestQueue.try_pop(); 
             if (request != nullptr)
             {
@@ -1156,6 +1198,7 @@ const double sDetectorSamplingRate = 100;
                     mLogger->error(e.what());
                 }
             }
+*/
         }
     }
     /// @brief Publishes probability packets.
@@ -1200,6 +1243,7 @@ const double sDetectorSamplingRate = 100;
     std::thread mInference3CSThread;
     std::thread mInference1CPThread;
     std::thread mPacketCacheThread;
+    std::thread mTaskManagerThread;
     std::string mModuleName{MODULE_NAME};
     ::ProgramOptions mProgramOptions;
     UDatabase::AQMS::ChannelDataTablePoller mChannelDataPoller;
@@ -1213,19 +1257,22 @@ const double sDetectorSamplingRate = 100;
          m3CSInferenceRequestor{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    ThreadSafeQueue<UDetectors::UNetThreeComponentP::ProcessingRequest> 
-         m3CPProcessingRequestQueue;
-    ThreadSafeQueue<UDetectors::UNetThreeComponentS::ProcessingRequest>
-         m3CSProcessingRequestQueue;
+    ThreadSafeBoundedQueue<size_t> mDataQueryBoundedQueue{2000};
+    //ThreadSafeQueue<UDetectors::UNetThreeComponentP::ProcessingRequest> 
+    //     m3CPProcessingRequestQueue;
+    //ThreadSafeQueue<UDetectors::UNetThreeComponentS::ProcessingRequest>
+    //     m3CSProcessingRequestQueue;
     //ThreadSafeQueue<UDetectors::UNetOneComponentP::ProcessingRequest>
     //     m1CPProcessingRequestQueue; 
     ThreadSafeQueue<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         mProbabilityPacketToPublisherQueue;
-    std::list<::ThreeComponentDataRequestItem> m3CDataRequestItems;
-    std::list<::ThreeComponentDataRequestItem> m3CPDataRequestItems;
-    std::list<::ThreeComponentDataRequestItem> m3CSDataRequestItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m1CPDataItems;
     std::set<std::string> mActiveNetworks;
-    std::set<double> mValidSamplingRates;
+    //std::set<double> mValidSamplingRates;
+    //std::set<::ThreadSafeState> mStates;
+    std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
     bool mPS3CInputsAreEqual{true}; // TODO
     bool mRun3CPDetector{false};
     bool mRun3CSDetector{false};

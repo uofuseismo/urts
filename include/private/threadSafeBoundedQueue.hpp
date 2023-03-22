@@ -78,17 +78,17 @@ public:
                 mDataQueue.pop();
             }
         }
-        mMaxSize = capacity;
+        mCapacity = capacity;
     }
     /// @brief Adds a value to the back of the bounded queue.
     /// @param[in] value  the value to add to the bounded queue.
     void push(const T &value)
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
-        if (mMaxSize > 0)
+        if (mCapacity > 0)
         {
             auto queueSize = static_cast<int> (mDataQueue.size()); 
-            if (queueSize >= mMaxSize)
+            if (queueSize >= mCapacity)
             {
                 mDataQueue.pop(); // Pop the first (oldest) element
             } 
@@ -225,7 +225,7 @@ private:
     mutable std::mutex mMutex;
     std::queue<T> mDataQueue;
     std::condition_variable mConditionVariable;
-    int mMaxSize{-1};
+    int mCapacity{-1}; // By default treat this like an unbounded queue
 };
 }
 #endif
