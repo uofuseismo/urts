@@ -572,7 +572,7 @@ public:
             throw std::runtime_error("Maximum signal latency must be positive");
         }
         mMaximumSignalLatency = std::chrono::seconds {maximumSignalLatency};
-        // Figure out which stations are running
+        // Figure out which algorithms are running
         mRunP3CDetector = propertyTree.get<bool> ("MLDetector.runP3CDetector",
                                                   mRunP3CDetector);
         mRunS3CDetector = propertyTree.get<bool> ("MLDetector.runS3CDetector",
@@ -1028,12 +1028,6 @@ public:
         }
 /*
 S3CDetectorProperties s3CProperties;
-int pCenterWindowStart = 254; 
-int pCenterWindowEnd = 754; 
-const double pDetectorSamplingRate = 100; 
-int sCenterWindowStart = 254;
-int sCenterWindowEnd = 754;
-const double sDetectorSamplingRate = 100;
             if (mRun3CPDetector)
             {
                 for (const auto &threeComponentSensor : threeComponentSensors)
@@ -1294,15 +1288,14 @@ const double sDetectorSamplingRate = 100;
          m3CSInferenceRequestor{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    ThreadSafeBoundedQueue<size_t> mPSDataQueryBoundedQueue{2000};
-    ThreadSafeQueue<size_t> mPS3CInferenceQueue;
-    ThreadSafeQueue<size_t> mP3CInferenceQueue;
-    ThreadSafeQueue<size_t> mS3CInferenceQueue;
-    ThreadSafeQueue<size_t> mP1CInferenceQueue;
-    ThreadSafeQueue<size_t> mPSBroadcastQueue;
-    ThreadSafeQueue<URTS::Broadcasts::Internal::DataPacket::DataPacket>
+    ::ThreadSafeBoundedQueue<size_t> mPSDataQueryBoundedQueue{2000};
+    ::ThreadSafeQueue<size_t> mPS3CInferenceQueue;
+    ::ThreadSafeQueue<size_t> mP3CInferenceQueue;
+    ::ThreadSafeQueue<size_t> mS3CInferenceQueue;
+    ::ThreadSafeQueue<size_t> mP1CInferenceQueue;
+    ::ThreadSafeQueue<size_t> mPSBroadcastQueue;
+    ::ThreadSafeQueue<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         mProbabilityPacketToPublisherQueue;
-    std::set<std::string> mActiveNetworks;
     std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
     std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
     std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
@@ -1375,7 +1368,7 @@ int main(int argc, char *argv[])
                                                             logger);
         processManager.insert(std::move(heartbeat));
         // Create a publisher 
-        logger->debug("\nCreating probability packet publisher...\n");
+        logger->debug("Creating probability packet publisher...");
         namespace UDP = URTS::Broadcasts::Internal::DataPacket;
         UDP::PublisherOptions publisherOptions;
         if (!programOptions.mProbabilityPacketBroadcastAddress.empty())

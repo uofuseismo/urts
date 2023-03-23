@@ -170,6 +170,9 @@ public:
             setState(::ThreadSafeState::State::ReadyToQueryData);
             return;
         }
+#ifndef NDEBUG
+        mPipelineStartTime = timeNow;
+#endif
         // Deal with highly latent data
         if (timeNow - mMaximumSignalLatency > mLastProbabilityTime)
         {
@@ -600,7 +603,7 @@ std::cout << "dealing with gaps" << std::endl;
         {
             return;
         }
-        //std::cout << std::setprecision(16) << mName << " " << getNow().count()*1.e-6 << " " << mPProbabilityPacket.getStartTime().count()*1.e-6 << " " << mPProbabilityPacket.getEndTime().count()*1.e-6 << " " << mLastProbabilityTime.count()*1.e-6 << std::endl; 
+        std::cout << std::setprecision(16) << mName << " " << getNow().count()*1.e-6 << " " << mPProbabilityPacket.getStartTime().count()*1.e-6 << " " << mPProbabilityPacket.getEndTime().count()*1.e-6 << " " << mLastProbabilityTime.count()*1.e-6 << std::endl; 
         std::string error;
         if (mBroadcastP)
         {
@@ -625,6 +628,13 @@ std::cout << "dealing with gaps" << std::endl;
                       + std::string {e.what()};
             }
         }
+#ifndef NDEBUG
+        auto pipelineDuration
+            = std::chrono::duration_cast<std::chrono::microseconds>
+              (::getNow() - mPipelineStartTime);
+        std::cout << mName << " " 
+                  << pipelineDuration.count()*1.e-6 << std::endl;
+#endif
         setState(::ThreadSafeState::State::ReadyToQueryData);
         if (!error.empty()){throw std::runtime_error(error);}
     }
@@ -674,6 +684,11 @@ std::cout << "dealing with gaps" << std::endl;
     // sample.  From this we can define appropriate data queries and
     // processing results.
     std::chrono::microseconds mLastProbabilityTime{0};
+#ifndef NDEBUG
+    // Utilities for timing
+    std::chrono::microseconds mPipelineStartTime{0};
+    std::chrono::microseconds mPipelineEndTime{0};
+#endif
     // Helps us unpack bulk data requests.
     int64_t mRequestIdentifier{0};
     // Detector sampling rate output signal

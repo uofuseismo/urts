@@ -308,6 +308,7 @@ endif()
 
 if (${BUILD_UUSS_MLMODELS})
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
+   add_executable(mlPicker   src/modules/pickers/mlPicker.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
@@ -316,6 +317,10 @@ if (${BUILD_UUSS_MLMODELS})
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO)
+   set_target_properties(mlPicker PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
    set_target_properties(uNetThreeComponentPService PROPERTIES
                          CXX_STANDARD 20
@@ -340,6 +345,9 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
+   target_include_directories(mlPicker
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              Boost::program_options)
    target_include_directories(uNetThreeComponentPService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
@@ -358,6 +366,9 @@ if (${BUILD_UUSS_MLMODELS})
    target_link_libraries(mlDetector
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
+   target_link_libraries(mlPicker
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
@@ -373,7 +384,9 @@ if (${BUILD_UUSS_MLMODELS})
    target_link_libraries(firstMotionClassifierService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
-   set(URTS_MODULES ${MODULES} uNetThreeComponentPService
+   set(URTS_MODULES ${MODULES} mlDetector
+                               mlPicker
+                               uNetThreeComponentPService
                                uNetThreeComponentSService
                                pPickRegressorService
                                sPickRegressorService
