@@ -1,6 +1,7 @@
 #ifndef PRIVATE_DETECTORS_THREAD_SAFE_STATE_HPP
 #define PRIVATE_DETECTORS_THREAD_SAFE_STATE_HPP
 #include <mutex>
+#include <atomic>
 namespace
 {
 
@@ -49,42 +50,42 @@ public:
     }
     ThreadSafeState &operator=(const ThreadSafeState &state)
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        mHash = state.mHash;
-        mState = state.mState;
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
+        mHash = state.getHash();//state.mHash;
+        mState = state.getState();//state.mState;
         return *this;
     }
     ThreadSafeState &operator=(const ThreadSafeState &&state) noexcept
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        mHash = std::move(state.mHash);
-        mState = std::move(state.mState);
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
+        mHash = state.getHash(); //mHash; //std::move(state.mHash);
+        mState = state.getState();//mState; //std::move(state.mState);
         return *this;
     }
     void setState(const State state) noexcept
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
         mState = state;
     }
     [[nodiscard]] State getState() const noexcept
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
         return mState;
     }
     void setHash(const size_t hash) noexcept
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
         mHash = hash;
     }
     [[nodiscard]] size_t getHash() const noexcept
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        //std::lock_guard<std::mutex> lockGuard(mMutex);
         return mHash;
     }
 //private:
-    mutable std::mutex mMutex;
-    size_t mHash{0};
-    State mState{State::Undefined};
+    //mutable std::mutex mMutex;
+    std::atomic<size_t> mHash{0};
+    std::atomic<State> mState{State::Undefined};
 };
 
 [[maybe_unused]]

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <chrono>
 #include <vector>
 #include <cstdbool>
@@ -391,7 +390,7 @@ void WigginsInterpolator::interpolate(
     {
         auto nNewSamples = pImpl->mSignal.size(); 
         pImpl->mStartTime = std::chrono::microseconds{time0};
-        pImpl->mEndTime = std::chrono::microseconds{timesToEvaluate.back()}; 
+        pImpl->mEndTime   = std::chrono::microseconds{timesToEvaluate.back()}; 
         // Perform gap check
         auto gapStartEnd = ::createGapStartEnd(pImpl->mGapTolerance.count(),
                                                startEndTimes,

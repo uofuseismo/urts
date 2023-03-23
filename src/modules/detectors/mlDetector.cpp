@@ -116,7 +116,7 @@ struct P3CDetectorProperties
     {
         mDetectorWindowDuration
             = std::chrono::microseconds {
-                static_cast<int64_t> (std::round(mExpectedLength*mSamplingRate*1.e6))
+                static_cast<int64_t> (std::round(mExpectedLength/mSamplingRate*1.e6))
               };
     }
     std::chrono::microseconds mDetectorWindowDuration{10080000};
@@ -132,7 +132,7 @@ struct S3CDetectorProperties
     {    
         mDetectorWindowDuration
             = std::chrono::microseconds {
-                static_cast<int64_t> (std::round(mExpectedLength*mSamplingRate*1.e6))
+                static_cast<int64_t> (std::round(mExpectedLength/mSamplingRate*1.e6))
               };
     }
     std::chrono::microseconds mDetectorWindowDuration{10080000};
@@ -1073,10 +1073,12 @@ S3CDetectorProperties s3CProperties;
         {
             for (auto &dataItem : m3CPSDataItems)
             {
+//if (dataItem.second.getName() != "WY.YPP.HH[ZNE].01"){continue;}
                 if (dataItem.second.getState() ==
                     ::ThreadSafeState::State::ReadyToQueryData)
                 {
-                    dataItem.second.setState(::ThreadSafeState::State::QueryData);
+                    dataItem.second.setState(
+                        ::ThreadSafeState::State::QueryData);
                     mPSDataQueryBoundedQueue.push(dataItem.first);
                 }
                 else if (dataItem.second.getState() ==
@@ -1121,7 +1123,8 @@ S3CDetectorProperties s3CProperties;
                     m3CPSDataItems.erase(it);
                 }
             }
-        }
+            std::this_thread::sleep_for (std::chrono::milliseconds {10});
+        } // Loop
     }
     /// @brief This queries signals from the packet cache.
     void queryWaveforms()
@@ -1147,6 +1150,7 @@ S3CDetectorProperties s3CProperties;
                     ::ThreadSafeState::State::ReadyToQueryData);
                 continue;
             }
+            std::this_thread::sleep_for (std::chrono::milliseconds {10});
         }
     }
     /// @brief Performs the P and S inferencing
@@ -1180,6 +1184,7 @@ S3CDetectorProperties s3CProperties;
                     ::ThreadSafeState::State::ReadyToQueryData);
                 continue;
             }
+            std::this_thread::sleep_for (std::chrono::milliseconds {10});
         }
     } 
     /// @brief Stitch the waveforms together.

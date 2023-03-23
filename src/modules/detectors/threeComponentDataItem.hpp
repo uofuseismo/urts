@@ -71,7 +71,7 @@ public:
         // Don't spam the packet cache's with redundant requests
         mQueryWaitInterval = std::chrono::microseconds
         {
-            static_cast<int64_t> (std::round(detectorWindowDuration.count()
+            static_cast<int64_t> (std::round(mDetectorWindowDuration.count()
                                             *(waitPercentage/100.)))
         };
  
@@ -165,12 +165,14 @@ public:
         if (getState() != ::ThreadSafeState::State::QueryData){return;}
         // Don't spam the packet caches
         auto timeNow = ::getNow();
+//std::cout << std::setprecision(16) << mLastQueryTime.count() << " " << timeNow.count() << " " << mQueryWaitInterval.count() << std::endl;
         if (timeNow - mQueryWaitInterval < mLastQueryTime)
         {
             setState(::ThreadSafeState::State::ReadyToQueryData);
             return;
         }
 #ifndef NDEBUG
+        mPipelineDuration = -1;
         mPipelineStartTime = timeNow;
 #endif
         // Deal with highly latent data
@@ -316,10 +318,10 @@ public:
         }
 
         // Okay, let's extract some signals.
-        auto vReference = mInterpolator.getVerticalSignalReference();
-        auto nReference = mInterpolator.getNorthSignalReference();
-        auto eReference = mInterpolator.getEastSignalReference();
-        auto gReference = mInterpolator.getGapIndicatorReference();
+        const auto &vReference = mInterpolator.getVerticalSignalReference();
+        const auto &nReference = mInterpolator.getNorthSignalReference();
+        const auto &eReference = mInterpolator.getEastSignalReference();
+        const auto &gReference = mInterpolator.getGapIndicatorReference();
 #ifndef NDEBUG
         assert(vReference.size() == nReference.size());
         assert(vReference.size() == eReference.size());
@@ -445,7 +447,9 @@ public:
         } 
         try
         {
+//std::cout << "request s start"<<std::endl;
             sResponse = sRequestor.request(mSInferenceRequest);
+//std::cout << "request s end" <<std::endl;
             if (sResponse == nullptr)
             {
                 throw std::runtime_error("S request timed out");
@@ -526,12 +530,12 @@ public:
             }
             else
             {
-std::cout << "dealing with gaps" << std::endl;
+std::cout << "dealing with gaps p" << std::endl;
                 if (!mChangesSamplingRate)
                 {
                     for (int i = i0; i < i1; ++i)
                     {
-                        pSignal[i] = pRef[i]*gapIndicator[i];
+                        pSignal[i - i0] = pRef[i]*gapIndicator[i];
                     }
                 }
                 else
@@ -539,7 +543,7 @@ std::cout << "dealing with gaps" << std::endl;
                     // TODO
                     for (int i = i0; i < i1; ++i)
                     {   
-                         pSignal[i] = pRef[i];
+                        pSignal[i - i0] = pRef[i];
                     }
                 }
             }
@@ -569,7 +573,7 @@ std::cout << "dealing with gaps" << std::endl;
                 {
                     for (int i = i0; i < i1; ++i)
                     {
-                        pSignal[i] = pRef[i]*gapIndicator[i];
+                        pSignal[i - i0] = pRef[i]*gapIndicator[i];
                     }
                 }
                 else
@@ -577,7 +581,7 @@ std::cout << "dealing with gaps" << std::endl;
                     // TODO
                     for (int i = i0; i < i1; ++i)
                     {
-                         pSignal[i] = pRef[i];
+                        pSignal[i - i0] = pRef[i];
                     }
                 }
             }
@@ -603,7 +607,7 @@ std::cout << "dealing with gaps" << std::endl;
         {
             return;
         }
-        std::cout << std::setprecision(16) << mName << " " << getNow().count()*1.e-6 << " " << mPProbabilityPacket.getStartTime().count()*1.e-6 << " " << mPProbabilityPacket.getEndTime().count()*1.e-6 << " " << mLastProbabilityTime.count()*1.e-6 << std::endl; 
+        //std::cout << std::setprecision(16) << mName << " " << getNow().count()*1.e-6 << " " << mPProbabilityPacket.getStartTime().count()*1.e-6 << " " << mPProbabilityPacket.getEndTime().count()*1.e-6 << " " << mLastProbabilityTime.count()*1.e-6 << std::endl; 
         std::string error;
         if (mBroadcastP)
         {
@@ -629,11 +633,18 @@ std::cout << "dealing with gaps" << std::endl;
             }
         }
 #ifndef NDEBUG
+        auto endTime = ::getNow();
         auto pipelineDuration
             = std::chrono::duration_cast<std::chrono::microseconds>
-              (::getNow() - mPipelineStartTime);
+              (endTime - mPipelineStartTime);
+        mPipelineDuration
+            = static_cast<double> (pipelineDuration.count())*1.e-6;
+/*
         std::cout << mName << " " 
-                  << pipelineDuration.count()*1.e-6 << std::endl;
+                  << mPipelineDuration << " "
+                  << endTime.count() << " "
+                  << mPipelineStartTime.count() << std::endl;
+*/
 #endif
         setState(::ThreadSafeState::State::ReadyToQueryData);
         if (!error.empty()){throw std::runtime_error(error);}
@@ -686,8 +697,8 @@ std::cout << "dealing with gaps" << std::endl;
     std::chrono::microseconds mLastProbabilityTime{0};
 #ifndef NDEBUG
     // Utilities for timing
+    double mPipelineDuration{-1};
     std::chrono::microseconds mPipelineStartTime{0};
-    std::chrono::microseconds mPipelineEndTime{0};
 #endif
     // Helps us unpack bulk data requests.
     int64_t mRequestIdentifier{0};
