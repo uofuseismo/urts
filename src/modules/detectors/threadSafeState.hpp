@@ -18,6 +18,9 @@ public:
         InferenceP,
         InferenceS,
         ReadyForBroadcasting,
+        BroadcastPS,
+        BroadcastP,
+        BroadcastS,
         Destroy
     }; 
 public:

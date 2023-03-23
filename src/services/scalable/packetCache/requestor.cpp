@@ -131,6 +131,10 @@ void Requestor::disconnect()
 std::unique_ptr<BulkDataResponse>
 Requestor::request(const BulkDataRequest &request)
 {
+    if (request.getNumberOfDataRequests() < 1)
+    {
+        throw std::invalid_argument("No data requests in bulk request");
+    } 
     auto message = pImpl->mRequestor->request(request);
     if (message->getMessageType() == pImpl->mFailureMessage.getMessageType())
     {

@@ -62,9 +62,7 @@
 #include "urts/services/scalable/packetCache/threeComponentWaveform.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
-//#include "threeComponentStations.hpp"
 #include "threeComponentChannelData.hpp"
-//#include "threeComponentDataRequestItem.hpp"
 #include "threeComponentDataItem.hpp"
 #include "getNow.hpp"
 #include "threadSafeState.hpp"
@@ -863,17 +861,25 @@ public:
         mLogger->debug("Starting the probability broadcast thread...");
         mPublisherThread = std::thread(&Detector::publishProbabilityPackets,
                                        this);
-        if (mRun3CPDetector)
+        if (mPS3CInputsAreEqual)
         {
-            mLogger->debug("Starting the 3CP inference thread...");
-            mInference3CPThread = std::thread(&Detector::performInference3CP,
-                                              this);
+            mInference3CPSThread = std::thread(&Detector::performInference3CPS,
+                                               this);
         }
-        if (mRun3CSDetector)
+        else
         {
-            mLogger->debug("Starting the 3CS inference thread...");
-            mInference3CSThread = std::thread(&Detector::performInference3CS,
-                                              this);
+            if (mRun3CPDetector)
+            {
+                mLogger->debug("Starting the 3CP inference thread...");
+                mInference3CPThread = std::thread(&Detector::performInference3CP,
+                                                  this);
+            }
+            if (mRun3CSDetector)
+            {
+                mLogger->debug("Starting the 3CS inference thread...");
+                mInference3CSThread = std::thread(&Detector::performInference3CS,
+                                                  this);
+            }
         }
         mLogger->debug("Starting the packet cache query thread...");
         mPacketCacheThread = std::thread(&Detector::queryWaveforms, this);
@@ -887,6 +893,7 @@ public:
     {
         setRunning(false);
         if (mPublisherThread.joinable()){mPublisherThread.join();}
+        if (mInference3CPSThread.joinable()){mInference3CPSThread.join();}
         if (mInference3CPThread.joinable()){mInference3CPThread.join();}
         if (mInference3CSThread.joinable()){mInference3CSThread.join();}
         if (mInference1CPThread.joinable()){mInference1CPThread.join();}
@@ -1013,6 +1020,7 @@ const double detectorSamplingRate = 100;
                     ::ThreeComponentDataItem
                         item(threeComponentSensor,
                              detectorWindowDuration,
+                             mProgramOptions.mMaximumSignalLatency,
                              mProgramOptions.mGapTolerance,
                              waitPct,
                              centerWindowStart,
@@ -1084,18 +1092,41 @@ const double sDetectorSamplingRate = 100;
                     ::ThreadSafeState::State::ReadyToQueryData)
                 {
                     dataItem.second.setState(::ThreadSafeState::State::QueryData);
-                    mDataQueryBoundedQueue.push(dataItem.first);
+                    mPSDataQueryBoundedQueue.push(dataItem.first);
                 }
                 else if (dataItem.second.getState() ==
                          ::ThreadSafeState::State::ReadyForInferencing)
                 {
+                    mLogger->debug("Sending: " + dataItem.second.getName()
+                                 + " for PS inferencing");
                     dataItem.second.setState(
                         ::ThreadSafeState::State::InferencePS);
+                    // Safely add to the queue
+                    while (mPSInferenceQueue.size() > mMaxInferenceItems)
+                    {
+                        auto purgeHash = mPSInferenceQueue.try_pop();
+                        if (purgeHash != nullptr)
+                        {
+                            auto jt = m3CPSDataItems.find(*purgeHash);
+                            if (jt == m3CPSDataItems.end())
+                            {
+                                mLogger->warn("PS inference job for "
+                                            + jt->second.getName()
+                                            + " timed out");
+                                jt->second.updateLastProbabilityTimeToNow();
+                                jt->second.setState(
+                                    ::ThreadSafeState::State::ReadyToQueryData);
+                            }
+                        }
+                    }
+                    mPSInferenceQueue.push(dataItem.first);
                 }
                 else if (dataItem.second.getState() ==
                          ::ThreadSafeState::State::ReadyForBroadcasting)
                 {
-                    
+                    dataItem.second.setState(
+                        ::ThreadSafeState::State::BroadcastPS);
+                    mPSBroadcastQueue.push(dataItem.first);
                 }
             }
             for (auto it = m3CPSDataItems.begin(); it != m3CPSDataItems.end(); ++it)
@@ -1115,8 +1146,7 @@ const double sDetectorSamplingRate = 100;
         constexpr std::chrono::microseconds oneSecond{1000000};
         while (keepRunning())
         {
-            auto t0MicroSeconds = ::getNow();
-            auto hash = mDataQueryBoundedQueue.try_pop();
+            auto hash = mPSDataQueryBoundedQueue.try_pop();
             if (hash == nullptr){continue;}  
             auto dataItemIterator = m3CPSDataItems.find(*hash);
             if (dataItemIterator == m3CPSDataItems.end())
@@ -1127,18 +1157,46 @@ const double sDetectorSamplingRate = 100;
             try
             {
                 dataItemIterator->second.queryPacketCache(*mPacketCacheRequestor);
-if (dataItemIterator->second.getState() == ::ThreadSafeState::State::ReadyForInferencing)
-{
-std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
-}
             }
             catch (const std::exception &e)
             {
                 mLogger->debug("Query failed with: " + std::string {e.what()});
-                dataItemIterator->second.setState(::ThreadSafeState::State::ReadyToQueryData);
+                dataItemIterator->second.setState(
+                    ::ThreadSafeState::State::ReadyToQueryData);
+                continue;
             }
         }
     }
+    /// @brief Performs the P and S inferencing
+    void performInference3CPS()
+    {
+        while (keepRunning())
+        { 
+            auto hash = mPSInferenceQueue.try_pop();
+            if (hash == nullptr){continue;}
+            auto dataItemIterator = m3CPSDataItems.find(*hash);
+            if (dataItemIterator == m3CPSDataItems.end())
+            {
+                mLogger->warn("Data item no longer exists in map");
+                continue;
+            }
+            try
+            {
+mLogger->info("Inference request started for " + dataItemIterator->second.getName() + " " + std::to_string(mPSInferenceQueue.size()));
+                dataItemIterator->second.performPAndSInference(
+                    *m3CPInferenceRequestor,
+                    *m3CSInferenceRequestor);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Inference failed with: "
+                              + std::string {e.what()});
+                dataItemIterator->second.setState(
+                    ::ThreadSafeState::State::ReadyToQueryData);
+                continue;
+            }
+        }
+    } 
     /// @brief Stitch the waveforms together.
     /// @brief Inference engine for P 3C waveforms.
     void performInference3CP()
@@ -1147,28 +1205,26 @@ std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
                        ProcessingResponse::ReturnCode::Success;
         while (keepRunning())
         {
-/*
-            auto request = m3CPProcessingRequestQueue.try_pop();
-            if (request != nullptr)
+            auto hash = mPInferenceQueue.try_pop();
+            if (hash == nullptr){continue;}
+            auto dataItemIterator = m3CPSDataItems.find(*hash);
+            if (dataItemIterator == m3CPSDataItems.end())
             {
-                try
-                {
-                    auto response = m3CPInferenceRequestor->request(*request);
-                    if (response != nullptr)
-                    {
-                        if (response->getReturnCode() == success)
-                        {
-                            //auto probabilityPacket = ::processingResponseToDataPacket(response, t0, station, network, verticalChannel, locationCode, 254, 754, 'P');
-//                          mProbabilityPacketToPublisherQueue(std::move(probabilityPacket));
-                        }
-                    }
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                }
+                mLogger->warn("Data item no longer exists in map");
+                continue;
             }
-*/
+            try
+            {
+                //dataItemIterator->second.pInference(*m3CPInferenceRequestor);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Inference failed with: "
+                              + std::string {e.what()});
+                dataItemIterator->second.setState(
+                    ::ThreadSafeState::State::ReadyToQueryData);
+                continue;
+            }
         }
     }
     /// @brief Inference engine for S 3C waveforms.
@@ -1206,31 +1262,25 @@ std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
     {
         while (keepRunning())
         {
-            auto packet = mProbabilityPacketToPublisherQueue.try_pop();
-            if (packet != nullptr)
+            auto hash = mPSBroadcastQueue.try_pop();
+            if (hash == nullptr){continue;}
+            auto dataItemIterator = m3CPSDataItems.find(*hash);
+            if (dataItemIterator == m3CPSDataItems.end())
             {
-                if (mLogger->getLevel() >= UMPS::Logging::Level::Debug)
-                {
-                    std::string message = "Sending "
-                        + packet->getNetwork() + "."
-                        + packet->getStation() + "."
-                        + packet->getChannel() + "."
-                        + packet->getLocationCode() + " "
-                        + " [" + std::to_string(packet->getStartTime().count())
-                        + "," + std::to_string(packet->getEndTime().count())
-                        + "], nSamples = "
-                        + std::to_string(packet->getNumberOfSamples());
-                    mLogger->debug(message);
-                }
-                try
-                {
-                    mProbabilityPublisher->send(*packet);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error("Failed to publish probability packet"
-                                 + std::string{e.what()});
-                }
+                mLogger->warn("Data item no longer exists in map");
+                continue;
+            }
+            try
+            {
+                dataItemIterator->second.broadcast(*mProbabilityPublisher);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Broadcast failed with: "
+                              + std::string {e.what()});
+                dataItemIterator->second.setState(
+                    ::ThreadSafeState::State::ReadyToQueryData);
+                continue;
             }
         }
         mLogger->debug("Probability publisher thread exiting...");
@@ -1239,6 +1289,7 @@ std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
 ///public: 
     mutable std::mutex mMutex;
     std::thread mPublisherThread;
+    std::thread mInference3CPSThread;
     std::thread mInference3CPThread;
     std::thread mInference3CSThread;
     std::thread mInference1CPThread;
@@ -1257,7 +1308,11 @@ std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
          m3CSInferenceRequestor{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    ThreadSafeBoundedQueue<size_t> mDataQueryBoundedQueue{2000};
+    ThreadSafeBoundedQueue<size_t> mPSDataQueryBoundedQueue{2000};
+    ThreadSafeQueue<size_t> mPSInferenceQueue;
+    ThreadSafeQueue<size_t> mPInferenceQueue;
+    ThreadSafeQueue<size_t> mSInferenceQueue;
+    ThreadSafeQueue<size_t> mPSBroadcastQueue;
     //ThreadSafeQueue<UDetectors::UNetThreeComponentP::ProcessingRequest> 
     //     m3CPProcessingRequestQueue;
     //ThreadSafeQueue<UDetectors::UNetThreeComponentS::ProcessingRequest>
@@ -1273,6 +1328,7 @@ std::cout << "iwin : " << dataItemIterator->second.getName() << std::endl;;
     //std::set<double> mValidSamplingRates;
     //std::set<::ThreadSafeState> mStates;
     std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
+    size_t mMaxInferenceItems{100};
     bool mPS3CInputsAreEqual{true}; // TODO
     bool mRun3CPDetector{false};
     bool mRun3CSDetector{false};
