@@ -379,9 +379,7 @@ public:
         URTS::Services::Scalable::Detectors::UNetThreeComponentP::Requestor
             &pRequestor,
         URTS::Services::Scalable::Detectors::UNetThreeComponentS::Requestor
-            &sRequestor//,
-//        URTS::Broadcasts::Internal::DataPacket::Publisher &publisher
-)
+            &sRequestor)
     {
         mInferencedP = false;
         mInferencedS = false;
@@ -398,7 +396,7 @@ public:
         auto north        = mInterpolator.getNorthSignalReference();
         auto east         = mInterpolator.getEastSignalReference();
         auto gapIndicator = mInterpolator.getGapIndicatorReference();
-        auto nSamples = static_cast<int> (vertical.size());
+        auto haveGaps     = mInterpolator.haveGaps();
         // Figure out where to start query
         auto t0Signal = mInterpolator.getStartTime();
         auto t1Signal = mInterpolator.getEndTime();
@@ -407,17 +405,18 @@ public:
         assert(t1Signal - t0Signal >= mDetectorWindowDuration);
         assert(t1Signal >= mLastProbabilityTime + endWindowDuration);
 #endif
-        auto dtSignalMuSec = mInterpolator.getNominalSamplingPeriod();
         try
         {
             auto pSlidingWindow
-                 = UPDetectors::ProcessingRequest::InferenceStrategy::SlidingWindow;
+                 = UPDetectors::ProcessingRequest
+                              ::InferenceStrategy::SlidingWindow;
             mPInferenceRequest.setVerticalNorthEastSignal(vertical,
                                                           north,
                                                           east,
                                                           pSlidingWindow);
             auto sSlidingWindow
-                 = USDetectors::ProcessingRequest::InferenceStrategy::SlidingWindow;
+                 = USDetectors::ProcessingRequest
+                              ::InferenceStrategy::SlidingWindow;
             mSInferenceRequest.setVerticalNorthEastSignal(vertical,
                                                           north,
                                                           east,
@@ -442,7 +441,9 @@ public:
             }
             if (pResponse->haveProbabilitySignal())
             {
-                nPSamplesOut = static_cast<int> (pResponse->getProbabilitySignalReference().size());
+                nPSamplesOut
+                    = static_cast<int>
+                      (pResponse->getProbabilitySignalReference().size());
                 mInferencedP = true;
             }
         }
@@ -459,7 +460,9 @@ public:
             }
             if (sResponse->haveProbabilitySignal())
             {
-                nSSamplesOut = static_cast<int> (sResponse->getProbabilitySignalReference().size());
+                nSSamplesOut
+                    = static_cast<int>
+                      (sResponse->getProbabilitySignalReference().size());
                 mInferencedS = true;
             }
         }
@@ -467,15 +470,22 @@ public:
         {
             std::cerr << "S inference request failed: " << e.what() << std::endl; 
         }
-#ifndef NDEBUG
         if (mInferencedP && mInferencedS)
         {
-            assert(nPSamplesOut = nSSamplesOut);
-        }
+#ifndef NDEBUG
+            assert(nPSamplesOut == nSSamplesOut);
+#else
+            setState(::ThreadSafeState::State::ReadyToQueryData);
+            throw std::runtime_error("P and S requests different result sizes");
 #endif
+        }
         auto dtMuSec = std::round(1e6/mDetectorProbabilitySignalSamplingRate);
-        auto idtMuSec = std::chrono::microseconds {static_cast<int64_t> (dtMuSec)};
-        // Figure out where to unpack signals
+        auto idtMuSec
+            = std::chrono::microseconds {static_cast<int64_t> (dtMuSec)};
+        // Figure out where to stop extracting signals.  Basically, we have to
+        // leave-off the tail.  We are also gauranteed that the signal
+        // duration is at least mDetectorWindowDuration (e.g., 10.08) seconds
+        // otherwise we would have never submitted the request.
         int i1
              = static_cast<int> (
                   std::round(
@@ -483,98 +493,125 @@ public:
                      - t0Signal.count() )/dtMuSec
                   )
                );
-        int i1P = std::min(nPSamplesOut, i1);
-        int i1S = std::min(nSSamplesOut, i1);
-        int i0P = 0;
-        int i0S = 0;
-        if (t0Signal + mStartWindowTime <= mLastProbabilityTime)
+#ifndef NDEBUG
+        assert(i1 >= 0);
+#endif
+        i1 = std::min(nPSamplesOut, i1);
+        int i0 = 0;
+        // In this case, our detector has had a proper build up time
+        if (t0Signal + mStartWindowTime <= mLastProbabilityTime + idtMuSec/2)
         {
-            // Just jump to part we care about
-            i0P = static_cast<int> (
-                std::round(
-                    (mLastProbabilityTime.count() - t0Signal.count())/dtMuSec
-                )
-            );
+            // Begin extracting this signal at the last probability time
+            i0 = static_cast<int> (
+                   std::round(
+                       (mLastProbabilityTime.count() - t0Signal.count())/dtMuSec
+                   )
+                 );
         }
         else
         {
-            // Deal with a gap
-            i0P = static_cast<int> (
-                std::round(mStartWindowTime.count()/dtMuSec));
-std::cout << "dealing with gap " << mName << std::endl;
+            // Instead, we deal with a gap.  In this case, the first valid 
+            // probability time typically 2.54 seconds into the probability
+            // signal.
+            i0 = static_cast<int> (
+                 std::round(mStartWindowTime.count()/dtMuSec));
         }
-        i0P = std::max(0, std::min(i1P, i0P));
-        i0S = i0P;
-//std::cout << i0P << " " << i1P << " " << i1S << " " << i1 << std::endl;
+        i0 = std::max(0, std::min(i1, i0));
+//std::cout << i0 << " " << " " << i1 << std::endl;
         // Unpack the signal 
         if (mInferencedP)
         {
-            auto pRef = pResponse->getProbabilitySignalReference();
-            std::vector<double> pSignal;
-            pSignal.reserve(i1P - i0P + 1);
-            if (!mChangesSamplingRate)
+            const auto &pRef = pResponse->getProbabilitySignalReference();
+            std::vector<double> pSignal(std::max(0, i1 - i0), 0);
+            if (!haveGaps)
             {
-                for (int i = i0P; i < i1P; ++i)
-                {
-                    pSignal.push_back(pRef.at(i)*gapIndicator.at(i));
-                }
+#ifndef NDEBUG
+                assert(i0 >= 0);
+                assert(i1 <= static_cast<int> (pRef.size()));
+#endif
+                std::copy(pRef.begin() + i0, pRef.begin() + i1,
+                          pSignal.data());
             }
             else
             {
-                // TODO
-                for (int i = i0P; i < i1P; ++i)
-                {   
-                    pSignal.push_back(pRef.at(i));
+std::cout << "dealing with gaps" << std::endl;
+                if (!mChangesSamplingRate)
+                {
+                    for (int i = i0; i < i1; ++i)
+                    {
+                        pSignal[i] = pRef[i]*gapIndicator[i];
+                    }
+                }
+                else
+                {
+                    // TODO
+                    for (int i = i0; i < i1; ++i)
+                    {   
+                         pSignal[i] = pRef[i];
+                    }
                 }
             }
             if (!pSignal.empty())
             {
-                mPProbabilityPacket.setStartTime(t0Signal + i0P*idtMuSec);
+                mPProbabilityPacket.setStartTime(t0Signal + i0*idtMuSec);
                 mPProbabilityPacket.setData(std::move(pSignal));
                 mBroadcastP = true;
             }
         }
         if (mInferencedS)
         {
-            auto pRef = sResponse->getProbabilitySignalReference();
-            std::vector<double> pSignal;
-            pSignal.reserve(i1S - i0S + 1); 
-            if (!mChangesSamplingRate)
+            const auto &pRef = sResponse->getProbabilitySignalReference();
+            std::vector<double> pSignal(std::max(0, i1 - i0), 0);
+            if (!haveGaps)
             {
-                for (int i = i0S; i < i1S; ++i)
-                {
-                    pSignal.push_back(pRef.at(i)*gapIndicator.at(i));
-                }
+#ifndef NDEBUG
+                assert(i0 >= 0);
+                assert(i1 <= static_cast<int> (pRef.size()));
+#endif       
+                std::copy(pRef.begin() + i0, pRef.begin() + i1,
+                          pSignal.data());
             }
             else
             {
-                // TODO
-                for (int i = i0P; i < i1P; ++i)
+                if (!mChangesSamplingRate)
                 {
-                    pSignal.push_back(pRef[i]);
+                    for (int i = i0; i < i1; ++i)
+                    {
+                        pSignal[i] = pRef[i]*gapIndicator[i];
+                    }
+                }
+                else
+                {
+                    // TODO
+                    for (int i = i0; i < i1; ++i)
+                    {
+                         pSignal[i] = pRef[i];
+                    }
                 }
             }
             if (!pSignal.empty())
             {
-                mSProbabilityPacket.setStartTime(t0Signal + i0P*idtMuSec);
+                mSProbabilityPacket.setStartTime(t0Signal + i0*idtMuSec);
                 mSProbabilityPacket.setData(std::move(pSignal));
                 mBroadcastS = true;
             }
         }
-        // Assume we were successful.  Worst case, both failed and we have
-        // a gap.
+        // At this point we are `successful.'  Sure, the broadcast coudl fail,
+        // or now data was extracted, but the machine must move forward and
+        // iterate at our last valid probability time.
         mLastProbabilityTime = t0Signal
-                             + std::max(i1P, i1S)
-                              *std::chrono::microseconds
-                               {static_cast<int64_t> (dtMuSec)};
+                             + i1*std::chrono::microseconds
+                                  {static_cast<int64_t> (dtMuSec)};
         setState(::ThreadSafeState::State::ReadyForBroadcasting);
     }
+    /// @brief Broadcasts packets
     void broadcast(URTS::Broadcasts::Internal::DataPacket::Publisher &publisher)
     {
         if (getState() != ::ThreadSafeState::State::BroadcastPS)
         {
             return;
         }
+        //std::cout << std::setprecision(16) << mName << " " << getNow().count()*1.e-6 << " " << mPProbabilityPacket.getStartTime().count()*1.e-6 << " " << mPProbabilityPacket.getEndTime().count()*1.e-6 << " " << mLastProbabilityTime.count()*1.e-6 << std::endl; 
         std::string error;
         if (mBroadcastP)
         {

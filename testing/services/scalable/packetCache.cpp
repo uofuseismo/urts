@@ -662,6 +662,7 @@ TEST(ServicesScalablePacketCache, Wiggins)
     }
     EXPECT_NEAR(yDiff, 0, 1.e-8);
     // There should be no gaps
+    EXPECT_FALSE(interpolator.haveGaps());
     auto gapPtr = interpolator.getGapIndicatorPointer();
     for (int i = 0; i < interpolator.getNumberOfSamples(); ++i)
     {
@@ -699,6 +700,7 @@ TEST(ServicesScalablePacketCache, Wiggins)
     packets.erase(packets.begin() + 1);
     interpolator.clearSignal();
     EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_TRUE(interpolator.haveGaps());
     gapPtr = interpolator.getGapIndicatorPointer();
     yi = interpolator.getSignal();
     EXPECT_EQ(yi.size(), yRef.size());

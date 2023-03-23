@@ -146,6 +146,8 @@ public:
     /// @note This exists for performance reasons.  When possibleu se
     ///       \c getGapIndicator().
     [[nodiscard]] const std::vector<int8_t> &getGapIndicatorReference() const noexcept;
+    /// @result True indicates that there are non-zeros in the gapIndicator.
+    [[nodiscard]] bool haveGaps() const noexcept;
 
     /// @result The start time of the interpolated signal.
     [[nodiscard]] std::chrono::microseconds getStartTime() const noexcept;

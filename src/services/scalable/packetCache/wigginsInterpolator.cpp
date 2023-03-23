@@ -71,8 +71,10 @@ void fillGapPointer(const size_t nNewSamples,
                     const int64_t targetSamplingPeriodMicroSeconds,
                     const std::vector<int64_t> &timesToEvaluate,
                     const std::vector<std::pair<int64_t, int64_t>> &gapStartEnd,
-                    std::vector<int8_t> *gapIndicator)
+                    std::vector<int8_t> *gapIndicator,
+                    bool *haveGaps)
 {
+    *haveGaps = false;
     // Less than this difference we're basically collocating
     auto targetDt2
          = static_cast<int64_t> (0.5*targetSamplingPeriodMicroSeconds);
@@ -112,6 +114,7 @@ void fillGapPointer(const size_t nNewSamples,
             if (t0 + targetDt2 < times[it] && times[it] < t1 - targetDt2)
             {
                  gapPointer[it] = 1;
+                 *haveGaps = true;
             }
         }
     }
@@ -128,6 +131,7 @@ public:
         mGapIndicator.clear();
         mStartTime = std::chrono::microseconds{0};
         mEndTime = std::chrono::microseconds{0};
+        mHaveGaps = false;
     }
     std::vector<double> mSignal;
     std::vector<int8_t> mGapIndicator;
@@ -135,6 +139,7 @@ public:
     std::chrono::microseconds mGapTolerance{50000};
     std::chrono::microseconds mStartTime{0};
     std::chrono::microseconds mEndTime{0};
+    bool mHaveGaps{false};
 };
 
 /// C'tor
@@ -395,7 +400,8 @@ void WigginsInterpolator::interpolate(
                          targetSamplingPeriodMicroSeconds,
                          timesToEvaluate,
                          gapStartEnd,
-                         &pImpl->mGapIndicator);
+                         &pImpl->mGapIndicator,
+                         &pImpl->mHaveGaps);
     }
 }
 
@@ -431,6 +437,12 @@ const std::vector<int8_t>
 &WigginsInterpolator::getGapIndicatorReference() const noexcept
 {
     return pImpl->mGapIndicator;
+}
+
+// Are there gaps?
+bool WigginsInterpolator::haveGaps() const noexcept
+{
+    return pImpl->mHaveGaps;
 }
 
 /// Start time

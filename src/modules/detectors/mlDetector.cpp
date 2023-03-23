@@ -1033,7 +1033,7 @@ const double detectorSamplingRate = 100;
         else
         {
 #ifndef NDEBUG
-assert(false);
+            assert(false);
 #endif
         }
 /*
@@ -1182,7 +1182,10 @@ const double sDetectorSamplingRate = 100;
             }
             try
             {
-mLogger->info("Inference request started for " + dataItemIterator->second.getName() + " " + std::to_string(mPSInferenceQueue.size()));
+                mLogger->debug("Inference request started for "
+                             + dataItemIterator->second.getName()
+                             + ".  Queue size is now "
+                             + std::to_string(mPSInferenceQueue.size()));
                 dataItemIterator->second.performPAndSInference(
                     *m3CPInferenceRequestor,
                     *m3CSInferenceRequestor);

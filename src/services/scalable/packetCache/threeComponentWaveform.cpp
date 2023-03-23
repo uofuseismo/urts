@@ -17,6 +17,7 @@ public:
     SingleComponentWaveform mNorthComponent; // North or 1 component
     SingleComponentWaveform mEastComponent; // East or 2 component
     std::vector<int8_t> mGapIndicator;
+    bool mHaveGaps{false};
 };
 
 /// Constructor
@@ -46,6 +47,7 @@ void ThreeComponentWaveform::clearSignal() noexcept
     pImpl->mNorthComponent.clearSignal();
     pImpl->mEastComponent.clearSignal();
     pImpl->mGapIndicator.clear();
+    pImpl->mHaveGaps = false;
 }
 
 /// Reset class
@@ -409,13 +411,16 @@ void ThreeComponentWaveform::set(const DataResponse &verticalComponent,
         = pImpl->mNorthComponent.getGapIndicatorReference().data();
     const auto *__restrict__ eGapPointer
         = pImpl->mEastComponent.getGapIndicatorReference().data();  
+    bool haveGaps = false;
     for (int i = 0; i < nSamples; ++i)
     {
         mGapPointer[i] = 0;
         if (zGapPointer[i] == 1){mGapPointer[i] = 1;}
         if (nGapPointer[i] == 1){mGapPointer[i] = 1;}
         if (eGapPointer[i] == 1){mGapPointer[i] = 1;}
+        if (mGapPointer[i] == 1){haveGaps = true;}
     } 
+    pImpl->mHaveGaps = haveGaps;
 }
 
 /// Gap indicator
@@ -447,4 +452,10 @@ const std::vector<double>
 &ThreeComponentWaveform::getEastSignalReference() const noexcept
 {
     return pImpl->mEastComponent.getSignalReference();
+}
+
+// Are there gaps?
+bool ThreeComponentWaveform::haveGaps() const noexcept
+{
+    return pImpl->mHaveGaps;
 }
