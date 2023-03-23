@@ -30,6 +30,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component
     [ "getVerticalSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a2001ffb2d65b29bbb64aa6a299ad8d2e", null ],
     [ "getVerticalSignalReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1ec7bf77c94187cd29f0b15b6c4d6621", null ],
     [ "haveEastChannel", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a98a5013141a88096fa559784a4de951b", null ],
+    [ "haveGaps", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a2e663b0ea7bf3fbc46c5a49d697accef", null ],
     [ "haveLocationCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a02066b8709290ad63f54aef1c5c83bda", null ],
     [ "haveNetwork", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a9f3621ab214d21f635a3e7c6a1047ac6", null ],
     [ "haveNorthChannel", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#aad186321947233dcccdc1d70eb268acc", null ],

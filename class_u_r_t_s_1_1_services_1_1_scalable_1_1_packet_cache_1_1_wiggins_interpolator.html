@@ -158,6 +158,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1b46b8c5707538660c91a773b19ef1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34df02fcae114d2182516aadd70e3d3b"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a34df02fcae114d2182516aadd70e3d3b">getGapIndicatorReference</a> () const noexcept</td></tr>
 <tr class="separator:a34df02fcae114d2182516aadd70e3d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21bf4094c6e8d979556405a1acf036ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a21bf4094c6e8d979556405a1acf036ae">haveGaps</a> () const noexcept</td></tr>
+<tr class="separator:a21bf4094c6e8d979556405a1acf036ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f96bb48e20fd7bc017d8ba660824ea4"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a2f96bb48e20fd7bc017d8ba660824ea4">getStartTime</a> () const noexcept</td></tr>
 <tr class="separator:a2f96bb48e20fd7bc017d8ba660824ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3753a1421d10794384756261b2d106e"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#aa3753a1421d10794384756261b2d106e">getEndTime</a> () const noexcept</td></tr>
@@ -533,6 +535,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a21bf4094c6e8d979556405a1acf036ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21bf4094c6e8d979556405a1acf036ae">&#9670;&nbsp;</a></span>haveGaps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool URTS::Services::Scalable::PacketCache::WigginsInterpolator::haveGaps </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True indicates that there are non-zeros in the gapIndicator. </dd></dl>
+
+</div>
+</div>
 <a id="a8d430942f11eef81a70e94f96266a3e3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8d430942f11eef81a70e94f96266a3e3">&#9670;&nbsp;</a></span>interpolate() <span class="overload">[1/2]</span></h2>
 
@@ -779,7 +807,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html">WigginsInterpolator</a></li>
-    <li class="footer">Generated on Wed Mar 22 2023 14:48:06 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 23 2023 15:01:24 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

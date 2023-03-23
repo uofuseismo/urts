@@ -17,6 +17,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpo
     [ "getSignalReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a3020c05615bc53813e2e74a5445a2dec", null ],
     [ "getStartTime", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a2f96bb48e20fd7bc017d8ba660824ea4", null ],
     [ "getTargetSamplingRate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#afd5dd03f214a3bc956ef09cff6360f06", null ],
+    [ "haveGaps", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a21bf4094c6e8d979556405a1acf036ae", null ],
     [ "interpolate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a8d430942f11eef81a70e94f96266a3e3", null ],
     [ "interpolate", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a1a17bfd0745d2436fed6f8dab6c27913", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_wiggins_interpolator.html#a572f57daae13c2a302e42b9412a2e247", null ],
