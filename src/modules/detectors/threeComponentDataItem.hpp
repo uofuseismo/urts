@@ -67,17 +67,6 @@ public:
         {
             mChangesSamplingRate = true;
         }
-        // Figure out where to prepad next query to accomdate sliding window
-/*
-        std::chrono::microseconds centerWindowStartDuration{
-            static_cast<int64_t> (std::round(mCenterWindowStart
-                                /mDetectorProbabilitySignalSamplingRate*1.e6))};
-        std::chrono::microseconds centerWindowEndDuration{
-            static_cast<int64_t> (std::round(mCenterWindowEnd
-                                /mDetectorProbabilitySignalSamplingRate*1.e6))};
-        mWindowCorrection = (detectorWindowDuration - centerWindowEndDuration)
-                          + centerWindowStartDuration;
-*/
 
         // Don't spam the packet cache's with redundant requests
         mQueryWaitInterval = std::chrono::microseconds

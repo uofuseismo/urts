@@ -38,6 +38,8 @@
 #include <umps/services/command/serviceOptions.hpp>
 #include <umps/services/command/terminateRequest.hpp>
 #include <umps/services/command/terminateResponse.hpp>
+#include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
+#include <uussmlmodels/detectors/uNetThreeComponentS/inference.hpp>
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "urts/broadcasts/internal/dataPacket/publisher.hpp"
 #include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
@@ -74,54 +76,14 @@
 namespace UDatabase = URTS::Database;
 namespace UDetectors = URTS::Services::Scalable::Detectors;
 
-template<typename T>
-struct ThreeComponentProcessingRequest
-{
-    explicit ThreeComponentProcessingRequest(
-        const ::ThreeComponentDataItem &dataRequest)
-    {
-        mNetwork = dataRequest.mChannelData.getNetwork();
-        mProbabilityPacket.setNetwork(dataRequest.mChannelData.getNetwork());
-        mProbabilityPacket.setStation(dataRequest.mChannelData.getStation());
-        mProbabilityPacket.setLocationCode(
-            dataRequest.mChannelData.getLocationCode());
-        auto dfDetector
-            = dataRequest.mDetectorProbabilitySignalSamplingRate;
-        auto windowStartSamples = dataRequest.getCenterWindowStart();
-        std::chrono::microseconds dtMuSecDelay{
-           static_cast<int64_t> (std::round(windowStartSamples*1.e6/dfDetector))
-        };
-//        dataRequest.mInterpolator.getStartTime() + dtMuSecDelay;
-        auto vRef = dataRequest.mInterpolator.getVerticalSignalReference();
-        auto nRef = dataRequest.mInterpolator.getNorthSignalReference();
-        auto eRef = dataRequest.mInterpolator.getEastSignalReference();
-
-        mProcessingRequest.setSamplingRate(dataRequest.mChannelData.getNominalSamplingRate());
-        mProcessingRequest.setVerticalNorthEastSignal(vRef, nRef, eRef);
-            //UDetectors::SlidingWindow); 
-    }
-     
-    T mProcessingRequest; 
-    URTS::Broadcasts::Internal::DataPacket::DataPacket mProbabilityPacket;
-    std::vector<int8_t> mGapIndicator;
-    std::string mNetwork;
-    std::string mStation;
-    std::string mVerticalChannel;
-    std::string mNorthChannel;
-    std::string mEastChannel;
-    std::string mLocationCode;
-    std::chrono::microseconds mStartTime;
-    std::chrono::microseconds mValidStartTime;
-    std::chrono::microseconds mValidEndTime;
-};
-
 /// @result Gets the command line input options as a string.
 [[nodiscard]] std::string getInputOptions() noexcept
 {
     std::string commands{
 R"""(
 Commands: 
-   help       Displays this message.
+   inferenceQueueSize  Displays the size of the inference queues.
+   help                Displays this message.
 )"""};
     return commands;
 }
@@ -148,10 +110,60 @@ std::shared_ptr<UMPS::Logging::ILog>
     return logger;
 }
 
+struct P3CDetectorProperties
+{
+    P3CDetectorProperties()
+    {
+        mDetectorWindowDuration
+            = std::chrono::microseconds {
+                static_cast<int64_t> (std::round(mExpectedLength*mSamplingRate*1.e6))
+              };
+    }
+    std::chrono::microseconds mDetectorWindowDuration{10080000};
+    double mSamplingRate{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getSamplingRate()};
+    int mExpectedLength{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getExpectedSignalLength()};
+    int mWindowStart{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getCentralWindowStartEndIndex().first};
+    int mWindowEnd{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getCentralWindowStartEndIndex().second}; 
+};
+
+struct S3CDetectorProperties
+{
+    S3CDetectorProperties()
+    {    
+        mDetectorWindowDuration
+            = std::chrono::microseconds {
+                static_cast<int64_t> (std::round(mExpectedLength*mSamplingRate*1.e6))
+              };
+    }
+    std::chrono::microseconds mDetectorWindowDuration{10080000};
+    double mSamplingRate{UUSSMLModels::Detectors::UNetThreeComponentS::Inference::getSamplingRate()};
+    int mExpectedLength{UUSSMLModels::Detectors::UNetThreeComponentS::Inference::getExpectedSignalLength()};
+    int mWindowStart{UUSSMLModels::Detectors::UNetThreeComponentS::Inference::getCentralWindowStartEndIndex().first};
+    int mWindowEnd{UUSSMLModels::Detectors::UNetThreeComponentS::Inference::getCentralWindowStartEndIndex().second}; 
+};
+
+bool operator==(const P3CDetectorProperties &lhs,
+                const S3CDetectorProperties &rhs)
+{
+    if (lhs.mDetectorWindowDuration != rhs.mDetectorWindowDuration){return false;}
+    if (std::abs(lhs.mSamplingRate - rhs.mSamplingRate) > 1.e-4){return false;}
+    if (lhs.mExpectedLength != rhs.mExpectedLength){return false;}
+    if (lhs.mWindowStart != rhs.mWindowStart){return false;}
+    if (lhs.mWindowEnd != rhs.mWindowEnd){return false;}
+    return true;
+}
+
+bool operator==(const S3CDetectorProperties &lhs,
+                const P3CDetectorProperties &rhs)
+{
+    return rhs == lhs;
+}
+
+
 /// Make the one and three-component channel list from database.
 /// @param[out] threeComponentSensors  The list of three-component sensors as
 ///                                    gleaned from the database.
-/// @param[ou]t oneComponentSensors    The list of one-component sensors as
+/// @param[out] oneComponentSensors    The list of one-component sensors as
 ///                                    gleaned from the database.
 /// @param[in] channels                The channels in the database. 
 /// @param[in] activeNetworks          Only retain channels in active networks.
@@ -358,45 +370,6 @@ void makeOneAndThreeComponentStation(
     }
     logger->debug("Number of one-component sensors after network mask: " 
                 + std::to_string(oneComponentSensors->size()));
-}
-
-template<typename T, typename U>
-URTS::Broadcasts::Internal::DataPacket::DataPacket
-processingResponseToDataPacket(const T &processingResponse,
-                               const std::chrono::microseconds &startTime,
-                               const std::string &network,
-                               const std::string &station,
-                               const std::string &verticalChannel,
-                               const std::string &locationCode,
-                               const int windowStart = 254,
-                               const int windowEnd   = 754,
-                               const char phaseType = 'P')
-{
-    URTS::Broadcasts::Internal::DataPacket::DataPacket result;
-    auto samplingRate = processingResponse.getSamplingRate();
-    const auto probabilitySignal
-        = processingResponse.getProbabilitySignalReference();
-    auto nCopy = windowEnd - windowStart;
-#ifndef NDEBUG
-    assert(nCopy >= 0);
-    assert(windowEnd <= static_cast<int> (probabilitySignal.size()));
-#endif
-    std::string channel{verticalChannel};
-    if (channel.size() != 3)
-    {
-        throw std::runtime_error("Unhandled channel code length");
-    }
-    channel[2] = phaseType;
-    result.setNetwork(network);
-    result.setStation(station);
-    result.setChannel(channel);
-    result.setLocationCode(locationCode);
-    result.setSamplingRate(samplingRate);     
-    auto iStartTime
-        = static_cast<int64_t> (std::round((windowStart/samplingRate)*1000000));
-    result.setStartTime(startTime + std::chrono::microseconds {iStartTime});
-    result.setData(nCopy, probabilitySignal.data() + windowStart);
-    return result;
 }
  
 /// @brief Parses the command line options.
@@ -648,7 +621,15 @@ public:
             {
                 mActiveNetworks.insert(network);
             }
-        } 
+        }
+        // Wait percentage for inference
+        mDataQueryWaitPercentage
+            = propertyTree.get<double> ("MLDetector.dataQueryWaitPercentage",
+                                        mDataQueryWaitPercentage);
+        if (mDataQueryWaitPercentage <= 0 || mDataQueryWaitPercentage >= 100)
+        {
+            throw std::invalid_argument("Wait pct must be in range (0,100)");
+        }
         // Figure out the valid sampling rates
         std::string validSamplingRates;
         for (const auto &validSamplingRate : mValidSamplingRates)
@@ -706,6 +687,7 @@ public:
     std::chrono::milliseconds mDataRequestReceiveTimeOut{5000}; // 5 seconds
     std::set<std::string> mActiveNetworks;
     std::set<double> mValidSamplingRates;
+    double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};
     int mProbabilityPacketHighWaterMark{0}; // Infinite
     int mGapTolerance{5}; // In samples
@@ -796,10 +778,13 @@ public:
         mChannelDataPoller.start();
         std::this_thread::sleep_for(std::chrono::milliseconds {250});
 
-        // TODO: Determine if the P and S 3C inputs are the same.
-        //       This also requires double checking the sampling rates,
-        //       and window start/ends for the detectors as well as the
-        //       window duration.
+        // Determine if the P and S 3C inputs are the same.
+        P3CDetectorProperties p3CProperties;
+        S3CDetectorProperties s3CProperties;
+        mPS3CInputsAreEqual = (p3CProperties == s3CProperties);
+#ifndef NDEBUG
+        assert(mPS3CInputsAreEqual);
+#endif 
 
         // Instantiate the local command replier
         mLocalCommand
@@ -948,7 +933,16 @@ public:
             }
             auto command = commandRequest.getCommand();
             response.setResponse(getInputOptions());
-            if (command != "help")
+            if (command == "inferenceQueueSize")
+            {
+                auto psQueueSize = mPS3CInferenceQueue.size();
+                auto message = "P and S 3C inference queue size is "
+                             + std::to_string(psQueueSize);
+                response.setResponse(message);
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
+            }
+            else if (command != "help")
             {
                 mLogger->debug("Invalid command: " + command);
                 response.setResponse("Invalid command: " + command);
@@ -1006,11 +1000,7 @@ public:
             mLogger->warn("No channels read from database");
         }
         // We can recycle data queries 
-const double waitPct = 30;
-std::chrono::microseconds detectorWindowDuration{10080000};
-int centerWindowStart = 254;
-int centerWindowEnd = 754;
-const double detectorSamplingRate = 100;
+        P3CDetectorProperties p3CProperties;
         if (mPS3CInputsAreEqual)
         {
             if (mRun3CPDetector || mRun3CSDetector)
@@ -1019,13 +1009,13 @@ const double detectorSamplingRate = 100;
                 {
                     ::ThreeComponentDataItem
                         item(threeComponentSensor,
-                             detectorWindowDuration,
+                             p3CProperties.mDetectorWindowDuration,
                              mProgramOptions.mMaximumSignalLatency,
                              mProgramOptions.mGapTolerance,
-                             waitPct,
-                             centerWindowStart,
-                             centerWindowEnd,
-                             detectorSamplingRate);
+                             mProgramOptions.mDataQueryWaitPercentage,
+                             p3CProperties.mWindowStart,
+                             p3CProperties.mWindowEnd,
+                             p3CProperties.mSamplingRate);
                     m3CPSDataItems.insert(std::pair{item.getHash(), item});
                 }
             }
@@ -1037,6 +1027,7 @@ const double detectorSamplingRate = 100;
 #endif
         }
 /*
+S3CDetectorProperties s3CProperties;
 int pCenterWindowStart = 254; 
 int pCenterWindowEnd = 754; 
 const double pDetectorSamplingRate = 100; 
@@ -1102,9 +1093,9 @@ const double sDetectorSamplingRate = 100;
                     dataItem.second.setState(
                         ::ThreadSafeState::State::InferencePS);
                     // Safely add to the queue
-                    while (mPSInferenceQueue.size() > mMaxInferenceItems)
+                    while (mPS3CInferenceQueue.size() > mMaxInferenceItems)
                     {
-                        auto purgeHash = mPSInferenceQueue.try_pop();
+                        auto purgeHash = mPS3CInferenceQueue.try_pop();
                         if (purgeHash != nullptr)
                         {
                             auto jt = m3CPSDataItems.find(*purgeHash);
@@ -1119,7 +1110,7 @@ const double sDetectorSamplingRate = 100;
                             }
                         }
                     }
-                    mPSInferenceQueue.push(dataItem.first);
+                    mPS3CInferenceQueue.push(dataItem.first);
                 }
                 else if (dataItem.second.getState() ==
                          ::ThreadSafeState::State::ReadyForBroadcasting)
@@ -1141,9 +1132,6 @@ const double sDetectorSamplingRate = 100;
     /// @brief This queries signals from the packet cache.
     void queryWaveforms()
     {
-        // Do an initial query of stations
-        updateChannelLists();
-        constexpr std::chrono::microseconds oneSecond{1000000};
         while (keepRunning())
         {
             auto hash = mPSDataQueryBoundedQueue.try_pop();
@@ -1172,7 +1160,7 @@ const double sDetectorSamplingRate = 100;
     {
         while (keepRunning())
         { 
-            auto hash = mPSInferenceQueue.try_pop();
+            auto hash = mPS3CInferenceQueue.try_pop();
             if (hash == nullptr){continue;}
             auto dataItemIterator = m3CPSDataItems.find(*hash);
             if (dataItemIterator == m3CPSDataItems.end())
@@ -1185,7 +1173,7 @@ const double sDetectorSamplingRate = 100;
                 mLogger->debug("Inference request started for "
                              + dataItemIterator->second.getName()
                              + ".  Queue size is now "
-                             + std::to_string(mPSInferenceQueue.size()));
+                             + std::to_string(mPS3CInferenceQueue.size()));
                 dataItemIterator->second.performPAndSInference(
                     *m3CPInferenceRequestor,
                     *m3CSInferenceRequestor);
@@ -1204,14 +1192,12 @@ const double sDetectorSamplingRate = 100;
     /// @brief Inference engine for P 3C waveforms.
     void performInference3CP()
     {
-        auto success = UDetectors::UNetThreeComponentP::
-                       ProcessingResponse::ReturnCode::Success;
         while (keepRunning())
         {
-            auto hash = mPInferenceQueue.try_pop();
+            auto hash = mP3CInferenceQueue.try_pop();
             if (hash == nullptr){continue;}
-            auto dataItemIterator = m3CPSDataItems.find(*hash);
-            if (dataItemIterator == m3CPSDataItems.end())
+            auto dataItemIterator = m3CPDataItems.find(*hash);
+            if (dataItemIterator == m3CPDataItems.end())
             {
                 mLogger->warn("Data item no longer exists in map");
                 continue;
@@ -1233,31 +1219,28 @@ const double sDetectorSamplingRate = 100;
     /// @brief Inference engine for S 3C waveforms.
     void performInference3CS()
     {
-        auto success = UDetectors::UNetThreeComponentS::ProcessingResponse::ReturnCode::Success;
         while (keepRunning())
         {
-/*
-            auto request = m3CSProcessingRequestQueue.try_pop(); 
-            if (request != nullptr)
+            auto hash = mS3CInferenceQueue.try_pop();
+            if (hash == nullptr){continue;}
+            auto dataItemIterator = m3CSDataItems.find(*hash);
+            if (dataItemIterator == m3CSDataItems.end())
             {
-                try
-                {
-                    auto response = m3CSInferenceRequestor->request(*request);
-                    if (response != nullptr)
-                    {
-                        if (response->getReturnCode() == success)
-                        {
-                            //::inferenceResponseToDataPacket(response, t0, 254, 754);
-//                          mProbabilityPacketToPublisherQueue(*response); 
-                        }
-                    }
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                }
+                mLogger->warn("Data item no longer exists in map");
+                continue;
             }
-*/
+            try
+            {
+                //dataItemIterator->second.pInference(*m3CPInferenceRequestor);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Inference failed with: "
+                              + std::string {e.what()});
+                dataItemIterator->second.setState(
+                    ::ThreadSafeState::State::ReadyToQueryData);
+                continue;
+            }
         }
     }
     /// @brief Publishes probability packets.
@@ -1312,25 +1295,18 @@ const double sDetectorSamplingRate = 100;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     ThreadSafeBoundedQueue<size_t> mPSDataQueryBoundedQueue{2000};
-    ThreadSafeQueue<size_t> mPSInferenceQueue;
-    ThreadSafeQueue<size_t> mPInferenceQueue;
-    ThreadSafeQueue<size_t> mSInferenceQueue;
+    ThreadSafeQueue<size_t> mPS3CInferenceQueue;
+    ThreadSafeQueue<size_t> mP3CInferenceQueue;
+    ThreadSafeQueue<size_t> mS3CInferenceQueue;
+    ThreadSafeQueue<size_t> mP1CInferenceQueue;
     ThreadSafeQueue<size_t> mPSBroadcastQueue;
-    //ThreadSafeQueue<UDetectors::UNetThreeComponentP::ProcessingRequest> 
-    //     m3CPProcessingRequestQueue;
-    //ThreadSafeQueue<UDetectors::UNetThreeComponentS::ProcessingRequest>
-    //     m3CSProcessingRequestQueue;
-    //ThreadSafeQueue<UDetectors::UNetOneComponentP::ProcessingRequest>
-    //     m1CPProcessingRequestQueue; 
     ThreadSafeQueue<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         mProbabilityPacketToPublisherQueue;
-    //std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
-    //std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
-    //std::map<size_t, ::ThreeComponentDataItem> m1CPDataItems;
     std::set<std::string> mActiveNetworks;
-    //std::set<double> mValidSamplingRates;
-    //std::set<::ThreadSafeState> mStates;
     std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
+    std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
+    std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
+    std::map<size_t, ::ThreeComponentDataItem> m1CPDataItems;
     size_t mMaxInferenceItems{100};
     bool mPS3CInputsAreEqual{true}; // TODO
     bool mRun3CPDetector{false};

@@ -356,7 +356,7 @@ if (${BUILD_UUSS_MLMODELS})
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_link_libraries(mlDetector
-                         PRIVATE urts ${UMPS_LIBRARY}
+                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
