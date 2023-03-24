@@ -8,6 +8,7 @@
 #include <numeric>
 #include <vector>
 #ifndef NDEBUG
+#include <iostream>
 #include <cassert>
 #endif
 namespace
