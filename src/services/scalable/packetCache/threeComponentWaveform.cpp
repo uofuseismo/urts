@@ -313,9 +313,15 @@ std::chrono::microseconds ThreeComponentWaveform::getEndTime() const noexcept
 /// Process data
 void ThreeComponentWaveform::set(const DataResponse &verticalComponent,
                                  const DataResponse &northComponent,
-                                 const DataResponse &eastComponent)
+                                 const DataResponse &eastComponent,
+                                 const std::chrono::microseconds &startTime,
+                                 const std::chrono::microseconds &endTime)
 {
     clearSignal();
+    if (endTime < startTime)
+    {
+        throw std::invalid_argument("Start time cannot exceed end time");
+    }
     int nVerticalPackets = verticalComponent.getNumberOfPackets();
     int nNorthPackets    = northComponent.getNumberOfPackets();
     int nEastPackets     = eastComponent.getNumberOfPackets();
@@ -368,6 +374,26 @@ void ThreeComponentWaveform::set(const DataResponse &verticalComponent,
                        std::max(t0NorthPackets, t0EastPackets));
     auto t1 = std::min(t1VerticalPackets,
                        std::min(t1NorthPackets, t1EastPackets)); 
+    if (startTime > t1) 
+    {   
+        auto errorMessage = "Desired interpolation start time ("
+                          + std::to_string(startTime.count())
+                          + ") exceeds last sample in data query ("
+                          + std::to_string(t1.count())
+                          + ")";
+        throw std::invalid_argument(errorMessage);
+    }   
+    if (endTime < t0) 
+    {   
+        auto errorMessage = "Desired interpolation end time ("
+                          + std::to_string(endTime.count())
+                          + ") is less than first sample in data query ("
+                          + std::to_string(t0.count())
+                          + ")";
+    }
+    /// Set the appropriate start/end interpolation time
+    t0 = std::max(startTime, t0);
+    t1 = std::min(endTime,   t1);
     // Finally, we can interpolate
     pImpl->mVerticalComponent.set(verticalComponent, t0, t1);
     pImpl->mNorthComponent.set(northComponent, t0, t1);

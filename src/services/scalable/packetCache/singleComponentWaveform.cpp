@@ -325,7 +325,7 @@ void SingleComponentWaveform::set(const DataResponse &response,
     {
         auto errorMessage = "Desired interpolation end time ("
                           + std::to_string(endTime.count())
-                          + ") is than first sample in data query ("
+                          + ") is less than first sample in data query ("
                           + std::to_string(t0Packets.count())
                           + ")";
     }

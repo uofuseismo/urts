@@ -64,10 +64,14 @@
 #include "urts/services/scalable/packetCache/threeComponentWaveform.hpp"
 #include "urts/services/scalable/packetCache/sensorRequest.hpp"
 #include "urts/services/scalable/packetCache/sensorResponse.hpp"
+#include "detectorProperties.hpp"
+#include "programOptions.hpp"
+#include "splitWork.hpp"
 #include "threeComponentChannelData.hpp"
 #include "threeComponentDataItem.hpp"
 #include "getNow.hpp"
 #include "threadSafeState.hpp"
+#include "threeComponentProcessingPipeline.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "private/threadSafeBoundedQueue.hpp"
 #include "private/isEmpty.hpp"
@@ -90,26 +94,25 @@ Commands:
 
 /// @result The logger for this application.
 std::shared_ptr<UMPS::Logging::ILog>
-    createLogger(const std::string &moduleName = MODULE_NAME,
-                 const std::filesystem::path logFileDirectory = "/var/log/urts",
-                 const UMPS::Logging::Level verbosity = UMPS::Logging::Level::Info,
-                 const int hour = 0,
-                 const int minute = 0)
+createLogger(const std::string &moduleName = MODULE_NAME,
+             const std::filesystem::path logFileDirectory = "/var/log/urts",
+             const UMPS::Logging::Level verbosity = UMPS::Logging::Level::Info,
+             const int hour = 0,
+             const int minute = 0)
 {
     auto logFileName = moduleName + ".log";
     auto fullLogFileName = logFileDirectory / logFileName;
-    auto logger = std::make_shared<UMPS::Logging::StandardOut> (verbosity);
-/*
+    //auto logger = std::make_shared<UMPS::Logging::StandardOut> (verbosity);
     auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
     logger->initialize(moduleName,
                        fullLogFileName,
                        verbosity,
                        hour, minute);
-*/
     logger->info("Starting logging for " + moduleName);
     return logger;
 }
 
+/*
 struct P3CDetectorProperties
 {
     P3CDetectorProperties()
@@ -158,7 +161,7 @@ bool operator==(const S3CDetectorProperties &lhs,
 {
     return rhs == lhs;
 }
-
+*/
 
 /// Make the one and three-component channel list from database.
 /// @param[out] threeComponentSensors  The list of three-component sensors as
@@ -414,9 +417,16 @@ Allowed options)""");
 ///--------------------------------------------------------------------------///
 ///                                 Program Options                          ///
 ///--------------------------------------------------------------------------///
+/*
 struct ProgramOptions
 {
 public:
+    ProgramOptions() = default;
+    ProgramOptions& operator=(const ProgramOptions &) = default;
+    ProgramOptions(const ProgramOptions &options)
+    {
+        *this = options;
+    }
     /// @brief Load the module options from an initialization file.
     void parseInitializationFile(const std::string &iniFile)
     {
@@ -687,6 +697,12 @@ public:
     std::chrono::milliseconds mDataRequestReceiveTimeOut{5000}; // 5 seconds
     std::set<std::string> mActiveNetworks;
     std::set<double> mValidSamplingRates;
+    UDetectors::UNetThreeComponentP::RequestorOptions mP3CRequestorOptions;
+    UDetectors::UNetThreeComponentS::RequestorOptions mS3CRequestorOptions;
+    URTS::Services::Scalable::PacketCache::RequestorOptions
+        mPacketCacheRequestorOptions;
+    URTS::Broadcasts::Internal::DataPacket::PublisherOptions
+        mProbabilityPacketPublisherOptions;
     double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};
     int mProbabilityPacketHighWaterMark{0}; // Infinite
@@ -696,12 +712,91 @@ public:
     bool mRunP1CDetector{false};
     bool mRunS3CDetector{true};
 };
+*/
 
 ///--------------------------------------------------------------------------///
 /// @brief This does the heavy lifting and runs all the detectors.
 class Detector : public UMPS::Modules::IProcess
 {
 public:
+    Detector(const int nThreads,
+             const ::ProgramOptions &programOptions,
+             std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mProgramOptions(programOptions),
+        mLogger(logger)
+    {
+
+        // Make a database connection
+        mLogger->debug("Connecting to AQMS database...");
+        auto databaseConnection
+            = std::make_shared<UDatabase::Connection::PostgreSQL> ();
+        databaseConnection->setAddress(mProgramOptions.mDatabaseAddress);
+        databaseConnection->setDatabaseName(mProgramOptions.mDatabaseName);
+        databaseConnection->setUser(mProgramOptions.mDatabaseReadOnlyUser);
+        databaseConnection->setPassword(
+            mProgramOptions.mDatabaseReadOnlyPassword);
+        databaseConnection->setPort(mProgramOptions.mDatabasePort);
+        databaseConnection->connect();
+
+        auto connectionHandle
+            = std::static_pointer_cast<UDatabase::Connection::IConnection> (
+                databaseConnection);
+
+        mChannelDataPoller.initialize(
+            connectionHandle,
+            UDatabase::AQMS::ChannelDataTablePoller::QueryMode::Current,
+            programOptions.mDatabasePollerInterval);
+        mChannelDataPoller.start();
+        std::this_thread::sleep_for(std::chrono::milliseconds {250});
+
+        // Figure out the 1c and 3c channel maps
+        auto channels = mChannelDataPoller.getChannelData();
+        std::vector<::ThreeComponentChannelData> threeComponentSensors;
+        std::vector<UDatabase::AQMS::ChannelData> oneComponentSensors;
+        ::makeOneAndThreeComponentStation(&threeComponentSensors,
+                                          &oneComponentSensors,
+                                          channels,
+                                          mLogger,
+                                          mProgramOptions.mActiveNetworks,
+                                          mProgramOptions.mValidSamplingRates);
+        if (threeComponentSensors.empty() && oneComponentSensors.empty())
+        {
+            mLogger->warn("No channels read from database");
+        }
+
+        // Send work out to processes
+        auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
+        for (int i = 0; i < nThreads; ++i)
+        {
+            std::vector<::ThreeComponentChannelData> sub3CSensorList;
+            for (int job = jobsToThread.at(i);
+                     job < jobsToThread.at(i+1); ++job)
+            {
+                sub3CSensorList.push_back(threeComponentSensors[job]);
+            }
+            mPipelines.push_back(std::make_unique<::ThreeComponentProcessingPipeline>
+                (i,
+                 mProgramOptions,
+                 sub3CSensorList,
+                 mLogger));
+            std::this_thread::sleep_for (std::chrono::microseconds {250});
+
+        } 
+
+        // Instantiate the local command replier
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(getName());
+        localServiceOptions.setCallback(
+            std::bind(&Detector::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
+        mInitialized = true;
+    }
     Detector(
         const ProgramOptions programOptions,
         std::unique_ptr<URTS::Broadcasts::Internal::DataPacket::Publisher>
@@ -842,7 +937,16 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
+for (auto &p : mPipelines){p->setRunning(true);}
         std::this_thread::sleep_for (std::chrono::milliseconds {250});
+for (int it = 0; it < mPipelines.size(); ++it)
+{
+   auto thread = std::thread(&::ThreeComponentProcessingPipeline::run,
+                             &*mPipelines[it]);
+
+    mPipelineThreads.push_back(std::move(thread));
+}
+/*
         mLogger->debug("Starting the probability broadcast thread...");
         mPublisherThread = std::thread(&Detector::publishProbabilityPackets,
                                        this);
@@ -870,6 +974,7 @@ public:
         mPacketCacheThread = std::thread(&Detector::queryWaveforms, this);
         mLogger->debug("Starting the task manager thread...");
         mTaskManagerThread = std::thread(&Detector::createTasks, this); 
+*/
         mLogger->debug("Starting the local command proxy..."); 
         mLocalCommand->start();
     }
@@ -877,6 +982,11 @@ public:
     void stop() override
     {
         setRunning(false);
+for (auto &p : mPipelines){p->setRunning(false);}
+for (auto &t : mPipelineThreads)
+{
+ if (t.joinable()){t.join();}
+}
         if (mPublisherThread.joinable()){mPublisherThread.join();}
         if (mInference3CPSThread.joinable()){mInference3CPSThread.join();}
         if (mInference3CPThread.joinable()){mInference3CPThread.join();}
@@ -1273,6 +1383,8 @@ S3CDetectorProperties s3CProperties;
 
 ///public: 
     mutable std::mutex mMutex;
+    std::vector<std::thread> mPipelineThreads;
+    std::vector<std::unique_ptr<::ThreeComponentProcessingPipeline>> mPipelines;
     std::thread mPublisherThread;
     std::thread mInference3CPSThread;
     std::thread mInference3CPThread;
@@ -1306,7 +1418,7 @@ S3CDetectorProperties s3CProperties;
     std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
     std::map<size_t, ::ThreeComponentDataItem> m1CPDataItems;
     size_t mMaxInferenceItems{100};
-    bool mPS3CInputsAreEqual{true}; // TODO
+    bool mPS3CInputsAreEqual{true};
     bool mRun3CPDetector{false};
     bool mRun3CSDetector{false};
     bool mRun1CPDetector{false};
@@ -1392,7 +1504,9 @@ int main(int argc, char *argv[])
             programOptions.mProbabilityPacketHighWaterMark);
         auto probabilityPublisher
             = std::make_unique<UDP::Publisher> (publisherContext, logger);
-        probabilityPublisher->initialize(publisherOptions);
+//        probabilityPublisher->initialize(publisherOptions);
+        programOptions.mProbabilityPacketPublisherOptions = publisherOptions;
+
         // Create the packet requestor
         logger->debug("Initializing packetCache client...");
         URTS::Services::Scalable::PacketCache::RequestorOptions upcOptions;
@@ -1412,7 +1526,8 @@ int main(int argc, char *argv[])
         auto packetCacheRequestor
             = std::make_unique<URTS::Services::Scalable::PacketCache::Requestor>
               (packetCacheContext, logger);
-        packetCacheRequestor->initialize(upcOptions);
+//        packetCacheRequestor->initialize(upcOptions);
+        programOptions.mPacketCacheRequestorOptions = upcOptions;
 
         // Create a 3C P client
         namespace UNetP = UDetectors::UNetThreeComponentP;
@@ -1437,7 +1552,8 @@ int main(int argc, char *argv[])
                 programOptions.mInferenceRequestReceiveTimeOut);
             inference3CPRequestor
                 = std::make_unique<UNetP::Requestor> (clientContext, logger);
-            inference3CPRequestor->initialize(requestOptions);
+//            inference3CPRequestor->initialize(requestOptions);
+            programOptions.mP3CDetectorRequestorOptions = requestOptions;
         }
 
         // Create a 3C S client
@@ -1463,7 +1579,8 @@ int main(int argc, char *argv[])
                 programOptions.mInferenceRequestReceiveTimeOut);
             inference3CSRequestor
                 = std::make_unique<UNetS::Requestor> (clientContext, logger);
-            inference3CSRequestor->initialize(requestOptions);
+//            inference3CSRequestor->initialize(requestOptions);
+            programOptions.mS3CDetectorRequestorOptions = requestOptions;
         }
         if (programOptions.mRunP1CDetector)
         {
@@ -1471,6 +1588,7 @@ int main(int argc, char *argv[])
         }
 
         // Create the detector
+/*
         auto detectorProcess
             = std::make_unique<::Detector> (programOptions,
                                             std::move(probabilityPublisher),
@@ -1478,9 +1596,9 @@ int main(int argc, char *argv[])
                                             std::move(inference3CPRequestor),
                                             std::move(inference3CSRequestor),
                                             logger);
+*/
+        auto detectorProcess = std::make_unique<::Detector> (2, programOptions, logger);
         // Create the remote replier
-logger->error("module registry replier process not made");
-/*
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
@@ -1499,9 +1617,8 @@ logger->error("module registry replier process not made");
                                                    "ModuleRegistry",
                                                    nullptr, // Make new context
                                                    logger);
-*/
         // Add the remote replier and inference engine
-        //processManager.insert(std::move(remoteReplierProcess));
+        processManager.insert(std::move(remoteReplierProcess));
         processManager.insert(std::move(detectorProcess));
     }
     catch (const std::exception &e)

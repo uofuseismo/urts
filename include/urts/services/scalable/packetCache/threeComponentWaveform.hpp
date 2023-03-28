@@ -92,6 +92,16 @@ public:
     ///                               for the north (or 1) component.
     /// @param[in] eastComponent      The data response from the packet cache
     ///                               for the east (or 2) component.
+    /// @param[in] startTime     The start time (UTC) in microseconds since the
+    ///                          epoch of the interpolation.  If this is less
+    ///                          than the minimum start time of all the packets
+    ///                          then the interpolation will start at the
+    ///                          minimum start time of all packets.
+    /// @param[in] endTime       The end time (UTC) in microseconds since the
+    ///                          epoch of the interpolation.  If this is greater
+    ///                          than the maximum end time of all the packets
+    ///                          then the interpolation will end at the maximum
+    ///                          end time of all packets.
     /// @note This will interpolate the packets to the nominal sampling rate
     ///       and set the corresponding channel naming information.
     /// @throws std::invalid_argument if the naming information cannot be
@@ -100,7 +110,9 @@ public:
     /// @throws std::runtime_error if an error occurs during interpolation.
     void set(const DataResponse &verticalComponent,
              const DataResponse &northComponent,
-             const DataResponse &eastComponent);
+             const DataResponse &eastComponent,
+             const std::chrono::microseconds &startTime = std::chrono::microseconds {-631152000000000},
+             const std::chrono::microseconds &endtime   = std::chrono::microseconds {5680281600000000});
     /// @}
 
     /// @name Waveform Getters
