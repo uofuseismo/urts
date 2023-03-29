@@ -1,9 +1,9 @@
 var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick =
 [
-    [ "Polarity", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9", [
-      [ "Unknown", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9abf8eac7bb53e8eaa73a7d760db6ab8b8", null ],
-      [ "Up", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9ab5bde7b5110cdcee161393290713fdd9", null ],
-      [ "Down", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9a0971a3e339e48bd336b7cdc9daf965d7", null ]
+    [ "FirstMotion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875", [
+      [ "Unknown", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875abf8eac7bb53e8eaa73a7d760db6ab8b8", null ],
+      [ "Up", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875ab5bde7b5110cdcee161393290713fdd9", null ],
+      [ "Down", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875a0971a3e339e48bd336b7cdc9daf965d7", null ]
     ] ],
     [ "ReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926", [
       [ "Automatic", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926a876347e02c03babc5fda87450c8dc68e", null ],
@@ -20,6 +20,7 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick =
     [ "fromMessage", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a60931d0c007961158d391553b1590457", null ],
     [ "getAlgorithm", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ae692ab1e42d48ca898917e9f630175b9", null ],
     [ "getChannel", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a28a9879d40f00085cfd5e8e566b6b288", null ],
+    [ "getFirstMotion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ad9f766c50eaf94e5fa3dab1d72b144fc", null ],
     [ "getIdentifier", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a4f159fc89a9bdacf27ce8834c34a3b76", null ],
     [ "getLocationCode", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a636f952e480bdf2a97b1157fff5bf50c", null ],
     [ "getLowerAndUpperUncertaintyBound", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a4e9eef48a3465a6ed4999d9e5b315af7", null ],
@@ -27,7 +28,6 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick =
     [ "getMessageVersion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a2e7603d626f4edf08c437d5b443373c1", null ],
     [ "getNetwork", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#aed07b5f04d6a3017107a6b49af107add", null ],
     [ "getPhaseHint", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a29cf0a459c0899982c16032b832e832b", null ],
-    [ "getPolarity", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ad10f2428c85b662f80e947c4694c5924", null ],
     [ "getReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a42dcc16e0a151211e4b430a3e5c07c10", null ],
     [ "getStation", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a8b6c99201382010a8f1578fc759ecfba", null ],
     [ "getTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab50ad14dcba10987f8442a3ceee33cae", null ],
@@ -42,12 +42,12 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick =
     [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a98c124d8e6c00fbab5056f69277f5ed5", null ],
     [ "setAlgorithm", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7ad06bf23449c4dfe60eca3688660f8b", null ],
     [ "setChannel", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#abcad8745d3a6b0f903e99036d6322f18", null ],
+    [ "setFirstMotion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a25237fd5b85822619d5667fc8276e9f7", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a98ee778f341138d034902a591d98a762", null ],
     [ "setLocationCode", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a331a8b9473037b92ece335624c836043", null ],
     [ "setLowerAndUpperUncertaintyBound", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a90705ed8cd63a0d0dd37f94ae45b8608", null ],
     [ "setNetwork", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a5673f3f4efec45f0754c02e980ea58ec", null ],
     [ "setPhaseHint", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a20d49a70d60f80d408b0170976fe4a1e", null ],
-    [ "setPolarity", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a3bdc50b7033adb636df7b8ccd087b6dd", null ],
     [ "setReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a90dacd49c1a33800f8659ab12dd5e416", null ],
     [ "setStation", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#aa22240f2095d92688078f175a9007534", null ],
     [ "setTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a634b4656a0c95c68648d20660f0d2838", null ],

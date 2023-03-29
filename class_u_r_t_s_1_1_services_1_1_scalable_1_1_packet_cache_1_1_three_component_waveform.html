@@ -140,9 +140,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9dc00c063680e02c2ae820277a46b56e"><td class="memItemLeft" align="right" valign="top">std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a9dc00c063680e02c2ae820277a46b56e">getGapTolerance</a> () const noexcept</td></tr>
 <tr class="separator:a9dc00c063680e02c2ae820277a46b56e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Packet Setters</div></td></tr>
-<tr class="memitem:abd029b3e34c349c3823036eda9dacfaf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#abd029b3e34c349c3823036eda9dacfaf">set</a> (const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;verticalComponent, const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;northComponent, const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;eastComponent)</td></tr>
-<tr class="memdesc:abd029b3e34c349c3823036eda9dacfaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data response and interpolates to a continuous signal.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#abd029b3e34c349c3823036eda9dacfaf">More...</a><br /></td></tr>
-<tr class="separator:abd029b3e34c349c3823036eda9dacfaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3b1422c31b02134c0c7506d87a80bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1a3b1422c31b02134c0c7506d87a80bb">set</a> (const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;verticalComponent, const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;northComponent, const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;eastComponent, const std::chrono::microseconds &amp;startTime=std::chrono::microseconds {-631152000000000}, const std::chrono::microseconds &amp;endtime=std::chrono::microseconds {5680281600000000})</td></tr>
+<tr class="memdesc:a1a3b1422c31b02134c0c7506d87a80bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data response and interpolates to a continuous signal.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a1a3b1422c31b02134c0c7506d87a80bb">More...</a><br /></td></tr>
+<tr class="separator:a1a3b1422c31b02134c0c7506d87a80bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Waveform Getters</div></td></tr>
 <tr class="memitem:a6d33b388d5686ebcaddedfa95be6f5ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html#a6d33b388d5686ebcaddedfa95be6f5ab">getNumberOfSamples</a> () const noexcept</td></tr>
 <tr class="separator:a6d33b388d5686ebcaddedfa95be6f5ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1165,8 +1165,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="abd029b3e34c349c3823036eda9dacfaf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd029b3e34c349c3823036eda9dacfaf">&#9670;&nbsp;</a></span>set()</h2>
+<a id="a1a3b1422c31b02134c0c7506d87a80bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3b1422c31b02134c0c7506d87a80bb">&#9670;&nbsp;</a></span>set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1187,7 +1187,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html">DataResponse</a> &amp;&#160;</td>
-          <td class="paramname"><em>eastComponent</em>&#160;</td>
+          <td class="paramname"><em>eastComponent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
+          <td class="paramname"><em>startTime</em> = <code>std::chrono::microseconds&#160;{-631152000000000}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::chrono::microseconds &amp;&#160;</td>
+          <td class="paramname"><em>endtime</em> = <code>std::chrono::microseconds&#160;{5680281600000000}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1203,6 +1215,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <tr><td class="paramdir">[in]</td><td class="paramname">verticalComponent</td><td>The data response from the packet cache for the vertical component. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">northComponent</td><td>The data response from the packet cache for the north (or 1) component. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">eastComponent</td><td>The data response from the packet cache for the east (or 2) component. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startTime</td><td>The start time (UTC) in microseconds since the epoch of the interpolation. If this is less than the minimum start time of all the packets then the interpolation will start at the minimum start time of all packets. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endTime</td><td>The end time (UTC) in microseconds since the epoch of the interpolation. If this is greater than the maximum end time of all the packets then the interpolation will end at the maximum end time of all packets. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1473,7 +1487,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html">ThreeComponentWaveform</a></li>
-    <li class="footer">Generated on Thu Mar 23 2023 23:49:53 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 29 2023 16:43:51 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

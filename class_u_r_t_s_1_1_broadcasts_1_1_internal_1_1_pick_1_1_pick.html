@@ -125,12 +125,12 @@ Collaboration diagram for URTS::Broadcasts::Internal::Pick::Pick:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ab3af73b5eb9694abb6c71fc2d065cbc9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">Polarity</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9abf8eac7bb53e8eaa73a7d760db6ab8b8">Unknown</a> = 0
-, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9ab5bde7b5110cdcee161393290713fdd9">Up</a> = 1
-, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9a0971a3e339e48bd336b7cdc9daf965d7">Down</a> =-1
+<tr class="memitem:a7b02a6710d0e2f2aa92c79b950360875"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">FirstMotion</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875abf8eac7bb53e8eaa73a7d760db6ab8b8">Unknown</a> = 0
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875ab5bde7b5110cdcee161393290713fdd9">Up</a> = 1
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875a0971a3e339e48bd336b7cdc9daf965d7">Down</a> =-1
  }</td></tr>
-<tr class="memdesc:ab3af73b5eb9694abb6c71fc2d065cbc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pick polarity. For example, if this is a direct P arrival arriving at a station with Z positive up then an "Up" polarity indicates compression, "Down" would indicate dilitation, and "Unknown" would be indeterminate.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">More...</a><br /></td></tr>
-<tr class="separator:ab3af73b5eb9694abb6c71fc2d065cbc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a7b02a6710d0e2f2aa92c79b950360875"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pick's first motion. For example, if this is a direct P arrival arriving at a station with Z positive up then an "Up" first motion indicates compression, "Down" would indicate dilitation, and "Unknown" would be indeterminate.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">More...</a><br /></td></tr>
+<tr class="separator:a7b02a6710d0e2f2aa92c79b950360875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a161c76904144af6df88dfc60fd578926"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926">ReviewStatus</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926a876347e02c03babc5fda87450c8dc68e">Automatic</a> = 0
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926a61d604c1461ed499397173536dfff9da">Manual</a> = 1
  }</td></tr>
@@ -212,11 +212,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a20d49a70d60f80d408b0170976fe4a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29cf0a459c0899982c16032b832e832b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a29cf0a459c0899982c16032b832e832b">getPhaseHint</a> () const noexcept</td></tr>
 <tr class="separator:a29cf0a459c0899982c16032b832e832b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bdc50b7033adb636df7b8ccd087b6dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a3bdc50b7033adb636df7b8ccd087b6dd">setPolarity</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">Polarity</a> polarity) noexcept</td></tr>
-<tr class="memdesc:a3bdc50b7033adb636df7b8ccd087b6dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the polarity of the arrival.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a3bdc50b7033adb636df7b8ccd087b6dd">More...</a><br /></td></tr>
-<tr class="separator:a3bdc50b7033adb636df7b8ccd087b6dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad10f2428c85b662f80e947c4694c5924"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">Polarity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ad10f2428c85b662f80e947c4694c5924">getPolarity</a> () const noexcept</td></tr>
-<tr class="separator:ad10f2428c85b662f80e947c4694c5924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25237fd5b85822619d5667fc8276e9f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a25237fd5b85822619d5667fc8276e9f7">setFirstMotion</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">FirstMotion</a> polarity) noexcept</td></tr>
+<tr class="memdesc:a25237fd5b85822619d5667fc8276e9f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the polarity of the arrival.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a25237fd5b85822619d5667fc8276e9f7">More...</a><br /></td></tr>
+<tr class="separator:a25237fd5b85822619d5667fc8276e9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9f766c50eaf94e5fa3dab1d72b144fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">FirstMotion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ad9f766c50eaf94e5fa3dab1d72b144fc">getFirstMotion</a> () const noexcept</td></tr>
+<tr class="separator:ad9f766c50eaf94e5fa3dab1d72b144fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ad06bf23449c4dfe60eca3688660f8b"><td class="memItemLeft" align="right" valign="top"><a id="a7ad06bf23449c4dfe60eca3688660f8b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7ad06bf23449c4dfe60eca3688660f8b">setAlgorithm</a> (const std::string &amp;algorithm) noexcept</td></tr>
 <tr class="memdesc:a7ad06bf23449c4dfe60eca3688660f8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the algorithm or code used to generate this pick. <br /></td></tr>
@@ -267,25 +267,25 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="textblock"><p>Defines a pick message. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Ben Baker (University of Utah) distributed under the MIT license. </dd></dl>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="ab3af73b5eb9694abb6c71fc2d065cbc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab3af73b5eb9694abb6c71fc2d065cbc9">&#9670;&nbsp;</a></span>Polarity</h2>
+<a id="a7b02a6710d0e2f2aa92c79b950360875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b02a6710d0e2f2aa92c79b950360875">&#9670;&nbsp;</a></span>FirstMotion</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">URTS::Broadcasts::Internal::Pick::Pick::Polarity</a> : int8_t</td>
+          <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">URTS::Broadcasts::Internal::Pick::Pick::FirstMotion</a> : int8_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>The pick polarity. For example, if this is a direct P arrival arriving at a station with Z positive up then an "Up" polarity indicates compression, "Down" would indicate dilitation, and "Unknown" would be indeterminate. </p>
+<p>The pick's first motion. For example, if this is a direct P arrival arriving at a station with Z positive up then an "Up" first motion indicates compression, "Down" would indicate dilitation, and "Unknown" would be indeterminate. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab3af73b5eb9694abb6c71fc2d065cbc9abf8eac7bb53e8eaa73a7d760db6ab8b8"></a>Unknown&#160;</td><td class="fielddoc"><p>Unknown polarity. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a7b02a6710d0e2f2aa92c79b950360875abf8eac7bb53e8eaa73a7d760db6ab8b8"></a>Unknown&#160;</td><td class="fielddoc"><p>Unknown polarity. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab3af73b5eb9694abb6c71fc2d065cbc9ab5bde7b5110cdcee161393290713fdd9"></a>Up&#160;</td><td class="fielddoc"><p>The pick corresponds to positive polarity. </p>
+<tr><td class="fieldname"><a id="a7b02a6710d0e2f2aa92c79b950360875ab5bde7b5110cdcee161393290713fdd9"></a>Up&#160;</td><td class="fielddoc"><p>The pick corresponds to positive polarity. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab3af73b5eb9694abb6c71fc2d065cbc9a0971a3e339e48bd336b7cdc9daf965d7"></a>Down&#160;</td><td class="fielddoc"><p>The pick corresponds to negative polarity. </p>
+<tr><td class="fieldname"><a id="a7b02a6710d0e2f2aa92c79b950360875a0971a3e339e48bd336b7cdc9daf965d7"></a>Down&#160;</td><td class="fielddoc"><p>The pick corresponds to negative polarity. </p>
 </td></tr>
 </table>
 
@@ -571,6 +571,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="ad9f766c50eaf94e5fa3dab1d72b144fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f766c50eaf94e5fa3dab1d72b144fc">&#9670;&nbsp;</a></span>getFirstMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">FirstMotion</a> URTS::Broadcasts::Internal::Pick::Pick::getFirstMotion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The pick's polarity. </dd></dl>
+
+</div>
+</div>
 <a id="a4f159fc89a9bdacf27ce8834c34a3b76"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4f159fc89a9bdacf27ce8834c34a3b76">&#9670;&nbsp;</a></span>getIdentifier()</h2>
 
@@ -743,32 +769,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The phase hint. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>If this was not set then result.empty() will be true. </dd></dl>
-
-</div>
-</div>
-<a id="ad10f2428c85b662f80e947c4694c5924"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad10f2428c85b662f80e947c4694c5924">&#9670;&nbsp;</a></span>getPolarity()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">Polarity</a> URTS::Broadcasts::Internal::Pick::Pick::getPolarity </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The pick's polarity. </dd></dl>
 
 </div>
 </div>
@@ -1122,6 +1122,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a25237fd5b85822619d5667fc8276e9f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25237fd5b85822619d5667fc8276e9f7">&#9670;&nbsp;</a></span>setFirstMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setFirstMotion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875">FirstMotion</a>&#160;</td>
+          <td class="paramname"><em>polarity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the polarity of the arrival. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polarity</td><td>The pick's polarity. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a98ee778f341138d034902a591d98a762"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a98ee778f341138d034902a591d98a762">&#9670;&nbsp;</a></span>setIdentifier()</h2>
 
@@ -1274,40 +1308,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">phase</td><td>The phase hint - e.g., P or S. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a3bdc50b7033adb636df7b8ccd087b6dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3bdc50b7033adb636df7b8ccd087b6dd">&#9670;&nbsp;</a></span>setPolarity()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setPolarity </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab3af73b5eb9694abb6c71fc2d065cbc9">Polarity</a>&#160;</td>
-          <td class="paramname"><em>polarity</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the polarity of the arrival. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polarity</td><td>The pick's polarity. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1493,7 +1493,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Pick</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html">Pick</a></li>
-    <li class="footer">Generated on Thu Mar 23 2023 23:49:53 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 29 2023 16:43:50 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
