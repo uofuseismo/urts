@@ -46,7 +46,7 @@ TEST(BroadcastsInternalPick, Pick)
     const std::string algorithm{"autoPicker"};
     const double time = 500;
     const std::chrono::microseconds timeRef{static_cast<int64_t> (time*1.e6)};
-    const Pick::Polarity polarity{Pick::Polarity::Up};
+    const Pick::FirstMotion fm{Pick::FirstMotion::Up};
     const Pick::ReviewStatus reviewStatus{Pick::ReviewStatus::Manual};
 
     UncertaintyBound lowerBoundRef;
@@ -70,7 +70,7 @@ TEST(BroadcastsInternalPick, Pick)
     EXPECT_EQ(pick.getMessageType(), MESSAGE_TYPE);
     EXPECT_NO_THROW(pick.setLowerAndUpperUncertaintyBound(
                     std::pair {lowerBoundRef, upperBoundRef}));
-    pick.setPolarity(polarity);
+    pick.setFirstMotion(fm);
     pick.setReviewStatus(reviewStatus);
     pick.setPhaseHint(phaseHint);
     pick.setAlgorithm(algorithm);
@@ -85,7 +85,7 @@ TEST(BroadcastsInternalPick, Pick)
     EXPECT_EQ(copy.getStation(), station);
     EXPECT_EQ(copy.getChannel(), channel);
     EXPECT_EQ(copy.getLocationCode(), locationCode);
-    EXPECT_EQ(copy.getPolarity(), polarity);
+    EXPECT_EQ(copy.getFirstMotion(), fm);
     EXPECT_EQ(copy.getReviewStatus(), reviewStatus);
     EXPECT_EQ(copy.getPhaseHint(), phaseHint);
     EXPECT_EQ(copy.getAlgorithm(), algorithm);

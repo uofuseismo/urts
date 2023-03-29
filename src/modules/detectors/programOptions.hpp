@@ -98,6 +98,12 @@ public:
         }
         mDatabasePollerInterval = std::chrono::seconds {databasePollerInterval};
         //--------------------------- Detector Options -----------------------//
+        mThreads = propertyTree.get<int> ("MLDetector.nThreads", mThreads);
+        if (mThreads < 1)
+        {
+            throw std::runtime_error("At least one thread required");
+        }
+
         mProbabilityPacketBroadcastName
             = propertyTree.get<std::string> (
                  "MLDetector.probabilityPacketBroadcastName",
@@ -298,6 +304,7 @@ public:
     int mDatabasePort{5432};
     int mProbabilityPacketHighWaterMark{0}; // Infinite
     int mGapTolerance{5}; // In samples
+    int mThreads{1};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
     bool mRunP3CDetector{true};
     bool mRunP1CDetector{false};

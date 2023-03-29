@@ -54,8 +54,8 @@ nlohmann::json toJSONObject(const Pick &pick)
     {
         obj["PhaseHint"] = nullptr;
     }
-    // Polarity
-    obj["Polarity"] = static_cast<int> (pick.getPolarity()); 
+    // First motion
+    obj["FirstMotion"] = static_cast<int> (pick.getFirstMotion()); 
     // Review
     obj["ReviewStatus"] = static_cast<int> (pick.getReviewStatus());
 
@@ -80,8 +80,8 @@ Pick objectToPick(const nlohmann::json &obj)
     pick.setTime(pickTime);
     pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
     // Optional stuff
-    pick.setPolarity(
-        static_cast<Pick::Polarity> (obj["Polarity"].get<int> ()));
+    pick.setFirstMotion(
+        static_cast<Pick::FirstMotion> (obj["FirstMotion"].get<int> ()));
     pick.setReviewStatus(
         static_cast<Pick::ReviewStatus> (obj["ReviewStatus"].get<int> ()));
     if (!obj["UncertaintyBounds"].is_null())
@@ -143,7 +143,7 @@ public:
     std::pair<UncertaintyBound, UncertaintyBound> mUncertaintyBounds;
     std::chrono::microseconds mTime{0};
     uint64_t mIdentifier{0};
-    Pick::Polarity mPolarity{Pick::Polarity::Unknown};
+    Pick::FirstMotion mFirstMotion{Pick::FirstMotion::Unknown};
     Pick::ReviewStatus mReviewStatus{Pick::ReviewStatus::Automatic};
     bool mHaveUncertaintyBounds{false};
     bool mHaveTime{false};
@@ -311,15 +311,15 @@ bool Pick::haveIdentifier() const noexcept
     return pImpl->mHaveIdentifier;
 }
 
-/// Polarity
-void Pick::setPolarity(const Pick::Polarity polarity) noexcept
+/// First motion
+void Pick::setFirstMotion(const Pick::FirstMotion firstMotion) noexcept
 {
-    pImpl->mPolarity = polarity;
+    pImpl->mFirstMotion = firstMotion;
 }
 
-Pick::Polarity Pick::getPolarity() const noexcept
+Pick::FirstMotion Pick::getFirstMotion() const noexcept
 {
-    return pImpl->mPolarity;
+    return pImpl->mFirstMotion;
 }
 
 /// Review status

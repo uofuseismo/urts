@@ -16,11 +16,11 @@ namespace URTS::Broadcasts::Internal::Pick
 class Pick : public UMPS::MessageFormats::IMessage
 {
 public:
-    /// @brief The pick polarity.  For example, if this is a direct P arrival
-    ///        arriving at a station with Z positive up then an "Up" polarity
-    ///        indicates compression, "Down" would indicate dilitation, and
-    ///        "Unknown" would be indeterminate.
-    enum Polarity : int8_t
+    /// @brief The pick's first motion.  For example, if this is a direct P
+    ///        arrival arriving at a station with Z positive up then an "Up"
+    ///        first motion indicates compression, "Down" would indicate
+    ///        dilitation, and "Unknown" would be indeterminate.
+    enum FirstMotion : int8_t
     {
         Unknown = 0, /*!< Unknown polarity. */
         Up      = 1, /*!< The pick corresponds to positive polarity. */
@@ -154,9 +154,9 @@ public:
 
     /// @brief Sets the polarity of the arrival.
     /// @param[in] polarity   The pick's polarity.
-    void setPolarity(Polarity polarity) noexcept;
+    void setFirstMotion(FirstMotion polarity) noexcept;
     /// @result The pick's polarity.
-    [[nodiscard]] Polarity getPolarity() const noexcept;
+    [[nodiscard]] FirstMotion getFirstMotion() const noexcept;
 
     /// @brief Sets the algorithm or code used to generate this pick.
     void setAlgorithm(const std::string &algorithm) noexcept;
