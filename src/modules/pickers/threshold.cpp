@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include <string>
 #include <map>
 #include <chrono>
@@ -11,6 +13,14 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <umps/authentication/zapOptions.hpp>
+#include <umps/services/command/availableCommandsRequest.hpp>
+#include <umps/services/command/availableCommandsResponse.hpp>
+#include <umps/services/command/commandRequest.hpp>
+#include <umps/services/command/commandResponse.hpp>
+#include <umps/services/command/service.hpp>
+#include <umps/services/command/serviceOptions.hpp>
+#include <umps/services/command/terminateRequest.hpp>
+#include <umps/services/command/terminateResponse.hpp>
 #include <umps/services/connectionInformation/requestorOptions.hpp>
 #include <umps/services/connectionInformation/requestor.hpp>
 #include <umps/services/connectionInformation/details.hpp>
@@ -18,6 +28,10 @@
 #include <umps/services/connectionInformation/socketDetails/router.hpp>
 #include <umps/services/connectionInformation/socketDetails/xSubscriber.hpp>
 #include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
@@ -37,6 +51,17 @@
 
 namespace
 {
+
+/// @result Gets the command line input options as a string.
+[[nodiscard]] std::string getInputOptions() noexcept
+{
+    std::string commands{
+R"""(
+Commands: 
+   help    Displays this message.
+)"""};
+    return commands;
+}
 
 /// @result The logger for this application.
 std::shared_ptr<UMPS::Logging::ILog>
@@ -274,12 +299,153 @@ bool operator<(const ThresholdPickersMap &lhs,
     return lhs.getName() < rhs.getName();
 }
 
-class Threshold
+*/
+class ThresholdPicker
 {
 public:
+    ThresholdPicker(const ::ProgramOptions &options,
+                    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mOptions(options),
+        mLogger(logger),
+        mContext(std::make_shared<UMPS::Messaging::Context> (1))
+    {
+        // Create the probability packet subscriber
+        mProbabilityPacketSubscriber
+            = std::make_unique<URTS::Broadcasts::Internal::ProbabilityPacket::
+                               Subscriber> (mContext, mLogger);
+        mProbabilityPacketSubscriber->initialize(
+            mOptions.mProbabilityPacketSubscriberOptions);
+        // Create the pick publisher
+        mPickPublisher
+            = std::make_unique<URTS::Broadcasts::Internal::
+                               Pick::Publisher> (mContext, mLogger);
+        mPickPublisher->initialize(mOptions.mPickPublisherOptions);
+        // Create the incrementer
+        mIncrementerRequestor
+            = std::make_unique<URTS::Services::Standalone::
+                               Incrementer::Requestor> (mContext, mLogger);
+        mIncrementerRequestor->initialize(
+            mOptions.mIncrementerRequestorOptions);
+        std::this_thread::sleep_for(std::chrono::milliseconds {100});
+        // Check everything started
+        if (!mProbabilityPacketSubscriber->isInitialized())
+        {
+            throw std::runtime_error("Probality subscriber not initialized");
+        }
+        if (!mPickPublisher->isInitialized())
+        {
+            throw std::runtime_error("Pick publisher not initialized");
+        }
+        if (!mIncrementerRequestor->isInitialized())
+        {
+            throw std::runtime_error("Incrementer requestor not initialized");
+        }
+
+        // Instantiate the local command replier
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(getName());
+        localServiceOptions.setCallback(
+            std::bind(&ThresholdPicker::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
+        mInitialized = true;
+    }
+    
+    /// @brief Callback function
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
+        commandCallback(const std::string &messageType,
+                        const void *data,
+                        size_t length)
+    {    
+        namespace USC = UMPS::Services::Command;
+        mLogger->debug("Command request received");
+        USC::AvailableCommandsRequest availableCommandsRequest;
+        USC::CommandRequest commandRequest;
+        USC::TerminateRequest terminateRequest;
+        if (messageType == availableCommandsRequest.getMessageType())
+        {
+            USC::AvailableCommandsResponse response;
+            response.setCommands(::getInputOptions());
+            try
+            {
+                availableCommandsRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack commands request");
+            }
+            return response.clone();
+        }
+        else if (messageType == commandRequest.getMessageType())
+        {
+            USC::CommandResponse response;
+            try
+            {
+                commandRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack commands request: "
+                             + std::string {e.what()});
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::ApplicationError);
+                return response.clone();
+            }
+            auto command = commandRequest.getCommand();
+            if (command != "help")
+            {
+                mLogger->debug("Invalid command: " + command);
+                response.setResponse("Invalid command: " + command);
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::InvalidCommand);
+            }
+            else
+            {
+                response.setResponse(::getInputOptions());
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
+            }
+            return response.clone();
+        }
+        else if (messageType == terminateRequest.getMessageType())
+        {
+/*
+            mLogger->info("Received terminate request...");
+            USC::TerminateResponse response;
+            try
+            {
+                terminateRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack terminate request.");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
+            }
+            issueStopCommand();
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
+            return response.clone();
+*/
+        }
+        // Return
+        mLogger->error("Unhandled message: " + messageType);
+        USC::AvailableCommandsResponse commandsResponse;
+        commandsResponse.setCommands(::getInputOptions());
+        return commandsResponse.clone();
+    }
+/*
     // Applies the threshold detector
-    void update(const URTS::Broadcasts::Internal::DataPacket::DataPacket
-                &dataPacket)
+    void update(const URTS::Broadcasts::Internal::
+                      ProbabilityPacket::ProbabilityPacket &packet)
     {
         auto name = ::toName(dataPacket);
         auto it = mPickers.find(name);
@@ -310,8 +476,25 @@ public:
         }
     }
     std::map<std::string, ThresholdDetector> mPickers;
-};
 */
+    /// @result The module name.
+    [[nodiscard]] std::string getName() const noexcept //override
+    {
+        return mOptions.mModuleName;
+    }
+//private:
+    ::ProgramOptions mOptions;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::unique_ptr<URTS::Broadcasts::Internal::Pick::Publisher>
+        mPickPublisher{nullptr};
+    std::unique_ptr<URTS::Broadcasts::Internal::ProbabilityPacket::Subscriber>
+        mProbabilityPacketSubscriber{nullptr};
+    std::unique_ptr<URTS::Services::Standalone::Incrementer::Requestor>
+        mIncrementerRequestor{nullptr};
+    std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
+    bool mInitialized{false};
+};
 
 /// @brief Parses the command line options.
 [[nodiscard]] std::string parseCommandLineOptions(int argc, char *argv[])
@@ -409,6 +592,90 @@ int main(int argc, char *argv[])
                                                             "Heartbeat",
                                                             context,
                                                             logger);
+        processManager.insert(std::move(heartbeat));
+
+        // Probability packet subscriber
+        URTS::Broadcasts::Internal::ProbabilityPacket::SubscriberOptions
+            subscriberOptions;
+        if (!programOptions.mProbabilityPacketBroadcastAddress.empty())
+        {
+            subscriberOptions.setAddress(
+                programOptions.mProbabilityPacketBroadcastAddress);
+        }
+        else
+        {
+            logger->debug("Fetching probability subscriber address..."); 
+            subscriberOptions.setAddress(
+                uOperator->getProxyBroadcastBackendDetails(
+                  programOptions.mProbabilityPacketBroadcastName).getAddress());
+        }
+        subscriberOptions.setZAPOptions(zapOptions);
+        subscriberOptions.setHighWaterMark(0); // Infinite 
+        programOptions.mProbabilityPacketSubscriberOptions = subscriberOptions;
+
+        // Pick publisher
+        logger->debug("Creating pick publisher...");
+        namespace UPick = URTS::Broadcasts::Internal::Pick;
+        URTS::Broadcasts::Internal::Pick::PublisherOptions publisherOptions;
+        if (!programOptions.mProbabilityPacketBroadcastAddress.empty())
+        {
+            publisherOptions.setAddress(
+                programOptions.mPickBroadcastAddress);
+        }
+        else
+        {
+            publisherOptions.setAddress(
+                uOperator->getProxyBroadcastFrontendDetails(
+                  programOptions.mPickBroadcastName).getAddress());
+        }
+        publisherOptions.setZAPOptions(zapOptions);
+        publisherOptions.setHighWaterMark(0); // Infinite 
+        programOptions.mPickPublisherOptions = publisherOptions;
+
+        // Incrementer requestor 
+        URTS::Services::Standalone::Incrementer::RequestorOptions irOptions;
+        if (!programOptions.mIncrementerServiceAddress.empty())
+        {
+            irOptions.setAddress(programOptions.mIncrementerServiceAddress);
+        }
+        else
+        {
+            logger->debug("Fetching incrementer address...");
+            irOptions.setAddress(
+               uOperator->getProxyServiceFrontendDetails(
+                   programOptions.mIncrementerServiceName).getAddress()
+            );
+        }
+        irOptions.setZAPOptions(zapOptions);
+        programOptions.mIncrementerRequestorOptions = irOptions;
+
+        // Create the picker process
+        auto pickerProcess
+            = std::make_unique<::ThresholdPicker> (programOptions, logger);
+
+        // Create the remote replier
+        logger->debug("Creating module registry replier process...");
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        auto callbackFunction = std::bind(&ThresholdPicker::commandCallback,
+                                          &*pickerProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        auto remoteReplierProcess
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        // Add the remote replier and inference engine
+        processManager.insert(std::move(remoteReplierProcess));
+std::cout << "yar uncomment here" << std::endl;
+getchar();
+//        processManager.insert(std::move(pickerProcess));
     }
     catch (const std::exception &e)
     {
