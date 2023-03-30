@@ -11,8 +11,20 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <umps/authentication/zapOptions.hpp>
+#include <umps/services/connectionInformation/requestorOptions.hpp>
+#include <umps/services/connectionInformation/requestor.hpp>
+#include <umps/services/connectionInformation/details.hpp>
+#include <umps/services/connectionInformation/socketDetails/proxy.hpp>
+#include <umps/services/connectionInformation/socketDetails/router.hpp>
+#include <umps/services/connectionInformation/socketDetails/xSubscriber.hpp>
+#include <umps/services/connectionInformation/socketDetails/xPublisher.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
+#include <umps/messaging/context.hpp>
+#include <umps/modules/process.hpp>
+#include <umps/modules/processManager.hpp>
+#include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
+#include <umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp>
 #include "urts/broadcasts/internal/pick.hpp"
 #include "urts/broadcasts/internal/probabilityPacket.hpp"
 #include "urts/services/standalone/incrementer.hpp"
@@ -375,6 +387,34 @@ int main(int argc, char *argv[])
                                  programOptions.mVerbosity,
                                  hour, minute);
 
-    //
+    // Create the contexts
+    auto context = std::make_shared<UMPS::Messaging::Context> (1);
+    // Initialize the various processes
+    logger->info("Initializing processes...");
+    UMPS::Modules::ProcessManager processManager(logger);
+    try
+    {
+        namespace UCI = UMPS::Services::ConnectionInformation;
+        // Connect to the operator
+        logger->debug("Connecting to uOperator...");
+        const std::string operatorSection{"uOperator"};
+        auto uOperator = UCI::createRequestor(iniFile, operatorSection,
+                                              context, logger);
+        auto zapOptions = uOperator->getZAPOptions();
+
+        // Create a heartbeat
+        logger->debug("Creating heartbeat process...");
+        namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+        auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
+                                                            "Heartbeat",
+                                                            context,
+                                                            logger);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
