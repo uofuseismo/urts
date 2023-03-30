@@ -936,15 +936,14 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
-for (auto &p : mPipelines){p->setRunning(true);}
+        for (auto &p : mPipelines){p->setRunning(true);}
         std::this_thread::sleep_for (std::chrono::milliseconds {250});
-for (int it = 0; it < mPipelines.size(); ++it)
-{
-   auto thread = std::thread(&::ThreeComponentProcessingPipeline::run,
-                             &*mPipelines[it]);
-
-    mPipelineThreads.push_back(std::move(thread));
-}
+        for (int it = 0; it < static_cast<int> (mPipelines.size()); ++it)
+        {
+            auto thread = std::thread(&::ThreeComponentProcessingPipeline::run,
+                                      &*mPipelines[it]);
+            mPipelineThreads.push_back(std::move(thread));
+        }
 /*
         mLogger->debug("Starting the probability broadcast thread...");
         mPublisherThread = std::thread(&Detector::publishProbabilityPackets,
@@ -981,11 +980,11 @@ for (int it = 0; it < mPipelines.size(); ++it)
     void stop() override
     {
         setRunning(false);
-for (auto &p : mPipelines){p->setRunning(false);}
-for (auto &t : mPipelineThreads)
-{
- if (t.joinable()){t.join();}
-}
+        for (auto &p : mPipelines){p->setRunning(false);}
+        for (auto &t : mPipelineThreads)
+        {
+            if (t.joinable()){t.join();}
+        }
         if (mPublisherThread.joinable()){mPublisherThread.join();}
         if (mInference3CPSThread.joinable()){mInference3CPSThread.join();}
         if (mInference3CPThread.joinable()){mInference3CPThread.join();}
