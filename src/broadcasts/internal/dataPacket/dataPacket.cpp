@@ -332,6 +332,11 @@ std::vector<double> DataPacket::getData() const noexcept
     return pImpl->mData;
 }
 
+const std::vector<double> &DataPacket::getDataReference() const noexcept
+{
+    return pImpl->mData;
+}
+
 const double* DataPacket::getDataPointer() const noexcept
 {
     return pImpl->mData.data();

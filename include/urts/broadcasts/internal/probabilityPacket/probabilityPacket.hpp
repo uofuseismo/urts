@@ -1,30 +1,31 @@
-#ifndef URTS_BROADCASTS_INTERNAL_DATA_PACKET_DATA_PACKET_HPP
-#define URTS_BROADCASTS_INTERNAL_DATA_PACKET_DATA_PACKET_HPP
+#ifndef URTS_BROADCASTS_INTERNAL_PROBABILITY_PACKET_DATA_PACKET_HPP
+#define URTS_BROADCASTS_INTERNAL_PROBABILITY_PACKET_DATA_PACKET_HPP
 #include <vector>
 #include <chrono>
 #include <memory>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Broadcasts::Internal::DataPacket
+namespace URTS::Broadcasts::Internal::ProbabilityPacket
 {
-/// @class DataPacket "dataPacket.hpp" "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
-/// @brief Defines a seismic data packet.
+/// @class ProbabilityPacket "probabilityPacket.hpp" "urts/broadcasts/internal/probabilityPacket/probabilityPacket.hpp"
+/// @brief Defines a probability packet. 
+/// @note This is for binary classification algorithms.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Modules_Broadcasts_Internal_DataPacket
-class DataPacket : public UMPS::MessageFormats::IMessage
+/// @ingroup Modules_Broadcasts_Internal_ProbabilityPacket
+class ProbabilityPacket : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    DataPacket();
+    ProbabilityPacket();
     /// @brief Copy constructor.
     /// @param[in] packet  The data packet from which to initialize this class.
-    DataPacket(const DataPacket &packet);
+    ProbabilityPacket(const ProbabilityPacket &packet);
     /// @brief Move constructor.
     /// @param[in,out] packet  The data packet from which to initialize this
     ///                        class.  On exit, packet's behavior is undefined.
-    DataPacket(DataPacket &&packet) noexcept;
+    ProbabilityPacket(ProbabilityPacket &&packet) noexcept;
     /// @}
 
     /// @name Operators
@@ -33,12 +34,12 @@ public:
     /// @brief Copy assignment.
     /// @param[in] packet  The packet to copy to this class.
     /// @result A deep copy of the input packet.
-    DataPacket& operator=(const DataPacket &packet);
+    ProbabilityPacket& operator=(const ProbabilityPacket &packet);
     /// @brief Move assignment.
     /// @param[in,out] packet  The packet whose memory will be moved to
     ///                        this class.
     /// @result The memory from packet moved to this.
-    DataPacket& operator=(DataPacket &&packet) noexcept; 
+    ProbabilityPacket& operator=(ProbabilityPacket &&packet) noexcept; 
     /// @}
  
     /// @name Required Information
@@ -98,6 +99,18 @@ public:
     /// @name Optional Information
     /// @{
 
+    /// @brief The probability pickers convert multiple input channels to a
+    ///        single probability stream.
+    /// @param[in] originalChannels  The original channels that were converted
+    ///                              to a probability signal.  For three
+    ///                              component data this could be
+    ///                              "HHZ", "HHN", "HHE".  For one component
+    ///                              data this could be "HHZ".
+    void setOriginalChannels(const std::vector<std::string> &originalChannels) noexcept; 
+    /// @result The original channels that were converted to a probability
+    ///         signal.
+    [[nodiscard]] std::vector<std::string> getOriginalChannels() const noexcept;
+
     /// @param[in] startTime  The UTC start time in seconds from the epoch
     ///                       (Jan 1, 1970).
     void setStartTime(double startTime) noexcept;
@@ -111,34 +124,48 @@ public:
     /// @throws std::runtime_error if \c haveSamplingRate() is false or
     ///         \c getNumberOfSamples() is 0.
     [[nodiscard]] std::chrono::microseconds getEndTime() const;
+
+    /// @brief Sets the machine learning algorithm details.
+    /// @param[in] algorithm  The machine learning algorithm - e.g.,
+    ///                       UNetThreeComponentP.
+    void setAlgorithm(const std::string &algorithm) noexcept;
+    /// @result The machine learning algorithm.
+    [[nodiscard]] std::string getAlgorithm() const noexcept;
+
+    /// @brief Sets the name of the positive class.  When the probability signal
+    ///        is large then this class becomes more likely.
+    /// @param[in] positiveClass   The name of the postiive class -
+    ///                            e.g., "P" or "S".
+    void setPositiveClassName(const std::string &positiveClass) noexcept;
+    /// @result The name of the positive class.
+    [[nodiscard]] std::string getPositiveClassName() const noexcept;
+
+    /// @brief Sets the name of the negative class.  When the probability signal
+    ///        is small then this class becomes more likely.
+    /// @param[in] negativeClass   The name of the negative class -
+    ///                            e.g., "Noise".
+    void setNegativeClassName(const std::string &negativeClass) noexcept;
+    /// @result The name of the negative class.
+    [[nodiscard]] std::string getNegativeClassName() const noexcept;
     /// @}
 
     /// @name Data
     /// @{
 
-    /// @brief Sets the time series data in this packet.
-    /// @param[in] data  The time series data.
+    /// @brief Sets the probability time series data in this packet.
+    /// @param[in] data  The probability time series data.
     template<typename U>
     void setData(const std::vector<U> &data) noexcept;
-    /// @brief Sets the time series data in this packet.
-    /// @param[in,out] data  The time series data whose memory will be moved
-    ///                      into the class.  On exit, data's behavior is
-    ///                      undefined.
+    /// @brief Sets the probability time series data in this packet.
+    /// @param[in,out] data  The probability time series data whose memory 
+    ///                      will be moved into this class.  On exit, data's
+    ///                      behavior is undefined.
     void setData(std::vector<double> &&data) noexcept;
-    /// @brief Sets the time series data in this packet.
-    /// @param[in] nSamples  The nubmer of samples in the signal.
-    /// @param[in] data      The time series data.  This is an array whose
-    ///                      dimension is [nSamples].
-    /// @throws std::invalid_argument if data is null.
-    ///  
-    template<typename U> void setData(int nSamples, const U *data);
-    /// @result The time series currently set on the packet. 
+    /// @result The probability time series currently set on the packet. 
     [[nodiscard]] std::vector<double> getData() const noexcept;
-    /// @result A reference to the time series currently set on the packet.
+    /// @result A reference to the probability time series currently set on
+    ///         the packet.
     [[nodiscard]] const std::vector<double> &getDataReference() const noexcept;
-    /// @result A pointer to the underlying data packet.  This is an array whose
-    ///         dimensions is [\c getNumberOfSamples()] 
-    [[nodiscard]] const double *getDataPointer() const noexcept;
     /// @result The number of data samples in the packet.
     [[nodiscard]] int getNumberOfSamples() const noexcept;
     /// @}
@@ -165,42 +192,10 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result The message type - e.g., "DataPacket".
+    /// @result The message type - e.g., "ProbabilityPacket".
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
-    /// @}
-
-    /// @name Debugging Utilities
-    /// @{
-
-    /// @brief Convenience function to initialize this class from a CBOR
-    ///        message.
-    /// @param[in] cbor  The CBOR message held in a string container.
-    /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromCBOR(const std::string &cbor);
-    /// @brief Creates the class from a CBOR message.
-    /// @param[in] data    The contents of the CBOR message.  This is an
-    ///                    array whose dimension is [length] 
-    /// @param[in] length  The length of data.
-    /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromCBOR(const uint8_t *data, size_t length);
-    /// @brief Converts the packet class to a CBOR message.
-    /// @result The class expressed in Compressed Binary Object Representation
-    ///         (CBOR) format.
-    /// @throws std::runtime_error if the required information is not set. 
-    [[nodiscard]] std::string toCBOR() const;
-    /// @brief Creates the class from a JSON data packet message.
-    /// @throws std::runtime_error if the message is invalid.
-    //void fromJSON(const std::string &message);
-    /// @brief Converts the data packet class to a JSON message.
-    /// @param[in] nIndent  The number of spaces to indent.
-    /// @note -1 disables indentation which is preferred for message
-    ///       transmission.
-    /// @result A JSON representation of this class.
-    [[nodiscard]] std::string toJSON(int nIndent =-1) const;
     /// @}
 
     /// @name Destructors
@@ -209,11 +204,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~DataPacket() override;
+    ~ProbabilityPacket() override;
     /// @}
 private:
-    class DataPacketImpl;
-    std::unique_ptr<DataPacketImpl> pImpl;
+    class ProbabilityPacketImpl;
+    std::unique_ptr<ProbabilityPacketImpl> pImpl;
 };
 }
 #endif

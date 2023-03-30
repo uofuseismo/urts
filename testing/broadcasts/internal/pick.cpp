@@ -43,7 +43,7 @@ TEST(BroadcastsInternalPick, Pick)
     const std::string channel{"EHZ"};
     const std::string locationCode{"01"};
     const std::string phaseHint{"P"};
-    const std::string algorithm{"autoPicker"};
+    const std::vector<std::string> algorithms{"thresholdPick", "mlPicker"};
     const double time = 500;
     const std::chrono::microseconds timeRef{static_cast<int64_t> (time*1.e6)};
     const Pick::FirstMotion fm{Pick::FirstMotion::Up};
@@ -73,7 +73,7 @@ TEST(BroadcastsInternalPick, Pick)
     pick.setFirstMotion(fm);
     pick.setReviewStatus(reviewStatus);
     pick.setPhaseHint(phaseHint);
-    pick.setAlgorithm(algorithm);
+    pick.setProcessingAlgorithms(algorithms);
 
     Pick copy(pick);
     auto pickMessage = pick.toMessage();
@@ -88,7 +88,12 @@ TEST(BroadcastsInternalPick, Pick)
     EXPECT_EQ(copy.getFirstMotion(), fm);
     EXPECT_EQ(copy.getReviewStatus(), reviewStatus);
     EXPECT_EQ(copy.getPhaseHint(), phaseHint);
-    EXPECT_EQ(copy.getAlgorithm(), algorithm);
+    auto algorithmsBack = copy.getProcessingAlgorithms();
+    EXPECT_EQ(algorithms.size(), algorithmsBack.size());
+    for (int i = 0; i < static_cast<int> (algorithms.size()); ++i)
+    {
+        EXPECT_EQ(algorithms[i], algorithmsBack[i]);
+    }
     auto [lowerBound, upperBound ] = copy.getLowerAndUpperUncertaintyBound();
     EXPECT_NEAR(lowerBoundRef.getPercentile(), lowerBound.getPercentile(),
                 1.e-14);

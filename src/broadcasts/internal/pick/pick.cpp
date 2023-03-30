@@ -1,5 +1,6 @@
 #include <chrono>
 #include <string>
+#include <vector>
 #include <nlohmann/json.hpp>
 #include "urts/broadcasts/internal/pick/pick.hpp"
 #include "urts/broadcasts/internal/pick/uncertaintyBound.hpp"
@@ -58,9 +59,8 @@ nlohmann::json toJSONObject(const Pick &pick)
     obj["FirstMotion"] = static_cast<int> (pick.getFirstMotion()); 
     // Review
     obj["ReviewStatus"] = static_cast<int> (pick.getReviewStatus());
-
     // Algorithm
-    obj["Algorithm"] = pick.getAlgorithm();
+    obj["ProcessingAlgorithms"] = pick.getProcessingAlgorithms();
     return obj;
 }
 
@@ -108,20 +108,13 @@ Pick objectToPick(const nlohmann::json &obj)
     {
         pick.setPhaseHint(obj["PhaseHint"].get<std::string> ());
     }
-    if (!obj["Algorithm"].is_null())
+    if (!obj["ProcessingAlgorithms"].is_null())
     {
-        pick.setAlgorithm(obj["Algorithm"].get<std::string> ());
+        pick.setProcessingAlgorithms(obj["ProcessingAlgorithms"]
+                                       .get<std::vector<std::string>> ());
     }
     return pick;
 }
-
-/*
-Pick fromJSONMessage(const std::string &message)
-{
-    auto obj = nlohmann::json::parse(message);
-    return ::objectToPick(obj);
-}
-*/
 
 Pick fromCBORMessage(const uint8_t *message, const size_t length)
 {
@@ -134,6 +127,7 @@ Pick fromCBORMessage(const uint8_t *message, const size_t length)
 class Pick::PickImpl
 {
 public:
+    std::vector<std::string> mProcessingAlgorithms;
     std::string mNetwork;
     std::string mStation;
     std::string mChannel;
@@ -333,16 +327,17 @@ Pick::ReviewStatus Pick::getReviewStatus() const noexcept
     return pImpl->mReviewStatus;
 }
 
-/// Algorithm
-void Pick::setAlgorithm(const std::string &algorithm) noexcept
+/// Algorithms
+void Pick::setProcessingAlgorithms(
+    const std::vector<std::string> &algorithms) noexcept
 {
-    pImpl->mAlgorithm = algorithm;
+    pImpl->mProcessingAlgorithms = algorithms;
 }
 
-std::string Pick::getAlgorithm() const noexcept
+std::vector<std::string> Pick::getProcessingAlgorithms() const noexcept
 {
-    return pImpl->mAlgorithm;
-} 
+    return pImpl->mProcessingAlgorithms;
+}
 
 /// Phase hint
 void Pick::setPhaseHint(const std::string &phaseHint) noexcept
@@ -389,51 +384,10 @@ bool Pick::haveLowerAndUpperUncertaintyBound() const noexcept
     return pImpl->mHaveUncertaintyBounds;
 }
 
-/// Create JSON
-/*
-std::string Pick::toJSON(const int nIndent) const
-{
-    auto obj = toJSONObject(*this);
-    return obj.dump(nIndent);
-}
-
-/// Create CBOR
-std::string Pick::toCBOR() const
-{
-    auto obj = toJSONObject(*this);
-    auto v = nlohmann::json::to_cbor(obj);
-    std::string result(v.begin(), v.end());
-    return result; 
-}
-
-/// From JSON
-void Pick::fromJSON(const std::string &message)
-{
-    *this = fromJSONMessage(message);
-}
-
-/// From CBOR
-void Pick::fromCBOR(const std::string &data)
-{
-    fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
-}
-
-void Pick::fromCBOR(const uint8_t *data, const size_t length)
-{
-    if (length == 0){throw std::invalid_argument("No data");}
-    if (data == nullptr)
-    {
-        throw std::invalid_argument("data is NULL");
-    }
-    *this = fromCBORMessage(data, length);
-}
-*/
-
 ///  Convert message
 std::string Pick::toMessage() const
 {
     auto obj = ::toJSONObject(*this);
-    //std::cout << obj << std::endl;
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result; 

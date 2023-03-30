@@ -6,11 +6,11 @@
 #include <umps/messaging/xPublisherXSubscriber/publisherOptions.hpp>
 #include <umps/messaging/xPublisherXSubscriber/publisher.hpp>
 #include <umps/logging/log.hpp>
-#include "urts/broadcasts/internal/dataPacket/publisher.hpp"
-#include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
-#include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/probabilityPacket/publisher.hpp"
+#include "urts/broadcasts/internal/probabilityPacket/publisherOptions.hpp"
+#include "urts/broadcasts/internal/probabilityPacket/probabilityPacket.hpp"
 
-using namespace URTS::Broadcasts::Internal::DataPacket;
+using namespace URTS::Broadcasts::Internal::ProbabilityPacket;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 
 class Publisher::PublisherImpl
@@ -73,7 +73,6 @@ void Publisher::initialize(const PublisherOptions &options)
     publisherOptions.setZAPOptions(options.getZAPOptions());
     publisherOptions.setTimeOut(options.getTimeOut());
     publisherOptions.setHighWaterMark(options.getHighWaterMark());
-    //auto publisherOptions = options.getPublisherOptions();
     pImpl->mPublisher->initialize(publisherOptions);
 #ifndef NDEBUG
     assert(pImpl->mPublisher->isInitialized());
@@ -93,7 +92,7 @@ bool Publisher::isInitialized() const noexcept
 Publisher::~Publisher() = default;
 
 /// Send
-void Publisher::send(const DataPacket &message)
+void Publisher::send(const ProbabilityPacket &message)
 {
     pImpl->mPublisher->send(message); 
 }

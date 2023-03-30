@@ -2,9 +2,9 @@
 #include <chrono>
 #include <umps/messaging/xPublisherXSubscriber/publisherOptions.hpp>
 #include <umps/authentication/zapOptions.hpp>
-#include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
+#include "urts/broadcasts/internal/probabilityPacket/publisherOptions.hpp"
 
-using namespace URTS::Broadcasts::Internal::DataPacket;
+using namespace URTS::Broadcasts::Internal::ProbabilityPacket;
 namespace UAuth = UMPS::Authentication;
 
 class PublisherOptions::PublisherOptionsImpl
@@ -13,7 +13,7 @@ public:
     PublisherOptionsImpl()
     {
         mOptions.setHighWaterMark(8192); // No point making this infinite
-        mOptions.setTimeOut(std::chrono::milliseconds{1000}); 
+        mOptions.setTimeOut(std::chrono::milliseconds{1000});
     }
     UMPS::Messaging::XPublisherXSubscriber::PublisherOptions mOptions;
 };
@@ -99,13 +99,6 @@ void PublisherOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 UAuth::ZAPOptions PublisherOptions::getZAPOptions() const noexcept
 {
     return pImpl->mOptions.getZAPOptions();
-}
-
-/// Get the options
-UMPS::Messaging::XPublisherXSubscriber::PublisherOptions
-    PublisherOptions::getPublisherOptions() const noexcept
-{
-    return pImpl->mOptions;
 }
 
 /// Timeout

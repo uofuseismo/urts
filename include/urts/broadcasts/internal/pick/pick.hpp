@@ -2,6 +2,8 @@
 #define URTS_BROADCASTS_INTERNAL_PICK_PICK_HPP
 #include <memory>
 #include <chrono>
+#include <vector>
+#include <string>
 #include <umps/messageFormats/message.hpp>
 namespace URTS::Broadcasts::Internal::Pick
 {
@@ -157,6 +159,13 @@ public:
     void setFirstMotion(FirstMotion polarity) noexcept;
     /// @result The pick's polarity.
     [[nodiscard]] FirstMotion getFirstMotion() const noexcept;
+
+    /// @brief Sets the list of the processing algorithms used to arrive
+    ///        at this pick.
+    /// @param[in] algorithms  The algorithms used to arrive at this pick. 
+    void setProcessingAlgorithms(const std::vector<std::string> &algorithms) noexcept;
+    /// @result The algorithms used to arrive at this pick.
+    [[nodiscard]] std::vector<std::string> getProcessingAlgorithms() const noexcept;
 
     /// @brief Sets the algorithm or code used to generate this pick.
     void setAlgorithm(const std::string &algorithm) noexcept;
