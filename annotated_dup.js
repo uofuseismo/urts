@@ -27,6 +27,13 @@ var annotated_dup =
             [ "Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber" ],
             [ "SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber_options" ],
             [ "UncertaintyBound", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_uncertainty_bound.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_uncertainty_bound" ]
+          ] ],
+          [ "ProbabilityPacket", null, [
+            [ "ProbabilityPacket", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_probability_packet.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_probability_packet" ],
+            [ "Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher" ],
+            [ "PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher_options" ],
+            [ "Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber" ],
+            [ "SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options" ]
           ] ]
         ] ]
       ] ],

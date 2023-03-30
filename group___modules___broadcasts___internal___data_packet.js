@@ -15,6 +15,7 @@ var group___modules___broadcasts___internal___data_packet =
       [ "getChannel", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a304da229caaea62488cfaa7868be7dc8", null ],
       [ "getData", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a8c8b2ded269320274a17c1c8fe1688b1", null ],
       [ "getDataPointer", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a022637de879cb3364155f226f63fc28e", null ],
+      [ "getDataReference", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a25666508cdb915365e6888272608b3ac", null ],
       [ "getEndTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a2a64571a5916b652ead38960440bdea9", null ],
       [ "getLocationCode", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a102b16439def59896cbf77ef43dcc027", null ],
       [ "getMessageType", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a573e7d71cd486e5e37920d6608533720", null ],
