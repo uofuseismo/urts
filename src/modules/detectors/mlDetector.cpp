@@ -102,7 +102,6 @@ createLogger(const std::string &moduleName = MODULE_NAME,
 {
     auto logFileName = moduleName + ".log";
     auto fullLogFileName = logFileDirectory / logFileName;
-    //auto logger = std::make_shared<UMPS::Logging::StandardOut> (verbosity);
     auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
     logger->initialize(moduleName,
                        fullLogFileName,
@@ -719,12 +718,12 @@ public:
 class Detector : public UMPS::Modules::IProcess
 {
 public:
-    Detector(const int nThreads,
-             const ::ProgramOptions &programOptions,
+    Detector(const ::ProgramOptions &programOptions,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mProgramOptions(programOptions),
         mLogger(logger)
     {
+        auto nThreads = programOptions.mThreads;
 
         // Make a database connection
         mLogger->debug("Connecting to AQMS database...");
@@ -1042,7 +1041,6 @@ for (auto &t : mPipelineThreads)
                 return response.clone();
             }
             auto command = commandRequest.getCommand();
-            response.setResponse(getInputOptions());
             if (command == "inferenceQueueSize")
             {
                 auto psQueueSize = mPS3CInferenceQueue.size();
@@ -1061,6 +1059,7 @@ for (auto &t : mPipelineThreads)
             }
             else
             {
+                response.setResponse(getInputOptions());
                 response.setReturnCode(
                     USC::CommandResponse::ReturnCode::Success);
             }
@@ -1486,7 +1485,7 @@ int main(int argc, char *argv[])
         processManager.insert(std::move(heartbeat));
         // Create a publisher 
         logger->debug("Creating probability packet publisher...");
-        namespace UDP = URTS::Broadcasts::Internal::DataPacket;
+        namespace UDP = URTS::Broadcasts::Internal::ProbabilityPacket;
         UDP::PublisherOptions publisherOptions;
         if (!programOptions.mProbabilityPacketBroadcastAddress.empty())
         {
@@ -1597,7 +1596,7 @@ int main(int argc, char *argv[])
                                             std::move(inference3CSRequestor),
                                             logger);
 */
-        auto detectorProcess = std::make_unique<::Detector> (2, programOptions, logger);
+        auto detectorProcess = std::make_unique<::Detector> (programOptions, logger);
         // Create the remote replier
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;

@@ -4,6 +4,11 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include "urts/broadcasts/internal/dataPacket.hpp"
+#include "urts/broadcasts/internal/probabilityPacket.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentS.hpp"
+#include "urts/services/scalable/packetCache.hpp"
 #include "private/isEmpty.hpp"
 namespace
 {
@@ -298,7 +303,7 @@ public:
          mS3CDetectorRequestorOptions;
     URTS::Services::Scalable::PacketCache::RequestorOptions
         mPacketCacheRequestorOptions;
-    URTS::Broadcasts::Internal::DataPacket::PublisherOptions
+    URTS::Broadcasts::Internal::ProbabilityPacket::PublisherOptions
         mProbabilityPacketPublisherOptions;
     double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};

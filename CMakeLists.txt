@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 project(URTS VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
+# Some options
+option(BUILD_UI "Build the Qt-based user interface" OFF)
+option(WRAP_PYTHON "Compile the Python bindings" OFF)
+
 include(CheckCXXCompilerFlag)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -41,6 +45,9 @@ if (${UUSSMLModels_FOUND})
    message("Enabling UUSS machine-learning models")
    set(BUILD_UUSS_MLMODELS TRUE)
 endif() 
+if (${BUILD_UI})
+   find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
+endif()
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
@@ -72,6 +79,11 @@ set(GENERIC_SRC
     src/broadcasts/internal/dataPacket/publisherOptions.cpp
     src/broadcasts/internal/dataPacket/subscriber.cpp
     src/broadcasts/internal/dataPacket/subscriberOptions.cpp
+    src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
+    src/broadcasts/internal/probabilityPacket/publisher.cpp
+    src/broadcasts/internal/probabilityPacket/publisherOptions.cpp
+    src/broadcasts/internal/probabilityPacket/subscriber.cpp
+    src/broadcasts/internal/probabilityPacket/subscriberOptions.cpp
     src/broadcasts/internal/pick/pick.cpp
     src/broadcasts/internal/pick/publisher.cpp
     src/broadcasts/internal/pick/publisherOptions.cpp 
@@ -172,6 +184,12 @@ if (${BUILD_SEEDLINK})
        src/broadcasts/external/seedlink/client.cpp
        src/broadcasts/external/seedlink/clientOptions.cpp)
 endif()
+if (${BUILD_UI})
+   set(UI_SRC
+       ui/qurts.cpp
+       ui/mainWindow.cpp ui/mainWindow.hpp
+       ui/topics.cpp)
+endif()
 
 add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${UUSS_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
 set_target_properties(urts PROPERTIES
@@ -216,6 +234,7 @@ set(TEST_SRC
     testing/database/aqms.cpp
     testing/broadcasts/internal/dataPacket.cpp
     testing/broadcasts/internal/pick.cpp
+    testing/broadcasts/internal/probabilityPacket.cpp
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
@@ -308,7 +327,14 @@ endif()
 
 if (${BUILD_UUSS_MLMODELS})
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
-   add_executable(mlPicker   src/modules/pickers/mlPicker.cpp)
+   add_executable(mlPickRegressor src/modules/pickers/mlPicker.cpp)
+  #                               src/modules/pickers/triggerWindow.cpp
+  #                               src/modules/pickers/thresholdDetectorOptions.cpp
+  #                               src/modules/pickers/thresholdDetector.cpp)
+   add_executable(thresholdPicker src/modules/pickers/threshold.cpp
+                                  src/modules/pickers/triggerWindow.cpp
+                                  src/modules/pickers/thresholdDetectorOptions.cpp
+                                  src/modules/pickers/thresholdDetector.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
@@ -318,7 +344,11 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO)
-   set_target_properties(mlPicker PROPERTIES
+   set_target_properties(mlPickRegressor PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   set_target_properties(thresholdPicker PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
@@ -328,46 +358,52 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_EXTENSIONS NO)
    set_target_properties(uNetThreeComponentSService PROPERTIES
                          CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES 
-                         CXX_EXTENSIONS NO) 
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
    set_target_properties(pPickRegressorService PROPERTIES
                          CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES 
-                         CXX_EXTENSIONS NO) 
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
    set_target_properties(sPickRegressorService PROPERTIES
                          CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES 
-                         CXX_EXTENSIONS NO) 
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
    set_target_properties(firstMotionClassifierService PROPERTIES
                          CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES 
-                         CXX_EXTENSIONS NO) 
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
-   target_include_directories(mlPicker
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
+   target_include_directories(mlPickRegressor
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
+   target_include_directories(thresholdPicker
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(uNetThreeComponentPService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(uNetThreeComponentSService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(pPickRegressorService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(sPickRegressorService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              Boost::program_options)
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_link_libraries(mlDetector
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
-   target_link_libraries(mlPicker
+   target_link_libraries(mlPickRegressor
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_link_libraries(thresholdPicker
+                         PRIVATE urts ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
@@ -385,7 +421,8 @@ if (${BUILD_UUSS_MLMODELS})
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} mlDetector
-                               mlPicker
+                               mlPickRegressor
+                               thresholdPicker
                                uNetThreeComponentPService
                                uNetThreeComponentSService
                                pPickRegressorService
@@ -394,9 +431,31 @@ if (${BUILD_UUSS_MLMODELS})
 endif()
 
 ##########################################################################################
+#                                       User Interface                                   #
+##########################################################################################
+if (${BUILD_UI})
+   qt6_add_resources(QURTS_RESOURCES
+                     ${CMAKE_SOURCE_DIR}/ui/resources/qurts.qrc)
+   add_executable(qurts ${UI_SRC} ${QURTS_RESOURCES})
+   set_target_properties(qurts PROPERTIES
+                         CXX_STANDARD 17
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO
+                         AUTOMOC ON
+                         AUTORCC ON
+                         AUTOUIC ON)
+   target_include_directories(qurts
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              PRIVATE Qt6::Core Qt6::Widgets
+                              PRIVATE ${UMPS_INCLUDE_DIR})
+   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets
+                                       ${UMPS_LIBRARY})
+endif()
+
+##########################################################################################
 #                                      Python Wrapping                                   #
 ##########################################################################################
-if (WRAP_PYTHON)
+if (${WRAP_PYTHON})
    message("Will build Python bindings")
    find_package(pybind11 REQUIRED)
    add_library(urtspy MODULE
