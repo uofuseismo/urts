@@ -970,7 +970,6 @@ int main(int argc, char *argv[])
             = std::make_unique<::ThresholdPicker> (programOptions, logger);
 
         // Create the remote replier
-/*
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
@@ -990,7 +989,6 @@ int main(int argc, char *argv[])
                                                    logger);
         // Add the remote replier and inference engine
         processManager.insert(std::move(remoteReplierProcess));
-*/
         processManager.insert(std::move(pickerProcess));
     }
     catch (const std::exception &e)
