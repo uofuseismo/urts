@@ -1,4 +1,5 @@
 #include <iostream>
+#include <atomic>
 #include <thread>
 #include <mutex>
 #include <string>
@@ -46,6 +47,7 @@
 #include "thresholdDetector.hpp"
 #include "triggerWindow.hpp"
 #include "private/isEmpty.hpp"
+#include "private/threadSafeQueue.hpp"
 
 #define MODULE_NAME "ThresholdPicker"
 
@@ -61,6 +63,63 @@ Commands:
    help    Displays this message.
 )"""};
     return commands;
+}
+
+enum class PhaseType : int
+{
+    Unknown = 0,
+    P = 1,
+    S = 2
+};
+
+/// @result Converts a trigger window and probability packet to a pick.
+template<typename T>
+[[nodiscard]]
+URTS::Broadcasts::Internal::Pick::Pick
+triggerWindowToPick(
+    const URTS::Modules::Pickers::TriggerWindow<T> &triggerWindow,
+    const URTS::Broadcasts::Internal::ProbabilityPacket::
+                                      ProbabilityPacket &packet,
+    const PhaseType phaseType,
+    const int64_t pickIdentifier)
+{
+    URTS::Broadcasts::Internal::Pick::Pick result;
+    URTS::Broadcasts::Internal::Pick::UncertaintyBound lowerBound;
+    URTS::Broadcasts::Internal::Pick::UncertaintyBound upperBound;
+    lowerBound.setPercentile(15.9);
+    upperBound.setPercentile(84.1);
+    result.setReviewStatus(URTS::Broadcasts::Internal::Pick::
+                                 Pick::ReviewStatus::Automatic);
+    result.setFirstMotion(URTS::Broadcasts::Internal::Pick::
+                                Pick::FirstMotion::Unknown);
+    result.setIdentifier(pickIdentifier);
+    result.setNetwork(packet.getNetwork());
+    result.setStation(packet.getStation());
+    result.setChannel(packet.getChannel());
+    result.setLocationCode(packet.getLocationCode());
+    result.setTime(triggerWindow.getMaximum().first);
+    std::vector<std::string> algorithms;
+    auto algorithm = packet.getAlgorithm();
+    if (!algorithm.empty()){algorithms.push_back(algorithm);}
+    algorithms.push_back("ThresholdPicker");
+    result.setProcessingAlgorithms(algorithms);
+    if (phaseType == ::PhaseType::P)
+    {
+        lowerBound.setPerturbation(std::chrono::microseconds{-50000});
+        upperBound.setPerturbation(std::chrono::microseconds{ 50000});
+        result.setLowerAndUpperUncertaintyBound(
+            std::pair{lowerBound, upperBound});
+        result.setPhaseHint("P");
+    }
+    else if (phaseType == ::PhaseType::S)
+    {
+        lowerBound.setPerturbation(std::chrono::microseconds{-100000});
+        upperBound.setPerturbation(std::chrono::microseconds{ 100000});
+        result.setLowerAndUpperUncertaintyBound(
+            std::pair{lowerBound, upperBound}); 
+        result.setPhaseHint("S");
+    }
+    return result;
 }
 
 /// @result The logger for this application.
@@ -83,17 +142,16 @@ createLogger(const std::string &moduleName = MODULE_NAME,
     return logger;
 }
 
-
 struct ProgramOptions
 {
 public:
     ProgramOptions()
     {
-        mPThresholdDetectorOptions.setOnThreshold(0.8);
+        mPThresholdDetectorOptions.setOnThreshold(0.9);
         mPThresholdDetectorOptions.setOffThreshold(0.72);
         mPThresholdDetectorOptions.setMinimumGapSize(5);
 
-        mSThresholdDetectorOptions.setOnThreshold(0.85);
+        mSThresholdDetectorOptions.setOnThreshold(0.92);
         mSThresholdDetectorOptions.setOffThreshold(0.72);
         mSThresholdDetectorOptions.setMinimumGapSize(5);
     }
@@ -214,7 +272,15 @@ public:
         mIncrementRequestReceiveTimeOut
             = std::chrono::milliseconds {requestTimeOut};
 
+        auto packetReceiveTimeOut
+            = propertyTree.get<int>
+                ("ThresholdDetector.receiveTimeOut",
+                 mProbabilityPacketReceiveTimeOut.count());
+        packetReceiveTimeOut = std::max(0, packetReceiveTimeOut);
+        mProbabilityPacketReceiveTimeOut 
+            = std::chrono::milliseconds {packetReceiveTimeOut};
     }
+//public:
     URTS::Broadcasts::Internal::ProbabilityPacket::SubscriberOptions
         mProbabilityPacketSubscriberOptions;
     URTS::Broadcasts::Internal::Pick::PublisherOptions mPickPublisherOptions;
@@ -231,76 +297,42 @@ public:
     std::string mIncrementerServiceAddress;
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
     std::chrono::milliseconds mIncrementRequestReceiveTimeOut{1000}; // 1 s
+    std::chrono::milliseconds mProbabilityPacketReceiveTimeOut{10};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
 };
 
-/*
-namespace
-{
 [[nodiscard]]
-std::string toName(
-    const URTS::Broadcasts::Internal::DataPacket::DataPacket &dataPacket)
+std::pair<std::string, PhaseType>
+getNameAndPhaseType(const URTS::Broadcasts::Internal::ProbabilityPacket::
+                                ProbabilityPacket &packet)
 {
-    std::string result;
-    if (dataPacket.haveNetwork())
+    ::PhaseType phaseType{::PhaseType::Unknown};
+    std::string name;
+    auto positiveClassName = packet.getPositiveClassName();
+    if (positiveClassName == "P")
     {
-        result = result + dataPacket.getNetwork();
+        phaseType = ::PhaseType::P;
     }
-    if (dataPacket.haveStation())
+    else if (positiveClassName == "S")
     {
-        if (!result.empty())
-        {
-            if (result.back() != '.'){result = result + ".";}
-        }
-        result = result + dataPacket.getStation();
+        phaseType = ::PhaseType::S;
     }
-    if (dataPacket.haveChannel())
+    else
     {
-        if (!result.empty())
-        {   
-            if (result.back() != '.'){result = result + ".";}
-        }
-        result = result + dataPacket.getChannel();
+        throw std::invalid_argument("Unhandled positive class name: "
+                                  + positiveClassName);
     }
-    if (dataPacket.haveLocationCode())
-    {
-        if (!result.empty())
-        {
-            if (result.back() != '.'){result = result + ".";}
-        }
-        result = result + dataPacket.getLocationCode();
-    }
-    return result;
-}
+    if (!packet.haveNetwork()){throw std::invalid_argument("Network not set");}
+    if (!packet.haveStation()){throw std::invalid_argument("Station not set");}
+    if (!packet.haveChannel()){throw std::invalid_argument("Channel not set");}
+    std::string locationCode{"--"};
+    if (packet.haveLocationCode()){locationCode = packet.getLocationCode();} 
+    name = packet.getNetwork() + "." + packet.getStation() + "."
+         + packet.getChannel() + "." + locationCode;
+    return std::pair {name, phaseType};
 }
 
-class ThresholdPickersMap
-{
-public:
-    // Constructor 
-    ThresholdPickerMap(const std::string &name,
-                       ThresholdDetectorOptions &options) :
-        mName(name)
-    {
-        mDetector.initialize(options);
-    }
-    // 
-    [[nodiscard]] std::string getName() const
-    {
-        return mname;
-    }
-    ThresholdDetector mDetector;
-    std::string mName;
-};
-
-bool operator<(const ThresholdPickersMap &lhs,
-               const ThresholdPickersMap &rhs)
-{
-    return lhs.getName() < rhs.getName();
-}
-
-*/
-class ThresholdPicker
+class ThresholdPicker : public UMPS::Modules::IProcess
 {
 public:
     ThresholdPicker(const ::ProgramOptions &options,
@@ -315,6 +347,7 @@ public:
                                Subscriber> (mContext, mLogger);
         mProbabilityPacketSubscriber->initialize(
             mOptions.mProbabilityPacketSubscriberOptions);
+
         // Create the pick publisher
         mPickPublisher
             = std::make_unique<URTS::Broadcasts::Internal::
@@ -355,7 +388,318 @@ public:
         mLocalCommand->initialize(localServiceOptions);
         mInitialized = true;
     }
-    
+    /// @brief Destructor
+    ~ThresholdPicker() override
+    {
+        stop();
+    } 
+    /// @result True indicates this should keep running
+    [[nodiscard]] bool keepRunning() const
+    {
+        return mKeepRunning;
+    }
+    /// @brief Toggles this as running or not running
+    void setRunning(const bool running)
+    {
+        mKeepRunning = running;
+    }
+    /// @result True indicates this is running.
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return keepRunning();
+    }
+    /// @result Initialized?
+    [[nodiscard]] bool isInitialized() const noexcept
+    {
+        return mInitialized;
+    }
+    /// @brief Stops the modules
+    void stop() override
+    {
+        setRunning(false);
+        if (mPickPublisherThread.joinable()){mPickPublisherThread.join();}
+        if (mPickerThread.joinable()){mPickerThread.join();}
+        if (mPacketSubscriberThread.joinable()){mPacketSubscriberThread.join();}
+        if (mLocalCommand != nullptr)
+        {
+            if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        }
+    }
+    /// @brief Starts the modules.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Class not initialized");
+        }
+        setRunning(true);
+        std::this_thread::sleep_for(std::chrono::milliseconds {10});
+        // Make thread that fetches probability packets
+        mLogger->debug("Starting the pick publisher thread...");
+        mPickPublisherThread
+             = std::thread(&::ThresholdPicker::publishPicks, this);
+        mLogger->debug("Starting the packet processing thread...");
+        mPickerThread
+             = std::thread(&::ThresholdPicker::processProbabilityPackets, this);
+        mLogger->debug("Starting the packet subscriber thread...");
+        mPacketSubscriberThread
+            = std::thread(&::ThresholdPicker::getPackets, this);
+        mLogger->debug("Starting the local command proxy..."); 
+        mLocalCommand->start();
+    }
+    /// @brief Reads packets
+    void getPackets()
+    {
+        while (keepRunning())
+        {
+            auto packet = mProbabilityPacketSubscriber->receive();
+            if (packet != nullptr)
+            {
+                mProbabilityPacketQueue.push(std::move(*packet));
+            }
+        }
+    }
+    /// @brief Processes probability packets
+    void processProbabilityPackets()
+    {
+        URTS::Services::Standalone::Incrementer::IncrementRequest
+            incrementRequest;
+        incrementRequest.setItem(URTS::Services::Standalone::
+                                Incrementer::IncrementRequest::Item::PhasePick);
+        int64_t incrementRequestIdentifier{0};
+        std::vector<URTS::Modules::Pickers::TriggerWindow<double>>
+            triggerWindows;
+        std::pair<std::string, ::PhaseType> nameAndPhaseType;
+        std::chrono::milliseconds timeOut{10};
+        while (keepRunning())
+        {
+            URTS::Broadcasts::Internal::ProbabilityPacket::
+                ProbabilityPacket packet;
+            auto gotPacket
+                = mProbabilityPacketQueue.wait_until_and_pop(&packet, timeOut);
+            if (gotPacket)
+            {
+                try
+                {
+                    nameAndPhaseType = ::getNameAndPhaseType(packet);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                    continue;
+                }
+                const auto &name = nameAndPhaseType.first;
+                const auto phaseType = nameAndPhaseType.second;
+                if (phaseType == ::PhaseType::P)
+                {
+                    auto it = mPDetectors.find(name);    
+                    if (it == mPDetectors.end())
+                    {
+                        URTS::Modules::Pickers::ThresholdDetector detector;
+                        try
+                        {
+                            mLogger->info("Adding P threshold detector: "
+                                        + name);
+                            detector.initialize(
+                                mOptions.mPThresholdDetectorOptions);
+                            mPDetectors.insert( {name, detector} );
+                        }
+                        catch (const std::exception &e)
+                        {
+                            std::string errorMessage
+                                = "Failed to initialize P detector for " + name
+                                + ".  Failed with: " + std::string{e.what()};
+                            mLogger->error(errorMessage);
+                            continue;
+                        }
+#ifndef NDEBUG
+                        assert(mPDetectors.find(name) != mPDetectors.end());
+#endif
+                    }
+                    it = mPDetectors.find(name);
+                    if (it != mPDetectors.end())
+                    {
+                        triggerWindows.clear();
+                        try
+                        {
+                            it->second.apply(packet, &triggerWindows);
+                        }
+                        catch (const std::exception &e)
+                        {
+                            std::string errorMessage
+                                = "Failed to update P detector for " + name
+                                + ".  Failed with: " + std::string{e.what()};
+                            mLogger->error(errorMessage);
+                            continue;
+                        }
+                        for (const auto &triggerWindow : triggerWindows)
+                        {
+                            int64_t pickIdentifier{0};
+                            incrementRequestIdentifier
+                                 = incrementRequestIdentifier + 1;
+                            if (incrementRequestIdentifier >
+                                std::numeric_limits<int64_t>::max() - 10)
+                            {
+                                incrementRequestIdentifier = 0;
+                            } 
+                            incrementRequest.setIdentifier(
+                                  incrementRequestIdentifier);
+                            try
+                            {
+                                auto incrementResponse 
+                                    = mIncrementerRequestor->request(
+                                        incrementRequest);
+                                pickIdentifier = incrementResponse->getValue();
+                            }
+                            catch (const std::exception &e)
+                            {
+                                std::string errorMessage
+                                     = "P increment request failed for " + name
+                                     + ".  Failed with: "
+                                     + std::string{e.what()};
+                                mLogger->error(errorMessage);
+                            }
+                            try
+                            {
+                                auto pick
+                                    = ::triggerWindowToPick(triggerWindow,
+                                                            packet,
+                                                            ::PhaseType::P,
+                                                            pickIdentifier);
+                                mPickPublisherQueue.push(std::move(pick));
+                            }
+                            catch (const std::exception &e)
+                            {
+                                std::string errorMessage
+                                    = "Failed to make P pick for " + name
+                                    + ".  Failed with: "
+                                    + std::string{e.what()};
+                                mLogger->error(errorMessage);
+                            }
+                        } // Loop on trigger windows
+                    } // End check on detector found
+                }
+                else if (phaseType == ::PhaseType::S)
+                {
+                    auto it = mSDetectors.find(name);
+                    if (it == mSDetectors.end())
+                    {
+                        URTS::Modules::Pickers::ThresholdDetector detector;
+                        try
+                        {
+                            mLogger->info("Adding S threshold detector: "
+                                        + name);
+                            detector.initialize(
+                                mOptions.mSThresholdDetectorOptions);
+                            mSDetectors.insert( {name, detector} );
+                        }
+                        catch (const std::exception &e) 
+                        {
+                            std::string errorMessage
+                                = "Failed to initialize S detector for " + name
+                                + ".  Failed with: " + std::string{e.what()};
+                            mLogger->error(errorMessage);
+                            continue;
+                        }
+#ifndef NDEBUG
+                        assert(mSDetectors.find(name) != mSDetectors.end());
+#endif
+                    }
+                    it = mSDetectors.find(name);
+                    if (it != mSDetectors.end())
+                    {
+                        triggerWindows.clear();
+                        try
+                        {   
+                            it->second.apply(packet, &triggerWindows);
+                        }
+                        catch (const std::exception &e)
+                        {
+                            std::string errorMessage
+                                = "Failed to update S detector for " + name
+                                + ".  Failed with: " + std::string{e.what()};
+                            mLogger->error(errorMessage);
+                            continue;
+                        }
+                        for (const auto &triggerWindow : triggerWindows)
+                        {
+                            int64_t pickIdentifier{0};
+                            incrementRequestIdentifier
+                                 = incrementRequestIdentifier + 1;
+                            if (incrementRequestIdentifier >
+                                std::numeric_limits<int64_t>::max() - 10)
+                            {
+                                incrementRequestIdentifier = 0;
+                            }
+                            incrementRequest.setIdentifier(
+                                  incrementRequestIdentifier);
+                            try
+                            {
+                                auto incrementResponse 
+                                    = mIncrementerRequestor->request(
+                                        incrementRequest);
+                                pickIdentifier = incrementResponse->getValue();
+                            }
+                            catch (const std::exception &e)
+                            {
+                                std::string errorMessage
+                                     = "S increment request failed for " + name
+                                     + ".  Failed with: "
+                                     + std::string{e.what()};
+                                mLogger->error(errorMessage);
+                            }
+                            try
+                            {
+                                auto pick
+                                    = ::triggerWindowToPick(triggerWindow,
+                                                            packet,
+                                                            ::PhaseType::S,
+                                                            pickIdentifier);
+                                mPickPublisherQueue.push(std::move(pick));
+                            }
+                            catch (const std::exception &e)
+                            {
+                                std::string errorMessage
+                                    = "Failed to make S pick for " + name
+                                    + ".  Failed with: "
+                                    + std::string{e.what()};
+                                mLogger->error(errorMessage);
+                            }
+                        } // Loop on trigger windows
+                    }
+                }
+                else
+                {
+                    mLogger->error("Unhandled phase type");
+                    continue;
+                }
+            }
+        }
+    }
+    /// @brief Publishes picks
+    void publishPicks()
+    {
+        std::chrono::milliseconds timeOut{10};
+        while (keepRunning())
+        {
+            URTS::Broadcasts::Internal::Pick::Pick pick;
+            auto gotPick
+                = mPickPublisherQueue.wait_until_and_pop(&pick, timeOut);
+            if (gotPick)
+            {
+                try
+                {
+                    mPickPublisher->send(pick);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error("Failed to send pick.  Failed with "
+                                 + std::string{e.what()});
+                }
+            }
+        }
+    }
     /// @brief Callback function
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         commandCallback(const std::string &messageType,
@@ -416,7 +760,6 @@ public:
         }
         else if (messageType == terminateRequest.getMessageType())
         {
-/*
             mLogger->info("Received terminate request...");
             USC::TerminateResponse response;
             try
@@ -434,53 +777,12 @@ public:
             issueStopCommand();
             response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
             return response.clone();
-*/
         }
         // Return
         mLogger->error("Unhandled message: " + messageType);
         USC::AvailableCommandsResponse commandsResponse;
         commandsResponse.setCommands(::getInputOptions());
         return commandsResponse.clone();
-    }
-/*
-    // Applies the threshold detector
-    void update(const URTS::Broadcasts::Internal::
-                      ProbabilityPacket::ProbabilityPacket &packet)
-    {
-        auto name = ::toName(dataPacket);
-        auto it = mPickers.find(name);
-        if (it == mPickers.end())
-        {
-        }
-        it = mPickers.find(name);
-#ifndef NDEBUG
-        assert(it != mPickers.end());
-#endif
-         
-        mDetector.update(dataPacket);
-    }
-    [[nodiscard]] std::string getName() const
-    {   
-        return mname;
-    }
-    void processProbabilityBroadcast()
-    {
-        // Read the packets from the queue
-        while (keepRunning())
-        {
-            auto message = subscriber->get();
-            if (message != nullptr)
-            {
-                 
-            }
-        }
-    }
-    std::map<std::string, ThresholdDetector> mPickers;
-*/
-    /// @result The module name.
-    [[nodiscard]] std::string getName() const noexcept //override
-    {
-        return mOptions.mModuleName;
     }
 //private:
     ::ProgramOptions mOptions;
@@ -493,7 +795,19 @@ public:
     std::unique_ptr<URTS::Services::Standalone::Incrementer::Requestor>
         mIncrementerRequestor{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    bool mInitialized{false};
+    ::ThreadSafeQueue<URTS::Broadcasts::Internal::ProbabilityPacket
+                          ::ProbabilityPacket> mProbabilityPacketQueue;
+    ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>
+        mPickPublisherQueue; 
+    std::thread mPacketSubscriberThread;
+    std::thread mPickerThread;
+    std::thread mPickPublisherThread;
+    std::map<std::string, URTS::Modules::Pickers::ThresholdDetector>
+        mPDetectors; 
+    std::map<std::string, URTS::Modules::Pickers::ThresholdDetector>
+        mSDetectors;
+    std::atomic<bool> mKeepRunning{true};
+    std::atomic<bool> mInitialized{false};
 };
 
 /// @brief Parses the command line options.
@@ -610,7 +924,9 @@ int main(int argc, char *argv[])
                   programOptions.mProbabilityPacketBroadcastName).getAddress());
         }
         subscriberOptions.setZAPOptions(zapOptions);
-        subscriberOptions.setHighWaterMark(0); // Infinite 
+        subscriberOptions.setTimeOut(
+            programOptions.mProbabilityPacketReceiveTimeOut);
+        subscriberOptions.setHighWaterMark(0); // Infinite
         programOptions.mProbabilityPacketSubscriberOptions = subscriberOptions;
 
         // Pick publisher
@@ -654,6 +970,7 @@ int main(int argc, char *argv[])
             = std::make_unique<::ThresholdPicker> (programOptions, logger);
 
         // Create the remote replier
+/*
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
@@ -673,9 +990,8 @@ int main(int argc, char *argv[])
                                                    logger);
         // Add the remote replier and inference engine
         processManager.insert(std::move(remoteReplierProcess));
-std::cout << "yar uncomment here" << std::endl;
-getchar();
-//        processManager.insert(std::move(pickerProcess));
+*/
+        processManager.insert(std::move(pickerProcess));
     }
     catch (const std::exception &e)
     {
@@ -683,5 +999,20 @@ getchar();
         logger->error(e.what());
         return EXIT_FAILURE;
     }
+    // Start the processes
+    logger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // The main thread waits and, when requested, sends a stop to all processes
+    logger->info("Starting main thread...");
+    processManager.handleMainThread();
     return EXIT_SUCCESS;
 }

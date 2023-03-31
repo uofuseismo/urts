@@ -5,6 +5,7 @@
 #include <cassert>
 #endif
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "urts/broadcasts/internal/probabilityPacket/probabilityPacket.hpp"
 #include "thresholdDetector.hpp"
 #include "thresholdDetectorOptions.hpp"
 #include "triggerWindow.hpp"
@@ -285,6 +286,21 @@ void ThresholdDetector::apply(
 {
     if (!packet.haveSamplingRate())
     {   
+        throw std::invalid_argument("Sampling rate not set");
+    }
+    apply(packet.getDataReference(),
+          packet.getSamplingRate(),
+          packet.getStartTime(),
+          triggerWindows);
+}
+
+void ThresholdDetector::apply(
+    const URTS::Broadcasts::Internal::ProbabilityPacket::
+                                      ProbabilityPacket &packet,
+    std::vector<TriggerWindow<double>> *triggerWindows)
+{
+    if (!packet.haveSamplingRate())
+    {
         throw std::invalid_argument("Sampling rate not set");
     }
     apply(packet.getDataReference(),

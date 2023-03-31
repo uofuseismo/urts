@@ -93,7 +93,20 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<Pick> Subscriber::receive() const
 {
-    auto pick = static_unique_pointer_cast<Pick>
-                (pImpl->mSubscriber->receive());
-    return pick;
+    auto message = pImpl->mSubscriber->receive();
+    if (message != nullptr)
+    {
+        try
+        {
+            return static_unique_pointer_cast<Pick> (std::move(message));
+        }
+        catch (const std::exception &e)
+        {
+            std::string errorMessage
+                = "Error deserializing pick message.  Failed with "
+                + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
+        }
+    }
+    return nullptr;
 }

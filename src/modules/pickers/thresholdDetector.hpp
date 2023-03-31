@@ -2,9 +2,16 @@
 #define URTS_MODULES_PICKERS_THRESHOLD_DETECTOR_HPP
 #include <memory>
 #include <chrono>
-namespace URTS::Broadcasts::Internal::DataPacket
+namespace URTS::Broadcasts::Internal
 {
- class DataPacket;
+ namespace DataPacket
+ {
+  class DataPacket;
+ }
+ namespace ProbabilityPacket
+ {
+  class ProbabilityPacket;
+ }
 }
 namespace URTS::Modules::Pickers
 {
@@ -64,14 +71,21 @@ public:
     /// @throws std::runtime_error if \c isInitialized() is false.
     void setInitialConditions();
 
-    /// @brief Applies the threshold detector to a characteristic function (or
-    ///        posterior probability) data packet.
+    /// @brief Applies the threshold detector to a data packet.
     /// @param[in] packet  The data packet on which to run the threshold
     ///                    detector.
-    /// @throws std::invalid_argument if the data packet does not have a 
+    /// @throws std::invalid_argument if the packet does not have a 
     ///         sampling rate.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void apply(const URTS::Broadcasts::Internal::DataPacket::DataPacket &packet,
+               std::vector<TriggerWindow<double>> *triggerWindows);
+    /// @brief Applies the threshold detector to a posterior probability packet.
+    /// @param[in] packet  The posterior probability packet on which to run
+    ///                    the threshold detector.
+    /// @throws std::invalid_argument if the packet does not have a 
+    ///         sampling rate.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    void apply(const URTS::Broadcasts::Internal::ProbabilityPacket::ProbabilityPacket &packet,
                std::vector<TriggerWindow<double>> *triggerWindows);
     /// @brief Applies the threshold detector the given characteristic function
     ///        signal (or posterior probability signal.

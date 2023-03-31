@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <chrono>
 #include <thread>
+#include <atomic>
 #include <mutex>
 #ifndef NDEBUG
 #include <cassert>
@@ -147,13 +148,11 @@ public:
     /// Initialized?
     [[nodiscard]] bool isInitialized() const noexcept
     {
-        std::scoped_lock lock(mMutex);
         return mInitialized;
     }
     /// @result True indicates this should keep running
     [[nodiscard]] bool keepRunning() const
     {
-        std::scoped_lock lock(mMutex);
         return mKeepRunning;
     }
     /// @result True indicates this is running.
@@ -169,7 +168,6 @@ public:
     /// @brief Toggles this as running or not running
     void setRunning(const bool running)
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
         mKeepRunning = running;
     }
     /// @brief Callback function
@@ -257,7 +255,6 @@ public:
         return commandsResponse.clone();
     }
 //private:
-    mutable std::mutex mMutex;
     ::ProgramOptions mProgramOptions;
     std::string mModuleName{MODULE_NAME};
     std::unique_ptr<URTS::Broadcasts::Internal::DataPacket::Subscriber>
@@ -271,8 +268,8 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     ::ThreadSafeQueue<size_t> mInferenceQueue;
-    bool mKeepRunning{true};
-    bool mInitialized{false};
+    std::atomic<bool> mKeepRunning{true};
+    std::atomic<bool> mInitialized{false};
 };
 /// @brief Parses the command line options.
 [[nodiscard]] std::string parseCommandLineOptions(int argc, char *argv[])

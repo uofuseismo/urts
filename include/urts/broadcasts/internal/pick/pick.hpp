@@ -1,6 +1,7 @@
 #ifndef URTS_BROADCASTS_INTERNAL_PICK_PICK_HPP
 #define URTS_BROADCASTS_INTERNAL_PICK_PICK_HPP
 #include <memory>
+#include <ostream>
 #include <chrono>
 #include <vector>
 #include <string>
@@ -231,5 +232,8 @@ private:
     class PickImpl;
     std::unique_ptr<PickImpl> pImpl;
 };
+/// @result Prints a valid pick class as a JSON object. 
+///         If the pick is invalid then the result is nothing.
+std::ostream& operator<<(std::ostream &os, const Pick &pick);
 }
 #endif

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <chrono>
 #include <string>
 #include <vector>
@@ -439,3 +440,17 @@ std::string Pick::getMessageVersion() const noexcept
     return MESSAGE_VERSION;
 }
 
+std::ostream&
+URTS::Broadcasts::Internal::Pick::operator<<(std::ostream &os, const Pick &pick)
+{
+    try
+    {
+        auto object = ::toJSONObject(pick);
+        return os << object.dump(4); 
+    }
+    catch (const std::exception &e)
+    {
+std::cout << e.what() << std::endl; 
+    }
+    return os;
+}

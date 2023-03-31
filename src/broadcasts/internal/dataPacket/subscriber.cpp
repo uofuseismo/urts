@@ -104,8 +104,20 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<DataPacket> Subscriber::receive() const
 {
-    auto dataPacket
-        = static_unique_pointer_cast<DataPacket>
-          (pImpl->mSubscriber->receive());
-    return dataPacket;
+    auto message = pImpl->mSubscriber->receive();
+    if (message != nullptr)
+    {
+        try
+        {
+            return static_unique_pointer_cast<DataPacket> (std::move(message));
+        }
+        catch (const std::exception &e)
+        {
+            std::string errorMessage
+                = "Error deserializing data packet.  Failed with "
+                + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
+        }
+    }
+    return nullptr;
 }

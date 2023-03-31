@@ -105,8 +105,22 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<ProbabilityPacket> Subscriber::receive() const
 {
-    auto probabilityPacket
-        = static_unique_pointer_cast<ProbabilityPacket>
-          (pImpl->mSubscriber->receive());
-    return probabilityPacket;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> message
+        = pImpl->mSubscriber->receive();
+    if (message != nullptr)
+    {
+        try
+        {
+            return static_unique_pointer_cast<ProbabilityPacket>
+                   (std::move(message));
+        }
+        catch (const std::exception &e)
+        {
+            std::string errorMessage
+                = "Error deserializing probability packet.  Failed with "
+                + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
+        }
+    }
+    return nullptr;
 }

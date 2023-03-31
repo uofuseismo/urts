@@ -61,11 +61,14 @@ ProbabilityPacket objectToProbabilityPacket(const nlohmann::json &obj)
     packet.setChannel(obj["Channel"].get<std::string> ());
     packet.setLocationCode(obj["LocationCode"].get<std::string> ());
     packet.setSamplingRate(obj["SamplingRate"].get<double> ());
-    packet.setOriginalChannels(obj["OriginalChannels"]
-                                 .get<std::vector<std::string>> ());
     packet.setAlgorithm(obj["Algorithm"].get<std::string> ());
     packet.setPositiveClassName(obj["PositiveClassName"].get<std::string> ());
     packet.setNegativeClassName(obj["NegativeClassName"].get<std::string> ());
+    std::vector<std::string> originalChannels = obj["OriginalChannels"];
+    if (!originalChannels.empty())
+    {
+        packet.setOriginalChannels(originalChannels);
+    }
     auto startTime = obj["StartTime"].get<int64_t> ();
     std::chrono::microseconds startTimeMuS{startTime};
     packet.setStartTime(startTimeMuS);
