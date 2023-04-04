@@ -24,6 +24,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_componen
     [ "getStartTime", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a191a5e82a4e953ab017a00b437125f34", null ],
     [ "getStation", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a632ec108e6888476a09b2f96ec2196c1", null ],
     [ "haveChannel", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#acca4a3f2fcf84ff7e6cdaf1fecdb5b62", null ],
+    [ "haveGaps", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#aecb9c2bcf5bb55c3688941d36300eae9", null ],
     [ "haveLocationCode", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#acea10c7ed09a54269e65ccccda80874f", null ],
     [ "haveNetwork", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a9cc1252069694cbb35eb595e74b546a4", null ],
     [ "haveStation", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#ac8c9c1481ca28ad472a48f7e64bfb1fd", null ],
