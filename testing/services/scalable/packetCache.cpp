@@ -812,6 +812,7 @@ TEST(ServicesScalablePacketCache, SingleComponent)
     EXPECT_NEAR(yDiff, 0, 1.e-8);
  
     const auto &gap = waveform.getGapIndicatorReference();
+    EXPECT_FALSE(waveform.haveGaps());
     EXPECT_EQ(gap.size(), yRef.size());
     for (const auto &g : gap)
     {

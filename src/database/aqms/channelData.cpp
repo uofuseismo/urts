@@ -1,14 +1,13 @@
 #include <string>
 #include <chrono>
 #include <nlohmann/json.hpp>
-#include <umps/logging/standardOut.hpp>
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/postgresql.hpp"
 #include "utilities.hpp"
 
 using namespace URTS::Database::AQMS;
 
-/// Compares station data
+/// Compares channel data
 bool URTS::Database::AQMS::operator==(
     const ChannelData &lhs, const ChannelData &rhs)
 {
@@ -510,6 +509,15 @@ URTS::Database::AQMS::operator<<(std::ostream &os, const ChannelData &data)
     if (data.haveAzimuth())
     {
         obj["Azimuth"] = data.getAzimuth();
+    }
+    if (data.haveOnOffDate())
+    {
+        obj["OnDate"] = ::formatTimeUTC(data.getOnDate());
+        obj["OffDate"] = ::formatTimeUTC(data.getOffDate());
+    }
+    if (data.haveLoadDate())
+    {
+       obj["LoadDate"] = ::formatTimeUTC(data.getLoadDate());
     }
     return os << obj.dump(4);
 }

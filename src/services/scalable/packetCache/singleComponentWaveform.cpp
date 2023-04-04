@@ -366,6 +366,12 @@ const std::vector<int8_t>
     return pImpl->mInterpolator.getGapIndicatorReference();
 }
 
+/// Have gaps?
+bool SingleComponentWaveform::haveGaps() const noexcept
+{
+    return pImpl->mInterpolator.haveGaps();
+}
+
 /// Number of samples
 int SingleComponentWaveform::getNumberOfSamples() const noexcept
 {

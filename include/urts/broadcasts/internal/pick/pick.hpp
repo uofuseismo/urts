@@ -168,11 +168,6 @@ public:
     /// @result The algorithms used to arrive at this pick.
     [[nodiscard]] std::vector<std::string> getProcessingAlgorithms() const noexcept;
 
-    /// @brief Sets the algorithm or code used to generate this pick.
-    void setAlgorithm(const std::string &algorithm) noexcept;
-    /// @result The algorithm that created this picked.
-    [[nodiscard]] std::string getAlgorithm() const noexcept;
-
     /// @brief Sets the lower and upper uncertainty bound.
     /// @throws std::invalid_argument if the lowerBound exceeds the upperBound.
     void setLowerAndUpperUncertaintyBound(const std::pair<UncertaintyBound, UncertaintyBound> &lowerAndUpperBound);
