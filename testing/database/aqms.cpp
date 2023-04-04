@@ -1,6 +1,7 @@
 #include <string>
+#include <chrono>
 #include "urts/database/aqms/channelData.hpp"
-//#include "urts/database/aqms/stationData.hpp"
+#include "urts/database/aqms/stationData.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -8,7 +9,6 @@ namespace
 
 using namespace URTS::Database::AQMS;
 
-/*
 TEST(DatabaseAQMS, StationData)
 {
     const std::string network{"UU"};
@@ -17,9 +17,9 @@ TEST(DatabaseAQMS, StationData)
     const double latitude = 38.63;
     const double longitude = -113.16;
     const double elevation = 1833;    
-    Time::UTC tOn("2012-01-01T00:00:00");
-    Time::UTC tOff("2021-01-01T00:00:00");
-    Time::UTC loadDate("2012-01-01T00:00:01");
+    std::chrono::microseconds tOn{1325376000000000}; // 2012-01-01T00:00:00
+    std::chrono::microseconds tOff{1609459200000000}; // 2021-01-01T00:00:00
+    std::chrono::microseconds loadDate{1325376001000000}; // 2012-01-01T00:00:01
     StationData data;
     data.setNetwork(network);
     data.setStation(station);
@@ -41,7 +41,6 @@ TEST(DatabaseAQMS, StationData)
     EXPECT_EQ(dataCopy.getOffDate(), tOff);
     EXPECT_EQ(dataCopy.getLoadDate(), loadDate);
 }
-*/
 
 TEST(DatabaseAQMS, ChannelData)
 {
