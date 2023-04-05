@@ -6,7 +6,7 @@ source urts.sh
 # Workspace directory
 WORKDIR=`dirname $0`
 # Config file
-CONFIG_FILE=$(pwd)/firstMotionClassifier.ini
+CONFIG_FILE=$(pwd)/sPickRegressor.ini
 # Name of executable
 EXECUTABLE=sPickRegressorService
 # Instance of service

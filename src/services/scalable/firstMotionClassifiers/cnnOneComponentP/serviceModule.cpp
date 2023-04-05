@@ -127,7 +127,7 @@ struct ProgramOptions
         //-----------------------ML Model Options-----------------------------//
         std::string weightsFileGuess
         {
-            "/usr/local/share/UUSSMLModels/detectorsFirstMotionClassifier.onnx"
+            "/usr/local/share/UUSSMLModels/firstMotionClassifiersCNNOneComponentP.onnx"
         };
         std::string weightsFile{""};
         if (std::filesystem::exists(weightsFileGuess))
