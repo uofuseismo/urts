@@ -172,7 +172,7 @@ public:
                     = UModels::convertProbabilityToClass(
                           pUp, pDown, pUnknown,
                           threshold);
-                response.setProbabilities(probabilities);
+                response.setProbabilities(std::tuple {pUp, pDown, pUnknown});
                 response.setFirstMotion(
                     static_cast<ProcessingResponse::FirstMotion> (firstMotion));
                 response.setReturnCode(ProcessingResponse::Success);
@@ -231,7 +231,7 @@ public:
                     = UModels::convertProbabilityToClass(
                           pUp, pDown, pUnknown,
                           threshold);
-                response.setProbabilities(probabilities);
+                response.setProbabilities(std::tuple {pUp, pDown, pUnknown});
                 response.setFirstMotion(
                     static_cast<InferenceResponse::FirstMotion> (firstMotion)
                 );
