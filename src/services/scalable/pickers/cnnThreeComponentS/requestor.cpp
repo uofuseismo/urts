@@ -131,6 +131,10 @@ std::unique_ptr<InferenceResponse>
 Requestor::request(const InferenceRequest &request)
 {
     auto message = pImpl->mRequestor->request(request);
+    if (message == nullptr)
+    {
+        throw std::runtime_error("Inference request may have timed out");
+    }
     if (message->getMessageType() == pImpl->mFailureMessage.getMessageType())
     {   
         auto failureMessage = UMF::static_unique_pointer_cast<UMF::Failure>
@@ -150,6 +154,10 @@ std::unique_ptr<PreprocessingResponse>
 Requestor::request(const PreprocessingRequest &request)
 {
     auto message = pImpl->mRequestor->request(request);
+    if (message == nullptr)
+    {
+        throw std::runtime_error("Preprocessing request may have timed out");
+    }
     if (message->getMessageType() == pImpl->mFailureMessage.getMessageType())
     {
         auto failureMessage = UMF::static_unique_pointer_cast<UMF::Failure>
@@ -169,6 +177,10 @@ std::unique_ptr<ProcessingResponse>
 Requestor::request(const ProcessingRequest &request)
 {
     auto message = pImpl->mRequestor->request(request);
+    if (message == nullptr)
+    {
+        throw std::runtime_error("Processing request may have timed out");
+    }
     if (message->getMessageType() == pImpl->mFailureMessage.getMessageType())
     {
         auto failureMessage = UMF::static_unique_pointer_cast<UMF::Failure>

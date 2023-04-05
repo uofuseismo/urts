@@ -93,6 +93,7 @@ set(GENERIC_SRC
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
+    src/database/aqms/stationData.cpp
     src/database/connection/postgresql.cpp
     src/observerPattern/subject.cpp
     src/services/standalone/incrementer/counter.cpp

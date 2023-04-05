@@ -1,6 +1,8 @@
 #ifndef URTS_MODULES_PICKERS_P_PICKER_PIPELINE_HPP
 #define URTS_MODULES_PICKERS_P_PICKER_PIPELINE_HPP
 #include <vector>
+#include <atomic>
+#include <cmath>
 #include <string>
 #include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
 #include <uussmlmodels/firstMotionClassifiers/cnnOneComponentP/inference.hpp>
@@ -12,12 +14,88 @@
 #include "urts/services/scalable/pickers/cnnOneComponentP.hpp"
 #include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP.hpp"
 #include "urts/services/standalone/incrementer.hpp"
+#include "private/threadSafeQueue.hpp"
 
 namespace
 {
 
+[[nodiscard]] [[maybe_unused]]
+std::vector<double>
+centerAndCut(
+    const URTS::Services::Scalable::PacketCache::SingleComponentWaveform
+       &waveform,
+    const std::chrono::microseconds &centerTime,
+    const std::chrono::microseconds &windowPreTime  = std::chrono::microseconds {-2000000},
+    const std::chrono::microseconds &windowPostTime = std::chrono::microseconds {+1990000})
+{
+    auto nSamples = waveform.getNumberOfSamples();
+    auto startTime = waveform.getStartTime();
+    auto endTime = waveform.getEndTime();
+    auto iSamplingRateMuS = waveform.getNominalSamplingPeriod();
+    auto samplingRateMuS = static_cast<double> (iSamplingRateMuS.count());
+    auto iSamplingRateMuS2 = iSamplingRateMuS/2;
+    if (centerTime < startTime || centerTime > endTime)
+    {
+        throw std::runtime_error("Center time not in start/end time");
+    }
+    auto centerTimeOffset = centerTime - startTime;
+    if (centerTime + windowPreTime < startTime)
+    {
+        throw std::runtime_error("Not enough lead time in signal");
+    }
+    if (centerTime + windowPostTime > endTime)
+    {
+        throw std::runtime_error("Not enough post time in signal");
+    }
+    auto centerIndex
+        = static_cast<int> (std::round(centerTimeOffset.count()
+                                      /samplingRateMuS));
+    auto nSamplesBefore
+        = static_cast<int> (std::round(windowPreTime.count()/samplingRateMuS));
+    std::chrono::microseconds windowDuration = windowPostTime - windowPreTime;
+    auto nSamplesInWindow
+        = static_cast<int> (std::round(windowDuration.count()/samplingRateMuS))
+        + 1;
+    auto i0 = centerIndex + nSamplesBefore;
+    auto i1 = i0 + nSamplesInWindow;
+    if (i0 < 0)
+    {
+        throw std::runtime_error("Cannot start window cut before 0");
+    }
+    auto anticipatedDuration = (i1 - i0)*iSamplingRateMuS;
+    if (anticipatedDuration <= windowDuration + iSamplingRateMuS2)
+    {
+        for (int i = 0; i < nSamples; ++i)
+        {
+            i1 = i1 + 1;
+            anticipatedDuration = (i1 - i0)*iSamplingRateMuS;
+            if (anticipatedDuration > windowDuration + iSamplingRateMuS2)
+            {
+                break;
+            }
+        }
+    }
+    anticipatedDuration = (i1 - i0)*iSamplingRateMuS;
+    if (anticipatedDuration <= windowDuration + iSamplingRateMuS2)
+    {
+        throw std::runtime_error("Could not extend window");
+    } 
+    if (i1 > nSamples)
+    {
+        throw std::runtime_error("Cannot end window cut after signal length");
+    }
+    // Finally cut the signal
+    auto signalReference = waveform.getSignalReference();  
+    std::vector<double> result(i1 - i0, 0);
+    std::copy(signalReference.data() + i0, signalReference.data() + i1,
+              result.data());
+std::cout << "nsamples: " << i1 - i0 << " " << result.size() << std::endl;
+    return result;
+}
+
 struct P1CPickerProperties
 {
+/*
     P1CPickerProperties()
     {
         mWindowDuration
@@ -36,9 +114,19 @@ struct P1CPickerProperties
         assert(mMaximumPerturbation > mMinimumPerturbation);
 #endif
     }
-    std::chrono::microseconds mWindowDuration{3990000};
-    std::chrono::microseconds mMinimumPerturbation{-850000};
-    std::chrono::microseconds mMaximumPerturbation{+850000};
+*/
+#ifndef NDEBUG
+    P1CPickerProperties()
+    {
+        assert(mPostWindow - mPreWindow == mWindowDuration);
+    }
+#endif
+    const std::string mAlgorithm{"CNNOneComponentPPicker"};
+    const std::chrono::microseconds mPreWindow{-2000000};
+    const std::chrono::microseconds mPostWindow{1990000};
+    const std::chrono::microseconds mWindowDuration{3990000};
+    const std::chrono::microseconds mMinimumPerturbation{-850000};
+    const std::chrono::microseconds mMaximumPerturbation{+850000};
     double mSamplingRate{UUSSMLModels::Pickers::CNNOneComponentP::
                          Inference::getSamplingRate()};
     int mExpectedSignalLength{UUSSMLModels::Pickers::CNNOneComponentP::
@@ -47,15 +135,18 @@ struct P1CPickerProperties
 
 struct P1CFirstMotionProperties
 {
+#ifndef NDEBUG
     P1CFirstMotionProperties()
     {
-        mWindowDuration
-            = std::chrono::microseconds {
-                static_cast<int64_t> (std::round((mExpectedSignalLength - 1)
-                                                /mSamplingRate*1.e6))
-              }; 
+        assert(mPostWindow - mPreWindow == mWindowDuration);
     }
-    std::chrono::microseconds mWindowDuration{3990000};
+#endif
+    const std::string mAlgorithm{"CNNOnecomponentPFirstMotionClassifier"};
+    const std::chrono::microseconds mPreWindow{-2000000};
+    const std::chrono::microseconds mPostWindow{1990000};
+    const std::chrono::microseconds mWindowDuration{3990000};
+    const std::chrono::microseconds mMinimumPerturbation{-500000}; 
+    const std::chrono::microseconds mMaximumPerturbation{+500000}; 
     double mSamplingRate{UUSSMLModels::FirstMotionClassifiers::
                          CNNOneComponentP::Inference::getSamplingRate()};
     int mExpectedSignalLength{UUSSMLModels::FirstMotionClassifiers::
@@ -74,22 +165,34 @@ bool operator==(const P1CPickerProperties &lhs,
 class OneComponentProcessingItem
 {
 public:
-    enum class State
-    {
-        Unknown,
-        Query,
-        Inference,
-        Publish
-    };
-public:
     OneComponentProcessingItem(
-        const URTS::Database::AQMS::ChannelData &verticalChannelData) :
+        const URTS::Database::AQMS::ChannelData &verticalChannelData,
+        const ::ProgramOptions &programOptions,
+        const int instance) :
         mVerticalChannelData(verticalChannelData),
-        mState(OneComponentProcessingItem::State::Unknown)
+        mInstance(instance)
     {
+        // Figure out which utilities we are running
+        mRunPPicker = programOptions.mRunPPicker;
+        mRunFirstMotionClassifier = programOptions.mRunFirstMotionClassifier;
+ 
+        P1CPickerProperties pickerProperties;
         P1CFirstMotionProperties fmProperties;
         mFirstMotionClassifierHalfWindowDuration
             = fmProperties.mWindowDuration/2;
+ 
+        // Figure out +/- shift tolerance
+        auto maxShift
+            = std::max(std::abs(pickerProperties.mMinimumPerturbation.count()),
+                       std::abs(pickerProperties.mMaximumPerturbation.count()));
+        if (!mRunPPicker && mRunFirstMotionClassifier)
+        {
+            maxShift
+                = std::max(std::abs(fmProperties.mMinimumPerturbation.count()),
+                           std::abs(fmProperties.mMaximumPerturbation.count()));
+        }
+        mTolerance = std::chrono::microseconds {maxShift};
+ 
 
         auto network = mVerticalChannelData.getNetwork();
         auto station = mVerticalChannelData.getStation();
@@ -100,9 +203,14 @@ public:
         mHash = std::hash<std::string>{} (mName);
 
         // Target sampling rate
-        mInterpolator.setNominalSamplingRate(
-            verticalChannelData.getSamplingRate());
-//        mInterpolator.setGapTolerance();
+        auto samplingRate = verticalChannelData.getSamplingRate();
+        mInterpolator.setNominalSamplingRate(samplingRate);
+        auto gapTolerance = std::chrono::microseconds
+        {
+            static_cast<int64_t> (std::round(
+                std::max(0, programOptions.mGapTolerance)/samplingRate*1.e6))
+        };
+        mInterpolator.setGapTolerance(gapTolerance);
 
         // Predefine some vertical data request information
         mVerticalRequest.setNetwork(network);
@@ -118,16 +226,97 @@ public:
         // Predefine some pick information
         mPick.setNetwork(network);
         mPick.setStation(station);
-        mPick.setChannel(channel);
+        mPick.setChannel(channel); // Picking happens on untransformed channel
         mPick.setLocationCode(locationCode);
         mPick.setPhaseHint("P");
         mPick.setFirstMotion(URTS::Broadcasts::Internal::Pick::Pick::
                              FirstMotion::Unknown);
         mPick.setReviewStatus(URTS::Broadcasts::Internal::Pick::Pick::
                               ReviewStatus::Automatic);
-        mPick.setAlgorithm("CNNOneComponentP");
+        URTS::Broadcasts::Internal::Pick::UncertaintyBound lowerBound;
+        URTS::Broadcasts::Internal::Pick::UncertaintyBound upperBound;
+        lowerBound.setPercentile(15.9);
+        upperBound.setPercentile(84.1);
+        lowerBound.setPerturbation(std::chrono::microseconds{-25000});
+        upperBound.setPerturbation(std::chrono::microseconds{ 25000});
+        mPick.setLowerAndUpperUncertaintyBound(
+           std::pair{lowerBound, upperBound});
 
-        mState = OneComponentProcessingItem::State::Query;
+        // Flip first motion b/c of sensor?
+        mFirstMotionMultiplier = 1;
+        if (verticalChannelData.haveDip())
+        {
+            // SEED convention -90 is + up and 90 is + down.
+            // So if the dip is is +90 then there's a reversal.
+            if (std::abs(verticalChannelData.getDip() - 90) < 1.e-4)
+            {
+                mFirstMotionMultiplier =-1;
+            }
+        }
+    }
+    /// @brief Convenience funtion to process a pick.
+    [[nodiscard]]
+    URTS::Broadcasts::Internal::Pick::Pick refinePick(
+        const URTS::Broadcasts::Internal::Pick::Pick &initialPick,
+        URTS::Services::Scalable::PacketCache::Requestor
+              &packetCacheRequestor,
+        URTS::Services::Scalable::Pickers::CNNOneComponentP::
+              Requestor &pickRequestor,
+        URTS::Services::Scalable::FirstMotionClassifiers::
+              CNNOneComponentP::Requestor &fmRequestor,
+        std::shared_ptr<UMPS::Logging::ILog> &logger)
+    {
+        // Do things match up?
+        if (mPick.getNetwork() != initialPick.getNetwork())
+        {
+            throw std::runtime_error("Inconsistent networks");
+        }
+        if (mPick.getStation() != initialPick.getStation())
+        {
+            throw std::runtime_error("Inconsistent stations");
+        }
+        if (mPick.getChannel() != initialPick.getChannel())
+        {
+            throw std::runtime_error("Inconsistent channels");
+        }
+        if (mPick.getLocationCode() != initialPick.getLocationCode())
+        {
+            throw std::runtime_error("Inconsistent location code");
+        }
+        // Initialize pick
+        auto result = mPick;
+        result.setTime(initialPick.getTime());
+        result.setIdentifier(initialPick.getIdentifier()); 
+        result.setPhaseHint(initialPick.getPhaseHint());
+        result.setReviewStatus(initialPick.getReviewStatus());
+        result.setProcessingAlgorithms(initialPick.getProcessingAlgorithms());
+        if (initialPick.haveLowerAndUpperUncertaintyBound())
+        {
+            result.setLowerAndUpperUncertaintyBound(
+                initialPick.getLowerAndUpperUncertaintyBound());
+        }
+        // Query data
+        try
+        {
+            queryPacketCache(result.getTime(), packetCacheRequestor);
+        }
+        catch (const std::exception &e)
+        {
+            logger->error(e.what());
+            return result; // Really just giving back what was sent
+        }
+        // Perform inference and update pick
+        try
+        {
+            performInference(&result, pickRequestor, fmRequestor, logger);
+        }
+        catch (const std::exception &e)
+        {
+            logger->error(e.what());
+            return result;
+        }
+std::cout << "updated pick: " << initialPick << " " << result << std::endl;
+        return result;
     }
 /*
     /// @brief Initializes the pick given this crude pick estimate from the
@@ -136,19 +325,21 @@ public:
     {
 
     }
+*/
     /// @brief Query the packet cache.
-    void queryPacketCache(const std::chrono::microseconds &pickTime)
+    void queryPacketCache(
+        const std::chrono::microseconds &pickTime,
+        URTS::Services::Scalable::PacketCache::Requestor &packetCacheRequestor)
     {
-
         // Update my request identifier (and avoid overflow in a billion years)
         if (mRequestIdentifier > std::numeric_limits<int64_t>::max() - 10)
         {
             mRequestIdentifier = 0;
         }
-        auto t0QueryMuSec = pickTime - mTimeBefore - mPadQuery;
-        auto t1QueryMuSec = pickTime + mTimeAfter  + mPadQuery;
+        auto t0QueryMuSec = pickTime - mTimeBefore - (mPadQuery + mTolerance);
+        auto t1QueryMuSec = pickTime + mTimeAfter  + (mPadQuery + mTolerance);
         auto t0Query = static_cast<double> (t0QueryMuSec.count())*1.e-6;
-        auto t1Qiery = static_cast<double> (t1QueryMuSec.count())*1.e-6;
+        auto t1Query = static_cast<double> (t1QueryMuSec.count())*1.e-6;
         try
         {
             std::pair<double, double> queryTimes{t0Query, t1Query};
@@ -157,19 +348,19 @@ public:
         }
         catch (const std::exception &e)
         {
-            logger->error("Instance " + std::to_string(mInstance) 
-                        + " failed to create data request: "
-                        + std::string{e.what()});
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + " failed to create data request: " 
+                              + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
         }
 
-        std::unique_ptr<URTS::Services::Scalable::PacketCache::DataResponse> reply{nullptr};
+        auto reply = packetCacheRequestor.request(mVerticalRequest);
         if (reply == nullptr)
         {
-            logger->warn("Instance " + std::to_string(mInstance)
-                        + "'s packet cache request for " + mName
-                        + " may have timed out");
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + "'s packet cache request for " + mName
+                              + " may have timed out";
+            throw std::runtime_error(errorMessage);
         }
         try
         {
@@ -178,18 +369,18 @@ public:
         }
         catch (const std::exception &e)
         {
-            logger->error("Instance " + std::to_string(mInstance)
-                        +" Failed to set data responses for "
-                        + mName + ".  Failed with: "
-                        + std::string{e.what()});
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + " failed to set data responses for "
+                              + mName + ".  Failed with: "
+                              + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
         }
         // Really not set up to deal with gaps
         if (mInterpolator.haveGaps())
         {
-            logger->debug("Instance " + std::to_string(mInstance)
-                        + ": " + mName + " has gaps.  Skipping...");
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + ": " + mName + " has gaps.  Skipping...";
+            throw std::runtime_error(errorMessage);
         }
         // Get the valid interpolated times
         auto t0Interpolated = mInterpolator.getStartTime();
@@ -199,117 +390,147 @@ public:
         // training.
         if ((pickTime - mTolerance) - t0Interpolated < mTimeBefore)
         {
-            logger->error("Instance " + std::to_string(mInstance)
-                        + ": Pick too close to start of window");
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + ": Pick too close to start of window";
+            throw std::runtime_error(errorMessage);
         }
         if (t1Interpolated - (pickTime + mTolerance) < mTimeAfter)
         {
-            logger->error("Instance " + std::to_string(mInstance)
-                        + ": Pick too close to end of window");
-            return;
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + ": Pick too close to end of window";
+            throw std::runtime_error(errorMessage);
         }
     }
-*/
     /// @brief Perform the pick regression and first motion classification
     ///        inference.
     void performInference(
+        URTS::Broadcasts::Internal::Pick::Pick *pick,
         URTS::Services::Scalable::Pickers::CNNOneComponentP::
               Requestor &pickRequestor,
         URTS::Services::Scalable::FirstMotionClassifiers::
               CNNOneComponentP::Requestor &fmRequestor,
         std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
-        // Set the requests
-        std::unique_ptr<URTS::Services::Scalable::Pickers::CNNOneComponentP::
-                        ProcessingResponse> pickResponse{nullptr};
-        std::chrono::microseconds pickCorrection{0};
+        auto algorithms = pick->getProcessingAlgorithms();
+        // Refine the P pick
         if (mRunPPicker)
         {
-            mPickRequest.setVerticalSignal(mInterpolator.getSignalReference());
-            pickResponse = pickRequestor.request(mPickRequest);
-            if (pickResponse == nullptr)
+            bool computePick = false;
+            try
             {
-                logger->error("P pick request for  " + mName
-                            + " timed out");
+                auto verticalSignal
+                     = ::centerAndCut(mInterpolator,
+                                      pick->getTime(),
+                                      std::chrono::microseconds {-2000000},
+                                      std::chrono::microseconds {+1990000});
+                mPickRequest.setVerticalSignal(
+                    mInterpolator.getSignalReference());
+                mPickRequest.setIdentifier(mRequestIdentifier);
+                computePick = true;
             }
-            else
+            catch (const std::exception &e)
             {
-                auto returnCode = pickResponse->getReturnCode();
-                if (returnCode ==
-                    URTS::Services::Scalable::Pickers::CNNOneComponentP::
-                          ProcessingResponse::ReturnCode::Success)
+                logger->error("Instance " + std::to_string(mInstance)
+                            + " P picker signal cut failed with: " + e.what());
+            }
+            if (computePick)
+            {
+                auto pickResponse = pickRequestor.request(mPickRequest);
+                if (pickResponse == nullptr)
                 {
-                    pickCorrection
-                        = std::chrono::microseconds {
-                            static_cast<int64_t> (
-                               std::round(pickResponse->getCorrection()*1.e6))
-                          };
+                    logger->error("P pick request for  " + mName
+                               + " timed out");
                 }
                 else
                 {
-                    logger->warn("P pick request failed for " + mName
-                               + " failed with error code"
-                               + std::to_string(static_cast<int> (returnCode)));
+                    auto returnCode = pickResponse->getReturnCode();
+                    if (returnCode ==
+                        URTS::Services::Scalable::Pickers::CNNOneComponentP::
+                              ProcessingResponse::ReturnCode::Success)
+                    {
+                        auto pickCorrection
+                            = std::chrono::microseconds {
+                                static_cast<int64_t> (
+                                std::round(pickResponse->getCorrection()*1.e6))
+                              };
+                        pick->setTime(pick->getTime() + pickCorrection);
+                        algorithms.push_back("CNNOneComponentPPicker");
+                        // TODO uncertainties
+                        pick->setLowerAndUpperUncertaintyBound(
+                             mPick.getLowerAndUpperUncertaintyBound());
+                    }
+                    else
+                    {
+                        logger->warn("P pick request failed for " + mName
+                                   + " on instance " + std::to_string(mInstance)
+                                   + ".  Failed with error code "
+                                   + std::to_string(static_cast<int>
+                                                       (returnCode)));
+                    }
                 }
             }
         }
         // Set the the pick time
-        // TODO uncertainties
-        mPick.setTime(mPick.getTime() + pickCorrection);
-        std::unique_ptr<URTS::Services::Scalable::FirstMotionClassifiers::
-                        CNNOneComponentP::ProcessingResponse>
-                       fmResponse{nullptr};
         int firstMotion{0};
         if (mRunFirstMotionClassifier)
         {
-            // Attempt to center the pick for the first motion classifier
-/*
-            auto pickTime = mPick.getTime();
-            const auto &signal = mInterpolator.getSignalReference();
-            auto dt = 1./mInterpolator.getNominalSamplingRate();
-            auto t0 = mInterpolator.getStartTime();
-            auto t1 = mInterpolator.getEndTime();
-            auto offset = pickTime - t0;
-            auto newStartTime = pickTime
-                              - mFirstMotionClassifierHalfWindowDuration; 
-            auto newEndTime   = pickTime
-                              + mFirstMotionClassifierHalfWindowDuration;
-            bool setOriginalSignal{false};
-            if (newStartTime > std::chrono::microseconds {0} &&
-                newEndTime <= t1)
+            bool computeFirstMotion = false;
+            try
             {
-                auto i0 = std::max(0, static_cast<int>
-                                      (std::round(offset.count()*1.e-6)/dt));
-                auto windowDuration
-                    = 2*mFirstMotionClassifierHalfWindowDuration;
-                auto nSamples = static_cast<int> (
-                                std::round(windowDuration.count()*1.e-6/dt))
-                              + 1;
-                auto i1 = std::min(static_cast<int> (signal.size()),
-                                   i0 + i1);
-                try
-                {
-                    std::vector<double> subSignal(nCopy);
-                    std::copy(signal.begin() + i0, signal.begin() + i1, 
+                auto verticalSignal
+                     = ::centerAndCut(mInterpolator,
+                                      pick->getTime(),
+                                      std::chrono::microseconds {-2000000},
+                                      std::chrono::microseconds {+1990000});
+                mFirstMotionRequest.setVerticalSignal(
+                    mInterpolator.getSignalReference());
+                mFirstMotionRequest.setIdentifier(mRequestIdentifier);
+                computeFirstMotion = true;
             }
-*/
-            try 
+            catch (const std::exception &e) 
             {
- //               mFirstMotionRequest.setVerticalSignal(signal);
+                logger->error("Instance " + std::to_string(mInstance)
+                            + " first motion signal cut failed with: "
+                            + e.what());
+            }
+            if (computeFirstMotion)
+            {
                 auto fmResponse = fmRequestor.request(mFirstMotionRequest);
                 if (fmResponse == nullptr)
                 {
-
+                    logger->error("First motion request for  " + mName
+                               + " timed out");
+                }
+                else
+                {
+                    auto returnCode = fmResponse->getReturnCode();
+                    if (returnCode ==
+                        URTS::Services::Scalable::FirstMotionClassifiers::
+                        CNNOneComponentP::ProcessingResponse::
+                        ReturnCode::Success)
+                    {
+                        firstMotion = 
+                           static_cast<int> (fmResponse->getFirstMotion());
+                        // Handle flipped sensors
+                        firstMotion = mFirstMotionMultiplier*firstMotion;
+                        pick->setFirstMotion(
+                           static_cast<URTS::Broadcasts::Internal::Pick
+                                          ::Pick::FirstMotion> (firstMotion));
+                        algorithms.push_back(
+                           "CNNOneComponentPFirstMotionClassifier");
+                    }
+                    else
+                    {
+                        logger->warn("First motion request failed for " + mName
+                                   + " on instance " + std::to_string(mInstance)
+                                   + ".  Failed with error code "
+                                   + std::to_string(static_cast<int>
+                                                       (returnCode)));
+                    }
                 }
             }
-            catch (const std::exception &e)
-            {
-
-            } 
         }
-        mPick.setFirstMotion(static_cast<URTS::Broadcasts::Internal::Pick
-                                         ::Pick::FirstMotion> (firstMotion));
+        pick->setProcessingAlgorithms(algorithms);
     }
     /// @result The hash.
     [[nodiscard]] size_t getHash() const noexcept
@@ -318,16 +539,6 @@ public:
     }
     URTS::Services::Scalable::PacketCache::SingleComponentWaveform
         mInterpolator;
-/*
-    std::chrono::microseconds mTimeBefore{2000000}; //+2 s
-    std::chrono::microseconds mTimeAfter{2000000};  //-2 s
-    //std::chrono::micrseoconds mMaxShift{
-    std::chrono::microseconds mPadQuery{500000}; // Pre/post pad query 0.5s
-    int64_t mRequestIdentifier{0};
-    int mInstance{0};
-    bool mRunPicker{true};
-    bool mRunFirstMotion{true};
-*/
     URTS::Database::AQMS::ChannelData mVerticalChannelData;
     URTS::Services::Scalable::PacketCache::DataRequest mVerticalRequest;
     URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingRequest
@@ -336,21 +547,43 @@ public:
           ProcessingRequest mFirstMotionRequest;
     URTS::Broadcasts::Internal::Pick::Pick mPick;
     std::string mName;
-    size_t mHash{std::hash<std::string>{} ("")};
     std::chrono::microseconds mFirstMotionClassifierHalfWindowDuration;
-    State mState{State::Unknown};
+    std::chrono::microseconds mTimeBefore{2000000}; //+2 s
+    std::chrono::microseconds mTimeAfter{2000000};  //-2 s
+    std::chrono::microseconds mTolerance{850000};   // +/- 0.85 s
+    std::chrono::microseconds mPadQuery{500000}; // Pre/post pad query 0.5s
+    size_t mHash{std::hash<std::string>{} ("")};
+    int64_t mRequestIdentifier{0};
+    int mInstance{0};
+    int mFirstMotionMultiplier{1}; // Handle polarity flips
     bool mRunPPicker{true};
     bool mRunFirstMotionClassifier{true};
 };
 
+///--------------------------------------------------------------------------///
+///                                 Refines Picks                            ///
+///--------------------------------------------------------------------------///
 class PPickerPipeline
 {
 public:
     PPickerPipeline(const int instance,
                     const ::ProgramOptions &programOptions,
+                    std::shared_ptr<URTS::Database::AQMS::
+                                    ChannelDataTablePoller> &databasePoller,
+                    std::shared_ptr<
+                         ::ThreadSafeQueue<URTS::Broadcasts::
+                                           Internal::Pick::Pick>>
+                           &pickProcessorQueue,
+                    std::shared_ptr<
+                         ::ThreadSafeQueue<URTS::Broadcasts::
+                                           Internal::Pick::Pick>>
+                           &pickPublisherQueue,
                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mProgramOptions(programOptions),
         mContext(std::make_shared<UMPS::Messaging::Context> (1)),
+        mDatabasePoller(databasePoller),
+        mPickProcessorQueue(pickProcessorQueue),
+        mPickPublisherQueue(pickPublisherQueue),
         mLogger(logger),
         mInstance(instance)
     {
@@ -363,17 +596,10 @@ public:
         mPacketCacheRequestor->initialize(
             mProgramOptions.mPacketCacheRequestorOptions);
 
-        mLogger->debug("Instance " + std::to_string(mInstance)
-                     + " creating pick publisher...");
-        mPickPublisher
-            = std::make_unique<URTS::Broadcasts::Internal::Pick::Publisher>
-              (mContext, mLogger);
-        mPickPublisher->initialize(mProgramOptions.mPickPublisherOptions);
-
         if (mProgramOptions.mRunPPicker)
         {
             mLogger->debug("Instance " + std::to_string(mInstance)
-                         + " creating P picker requestor...");
+                         + " creating P pick regressor requestor...");
             mPickerRequestor
                 = std::make_unique<URTS::Services::Scalable::Pickers::
                                    CNNOneComponentP::Requestor>
@@ -408,7 +634,6 @@ public:
 #ifndef NDEBUG
         assert(mInputsEqual);
 #endif
-
         if (mInputsEqual)
         {
 
@@ -422,9 +647,200 @@ public:
 #endif
         }
     }
+    /// @brief Destructor
+    ~PPickerPipeline()
+    {
+        stop();
+    }
+    /// @brief Refines a pick
+    URTS::Broadcasts::Internal::Pick::Pick processPick(
+        const URTS::Broadcasts::Internal::Pick::Pick &pick,
+        const URTS::Broadcasts::Internal::Pick::Publisher &publisher)
+    {
+        URTS::Broadcasts::Internal::Pick::Pick result{pick};
+        // Does this pick exist?
+        std::string channel = pick.getChannel();
+        if (channel.size() == 2)
+        {
+            channel[2] = 'Z';
+        }
+        else
+        {
+            mLogger->error("Unhandled channel name: " + channel);
+            return result;
+        }
+        auto name = pick.getNetwork() + "."
+                  + pick.getStation() + "."
+                  + channel
+                  + pick.getLocationCode();
+        auto it = mProcessingItems.find(name);
+        // If it doesn't already exist then add it
+        if (it == mProcessingItems.end())
+        {
+            mLogger->debug("Instance " + std::to_string(mInstance)
+                         + " adding " + name);
+        }
+        it = mProcessingItems.find(name);
+        // Give up now
+        if (it == mProcessingItems.end())
+        {
+            mLogger->warn("Instance " + std::to_string(mInstance)
+                        + " cannot find " + name);
+            return result;
+        }
+        // Process this pick.
+ 
+        // This worked.  Button up the pick and give it back.
+
+        // All done
+        return result;
+    }
+    /// @brief Creates a processing item if it does not exists
+    void createProcessingItem(const std::string &network,
+                              const std::string &station,
+                              const std::string &channel,
+                              const std::string &locationCode)
+    {
+        // Set name and check if it already exists
+        auto name = network + "." + station + "."
+                  + channel + "." + locationCode;
+        if (mProcessingItems.contains(name)){return;}
+        // Okay, let's add it
+        mLogger->info("Instance " + std::to_string(mInstance)
+                    + " adding " + name);
+        auto channelDataVector = mDatabasePoller->getChannelData(network,
+                                                                 station,
+                                                                 channel,
+                                                                 locationCode);
+        if (channelDataVector.empty())
+        {
+            auto errorMessage = "Instance " + std::to_string(mInstance)
+                              + " cannot find channel data for " + name;
+            throw std::runtime_error(errorMessage);
+        }
+        // In case we somehow get multiple matches for the channel data
+        int channelIndex = 0;
+        if (channelDataVector.size() > 1)
+        {
+            // Take most recent channel
+            mLogger->warn("Instance "
+                        + std::to_string(mInstance)
+                        + " using most recent channel information for "
+                        + name);
+            auto maxOnDate = channelDataVector[0].getOnDate() ;
+            for (int i = 1; i < static_cast<int> (channelDataVector.size());
+                 ++i)
+            {
+                if (channelDataVector[0].getOnDate() > maxOnDate)
+                {   
+                    maxOnDate = channelDataVector[0].getOnDate();
+                    channelIndex = i;
+                }
+            }
+        }
+        // Is this channel still active?
+        auto endTime = channelDataVector.at(channelIndex).getOffDate();
+        auto now
+            = std::chrono::duration_cast<std::chrono::microseconds> (
+                std::chrono::system_clock::now().time_since_epoch());
+        if (endTime < now)
+        {  
+            throw std::runtime_error("Instance " + std::to_string(mInstance)
+                                  + name + " is closed in database");
+        }
+        mProcessingItems.insert(
+           std::pair {name,
+                      ::OneComponentProcessingItem(
+                          channelDataVector[channelIndex],
+                          mProgramOptions,
+                          mInstance)});
+    }
+    void setRunning(const bool running) noexcept
+    {
+        mKeepRunning = running;
+    }
+    [[nodiscard]] bool keepRunning() const noexcept
+    {
+        return mKeepRunning;
+    }
+    void run()
+    {
+        std::chrono::milliseconds timeOut{10};
+        URTS::Broadcasts::Internal::Pick::Pick initialPick;
+        while (keepRunning())
+        {
+            auto gotPick = mPickProcessorQueue->wait_until_and_pop(
+                                &initialPick, timeOut);
+            if (gotPick)
+            {
+mLogger->info("got a p pick");
+                try
+                {
+                    // Figure out a name  
+                    auto channel = initialPick.getChannel();
+                    if (channel.back() == 'P')
+                    {
+                        if (channel.size() != 3)
+                        {
+                            mLogger->error("Unhandled channel");
+                        }
+                        channel[2] = 'Z';
+                    }
+                    auto network = initialPick.getNetwork();
+                    auto station = initialPick.getStation();
+                    auto locationCode = initialPick.getLocationCode();
+                    // If the processing item doesn't exist then make it
+                    createProcessingItem(network,
+                                         station,
+                                         channel,
+                                         locationCode);
+                    // Process this pick
+                    auto name = network + "." + station + "." 
+                              + channel + "." + locationCode;
+                    auto it = mProcessingItems.find(name);
+#ifndef NDEBUG
+                    assert(it != mProcessingItems.end());
+#endif
+                    auto temporaryPick = initialPick;
+                    temporaryPick.setChannel(channel);
+                    auto refinedPick
+                        = it->second.refinePick(temporaryPick,
+                                                *mPacketCacheRequestor,
+                                                *mPickerRequestor,
+                                                *mFirstMotionRequestor,
+                                                mLogger);
+std::cout << "sending " << refinedPick << std::endl;
+                    mPickPublisherQueue->push(refinedPick); 
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                    mPickPublisherQueue->push(initialPick);
+                }
+            } // End check on getting a pick
+        }
+    }
+    void start()
+    {
+        stop();
+        setRunning(true);
+        mThread = std::thread(&::PPickerPipeline::run, this);
+    } 
+    void stop()
+    {
+        setRunning(false);
+        if (mThread.joinable()){mThread.join();}
+    }
 ///private:
+    std::thread mThread;
     ::ProgramOptions mProgramOptions; 
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::shared_ptr<URTS::Database::AQMS::ChannelDataTablePoller>
+        mDatabasePoller{nullptr};
+    std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
+         mPickProcessorQueue{nullptr};
+    std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
+         mPickPublisherQueue{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<URTS::Services::Scalable::PacketCache::Requestor>
         mPacketCacheRequestor{nullptr};
@@ -434,14 +850,10 @@ public:
     std::unique_ptr<URTS::Services::Scalable::
                     FirstMotionClassifiers::CNNOneComponentP::Requestor>
         mFirstMotionRequestor{nullptr};
-    std::unique_ptr<URTS::Services::Standalone::Incrementer::Requestor>
-        mIncrementRequestor{nullptr};
-    std::unique_ptr<URTS::Broadcasts::Internal::Pick::Publisher>
-        mPickPublisher{nullptr};
-    std::chrono::microseconds tBefore{2500000};
-    std::chrono::microseconds tAfter{2500000};
+    std::map<std::string, ::OneComponentProcessingItem> mProcessingItems;
     int mInstance{0};
     bool mInputsEqual{true};
+    std::atomic<bool> mKeepRunning{true};
 };
 }
 #endif

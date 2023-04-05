@@ -1,6 +1,8 @@
 #ifndef PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #define PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #include <iostream>
+#include <chrono>
+#include <date/date.h>
 //#include <time/utc.hpp>
 #ifndef NDEBUG
 #include <cassert>
@@ -90,5 +92,40 @@ double lonTo180(const double lonIn)
 #endif
     return lon;
 }
+
+[[maybe_unused]] [[nodiscard]]
+std::string formatTimeUTC(const std::chrono::microseconds &time)
+{
+    std::string result(27, '\0');
+    auto timeStamp = static_cast<double> (time.count())*1.e-6;
+    // Figure out the fractional second 
+    auto iUTCStamp = static_cast<int64_t> (timeStamp);
+    auto fraction = timeStamp - static_cast<double> (iUTCStamp);
+    auto microSecond = static_cast<int> (std::lround(fraction*1.e6));
+    // Create the epochal time
+    std::chrono::seconds chronoSeconds(iUTCStamp);
+    std::chrono::system_clock::time_point timePoint{chronoSeconds};
+    // Year/month/day
+    //const std::chrono::year_month_day
+    //     yearMonthDate{std::chrono::floor<std::chrono::days> (timePoint)};
+    auto dayPoint = date::floor<date::days> (timePoint);
+    date::year_month_day ymd{dayPoint};
+    auto year = static_cast<int> (ymd.year());
+    auto month = static_cast<int> (unsigned(ymd.month()));
+    auto dayOfMonth = static_cast<int> (unsigned(ymd.day()));
+    // Hour/minute/second        
+    //const std::chrono::hh_mm_ss hourMinuteSecond{timePoint - dayPoint}; 
+    date::hh_mm_ss tod{timePoint - dayPoint};
+    auto hour = static_cast<int> (tod.hours().count());
+    auto minute = static_cast<int> (tod.minutes().count());
+    auto second = static_cast<int> (tod.seconds().count());
+    // Format it
+    sprintf(result.data(), "%04d-%02d-%02dT%02d:%02d:%02d.%06dZ",
+            year, month, dayOfMonth,
+            hour, minute, second,
+            microSecond);
+    return result;
+}
+
 }
 #endif

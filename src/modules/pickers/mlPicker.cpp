@@ -49,25 +49,6 @@
 #include "urts/database/aqms/channelDataTable.hpp"
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/connection/postgresql.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/processingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestor.hpp"
-#include "urts/services/scalable/pickers/cnnOneComponentP/requestorOptions.hpp"
-#include "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnThreeComponentS/processingResponse.hpp"
-#include "urts/services/scalable/pickers/cnnThreeComponentS/requestor.hpp"
-#include "urts/services/scalable/pickers/cnnThreeComponentS/requestorOptions.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.hpp"
-#include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
-#include "urts/services/scalable/packetCache/bulkDataResponse.hpp"
-#include "urts/services/scalable/packetCache/dataRequest.hpp"
-#include "urts/services/scalable/packetCache/dataResponse.hpp"
-#include "urts/services/scalable/packetCache/requestor.hpp"
-#include "urts/services/scalable/packetCache/requestorOptions.hpp"
-#include "urts/services/scalable/packetCache/threeComponentWaveform.hpp"
 #include "programOptions.hpp"
 #include "pPickerPipeline.hpp"
 #include "thresholdDetectorOptions.hpp"
@@ -100,11 +81,14 @@ createLogger(const std::string &moduleName = MODULE_NAME,
 {
     auto logFileName = moduleName + ".log";
     auto fullLogFileName = logFileDirectory / logFileName;
+auto logger = std::make_shared<UMPS::Logging::StandardOut> (UMPS::Logging::Level::Debug);
+/*
     auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
     logger->initialize(moduleName,
                        fullLogFileName,
                        verbosity,
                        hour, minute);
+*/
     logger->info("Starting logging for " + moduleName);
     return logger;
 }
@@ -118,10 +102,96 @@ class Picker : public UMPS::Modules::IProcess
 public:
     Picker(const ::ProgramOptions &programOptions,
            std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mContext(std::make_shared<UMPS::Messaging::Context> (1)),
+        mChannelDataPoller(std::make_shared<URTS::Database::
+                                            AQMS::ChannelDataTablePoller> ()),
         mProgramOptions(programOptions),
+        mInitialPPickQueue(
+            std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
+                                               Internal::Pick::Pick>> ()),
+        mInitialSPickQueue(
+            std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
+                                               Internal::Pick::Pick>> ()),
+        mRefinedPickPublisherQueue(
+            std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
+                                               Internal::Pick::Pick>> ()),
         mLogger(logger)
     {
+        // Make a database connection
+        mLogger->debug("Connecting to AQMS database...");
+        auto databaseConnection
+            = std::make_shared<URTS::Database::Connection::PostgreSQL> ();
+        databaseConnection->setAddress(mProgramOptions.mDatabaseAddress);
+        databaseConnection->setDatabaseName(mProgramOptions.mDatabaseName);
+        databaseConnection->setUser(mProgramOptions.mDatabaseReadOnlyUser);
+        databaseConnection->setPassword(
+            mProgramOptions.mDatabaseReadOnlyPassword);
+        databaseConnection->setPort(mProgramOptions.mDatabasePort);
+        databaseConnection->connect();
+
+        auto connectionHandle
+            = std::static_pointer_cast<URTS::Database::
+                                       Connection::IConnection> (
+                databaseConnection);
+
+        mChannelDataPoller->initialize(
+            connectionHandle,
+            UDatabase::AQMS::ChannelDataTablePoller::QueryMode::Current,
+            programOptions.mDatabasePollerInterval);
+        mChannelDataPoller->start();
+        std::this_thread::sleep_for(std::chrono::milliseconds {250});
+
+        // Create pick subscriber
+        mInitialPickSubscriber
+            = std::make_unique<URTS::Broadcasts::Internal::Pick::Subscriber>
+                (mContext, mLogger);
+        mInitialPickSubscriber->initialize(
+            mProgramOptions.mInitialPickSubscriberOptions);
+         
+        // Create pick publisher
+        mRefinedPickPublisher
+            = std::make_unique<URTS::Broadcasts::Internal::Pick::Publisher>
+                (mContext, mLogger);
+        mRefinedPickPublisher->initialize(
+            mProgramOptions.mRefinedPickPublisherOptions);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds {250});
+        if (!mInitialPickSubscriber->isInitialized())
+        {
+            throw std::runtime_error("Pick subscriber not initialized");
+        }
+        if (!mRefinedPickPublisher->isInitialized())
+        {
+            throw std::runtime_error("Pick publisher not initialized");
+        }
+
+        // Instantatiate the pickers
+        auto nThreads = mProgramOptions.mThreads;
+        if (mProgramOptions.mRunPPicker ||
+            mProgramOptions.mRunFirstMotionClassifier)
+        {
+            mPProcessingPipelines.reserve(nThreads);
+            for (int i = 0; i < nThreads; ++i)
+            {
+                auto pipeline
+                    = std::make_unique<::PPickerPipeline> (
+                         i,
+                         mProgramOptions,
+                         mChannelDataPoller,
+                         mInitialPPickQueue,
+                         mRefinedPickPublisherQueue,
+                         mLogger);
+                mPProcessingPipelines.push_back(std::move(pipeline));
+                std::this_thread::sleep_for( std::chrono::milliseconds {100});
+            }
+        }
+        if (mProgramOptions.mRunSPicker)
+        {
+            //mSProcessingPipelines.reserve(nThreads);
+        }
+
         // Instantiate the local command replier
+/*
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::Service> (mLogger);
         UMPS::Services::Command::ServiceOptions localServiceOptions;
@@ -133,6 +203,7 @@ public:
                       std::placeholders::_2,
                       std::placeholders::_3));
         mLocalCommand->initialize(localServiceOptions);
+*/
         mInitialized = true;
     }
     /// Destructor
@@ -144,6 +215,55 @@ public:
     void stop() override
     {
         setRunning(false);
+        for (auto &pipeline : mPProcessingPipelines)
+        {
+            pipeline->stop();
+        }
+        //for (auto &pipeline : mSProcessingPipelines)
+        //{
+        //    pipeline->stop();
+        //}
+        if (mPickSubscriberThread.joinable()){mPickSubscriberThread.join();}
+        if (mPickPublisherThread.joinable()){mPickPublisherThread.join();}
+        if (mLocalCommand != nullptr)
+        {
+            if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        }
+    }
+    /// @brief Starts the modules.
+    void start() override
+    {    
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Class not initialized");
+        }
+        setRunning(true);
+        std::this_thread::sleep_for(std::chrono::milliseconds {10});
+        // Instantiate P picker pipeline
+        for (auto &pipeline : mPProcessingPipelines)
+        {
+            pipeline->start();
+        }
+        //for (auto &pipeline : mSProcessingPipelines)
+        //{
+        //    pipeline->start();
+        //}
+        // Make thread that fetches probability packets
+        mLogger->debug("Starting the refined pick publisher thread...");
+        mPickPublisherThread
+             = std::thread(&::Picker::publishRefinedPicks, this);
+        mLogger->debug("Starting the pick subscriber thread...");
+        mPickSubscriberThread
+            = std::thread(&::Picker::getInitialPicks, this);
+        mLogger->debug("Starting the local command proxy..."); 
+        if (mLocalCommand != nullptr)
+        {
+#ifndef NDEBUG
+            assert(mLocalCommand->isInitialized());
+#endif
+            mLocalCommand->start();
+        }
     }
     /// Initialized?
     [[nodiscard]] bool isInitialized() const noexcept
@@ -254,32 +374,118 @@ public:
         commandsResponse.setCommands(::getInputOptions());
         return commandsResponse.clone();
     }
+    /// @brief Reads the initial picks
+    void getInitialPicks()
+    {
+#ifndef NDEBUG
+        assert(mInitialPickSubscriber->isInitialized());
+#endif
+        while (keepRunning())
+        {
+            auto pick = mInitialPickSubscriber->receive();
+            if (pick != nullptr)
+            {
+                auto phaseHint = pick->getPhaseHint();
+                if (phaseHint == "P")
+                { 
+                    mLogger->debug("Got a P pick");
+                    while (mInitialPPickQueue->size() > mMaximumQueueSize)
+                    {
+                        mLogger->warn("Overfull P queue - popping pick");
+                        mInitialPPickQueue->pop();
+                    }
+                    mInitialPPickQueue->push(std::move(*pick));
+                }
+                else if (phaseHint == "S")
+                {
+                    mLogger->debug("Got an S pick");
+                    while (mInitialSPickQueue->size() > mMaximumQueueSize)
+                    {
+                        mLogger->warn("Overfull S queue - popping pick");
+                        mInitialSPickQueue->pop();
+                    }   
+mLogger->error("uncomment here after Got an S pick");
+//                    mInitialSPickQueue->push(std::move(*pick));
+                }
+                else
+                {
+                    // Let the associator deal with it
+                    mLogger->warn("Unhandled pick phase hint: "
+                                + pick->getPhaseHint());
+                    mRefinedPickPublisherQueue->push(std::move(*pick));
+                }
+            }
+        }
+    }
+    /// Publish refined picks 
+    void publishRefinedPicks()
+    {
+#ifndef NDEBUG
+        assert(mRefinedPickPublisher->isInitialized());
+#endif
+        std::chrono::milliseconds timeOut{10};
+        while (keepRunning())
+        {
+            URTS::Broadcasts::Internal::Pick::Pick pick;
+            auto gotPick
+                = mRefinedPickPublisherQueue->wait_until_and_pop(&pick,
+                                                                 timeOut);
+            if (gotPick)
+            {
+                try
+                {
+                    mLogger->debug("Publishing pick...");
+//                    mRefinedPickPublisher->send(pick);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error("Failed to send refined pick.  Failed with "
+                                 + std::string{e.what()});
+                }
+            }
+        }
+    }
 //private:
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::shared_ptr<URTS::Database::AQMS::ChannelDataTablePoller>
+        mChannelDataPoller{nullptr};
     ::ProgramOptions mProgramOptions;
+    std::vector<std::unique_ptr<::PPickerPipeline>> mPProcessingPipelines;
+    //std::vector<std::unique_ptr<::SPickerPipeline>> mSProcessingPipelines;
+    std::thread mPickPublisherThread; // Publishes refined picks
+    std::thread mPickSubscriberThread; // Gets picks to refine
     std::string mModuleName{MODULE_NAME};
-    std::unique_ptr<URTS::Broadcasts::Internal::DataPacket::Subscriber>
-        mProbabilitySubscriber{nullptr};
-    std::unique_ptr<URTS::Services::Scalable::PacketCache::Requestor>
-        mPacketCacheRequestor{nullptr};
-    std::unique_ptr<UPickers::CNNOneComponentP::Requestor>
-        mPPickerInferenceRequestor{nullptr};
-    std::unique_ptr<UPickers::CNNThreeComponentS::Requestor>
-        mSPickerInferenceRequestor{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::unique_ptr<URTS::Broadcasts::Internal::Pick::Subscriber>
+        mInitialPickSubscriber{nullptr};
+    std::unique_ptr<URTS::Broadcasts::Internal::Pick::Publisher>
+        mRefinedPickPublisher{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    ::ThreadSafeQueue<size_t> mInferenceQueue;
+    std::shared_ptr<
+        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
+          mInitialPPickQueue;
+    std::shared_ptr<
+        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
+          mInitialSPickQueue; 
+    std::shared_ptr<
+        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
+          mRefinedPickPublisherQueue;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::atomic<bool> mKeepRunning{true};
     std::atomic<bool> mInitialized{false};
+    size_t mMaximumQueueSize{250};
 };
+
 /// @brief Parses the command line options.
 [[nodiscard]] std::string parseCommandLineOptions(int argc, char *argv[])
 {
     std::string iniFile;
     boost::program_options::options_description desc(
 R"""(
-The mlPicker refines preliminary P and S picks generated by the mlDetector.
+The mlPicker refines preliminary P and S picks generated by the threshold
+detector.  The threshold detector is typically applied to posterior probability
+packets generated by the UNet phase detectors.
 Example usage:
-    mlPickerDetector --ini=mlPicker.ini
+    mlPicker --ini=mlPicker.ini
 Allowed options)""");
     desc.add_options()
         ("help", "Produces this help message")
@@ -369,43 +575,42 @@ int main(int argc, char *argv[])
                                                             logger);
         processManager.insert(std::move(heartbeat));
 
-        // Pick publisher 
-        logger->debug("Creating pick publisher...");
-        namespace UPick = URTS::Broadcasts::Internal::Pick;
-        URTS::Broadcasts::Internal::Pick::PublisherOptions publisherOptions;
-        if (!programOptions.mProbabilityPacketBroadcastAddress.empty())
-        {   
-            publisherOptions.setAddress(
-                programOptions.mPickBroadcastAddress);
-        }   
-        else
-        {   
-            publisherOptions.setAddress(
-                uOperator->getProxyBroadcastFrontendDetails(
-                  programOptions.mPickBroadcastName).getAddress());
-        }   
-        publisherOptions.setZAPOptions(zapOptions);
-        publisherOptions.setHighWaterMark(0); // Infinite 
-        programOptions.mPickPublisherOptions = publisherOptions;
-
-        // Probability packet subscriber
-        URTS::Broadcasts::Internal::DataPacket::SubscriberOptions
+        // Initial pick subscriber
+        URTS::Broadcasts::Internal::Pick::SubscriberOptions
             subscriberOptions;
-        if (!programOptions.mProbabilityPacketBroadcastAddress.empty())
+        if (!programOptions.mInitialPickBroadcastAddress.empty())
         {
             subscriberOptions.setAddress(
-                programOptions.mProbabilityPacketBroadcastAddress);
+                programOptions.mInitialPickBroadcastAddress);
         }
         else
         {
-            logger->debug("Fetching probability subscriber address..."); 
+            logger->debug("Fetching initial pick subscriber address..."); 
             subscriberOptions.setAddress(
                 uOperator->getProxyBroadcastBackendDetails(
-                  programOptions.mProbabilityPacketBroadcastName).getAddress());
+                  programOptions.mInitialPickBroadcastName).getAddress());
         }
         subscriberOptions.setZAPOptions(zapOptions);
         subscriberOptions.setHighWaterMark(0); // Infinite 
-        programOptions.mDataPacketSubscriberOptions = subscriberOptions;
+        programOptions.mInitialPickSubscriberOptions = subscriberOptions;
+
+        // Output pick publisher 
+        logger->debug("Creating pick publisher...");
+        URTS::Broadcasts::Internal::Pick::PublisherOptions publisherOptions;
+        if (!programOptions.mRefinedPickBroadcastAddress.empty())
+        {
+            publisherOptions.setAddress(
+                programOptions.mRefinedPickBroadcastAddress);
+        }
+        else
+        {
+            publisherOptions.setAddress(
+                uOperator->getProxyBroadcastFrontendDetails(
+                  programOptions.mRefinedPickBroadcastName).getAddress());
+        }
+        publisherOptions.setZAPOptions(zapOptions);
+        publisherOptions.setHighWaterMark(0); // Infinite 
+        programOptions.mRefinedPickPublisherOptions = publisherOptions;
 
         // Packet cache requestor
         URTS::Services::Scalable::PacketCache::RequestorOptions upcOptions;
@@ -424,23 +629,6 @@ int main(int argc, char *argv[])
         upcOptions.setZAPOptions(zapOptions);
         upcOptions.setReceiveTimeOut(programOptions.mDataRequestReceiveTimeOut);
         programOptions.mPacketCacheRequestorOptions = upcOptions;
-
-        // Incrementer requestor 
-        URTS::Services::Standalone::Incrementer::RequestorOptions irOptions;
-        if (!programOptions.mIncrementerServiceAddress.empty())
-        {
-            irOptions.setAddress(programOptions.mIncrementerServiceAddress);
-        }
-        else
-        {
-            logger->debug("Fetching incrementer address...");
-            irOptions.setAddress(
-               uOperator->getProxyServiceFrontendDetails(
-                   programOptions.mIncrementerServiceName).getAddress()
-            ); 
-        }
-        irOptions.setZAPOptions(zapOptions);
-        programOptions.mIncrementerRequestorOptions = irOptions;
 
         // P picker client
         URTS::Services::Scalable::Pickers::CNNOneComponentP::
@@ -466,6 +654,7 @@ int main(int argc, char *argv[])
                 programOptions.mInferenceRequestReceiveTimeOut);
             programOptions.mPPickerRequestorOptions = pOptions;
         }
+
         // S picker client
         URTS::Services::Scalable::Pickers::CNNThreeComponentS::
               RequestorOptions sOptions;
@@ -520,7 +709,10 @@ int main(int argc, char *argv[])
             programOptions.mFirstMotionClassifierRequestorOptions = fmOptions;
         }
 
+
+        auto pickerProcess = std::make_unique<::Picker> (programOptions, logger);
         // Create the remote replier
+logger->error("create module registry process");
 /*
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;
@@ -542,7 +734,7 @@ int main(int argc, char *argv[])
 */
         // Add the remote replier and inference engine
         //processManager.insert(std::move(remoteReplierProcess));
-        //processManager.insert(std::move(detectorProcess));
+        processManager.insert(std::move(pickerProcess));
     }
     catch (const std::exception &e)
     {

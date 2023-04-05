@@ -8,8 +8,10 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "urts/broadcasts/internal/pick.hpp"
+#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP.hpp"
+#include "urts/services/scalable/pickers/cnnOneComponentP.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS.hpp"
 #include "urts/services/scalable/packetCache.hpp"
-#include "urts/services/standalone/incrementer.hpp"
 #include "private/isEmpty.hpp"
 namespace
 {
@@ -132,32 +134,32 @@ public:
             throw std::runtime_error("FM classifer service address unknowable");
         }
 
-        mProbabilityPacketBroadcastName
+        mInitialPickBroadcastName
             = propertyTree.get<std::string> (
-                 "MLPicker.probabilityPacketBroadcastName",
-                 mProbabilityPacketBroadcastName);
-        mProbabilityPacketBroadcastAddress
+                 "MLPicker.initialPickBroadcastName",
+                 mInitialPickBroadcastName);
+        mInitialPickBroadcastAddress
             = propertyTree.get<std::string> (
-                 "MLPicker.probabilityPacketBroadcastAddress",
-                 mProbabilityPacketBroadcastAddress);
-        if (::isEmpty(mProbabilityPacketBroadcastName) &&
-            ::isEmpty(mProbabilityPacketBroadcastAddress))
+                 "MLPicker.initialPickBroadcastAddress",
+                 mInitialPickBroadcastAddress);
+        if (::isEmpty(mInitialPickBroadcastName) &&
+            ::isEmpty(mInitialPickBroadcastAddress))
         {
-            throw std::runtime_error("Probability broadcast indeterminable");
+            throw std::runtime_error("Initial pick broadcast indeterminable");
         }
 
-        mPickBroadcastName
+        mRefinedPickBroadcastName
             = propertyTree.get<std::string> (
-                "MLPicker.pickBroadcastName",
-                mPickBroadcastName);
-        mPickBroadcastAddress
+                "MLPicker.refinedPickBroadcastName",
+                mRefinedPickBroadcastName);
+        mRefinedPickBroadcastAddress
             = propertyTree.get<std::string> (
-                "MLPicker.pickBroadcastAddress",
-                mPickBroadcastAddress);
-        if (::isEmpty(mPickBroadcastName) &&
-            ::isEmpty(mPickBroadcastAddress))
+                "MLPicker.refinedPickBroadcastAddress",
+                mRefinedPickBroadcastAddress);
+        if (::isEmpty(mRefinedPickBroadcastName) &&
+            ::isEmpty(mRefinedPickBroadcastAddress))
         {
-            throw std::runtime_error("Pick broadcast indeterminable");
+            throw std::runtime_error("Refined pick broadcast indeterminable");
         }
 
         if (mRunPPicker)
@@ -254,9 +256,10 @@ public:
                                                mGapTolerance);
 
     }
-    URTS::Broadcasts::Internal::DataPacket::SubscriberOptions
-        mDataPacketSubscriberOptions;
-    URTS::Broadcasts::Internal::Pick::PublisherOptions mPickPublisherOptions;
+    URTS::Broadcasts::Internal::Pick::PublisherOptions
+         mRefinedPickPublisherOptions;
+    URTS::Broadcasts::Internal::Pick::SubscriberOptions
+         mInitialPickSubscriberOptions;
     URTS::Services::Scalable::PacketCache::RequestorOptions
         mPacketCacheRequestorOptions;
     URTS::Services::Scalable::Pickers::CNNOneComponentP::RequestorOptions
@@ -266,13 +269,9 @@ public:
     URTS::Services::Scalable::FirstMotionClassifiers::
         CNNOneComponentP::RequestorOptions
         mFirstMotionClassifierRequestorOptions;
-    URTS::Services::Standalone::Incrementer::RequestorOptions
-        mIncrementerRequestorOptions;
     std::string mModuleName{"MLPicker"};
-    std::string mIncrementerServiceName{"Incrementer"};
-    std::string mIncrementerServiceAddress;
-    std::string mPickBroadcastName{"Pick"};
-    std::string mPickBroadcastAddress;
+    std::string mRefinedPickBroadcastName{"RefinedPick"};
+    std::string mRefinedPickBroadcastAddress;
     std::string mPacketCacheServiceName{"RawDataPackets"};
     std::string mPacketCacheServiceAddress;
     std::string mPPickerServiceName{"PPicker"};
@@ -281,8 +280,8 @@ public:
     std::string mSPickerServiceAddress;
     std::string mFirstMotionClassifierServiceName{"FirstMotionClassifier"};
     std::string mFirstMotionClassifierServiceAddress;
-    std::string mProbabilityPacketBroadcastName{"ProbabilityPacket"};
-    std::string mProbabilityPacketBroadcastAddress;
+    std::string mInitialPickBroadcastName{"InitialPick"};
+    std::string mInitialPickBroadcastAddress;
     std::string mDatabaseAddress;
     std::string mDatabaseName;
     std::string mDatabaseReadOnlyUser;
