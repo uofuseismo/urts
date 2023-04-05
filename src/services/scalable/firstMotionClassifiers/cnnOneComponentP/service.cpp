@@ -89,6 +89,7 @@ public:
             mLogger->debug("Processing request received");
             ProcessingResponse response;
             response.setFirstMotion(ProcessingResponse::FirstMotion::Unknown);
+            response.setProbabilities(std::tuple {0, 0, 1});
             try
             {
                 processingRequest.fromMessage(
@@ -187,6 +188,7 @@ public:
             InferenceResponse response;
             response.setFirstMotion(
                 InferenceResponse::FirstMotion::Unknown);
+            response.setProbabilities(std::tuple {0, 0, 1});
             try
             {
                 inferenceRequest.fromMessage(
