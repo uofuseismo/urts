@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <mutex>
 #include <thread>
 #ifndef NDEBUG
@@ -161,11 +162,15 @@ public:
                 auto threshold = processingRequest.getThreshold();
                 auto probabilities
                     = mInference->predictProbability(verticalProcessed);
+                // I don't want this to fail
+                auto pUp = static_cast<double> (std::get<0> (probabilities));
+                auto pDown = static_cast<double> (std::get<1> (probabilities));
+                auto pUnknown
+                    = static_cast<double> (std::get<2> (probabilities));
+                pUnknown = std::min(1.0, std::max(0.0, 1 - pUp - pDown));
                 auto firstMotion
                     = UModels::convertProbabilityToClass(
-                          std::get<0> (probabilities),
-                          std::get<1> (probabilities),
-                          std::get<2> (probabilities),
+                          pUp, pDown, pUnknown,
                           threshold);
                 response.setProbabilities(probabilities);
                 response.setFirstMotion(
@@ -215,11 +220,16 @@ public:
                     = inferenceRequest.getVerticalSignalReference();
                 auto threshold = inferenceRequest.getThreshold();
                 auto probabilities = mInference->predictProbability(vertical);
+                // I don't want this to fail
+                auto pUp = static_cast<double> (std::get<0> (probabilities));
+                auto pDown = static_cast<double> (std::get<1> (probabilities));
+                auto pUnknown
+                    = static_cast<double> (std::get<2> (probabilities));
+                pUnknown = std::min(1.0, std::max(0.0, 1 - pUp - pDown));
+                // Now get first motion
                 auto firstMotion
                     = UModels::convertProbabilityToClass(
-                          std::get<0> (probabilities),
-                          std::get<1> (probabilities),
-                          std::get<2> (probabilities),
+                          pUp, pDown, pUnknown,
                           threshold);
                 response.setProbabilities(probabilities);
                 response.setFirstMotion(
