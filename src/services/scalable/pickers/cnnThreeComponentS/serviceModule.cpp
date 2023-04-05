@@ -154,11 +154,11 @@ struct ProgramOptions
         //----------------Backend Service Connection Information--------------//
         mServiceName
              = propertyTree.get<std::string>
-               ("SRegressor.proxyServiceName", mServiceName);
+               ("SPickRegressor.proxyServiceName", mServiceName);
     
         auto backendAddress
              = propertyTree.get<std::string>
-               ("SRegressor.proxyServiceAddress", "");
+               ("SPickRegressor.proxyServiceAddress", "");
         if (!::isEmpty(backendAddress))
         {
             mServiceOptions.setAddress(backendAddress);
@@ -169,19 +169,19 @@ struct ProgramOptions
         }
         mServiceOptions.setReceiveHighWaterMark(
             propertyTree.get<int> (
-                "SRegressor.proxyServiceReceiveHighWaterMark",
+                "SPickRegressor.proxyServiceReceiveHighWaterMark",
                 mServiceOptions.getReceiveHighWaterMark())
         );
         mServiceOptions.setSendHighWaterMark(
             propertyTree.get<int> (
-                "SRegressor.proxyServiceSendHighWaterMark",
+                "SPickRegressor.proxyServiceSendHighWaterMark",
                 mServiceOptions.getSendHighWaterMark())
         );
         auto pollingTimeOut 
             = static_cast<int> (mServiceOptions.getPollingTimeOut().count()
               );
         pollingTimeOut = propertyTree.get<int> (
-              "SRegressor.proxyServicePollingTimeOut", pollingTimeOut);
+              "SPickRegressor.proxyServicePollingTimeOut", pollingTimeOut);
         mServiceOptions.setPollingTimeOut(
             std::chrono::milliseconds {pollingTimeOut} );
     }
