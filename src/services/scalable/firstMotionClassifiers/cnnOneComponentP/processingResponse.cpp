@@ -164,7 +164,10 @@ void ProcessingResponse::setProbabilities(
     auto pUnknown = std::get<2> (probability); 
     if (std::abs(pUp + pDown + pUnknown) - 1 > 1.e-5)
     {   
-        throw std::invalid_argument("Probabilities do not sum to unity");
+        throw std::invalid_argument("Probabilities do not sum to unity: "
+                                  + std::to_string(pUp) + ","
+                                  + std::to_string(pDown) + ","
+                                  + std::to_string(pUnknown));
     }
     if (pUp < 0 || pUp > 1)
     {   

@@ -88,6 +88,7 @@ public:
         {
             mLogger->debug("Processing request received");
             ProcessingResponse response;
+            response.setFirstMotion(ProcessingResponse::FirstMotion::Unknown);
             try
             {
                 processingRequest.fromMessage(
@@ -96,7 +97,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to upnack preprocessing request: "
+                mLogger->error("Failed to unpack preprocessing request: "
                              + std::string{e.what()});
                 response.setReturnCode(ProcessingResponse::InvalidMessage);
                 return response.clone();
@@ -167,8 +168,7 @@ public:
                           threshold);
                 response.setProbabilities(probabilities);
                 response.setFirstMotion(
-                    static_cast<ProcessingResponse::FirstMotion> (firstMotion)
-                );
+                    static_cast<ProcessingResponse::FirstMotion> (firstMotion));
                 response.setReturnCode(ProcessingResponse::Success);
             }
             catch (const std::exception &e) 
@@ -185,6 +185,8 @@ public:
         {
             mLogger->debug("Inference request received");
             InferenceResponse response;
+            response.setFirstMotion(
+                InferenceResponse::FirstMotion::Unknown);
             try
             {
                 inferenceRequest.fromMessage(
@@ -193,7 +195,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to upnack preprocessing request: "
+                mLogger->error("Failed to unpack preprocessing request: "
                              + std::string{e.what()});
                 response.setReturnCode(InferenceResponse::InvalidMessage);
                 return response.clone();
@@ -245,7 +247,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to upnack preprocessing request: "
+                mLogger->error("Failed to unpack preprocessing request: "
                              + std::string{e.what()});
                 response.setReturnCode(PreprocessingResponse::InvalidMessage);
                 return response.clone();

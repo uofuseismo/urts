@@ -287,9 +287,9 @@ public:
     std::string mDatabaseReadOnlyUser;
     std::string mDatabaseReadOnlyPassword;
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
-    std::chrono::milliseconds mInferenceRequestReceiveTimeOut{2000}; // 2 second
+    std::chrono::milliseconds mInferenceRequestReceiveTimeOut{3000}; // 3 second
     std::chrono::milliseconds mDataRequestReceiveTimeOut{5000}; // 5 seconds
-    std::chrono::milliseconds mIncrementRequestReceiveTimeOut{5000}; // 5 seconds
+    std::chrono::milliseconds mIncrementRequestReceiveTimeOut{2000}; // 2 seconds
     std::chrono::seconds mDatabasePollerInterval{3600};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
     int mDatabasePort{5432};
