@@ -207,6 +207,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1b23c129de8a64af624c0f1a6c3106de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a1b23c129de8a64af624c0f1a6c3106de">haveIdentifier</a> () const noexcept</td></tr>
 <tr class="separator:a1b23c129de8a64af624c0f1a6c3106de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Optional Information</div></td></tr>
+<tr class="memitem:a7a3acdac9a3d945e7b8e9fe9cc884134"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7a3acdac9a3d945e7b8e9fe9cc884134">setOriginalChannels</a> (const std::vector&lt; std::string &gt; &amp;originalChannels) noexcept</td></tr>
+<tr class="memdesc:a7a3acdac9a3d945e7b8e9fe9cc884134"><td class="mdescLeft">&#160;</td><td class="mdescRight">The threshold pickers typically work on a channel that was converted from an original (or multiple original) channels to a derived channel.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7a3acdac9a3d945e7b8e9fe9cc884134">More...</a><br /></td></tr>
+<tr class="separator:a7a3acdac9a3d945e7b8e9fe9cc884134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a8bf0fe3fa6678731774d86f39a3939"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a5a8bf0fe3fa6678731774d86f39a3939">getOriginalChannels</a> () const noexcept</td></tr>
+<tr class="separator:a5a8bf0fe3fa6678731774d86f39a3939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20d49a70d60f80d408b0170976fe4a1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a20d49a70d60f80d408b0170976fe4a1e">setPhaseHint</a> (const std::string &amp;phase) noexcept</td></tr>
 <tr class="memdesc:a20d49a70d60f80d408b0170976fe4a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a guess of the arrival's seismic phase.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a20d49a70d60f80d408b0170976fe4a1e">More...</a><br /></td></tr>
 <tr class="separator:a20d49a70d60f80d408b0170976fe4a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -715,6 +720,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a5a8bf0fe3fa6678731774d86f39a3939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a8bf0fe3fa6678731774d86f39a3939">&#9670;&nbsp;</a></span>getOriginalChannels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; URTS::Broadcasts::Internal::Pick::Pick::getOriginalChannels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The original channels that were converted to a dervied signal on which something like the threshold picker operated. </dd></dl>
 
 </div>
 </div>
@@ -1279,6 +1310,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a7a3acdac9a3d945e7b8e9fe9cc884134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3acdac9a3d945e7b8e9fe9cc884134">&#9670;&nbsp;</a></span>setOriginalChannels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setOriginalChannels </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>originalChannels</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The threshold pickers typically work on a channel that was converted from an original (or multiple original) channels to a derived channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">originalChannels</td><td>The original channels that were converted to a signal on which something like the threshold picker operated upon. For three component data this could be "HHZ", "HHN", "HHE". For one component data this could be "HHZ". </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a20d49a70d60f80d408b0170976fe4a1e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a20d49a70d60f80d408b0170976fe4a1e">&#9670;&nbsp;</a></span>setPhaseHint()</h2>
 
@@ -1527,7 +1592,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Pick</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html">Pick</a></li>
-    <li class="footer">Generated on Thu Apr 6 2023 14:37:50 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Apr 6 2023 16:15:00 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
