@@ -161,7 +161,7 @@ std::pair<int, NextPacketCategory>
          {
              std::string msg = "Doing it slow way: "
                              + std::to_string(desiredNextTimeMuS) + " "
-                             + std::to_string(roundToNearestDigit(iT1Est, 1));
+                             + std::to_string(::roundToNearestDigit(iT1Est, 1));
              std::cerr << msg << std::endl;
              bool lFound = false;
              for (int i = 0; i < nSamples; ++i)
@@ -357,7 +357,7 @@ void ThresholdDetector::apply(
         }
         else
         {
-            throw std::runtime_error("Algorithmic failure");
+            throw std::runtime_error("Could not categorize next packet");
         }
     }
     // Update the detector
