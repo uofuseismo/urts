@@ -40,7 +40,8 @@ TEST(BroadcastsInternalPick, Pick)
     const uint64_t pickID{84823};
     const std::string network{"UU"};
     const std::string station{"MOUT"};
-    const std::string channel{"EHZ"};
+    const std::string channel{"EHP"};
+    const std::vector<std::string> originalChannels{"EHZ", "EHN", "EHE"};
     const std::string locationCode{"01"};
     const std::string phaseHint{"P"};
     const std::vector<std::string> algorithms{"thresholdPick", "mlPicker"};
@@ -74,6 +75,7 @@ TEST(BroadcastsInternalPick, Pick)
     pick.setReviewStatus(reviewStatus);
     pick.setPhaseHint(phaseHint);
     pick.setProcessingAlgorithms(algorithms);
+    pick.setOriginalChannels(originalChannels);
 
     Pick copy(pick);
     auto pickMessage = pick.toMessage();
@@ -94,6 +96,13 @@ TEST(BroadcastsInternalPick, Pick)
     {
         EXPECT_EQ(algorithms[i], algorithmsBack[i]);
     }
+    auto originalChannelsBack = copy.getOriginalChannels();
+    EXPECT_EQ(originalChannels.size(), originalChannelsBack.size());
+    for (int i = 0; i < static_cast<int> (originalChannels.size()); ++i)
+    {
+        EXPECT_EQ(originalChannels[i], originalChannelsBack[i]);
+    }
+ 
     auto [lowerBound, upperBound ] = copy.getLowerAndUpperUncertaintyBound();
     EXPECT_NEAR(lowerBoundRef.getPercentile(), lowerBound.getPercentile(),
                 1.e-14);

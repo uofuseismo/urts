@@ -333,7 +333,6 @@ std::cout << "updated pick p : " << initialPick << " " << result << std::endl;
         {
             timeAfter = fmProperties.mPostWindow;
         }
-std::cout << timeBefore.count() << " " << timeAfter.count() << std::endl;
 
         // Update my request identifier (and avoid overflow in a billion years)
         if (mRequestIdentifier > std::numeric_limits<int64_t>::max() - 10)
@@ -648,49 +647,6 @@ public:
     {
         stop();
     }
-    /// @brief Refines a pick
-    URTS::Broadcasts::Internal::Pick::Pick processPick(
-        const URTS::Broadcasts::Internal::Pick::Pick &pick,
-        const URTS::Broadcasts::Internal::Pick::Publisher &publisher)
-    {
-        URTS::Broadcasts::Internal::Pick::Pick result{pick};
-        // Does this pick exist?
-        std::string channel = pick.getChannel();
-        if (channel.size() == 2)
-        {
-            channel[2] = 'Z';
-        }
-        else
-        {
-            mLogger->error("Unhandled channel name: " + channel);
-            return result;
-        }
-        auto name = pick.getNetwork() + "."
-                  + pick.getStation() + "."
-                  + channel
-                  + pick.getLocationCode();
-        auto it = mProcessingItems.find(name);
-        // If it doesn't already exist then add it
-        if (it == mProcessingItems.end())
-        {
-            mLogger->debug("Instance " + std::to_string(mInstance)
-                         + " adding " + name);
-        }
-        it = mProcessingItems.find(name);
-        // Give up now
-        if (it == mProcessingItems.end())
-        {
-            mLogger->warn("Instance " + std::to_string(mInstance)
-                        + " cannot find " + name);
-            return result;
-        }
-        // Process this pick.
- 
-        // This worked.  Button up the pick and give it back.
-
-        // All done
-        return result;
-    }
     /// @brief Creates a processing item if it does not exists
     void createProcessingItem(const std::string &network,
                               const std::string &station,
@@ -751,14 +707,18 @@ public:
                           mProgramOptions,
                           mInstance)});
     }
+    /// @result Sets the class as running or not running.
     void setRunning(const bool running) noexcept
     {
         mKeepRunning = running;
     }
+    /// @result True indicates the process should keep working.
     [[nodiscard]] bool keepRunning() const noexcept
     {
         return mKeepRunning;
     }
+    /// @brief Reads picks from the queue, refines them, then pushes them
+    ///        onto the publisher queue.
     void run()
     {
         std::chrono::milliseconds timeOut{10};
@@ -769,7 +729,6 @@ public:
                                 &initialPick, timeOut);
             if (gotPick)
             {
-mLogger->info("got a p pick");
                 try
                 {
                     // Figure out a name  

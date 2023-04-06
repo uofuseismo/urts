@@ -96,6 +96,7 @@ triggerWindowToPick(
     result.setNetwork(packet.getNetwork());
     result.setStation(packet.getStation());
     result.setChannel(packet.getChannel());
+    result.setOriginalChannels(packet.getOriginalChannels());
     result.setLocationCode(packet.getLocationCode());
     result.setTime(triggerWindow.getMaximum().first);
     std::vector<std::string> algorithms;

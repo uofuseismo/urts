@@ -148,6 +148,20 @@ public:
     /// @name Optional Information
     /// @{
 
+    /// @brief The threshold pickers typically work on a channel that was
+    ///        converted from an original (or multiple original) channels
+    ///        to a derived channel.
+    /// @param[in] originalChannels  The original channels that were converted
+    ///                              to a signal on which something like the
+    ///                              threshold picker operated upon.  For three
+    ///                              component data this could be
+    ///                              "HHZ", "HHN", "HHE".  For one component
+    ///                              data this could be "HHZ".
+    void setOriginalChannels(const std::vector<std::string> &originalChannels) noexcept; 
+    /// @result The original channels that were converted to a dervied 
+    ///         signal on which something like the threshold picker operated.
+    [[nodiscard]] std::vector<std::string> getOriginalChannels() const noexcept;
+
     /// @brief Sets a guess of the arrival's seismic phase.
     /// @param[in] phase  The phase hint - e.g., P or S.
     void setPhaseHint(const std::string &phase) noexcept;

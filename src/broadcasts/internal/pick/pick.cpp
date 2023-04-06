@@ -47,6 +47,13 @@ nlohmann::json toJSONObject(const Pick &pick)
     {
         obj["UncertaintyBounds"] = nullptr;
     }
+    // Original channels
+    auto originalChannels = pick.getOriginalChannels();
+    if (!originalChannels.empty())
+    {
+        obj["OriginalChannels"] = originalChannels;
+    }
+    // Phase hint
     auto phaseHint = pick.getPhaseHint();
     if (!phaseHint.empty())
     {
@@ -81,6 +88,14 @@ Pick objectToPick(const nlohmann::json &obj)
     pick.setTime(pickTime);
     pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
     // Optional stuff
+    if (!obj["OriginalChannels"].is_null())
+    {
+        std::vector<std::string> originalChannels = obj["OriginalChannels"];
+        if (!originalChannels.empty())
+        {
+            pick.setOriginalChannels(originalChannels);
+        }
+    }
     pick.setFirstMotion(
         static_cast<Pick::FirstMotion> (obj["FirstMotion"].get<int> ()));
     pick.setReviewStatus(
@@ -129,6 +144,7 @@ class Pick::PickImpl
 {
 public:
     std::vector<std::string> mProcessingAlgorithms;
+    std::vector<std::string> mOriginalChannels;
     std::string mNetwork;
     std::string mStation;
     std::string mChannel;
@@ -385,6 +401,18 @@ bool Pick::haveLowerAndUpperUncertaintyBound() const noexcept
     return pImpl->mHaveUncertaintyBounds;
 }
 
+/// Original packets
+void Pick::setOriginalChannels(
+    const std::vector<std::string> &originalChannels) noexcept
+{
+    pImpl->mOriginalChannels = originalChannels;
+}
+
+std::vector<std::string> Pick::getOriginalChannels() const noexcept
+{
+    return pImpl->mOriginalChannels;
+}
+
 ///  Convert message
 std::string Pick::toMessage() const
 {
@@ -450,7 +478,7 @@ URTS::Broadcasts::Internal::Pick::operator<<(std::ostream &os, const Pick &pick)
     }
     catch (const std::exception &e)
     {
-std::cout << e.what() << std::endl; 
+        return os << e.what();
     }
     return os;
 }
