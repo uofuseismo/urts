@@ -23,8 +23,11 @@ std::string toCBORObject(const ProcessingResponse &message)
     if (!message.haveCorrection())
     {   
         throw std::runtime_error("Pick correction not set");
-    }   
-    obj["Correction"] = message.getCorrection();
+    }
+    if (message.getReturnCode() == ProcessingResponse::ReturnCode::Success)
+    {
+        obj["Correction"] = message.getCorrection();
+    }
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -44,7 +47,10 @@ ProcessingResponse
        static_cast<ProcessingResponse::ReturnCode> (
          obj["ReturnCode"].get<int> ()
     ));
-    result.setCorrection(obj["Correction"].get<double> ());
+    if (result.getReturnCode() == ProcessingResponse::ReturnCode::Success)
+    {
+        result.setCorrection(obj["Correction"].get<double> ());
+    }
     return result;
 }
 

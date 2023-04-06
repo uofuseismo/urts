@@ -26,11 +26,14 @@ std::string toCBORObject(const ProcessingResponse &message)
     {
         throw std::runtime_error("Posterior probabilities not set");
     }
-    obj["FirstMotion"] = static_cast<int> (message.getFirstMotion());
-    auto p = message.getProbabilities(); 
-    obj["ProbabilityUp"] = std::get<0> (p);
-    obj["ProbabilityDown"] = std::get<1> (p);
-    obj["ProbabilityUnknown"] = std::get<2> (p);
+    if (message.getReturnCode() == ProcessingResponse::ReturnCode::Success)
+    {
+        obj["FirstMotion"] = static_cast<int> (message.getFirstMotion());
+        auto p = message.getProbabilities(); 
+        obj["ProbabilityUp"] = std::get<0> (p);
+        obj["ProbabilityDown"] = std::get<1> (p);
+        obj["ProbabilityUnknown"] = std::get<2> (p);
+    }
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -50,14 +53,17 @@ ProcessingResponse
         static_cast<ProcessingResponse::ReturnCode> (
             obj["ReturnCode"].get<int> ()
     ));
-    auto pUp = obj["ProbabilityUp"].get<double> ();
-    auto pDown = obj["ProbabilityDown"].get<double> ();
-    auto pUnknown = obj["ProbabilityUnknown"].get<double> ();
-    result.setProbabilities(std::tuple {pUp, pDown, pUnknown});
-    result.setFirstMotion(
-       static_cast<ProcessingResponse::FirstMotion>
-          (obj["FirstMotion"].get<int> ())
-    );
+    if (result.getReturnCode() == ProcessingResponse::ReturnCode::Success)
+    {
+        auto pUp = obj["ProbabilityUp"].get<double> ();
+        auto pDown = obj["ProbabilityDown"].get<double> ();
+        auto pUnknown = obj["ProbabilityUnknown"].get<double> ();
+        result.setProbabilities(std::tuple {pUp, pDown, pUnknown});
+        result.setFirstMotion(
+           static_cast<ProcessingResponse::FirstMotion>
+              (obj["FirstMotion"].get<int> ())
+        );
+    }
     return result;
 }
 

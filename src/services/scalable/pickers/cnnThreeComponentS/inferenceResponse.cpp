@@ -24,7 +24,10 @@ std::string toCBORObject(const InferenceResponse &message)
     {
         throw std::runtime_error("Pick correction not set");
     }
-    obj["Correction"] = message.getCorrection();
+    if (message.getReturnCode() == InferenceResponse::ReturnCode::Success)
+    {
+        obj["Correction"] = message.getCorrection();
+    } 
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -44,7 +47,10 @@ InferenceResponse
        static_cast<InferenceResponse::ReturnCode> (
          obj["ReturnCode"].get<int> ()
     ));
-    result.setCorrection(obj["Correction"].get<double> ());
+    if (result.getReturnCode() == InferenceResponse::ReturnCode::Success)
+    {
+        result.setCorrection(obj["Correction"].get<double> ());
+    }
     return result;
 }
 
