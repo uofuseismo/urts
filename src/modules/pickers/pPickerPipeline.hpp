@@ -20,6 +20,17 @@ namespace
 {
 
 [[nodiscard]] [[maybe_unused]]
+std::string toName(const std::string &network,
+                   const std::string &station,
+                   const std::string &channel,
+                   const std::string &locationCode)
+{
+    auto name = network + "." + station + "."
+              + channel + "." + locationCode;
+    return name;
+}
+
+[[nodiscard]] [[maybe_unused]]
 std::vector<double>
 centerAndCut(
     const URTS::Services::Scalable::PacketCache::SingleComponentWaveform
@@ -89,7 +100,7 @@ centerAndCut(
     std::vector<double> result(i1 - i0, 0);
     std::copy(signalReference.data() + i0, signalReference.data() + i1,
               result.data());
-std::cout << "nsamples p: " << i1 - i0 << " " << result.size() << std::endl;
+    //std::cout << "nsamples p: " << i1 - i0 << " " << result.size() << std::endl;
     return result;
 }
 
@@ -273,7 +284,8 @@ public:
         {
             throw std::runtime_error("Inconsistent stations");
         }
-        if (mPick.getChannel() != initialPick.getChannel())
+        if (mPick.getChannel().at(0) != initialPick.getChannel().at(0) ||
+            mPick.getChannel().at(1) != initialPick.getChannel().at(1))
         {
             throw std::runtime_error("Inconsistent channels");
         }
@@ -301,6 +313,8 @@ public:
         catch (const std::exception &e)
         {
             logger->error(e.what());
+            result.setChannel(initialPick.getChannel());
+            result.setOriginalChannels(initialPick.getOriginalChannels());
             return result; // Really just giving back what was sent
         }
         // Perform inference and update pick
@@ -311,9 +325,11 @@ public:
         catch (const std::exception &e)
         {
             logger->error(e.what());
+            result.setChannel(initialPick.getChannel());
+            result.setOriginalChannels(initialPick.getOriginalChannels());
             return result;
         }
-std::cout << "updated pick p : " << initialPick << " " << result << std::endl;
+        //std::cout << "updated pick p : " << initialPick << " " << result << std::endl;
         return result;
     }
     /// @brief Query the packet cache.
@@ -394,13 +410,13 @@ std::cout << "updated pick p : " << initialPick << " " << result << std::endl;
         if ((pickTime - mTolerance) - t0Interpolated < timeBefore)
         {
             auto errorMessage = "Instance " + std::to_string(mInstance)
-                              + ": Pick too close to start of window";
+                              + ": P pick too close to start of window";
             throw std::runtime_error(errorMessage);
         }
         if (t1Interpolated - (pickTime + mTolerance) < timeAfter)
         {
             auto errorMessage = "Instance " + std::to_string(mInstance)
-                              + ": Pick too close to end of window";
+                              + ": P pick too close to end of window";
             throw std::runtime_error(errorMessage);
         }
     }
@@ -654,8 +670,7 @@ public:
                               const std::string &locationCode)
     {
         // Set name and check if it already exists
-        auto name = network + "." + station + "."
-                  + channel + "." + locationCode;
+        auto name = ::toName(network, station, channel, locationCode);
         if (mProcessingItems.contains(name)){return;}
         // Okay, let's add it
         mLogger->info("Instance " + std::to_string(mInstance)
@@ -683,9 +698,9 @@ public:
             for (int i = 1; i < static_cast<int> (channelDataVector.size());
                  ++i)
             {
-                if (channelDataVector[0].getOnDate() > maxOnDate)
+                if (channelDataVector[i].getOnDate() > maxOnDate)
                 {   
-                    maxOnDate = channelDataVector[0].getOnDate();
+                    maxOnDate = channelDataVector[i].getOnDate();
                     channelIndex = i;
                 }
             }
@@ -732,14 +747,38 @@ public:
                 try
                 {
                     // Figure out a name  
-                    auto channel = initialPick.getChannel();
-                    if (channel.back() == 'P')
+                    auto originalChannels = initialPick.getOriginalChannels();
+                    std::string channel;
+                    for (const auto &originalChannel : originalChannels)
                     {
-                        if (channel.size() != 3)
+                        if (originalChannel.back() == 'Z')
                         {
-                            mLogger->error("Unhandled channel");
+                            channel = originalChannel;
+                            break;
                         }
-                        channel[2] = 'Z';
+                    }
+                    if (channel.empty())
+                    {
+                        channel = initialPick.getChannel();
+                        if (channel.back() == 'P')
+                        {
+                            if (channel.size() != 3)
+                            {
+                                mLogger->error("Unhandled channel: " + channel);
+                                continue;
+                            }
+                            channel[2] = 'Z';
+                        }
+                        else
+                        {
+                            mLogger->error("Unhandled channel: " + channel);
+                            continue;
+                        }
+                    }
+                    if (channel.empty())
+                    {
+                        mLogger->error("Could not divine channel");
+                        continue;
                     }
                     auto network = initialPick.getNetwork();
                     auto station = initialPick.getStation();
@@ -750,16 +789,14 @@ public:
                                          channel,
                                          locationCode);
                     // Process this pick
-                    auto name = network + "." + station + "." 
-                              + channel + "." + locationCode;
+                    auto name = ::toName(network, station,
+                                         channel, locationCode);
                     auto it = mProcessingItems.find(name);
 #ifndef NDEBUG
                     assert(it != mProcessingItems.end());
 #endif
-                    auto temporaryPick = initialPick;
-                    temporaryPick.setChannel(channel);
                     auto refinedPick
-                        = it->second.refinePick(temporaryPick,
+                        = it->second.refinePick(initialPick,
                                                 *mPacketCacheRequestor,
                                                 *mPickerRequestor,
                                                 *mFirstMotionRequestor,

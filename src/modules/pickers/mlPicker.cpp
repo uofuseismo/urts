@@ -51,6 +51,7 @@
 #include "urts/database/connection/postgresql.hpp"
 #include "programOptions.hpp"
 #include "pPickerPipeline.hpp"
+#include "sPickerPipeline.hpp"
 #include "thresholdDetectorOptions.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "private/isEmpty.hpp"
@@ -81,14 +82,12 @@ createLogger(const std::string &moduleName = MODULE_NAME,
 {
     auto logFileName = moduleName + ".log";
     auto fullLogFileName = logFileDirectory / logFileName;
-auto logger = std::make_shared<UMPS::Logging::StandardOut> (UMPS::Logging::Level::Debug);
-/*
+    //auto logger = std::make_shared<UMPS::Logging::StandardOut> (verbosity);
     auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
     logger->initialize(moduleName,
                        fullLogFileName,
                        verbosity,
                        hour, minute);
-*/
     logger->info("Starting logging for " + moduleName);
     return logger;
 }
@@ -187,11 +186,23 @@ public:
         }
         if (mProgramOptions.mRunSPicker)
         {
-            //mSProcessingPipelines.reserve(nThreads);
+            mSProcessingPipelines.reserve(nThreads);
+            for (int i = 0; i < nThreads; ++i)
+            {
+                auto pipeline
+                    = std::make_unique<::SPickerPipeline> (
+                         i,
+                         mProgramOptions,
+                         mChannelDataPoller,
+                         mInitialSPickQueue,
+                         mRefinedPickPublisherQueue,
+                         mLogger);
+                mSProcessingPipelines.push_back(std::move(pipeline));
+                std::this_thread::sleep_for( std::chrono::milliseconds {100});
+            }
         }
 
         // Instantiate the local command replier
-/*
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::Service> (mLogger);
         UMPS::Services::Command::ServiceOptions localServiceOptions;
@@ -203,7 +214,6 @@ public:
                       std::placeholders::_2,
                       std::placeholders::_3));
         mLocalCommand->initialize(localServiceOptions);
-*/
         mInitialized = true;
     }
     /// Destructor
@@ -219,10 +229,10 @@ public:
         {
             pipeline->stop();
         }
-        //for (auto &pipeline : mSProcessingPipelines)
-        //{
-        //    pipeline->stop();
-        //}
+        for (auto &pipeline : mSProcessingPipelines)
+        {
+            pipeline->stop();
+        }
         if (mPickSubscriberThread.joinable()){mPickSubscriberThread.join();}
         if (mPickPublisherThread.joinable()){mPickPublisherThread.join();}
         if (mLocalCommand != nullptr)
@@ -245,10 +255,10 @@ public:
         {
             pipeline->start();
         }
-        //for (auto &pipeline : mSProcessingPipelines)
-        //{
-        //    pipeline->start();
-        //}
+        for (auto &pipeline : mSProcessingPipelines)
+        {
+            pipeline->start();
+        }
         // Make thread that fetches probability packets
         mLogger->debug("Starting the refined pick publisher thread...");
         mPickPublisherThread
@@ -404,8 +414,7 @@ public:
                         mLogger->warn("Overfull S queue - popping pick");
                         mInitialSPickQueue->pop();
                     }   
-mLogger->error("uncomment here after Got an S pick");
-//                    mInitialSPickQueue->push(std::move(*pick));
+                    mInitialSPickQueue->push(std::move(*pick));
                 }
                 else
                 {
@@ -435,7 +444,7 @@ mLogger->error("uncomment here after Got an S pick");
                 try
                 {
                     mLogger->debug("Publishing pick...");
-//                    mRefinedPickPublisher->send(pick);
+                    mRefinedPickPublisher->send(pick);
                 }
                 catch (const std::exception &e)
                 {
@@ -451,7 +460,7 @@ mLogger->error("uncomment here after Got an S pick");
         mChannelDataPoller{nullptr};
     ::ProgramOptions mProgramOptions;
     std::vector<std::unique_ptr<::PPickerPipeline>> mPProcessingPipelines;
-    //std::vector<std::unique_ptr<::SPickerPipeline>> mSProcessingPipelines;
+    std::vector<std::unique_ptr<::SPickerPipeline>> mSProcessingPipelines;
     std::thread mPickPublisherThread; // Publishes refined picks
     std::thread mPickSubscriberThread; // Gets picks to refine
     std::string mModuleName{MODULE_NAME};

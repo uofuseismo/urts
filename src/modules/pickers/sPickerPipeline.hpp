@@ -18,6 +18,22 @@
 namespace
 {
 
+[[nodiscard]] [[maybe_unused]]
+std::string toName(const std::string &network,
+                   const std::string &station,
+                   const std::string &verticalChannel,
+                   const std::string &northChannel,
+                   const std::string &eastChannel,
+                   const std::string &locationCode)
+{
+    auto channel = verticalChannel
+                 + "_" + northChannel.back()
+                 + "_" + eastChannel.back();
+    auto name = network + "." + station + "."
+              + channel + "." + locationCode;
+    return name;
+}
+
 void centerAndCut(
     std::vector<double> *verticalSignal,
     std::vector<double> *northSignal,
@@ -131,6 +147,8 @@ public:
         const ::ProgramOptions &programOptions,
         const int instance) :
         mVerticalChannelData(verticalChannelData),
+        mNorthChannelData(northChannelData),
+        mEastChannelData(eastChannelData),
         mInstance(instance)
     {
         // Some checks
@@ -140,6 +158,7 @@ public:
         auto northChannel    = mNorthChannelData.getChannel();
         auto eastChannel     = mEastChannelData.getChannel();
         auto locationCode = mVerticalChannelData.getLocationCode();
+        auto samplingRate = verticalChannelData.getSamplingRate();
         if (network != mNorthChannelData.getNetwork() ||
             network != mEastChannelData.getNetwork())
         {
@@ -154,6 +173,13 @@ public:
             locationCode != mEastChannelData.getLocationCode())
         {
             throw std::invalid_argument("Inconsistent location codes");
+        }
+        if (std::abs(samplingRate
+                   - mNorthChannelData.getSamplingRate()) > 1.e-7 ||
+            std::abs(samplingRate
+                   - mEastChannelData.getSamplingRate()) > 1.e-7)
+        {
+            throw std::invalid_argument("Inconsistent sampling rates");
         }
      
         // Figure out +/- shift tolerance
@@ -170,7 +196,6 @@ public:
         mName = network + "." + station + "." + channel + "." + locationCode;
 
         // Target sampling rate
-        auto samplingRate = verticalChannelData.getSamplingRate();
         mInterpolator.setNominalSamplingRate(samplingRate);
         auto gapTolerance = std::chrono::microseconds
         {
@@ -206,6 +231,9 @@ public:
         mPick.setNetwork(network);
         mPick.setStation(station);
         mPick.setChannel(northChannel); // Arbitrarily choose non-vertical 
+        mPick.setOriginalChannels(std::vector<std::string> {verticalChannel,
+                                                            northChannel,
+                                                            eastChannel});
         mPick.setLocationCode(locationCode);
         mPick.setPhaseHint("S");
         mPick.setFirstMotion(URTS::Broadcasts::Internal::Pick::Pick::
@@ -240,7 +268,8 @@ public:
         {
             throw std::runtime_error("Inconsistent stations");
         }
-        if (mPick.getChannel() != initialPick.getChannel())
+        if (mPick.getChannel().at(0) != initialPick.getChannel().at(0) ||
+            mPick.getChannel().at(1) != initialPick.getChannel().at(1))
         {
             throw std::runtime_error("Inconsistent channels");
         }
@@ -268,6 +297,8 @@ public:
         catch (const std::exception &e)
         {
             logger->error(e.what());
+            result.setChannel(initialPick.getChannel());
+            result.setOriginalChannels(initialPick.getOriginalChannels());
             return result; // Really just giving back what was sent
         }
         // Perform inference and update pick
@@ -278,9 +309,11 @@ public:
         catch (const std::exception &e)
         {
             logger->error(e.what());
+            result.setChannel(initialPick.getChannel());
+            result.setOriginalChannels(initialPick.getOriginalChannels());
             return result;
         }
-std::cout << "updated pick s: " << initialPick << " " << result << std::endl;
+        //std::cout << "updated pick s: " << initialPick << " " << result << std::endl;
         return result;
     }
     /// @brief Query the packet cache.
@@ -407,13 +440,13 @@ std::cout << "updated pick s: " << initialPick << " " << result << std::endl;
         if ((pickTime - mTolerance) - t0Interpolated < timeBefore)
         {
             auto errorMessage = "Instance " + std::to_string(mInstance)
-                              + ": Pick too close to start of window";
+                              + ": S pick too close to start of window";
             throw std::runtime_error(errorMessage);
         }
         if (t1Interpolated - (pickTime + mTolerance) < timeAfter)
         {
             auto errorMessage = "Instance " + std::to_string(mInstance)
-                              + ": Pick too close to end of window";
+                              + ": S pick too close to end of window";
             throw std::runtime_error(errorMessage);
         }
     }
@@ -562,27 +595,26 @@ public:
     {
         stop();
     }
-    /// @brief Creates a processing item if it does not exists
-    void createProcessingItem(const std::string &network,
-                              const std::string &station,
-                              const std::string &channel,
-                              const std::string &locationCode)
+    /// @brief Fetches the channel data vector
+    [[nodiscard]]
+    URTS::Database::AQMS::ChannelData
+        fetchChannelData(const std::string &network,
+                         const std::string &station,
+                         const std::string &channel,
+                         const std::string &locationCode)
     {
-        // Set name and check if it already exists
         auto name = network + "." + station + "."
                   + channel + "." + locationCode;
-        if (mProcessingItems.contains(name)){return;}
-        // Okay, let's add it
-        mLogger->info("Instance " + std::to_string(mInstance)
-                    + " adding " + name);
-        auto channelDataVector = mDatabasePoller->getChannelData(network,
-                                                                 station,
-                                                                 channel,
-                                                                 locationCode);
+        auto channelDataVector
+            = mDatabasePoller->getChannelData(network,
+                                              station,
+                                              channel,
+                                              locationCode);
         if (channelDataVector.empty())
         {
             auto errorMessage = "Instance " + std::to_string(mInstance)
-                              + " cannot find channel data for " + name;
+                              + " cannot find channel data for "
+                              + name;
             throw std::runtime_error(errorMessage);
         }
         // In case we somehow get multiple matches for the channel data
@@ -598,31 +630,57 @@ public:
             for (int i = 1; i < static_cast<int> (channelDataVector.size());
                  ++i)
             {
-                if (channelDataVector[0].getOnDate() > maxOnDate)
-                {   
-                    maxOnDate = channelDataVector[0].getOnDate();
+                if (channelDataVector[i].getOnDate() > maxOnDate)
+                {
+                    maxOnDate = channelDataVector[i].getOnDate();
                     channelIndex = i;
                 }
             }
         }
-        // Is this channel still active?
         auto endTime = channelDataVector.at(channelIndex).getOffDate();
         auto now
             = std::chrono::duration_cast<std::chrono::microseconds> (
                 std::chrono::system_clock::now().time_since_epoch());
         if (endTime < now)
-        {  
+        {
             throw std::runtime_error("Instance " + std::to_string(mInstance)
                                   + name + " is closed in database");
         }
-/*
+        return channelDataVector[channelIndex];
+    }
+    /// @brief Creates a processing item if it does not exists
+    void createProcessingItem(const std::string &network,
+                              const std::string &station,
+                              const std::string &verticalChannel,
+                              const std::string &northChannel,
+                              const std::string &eastChannel,
+                              const std::string &locationCode)
+    {
+        // Set name and check if it already exists
+        auto name = ::toName(network, station, 
+                             verticalChannel, northChannel, eastChannel,
+                             locationCode);
+        if (mProcessingItems.contains(name)){return;}
+        // Okay, let's fetch the channel data and add it
+        mLogger->info("Instance " + std::to_string(mInstance)
+                    + " adding " + name);
+        auto verticalChannelData
+            = fetchChannelData(network, station,
+                               verticalChannel, locationCode);
+        auto northChannelData
+            = fetchChannelData(network, station,
+                               northChannel, locationCode);
+        auto eastChannelData
+            = fetchChannelData(network, station,
+                               eastChannel, locationCode);
         mProcessingItems.insert(
            std::pair {name,
                       ::ThreeComponentProcessingItem(
-                          channelDataVector[channelIndex],
+                          verticalChannelData,
+                          northChannelData,
+                          eastChannelData,
                           mProgramOptions,
                           mInstance)});
-*/
     }
     void setRunning(const bool running) noexcept
     {
@@ -642,42 +700,95 @@ public:
                                 &initialPick, timeOut);
             if (gotPick)
             {
-mLogger->info("got an s pick");
-/*
                 try
                 {
                     // Figure out a name  
-                    auto channel = initialPick.getChannel();
-                    if (channel.back() == 'P')
-                    {
-                        if (channel.size() != 3)
-                        {
-                            mLogger->error("Unhandled channel");
-                        }
-                        channel[2] = 'Z';
-                    }
+                    auto originalChannels = initialPick.getOriginalChannels();
                     auto network = initialPick.getNetwork();
                     auto station = initialPick.getStation();
                     auto locationCode = initialPick.getLocationCode();
+                    std::string verticalChannel;
+                    std::string northChannel;
+                    std::string eastChannel;
+                    if (originalChannels.size() == 3)
+                    {
+                        for (const auto &originalChannel : originalChannels)
+                        {
+                            if (originalChannel.back() == 'Z')
+                            {
+                                verticalChannel = originalChannel;
+                            }
+                            else if (originalChannel.back() == 'N' ||
+                                     originalChannel.back() == '1')
+                            {
+                                northChannel = originalChannel;
+                            }
+                            else if (originalChannel.back() == 'E' ||
+                                     originalChannel.back() == '2')
+                            {
+                                eastChannel = originalChannel;
+                            }
+                            else
+                            {
+                                mLogger->error("Unhandled channel "
+                                             + originalChannel);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        auto channel = initialPick.getChannel();
+                        verticalChannel = channel;
+                        northChannel = channel;
+                        eastChannel = channel;
+                        // Take my best guess
+                        if (channel.back() == 'S')
+                        {
+                            if (channel.size() != 3)
+                            {
+                                mLogger->error("Unhandled channel: " + channel);
+                            }
+                            verticalChannel[2] = 'Z';
+                            northChannel[2] = 'N';
+                            eastChannel[2] = 'E';
+                        }
+                        else
+                        {
+                            mLogger->error("Cannot determine channels: "
+                                         + channel);
+                            continue;
+                        } 
+                    }
+                    // Did I figure this out?
+                    if (verticalChannel.empty() ||
+                        northChannel.empty() ||
+                        eastChannel.empty())
+                    {
+                        mLogger->error("Could not unwind channel names");
+                        continue;
+                    }
                     // If the processing item doesn't exist then make it
                     createProcessingItem(network,
                                          station,
-                                         channel,
+                                         verticalChannel,
+                                         northChannel,
+                                         eastChannel,
                                          locationCode);
                     // Process this pick
-                    auto name = network + "." + station + "." 
-                              + channel + "." + locationCode;
+                    auto name = ::toName(network,
+                                         station,
+                                         verticalChannel,
+                                         northChannel,
+                                         eastChannel,
+                                         locationCode);
                     auto it = mProcessingItems.find(name);
 #ifndef NDEBUG
                     assert(it != mProcessingItems.end());
 #endif
-                    auto temporaryPick = initialPick;
-                    temporaryPick.setChannel(channel);
                     auto refinedPick
-                        = it->second.refinePick(temporaryPick,
+                        = it->second.refinePick(initialPick,
                                                 *mPacketCacheRequestor,
                                                 *mPickerRequestor,
-                                                *mFirstMotionRequestor,
                                                 mLogger);
                     mPickPublisherQueue->push(refinedPick); 
                 }
@@ -686,7 +797,6 @@ mLogger->info("got an s pick");
                     mLogger->error(e.what());
                     mPickPublisherQueue->push(initialPick);
                 }
-*/
             } // End check on getting a pick
         }
     }
