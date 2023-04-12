@@ -6,7 +6,6 @@
 #include <mutex>
 #include <thread>
 #include <soci/soci.h>
-#include <time/utc.hpp>
 #include <umps/logging/standardOut.hpp>
 #include "urts/database/aqms/channelDataTable.hpp"
 #include "urts/database/aqms/channelData.hpp"
@@ -203,7 +202,7 @@ bool ChannelDataTable::isConnected() const noexcept
 void ChannelDataTable::queryAll()
 {
     if (!isConnected()){throw std::runtime_error("Class not connected");}
-    pImpl->mLogger->debug("Checking for new channel_date information...");
+    pImpl->mLogger->debug("Checking for new channel_data information...");
     auto session
         = reinterpret_cast<soci::session *> (pImpl->mConnection->getSession());
     // Do I really need an update?
@@ -261,7 +260,7 @@ void ChannelDataTable::queryAll()
 void ChannelDataTable::queryCurrent()
 {
     if (!isConnected()){throw std::runtime_error("Class not connected");}
-    pImpl->mLogger->debug("Checking for new channel_date information...");
+    pImpl->mLogger->debug("Checking for new channel_data information...");
     auto session
         = reinterpret_cast<soci::session *> (pImpl->mConnection->getSession());
     // Do I really need an update?
@@ -293,18 +292,12 @@ void ChannelDataTable::queryCurrent()
     }
     // Yeah, let's actually query
     pImpl->mLogger->debug("Querying channel_data information...");
-    Time::UTC now;
-    now.now();
-    auto currentTime = static_cast<int64_t> (now.getEpoch());
     pImpl->mChannelData.clear();
     soci::rowset<ChannelData>
         rows(session->prepare << "SELECT "
                               << COLUMNS
                               << " FROM channel_data WHERE "
-                              << "TO_TIMESTAMP("
-                              << std::to_string(currentTime)
-                              << ") AT TIME ZONE 'UTC'"
-                              << " BETWEEN ondate AND offdate");
+                              << " now() BETWEEN ondate AND offdate");
     std::vector<ChannelData> data;
     data.reserve(pImpl->mChannelSpaceEstimate);
     for (auto &it : rows)

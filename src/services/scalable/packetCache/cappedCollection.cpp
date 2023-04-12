@@ -1,5 +1,5 @@
-#include <iostream>
 #include <string>
+#include <set>
 #include <map>
 #include <unordered_set>
 #include <vector>
@@ -9,6 +9,7 @@
 #include "urts/services/scalable/packetCache/circularBuffer.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "utilities.hpp"
+#include "stringMatch.hpp"
 
 using namespace URTS::Services::Scalable::PacketCache;
 namespace UDP = URTS::Broadcasts::Internal::DataPacket;
@@ -52,7 +53,6 @@ public:
         return mCircularBufferMap.contains(name);
     }
     /// Get all sensor names
-    //[[nodiscard]] std::vector<std::string> getSensors() const noexcept
     [[nodiscard]] std::unordered_set<std::string> getSensors() const noexcept
     {
         std::unordered_set<std::string> result;
@@ -92,6 +92,25 @@ public:
             it->second.addPacket(std::move(packet));
         } 
     }
+    /// True indicates the channel is blacklisted 
+    [[nodiscard]] bool isBlackListed(const UDP::DataPacket &packet)
+    {
+        bool isBlackListed = false;
+        if (mBlackList.empty()){return isBlackListed;}
+        if (packet.haveChannel())
+        {
+            auto channel = packet.getChannel();
+            for (const auto &pattern : mBlackList)
+            {
+                if (::stringMatch(channel, pattern))
+                {
+                    isBlackListed = true;
+                    break;
+                }
+            }
+        }
+        return isBlackListed;
+    } 
     /// Get total number of packets
     [[nodiscard]] int getTotalNumberOfPackets() const noexcept
     {
@@ -148,9 +167,10 @@ public:
 ///private:
     mutable std::mutex mMutex;
     std::map<std::string, CircularBuffer> mCircularBufferMap;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    int mMaxPackets = 0;
-    bool mInitialized = false;
+    std::set<std::string> mBlackList;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    int mMaxPackets{0};
+    bool mInitialized{false};
 };
 
 /// C'tor
@@ -170,7 +190,8 @@ CappedCollection::CappedCollection(
 CappedCollection::~CappedCollection() = default;
 
 /// Initialization
-void CappedCollection::initialize(const int maxPackets)
+void CappedCollection::initialize(const int maxPackets,
+                                  const std::set<std::string> &blackList)
 {
     clear();
     if (maxPackets < 1)
@@ -179,6 +200,7 @@ void CappedCollection::initialize(const int maxPackets)
                                   + std::to_string(maxPackets)
                                   + " must be positive");
     }
+    pImpl->mBlackList = blackList;
     pImpl->mMaxPackets = maxPackets;
     pImpl->mInitialized = true;
 }
@@ -199,6 +221,7 @@ void CappedCollection::addPacket(const UDP::DataPacket &packet)
 /// Add packet with move
 void CappedCollection::addPacket(UDP::DataPacket &&packet)
 {
+    if (pImpl->isBlackListed(packet)){return;}
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     if (!isValidPacket(packet))
     {
@@ -272,7 +295,7 @@ std::vector<UDP::DataPacket>
     CappedCollection::getPackets(const std::string &name,
                                     const double t0) const
 {
-    return getPackets(name, secondsToMicroSeconds(t0));
+    return getPackets(name, ::secondsToMicroSeconds(t0));
 }
 
 /// Get packets from t0 to t1 
@@ -300,6 +323,6 @@ std::vector<UDP::DataPacket>
                                  const double t1) const
 {
     return getPackets(name,
-                      secondsToMicroSeconds(t0),
-                      secondsToMicroSeconds(t1));
+                      ::secondsToMicroSeconds(t0),
+                      ::secondsToMicroSeconds(t1));
 }

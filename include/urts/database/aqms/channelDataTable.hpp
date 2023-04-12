@@ -20,7 +20,7 @@ namespace URTS::Database
 }
 namespace URTS::Database::AQMS
 {
-/// @class ChannelDataTable "channelDataTable.hpp" "urts/database/aqms/ChannelDataTable.hpp"
+/// @class ChannelDataTable "channelDataTable.hpp" "urts/database/aqms/channelDataTable.hpp"
 /// @brief A container for working with the channel_data table. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ChannelDataTable : public URTS::ObserverPattern::ISubject
