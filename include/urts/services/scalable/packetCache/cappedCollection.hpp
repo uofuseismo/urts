@@ -1,6 +1,7 @@
 #ifndef URTS_SERVICES_SCALABLE_PACKET_CACHE_CAPPED_COLLECTION_HPP
 #define URTS_SERVICES_SCALABLE_PACKET_CACHE_CAPPED_COLLECTION_HPP
 #include <memory>
+#include <set>
 #include <chrono>
 #include <unordered_set>
 namespace UMPS::Logging
@@ -34,9 +35,12 @@ public:
     /// @{
 
     /// @brief Initializes the capped collection.
-    /// @param[in] maxPackets  The maximum number of packets retained in
-    ///                        this collection.
-    void initialize(int maxPackets);
+    /// @param[in] maxPackets        The maximum number of packets retained in
+    ///                              this collection.
+    /// @param[in] channelBlackList  This is a list of wildcarded channels that
+    ///                              will not be added to the packet cache. 
+    void initialize(int maxPackets,
+                    const std::set<std::string> &channelBlackList = std::set<std::string> {});
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}

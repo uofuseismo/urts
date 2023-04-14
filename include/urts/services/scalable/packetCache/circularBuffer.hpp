@@ -9,6 +9,10 @@ namespace URTS::Broadcasts::Internal::DataPacket
 }
 namespace URTS::Services::Scalable::PacketCache
 {
+ template<class T> class CircularBufferImpl;
+}
+namespace URTS::Services::Scalable::PacketCache
+{
 /// @class CircularBuffer "circularBuffer.hpp" "urts/services/scalable//packetCache/circularBuffer.hpp"
 /// @brief This is a thread-safe circular buffer for storing data packets for
 ///        a given station's channel.
@@ -164,8 +168,7 @@ public:
     ~CircularBuffer();
     /// @}
 private:
-    class CircularBufferImpl;
-    std::unique_ptr<CircularBufferImpl> pImpl; 
+    std::unique_ptr<CircularBufferImpl<URTS::Broadcasts::Internal::DataPacket::DataPacket>> pImpl; 
 };
 }
 #endif

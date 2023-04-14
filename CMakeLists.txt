@@ -46,7 +46,8 @@ if (${UUSSMLModels_FOUND})
    set(BUILD_UUSS_MLMODELS TRUE)
 endif() 
 if (${BUILD_UI})
-   find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
+   find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED)
+   find_package(QPhase REQUIRED)
 endif()
 
 set(BUILD_EW FALSE)
@@ -94,6 +95,7 @@ set(GENERIC_SRC
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
     src/database/aqms/stationData.cpp
+    src/database/aqms/stationDataTable.cpp
     src/database/connection/postgresql.cpp
     src/observerPattern/subject.cpp
     src/services/standalone/incrementer/counter.cpp
@@ -189,6 +191,11 @@ if (${BUILD_UI})
    set(UI_SRC
        ui/qurts.cpp
        ui/mainWindow.cpp ui/mainWindow.hpp
+       ui/waveformViewer/mainWindow.cpp #ui/waveformViewer/mainWindow.hpp 
+       #ui/uOperatorOptions.cpp 
+       ui/uOperatorOptionsDialog.cpp
+       ui/waveformViewer/channelSelectorDialog.cpp
+       ui/waveformViewer/channelListModel.cpp
        ui/topics.cpp)
 endif()
 
@@ -447,10 +454,13 @@ if (${BUILD_UI})
                          AUTOUIC ON)
    target_include_directories(qurts
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              PRIVATE Qt6::Core Qt6::Widgets
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/ui>
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+                              PRIVATE Qt6::Core Qt6::Widgets Qt6::Network
+                                      ${QPHASE_INCLUDE_DIR}
                               PRIVATE ${UMPS_INCLUDE_DIR})
-   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets
-                                       ${UMPS_LIBRARY})
+   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets Qt6::Network
+                                       ${UMPS_LIBRARY} ${QPHASE_LIBRARY})
 endif()
 
 ##########################################################################################

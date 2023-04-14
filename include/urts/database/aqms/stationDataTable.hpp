@@ -1,6 +1,7 @@
 #ifndef URTS_DATABASE_AQMS_STATION_DATA_TABLE_HPP
 #define URTS_DATABASE_AQMS_STATION_DATA_TABLE_HPP
 #include <memory>
+#include <set>
 #include <vector>
 #include "urts/observerPattern/subject.hpp"
 namespace UMPS::Logging
@@ -66,6 +67,12 @@ public:
     ///         may get multiple results that correspond to different epochs.
     [[nodiscard]] std::vector<StationData> getStationData(const std::string &network,
                                                           const std::string &station) const;
+    /// @param[in] network       The network code to match.
+    /// @result The station data matching this network.
+    ///         Note, if the queryAll was invoked then you
+    ///         may get multiple results that correspond to different epochs.
+    [[nodiscard]] std::vector<StationData> getStationData(const std::string &network) const;
+    [[nodiscard]] std::vector<StationData> getStationData(const std::set<std::string> &network) const;
     /// @}
 
     /// @name Destructors

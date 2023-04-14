@@ -1,3 +1,5 @@
+#ifndef PRIVATE_SERVICES_SCALABLE_PACKET_CACHE_CIRCULAR_BUFFER_HPP
+#define PRIVATE_SERVICES_SCALABLE_PACKET_CACHE_CIRCULAR_BUFFER_HPP
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -9,22 +11,14 @@
 #include <cassert>
 #endif
 #include <boost/circular_buffer.hpp>
-#include "urts/services/scalable/packetCache/circularBuffer.hpp"
-#include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
-#include "private/isEmpty.hpp"
-#include "utilities.hpp"
-#include "circularBuffer.hpp"
-
-using namespace URTS::Services::Scalable::PacketCache;
-namespace UDP = URTS::Broadcasts::Internal::DataPacket;
 
 #define NAN_TIME std::chrono::microseconds{std::numeric_limits<int64_t>::lowest()}
 
-/*
-class CircularBuffer::CircularBufferImpl
+template<class T>
+class URTS::Services::Scalable::PacketCache::CircularBufferImpl
 {
 public:
-    void update(UDP::DataPacket &&packet)
+    void update(T &&packet)
     {
         auto t0 = packet.getStartTime(); 
         std::scoped_lock lock(mMutex);
@@ -54,8 +48,7 @@ public:
         // packet's start value.
         auto it = std::upper_bound(mCircularBuffer.begin(),
                                    mCircularBuffer.end(), packet,
-                                   [](const UDP::DataPacket &lhs,
-                                      const UDP::DataPacket &rhs)
+                                   [](const T &lhs, const T &rhs)
                                    {
                                       return lhs.getStartTime() <
                                              rhs.getStartTime();
@@ -77,8 +70,7 @@ public:
 #ifndef NDEBUG
             assert(std::is_sorted(mCircularBuffer.begin(),
                                   mCircularBuffer.end(),
-                                  [](const UDP::DataPacket &lhs,
-                                     const UDP::DataPacket &rhs)
+                                  [](const T &lhs, const T &rhs)
                                   {
                                      return lhs.getStartTime() <
                                             rhs.getStartTime();
@@ -91,8 +83,7 @@ public:
             //mCircularBuffer.push_back(packet);
             //mCircularBuffer.rinsert(it, packet);
             //std::sort(mCircularBuffer.begin(), mCircularBuffer.end(),
-            //          [](const UDP::DataPacket &lhs,
-            //             const UDP::DataPacket &rhs)
+            //          [](const T &lhs, const T &rhs)
             //          {
             //             return lhs.getStartTime() < rhs.getStartTime();
             //          });
@@ -109,9 +100,9 @@ public:
         return packet.getStartTime();
     }
     // Get all packets currently in buffer
-    [[nodiscard]] std::vector<UDP::DataPacket> getAllPackets() const
+    [[nodiscard]] std::vector<T> getAllPackets() const
     {
-        std::vector<UDP::DataPacket> result;
+        std::vector<T> result;
         std::scoped_lock lock(mMutex);
         auto nPackets = mCircularBuffer.size();
         result.reserve(nPackets); 
@@ -122,17 +113,17 @@ public:
         return result;
     }
     // Perform query from now until whenever
-    [[nodiscard]] std::vector<UDP::DataPacket>
+    [[nodiscard]] std::vector<T>
         getPackets(const std::chrono::microseconds t0MuS,
                    const std::chrono::microseconds t1MuS) const
     {
-        std::vector<UDP::DataPacket> result;
+        std::vector<T> result;
         std::scoped_lock lock(mMutex);
         if (mCircularBuffer.empty()){return result;}
         auto it0 = std::upper_bound(mCircularBuffer.begin(),
                                     mCircularBuffer.end(), t0MuS,
                                     [](const std::chrono::microseconds t0MuS,
-                                       const UDP::DataPacket &rhs)
+                                       const T &rhs)
                                     {
                                        return t0MuS <= rhs.getStartTime();
                                     });
@@ -152,7 +143,7 @@ public:
             it1 = std::upper_bound(mCircularBuffer.begin(),
                                    mCircularBuffer.end(), t1MuS,
                                    [](const std::chrono::microseconds t1MuS,
-                                      const UDP::DataPacket &rhs)
+                                      const T &rhs)
                                    {
                                       return t1MuS < rhs.getStartTime();
                                    });
@@ -241,7 +232,7 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
-    boost::circular_buffer<UDP::DataPacket> mCircularBuffer;
+    boost::circular_buffer<T> mCircularBuffer;
     std::string mName;
     std::string mNetwork;
     std::string mStation;
@@ -250,237 +241,5 @@ public:
     int mMaxPackets{0};
     bool mInitialized{false};
 };
-*/
 
-/// C'tor
-CircularBuffer::CircularBuffer() :
-    pImpl(std::make_unique<::CircularBufferImpl<UDP::DataPacket>> ())
-{
-}
-
-/// Copy c'tor
-CircularBuffer::CircularBuffer(const CircularBuffer &cb)
-{
-    *this = cb;
-}
-
-/// Copy assignment
-CircularBuffer& CircularBuffer::operator=(const CircularBuffer &cb)
-{
-    if (&cb == this){return *this;}
-    pImpl = std::make_unique<::CircularBufferImpl<UDP::DataPacket>> (*cb.pImpl);
-    return *this;
-}
-
-/// Move c'tor
-CircularBuffer::CircularBuffer(CircularBuffer &&cb) noexcept
-{
-    *this = std::move(cb);
-}
-
-/// Move assignment
-CircularBuffer& CircularBuffer::operator=(CircularBuffer &&cb) noexcept
-{
-    if (&cb == this){return *this;}
-    pImpl = std::make_unique<::CircularBufferImpl<UDP::DataPacket>>
-            (std::move(*cb.pImpl));
-    return *this;
-}
-
-/// Initialize class
-void CircularBuffer::initialize(
-    const std::string &network, const std::string &station,
-    const std::string &channel, const std::string &locationCode,
-    const int maxPackets)
-{
-    clear();
-    if (::isEmpty(network)){throw std::invalid_argument("Network is empty");}
-    if (::isEmpty(station)){throw std::invalid_argument("Station is empty");}
-    if (::isEmpty(channel)){throw std::invalid_argument("Channel is empty");}
-    if (::isEmpty(locationCode))
-    {
-        throw std::invalid_argument("Location code is empty");
-    }
-    if (maxPackets < 1)
-    {
-        throw std::invalid_argument("maxPackets " + std::to_string(maxPackets)
-                                  + " must be positive");
-    }
-    pImpl->mCircularBuffer.rset_capacity(maxPackets);
-    pImpl->mNetwork = network;
-    pImpl->mStation = station;
-    pImpl->mChannel = channel;
-    pImpl->mLocationCode = locationCode;
-    pImpl->mName = ::makeName(network, station, channel, locationCode);
-    pImpl->mMaxPackets = maxPackets;
-    pImpl->mInitialized = true;
-}
-
-std::string CircularBuffer::getNetwork() const
-{
-    if (!isInitialized()){throw std::invalid_argument("Class not initialized");}
-    return pImpl->mNetwork;
-}
-
-std::string CircularBuffer::getStation() const
-{
-    if (!isInitialized()){throw std::invalid_argument("Class not initialized");}
-    return pImpl->mStation;
-}
-
-std::string CircularBuffer::getChannel() const
-{
-    if (!isInitialized()){throw std::invalid_argument("Class not initialized");}
-    return pImpl->mChannel;
-}
-
-std::string CircularBuffer::getLocationCode() const
-{
-    if (!isInitialized()){throw std::invalid_argument("Class not initialized");}
-    return pImpl->mLocationCode;
-}
-
-/// Initialized?
-bool CircularBuffer::isInitialized() const noexcept
-{
-    return pImpl->mInitialized;
-}
-
-/// Circular buffer size 
-int CircularBuffer::getNumberOfPackets() const noexcept
-{
-    return pImpl->size();
-}
-
-/// Circular buffer capacity
-int CircularBuffer::getMaximumNumberOfPackets() const
-{
-    if (!isInitialized()){throw std::invalid_argument("Class not initialize");}
-    return pImpl->capacity();
-}
-
-/// Reset class
-void CircularBuffer::clear() noexcept
-{
-    pImpl->clear();
-}
-
-/// Add a packet
-void CircularBuffer::addPacket(UDP::DataPacket &&packet)
-{
-    // Is this a valid packet?
-    if (!::isValidPacket(packet))
-    {   
-        throw std::invalid_argument("Packet is invalid");
-    }
-    // Make the packet name
-    auto packetName = ::makeName(packet);
-    if (packetName != pImpl->mName)
-    {   
-        throw std::invalid_argument("Packet for " + packetName
-                                  + " does not belong in buffer for "
-                                  + pImpl->mName);
-    }   
-    pImpl->update(std::move(packet));
-}
-
-/// Add a packet
-void CircularBuffer::addPacket(const UDP::DataPacket &packet)
-{
-    auto packetCopy = packet;
-    addPacket(std::move(packetCopy));
-}
-
-/// Get earliest start time
-std::chrono::microseconds CircularBuffer::getEarliestStartTime() const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    auto startTime = pImpl->getEarliestStartTime();
-    if (startTime == NAN_TIME)
-    {
-        throw std::runtime_error("No packets in buffer");
-    }
-    return startTime;
-}
-
-/// Destructor
-CircularBuffer::~CircularBuffer() = default;
-
-/// Get all the packets
-std::vector<UDP::DataPacket> CircularBuffer::getPackets() const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    auto packets = pImpl->getAllPackets();
-#ifndef NDEBUG
-    assert(std::is_sorted(packets.begin(), packets.end(),
-           [](const UDP::DataPacket &lhs, const UDP::DataPacket &rhs)
-           {
-              return lhs.getStartTime() < rhs.getStartTime();
-           }));
 #endif
-    return packets;
-}
-
-/// Get all packets from given time to now
-std::vector<UDP::DataPacket> CircularBuffer::getPackets(
-    const std::chrono::microseconds &t0) const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    constexpr std::chrono::microseconds
-        t1{std::numeric_limits<int64_t>::max()};
-    auto packets = pImpl->getPackets(t0, t1);
-#ifndef NDEBUG
-    assert(std::is_sorted(packets.begin(), packets.end(),
-           [](const UDP::DataPacket &lhs, const UDP::DataPacket &rhs)
-           {
-              return lhs.getStartTime() < rhs.getStartTime();
-           }));
-#endif
-    return packets;
-}
-
-std::vector<UDP::DataPacket> CircularBuffer::getPackets(const double t0) const
-{
-    auto t0MicroSeconds = ::secondsToMicroSeconds(t0);
-    return getPackets(t0MicroSeconds);
-}
-
-
-/// Get all packets from given time t0 to given time t1
-std::vector<UDP::DataPacket> CircularBuffer::getPackets(
-    const double t0, const double t1) const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    if (t1 <= t0)
-    {
-        throw std::invalid_argument("t0 = " + std::to_string(t0)
-                                  + " must be less than t1 = "
-                                  + std::to_string(t1));
-    }
-    auto t0MicroSeconds = ::secondsToMicroSeconds(t0);
-    auto t1MicroSeconds = ::secondsToMicroSeconds(t1);
-    return getPackets(t0MicroSeconds, t1MicroSeconds);
-}
-
-std::vector<UDP::DataPacket> CircularBuffer::getPackets(
-    const std::chrono::microseconds &t0,
-    const std::chrono::microseconds &t1) const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    if (t1 <= t0) 
-    {
-        throw std::invalid_argument("t0 = " + std::to_string(t0.count())
-                                  + " must be less than t1 = "
-                                  + std::to_string(t1.count()));
-    }
-    auto packets = pImpl->getPackets(t0, t1);
-#ifndef NDEBUG
-    assert(std::is_sorted(packets.begin(), packets.end(),
-           [](const UDP::DataPacket &lhs, const UDP::DataPacket &rhs)
-           {
-              return lhs.getStartTime() < rhs.getStartTime();
-           }));
-#endif
-    return packets;
-}
-

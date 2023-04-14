@@ -1,6 +1,6 @@
 #include <umps/authentication/zapOptions.hpp>
-#include <umps/messaging/publisherSubscriber/subscriber.hpp>
-#include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
+#include <umps/messaging/xPublisherXSubscriber/subscriber.hpp>
+#include <umps/messaging/xPublisherXSubscriber/subscriberOptions.hpp>
 #include <umps/messageFormats/messages.hpp>
 #include <umps/messageFormats/message.hpp>
 #include <umps/logging/log.hpp>
@@ -12,7 +12,7 @@
 using namespace URTS::Broadcasts::Internal::Pick;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
-namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+namespace UPubSub = UMPS::Messaging::XPublisherXSubscriber;
 
 class Subscriber::SubscriberImpl
 {
@@ -70,13 +70,12 @@ Subscriber& Subscriber::operator=(Subscriber &&subscriber) noexcept
 void Subscriber::initialize(const SubscriberOptions &options)
 {
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
-    UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
+    UPubSub::SubscriberOptions subscriberOptions;
     subscriberOptions.setAddress(options.getAddress());
     subscriberOptions.setZAPOptions(options.getZAPOptions());
     subscriberOptions.setReceiveTimeOut(options.getTimeOut());
     subscriberOptions.setReceiveHighWaterMark(options.getHighWaterMark());
     subscriberOptions.setMessageTypes(pImpl->mMessageTypes);
-    //auto subscriberOptions = pImpl->mOptions.getSubscriberOptions();
     pImpl->mSubscriber->initialize(subscriberOptions);
     pImpl->mOptions = options;
 }
