@@ -1,4 +1,5 @@
 <map id="URTS::ObserverPattern::ISubject" name="URTS::ObserverPattern::ISubject">
-<area shape="rect" id="node1" title="Abstract base class for subjects. Typically, subjects will be (data) models which widgets (observers)..." alt="" coords="7,5,177,47"/>
+<area shape="rect" id="node1" title="Abstract base class for subjects. Typically, subjects will be (data) models which widgets (observers)..." alt="" coords="106,5,275,47"/>
 <area shape="rect" id="node2" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html" title="A container for working with the channel_data table." alt="" coords="5,95,179,136"/>
+<area shape="rect" id="node3" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html" title="A container for working with the station_data table." alt="" coords="203,95,376,136"/>
 </map>

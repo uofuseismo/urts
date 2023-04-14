@@ -42,7 +42,8 @@ var annotated_dup =
           [ "ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data" ],
           [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table" ],
           [ "ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller" ],
-          [ "StationData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data" ]
+          [ "StationData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data" ],
+          [ "StationDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table" ]
         ] ],
         [ "Connection", null, [
           [ "IConnection", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection" ],
@@ -99,6 +100,7 @@ var annotated_dup =
             [ "BulkDataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request" ],
             [ "BulkDataResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_response" ],
             [ "CappedCollection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection" ],
+            [ "CircularBufferImpl", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer_impl.html", null ],
             [ "CircularBuffer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer" ],
             [ "DataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_request" ],
             [ "DataResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_data_response" ],

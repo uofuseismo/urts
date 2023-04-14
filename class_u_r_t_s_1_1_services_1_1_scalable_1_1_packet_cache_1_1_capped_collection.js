@@ -18,7 +18,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collecti
     [ "getTotalNumberOfPackets", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ae6f1ffd1dc5d413fdbf4085dacda37f3", null ],
     [ "haveSensor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a0e3551f4fd5b54f19f41a7fe5942f041", null ],
     [ "haveSensor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#af3ffb8a766e7d2210eda78d2761d9588", null ],
-    [ "initialize", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ae8c56a39066781e76e1cf6a3434f986b", null ],
+    [ "initialize", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a48374f0c437409ce6687fc8706877221", null ],
     [ "isInitialized", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2ec6cefad49ff8f161c3f3ad5ab90a7f", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a3a7ab132080ecb85a879ab5da744d212", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a177e8ded1d724bfb5d2c13746c66f357", null ]

@@ -4,6 +4,7 @@ var hierarchy =
     [ "URTS::Database::AQMS::ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", null ],
     [ "URTS::Database::AQMS::ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", null ],
     [ "URTS::Services::Scalable::PacketCache::CircularBuffer", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer.html", null ],
+    [ "URTS::Services::Scalable::PacketCache::CircularBufferImpl< T >", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_circular_buffer_impl.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Counter", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html", null ],
@@ -58,7 +59,8 @@ var hierarchy =
     ] ],
     [ "URTS::ObserverPattern::IObserver", "class_u_r_t_s_1_1_observer_pattern_1_1_i_observer.html", null ],
     [ "URTS::ObserverPattern::ISubject", "class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html", [
-      [ "URTS::Database::AQMS::ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", null ]
+      [ "URTS::Database::AQMS::ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", null ],
+      [ "URTS::Database::AQMS::StationDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html", null ]
     ] ],
     [ "Message", "class_message.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],

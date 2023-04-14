@@ -130,9 +130,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9c6c8e2ec0008f1e496946ac4da23dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a9c6c8e2ec0008f1e496946ac4da23dfb">More...</a><br /></td></tr>
 <tr class="separator:a9c6c8e2ec0008f1e496946ac4da23dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Initialization</div></td></tr>
-<tr class="memitem:ae8c56a39066781e76e1cf6a3434f986b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ae8c56a39066781e76e1cf6a3434f986b">initialize</a> (int maxPackets)</td></tr>
-<tr class="memdesc:ae8c56a39066781e76e1cf6a3434f986b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the capped collection.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#ae8c56a39066781e76e1cf6a3434f986b">More...</a><br /></td></tr>
-<tr class="separator:ae8c56a39066781e76e1cf6a3434f986b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48374f0c437409ce6687fc8706877221"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a48374f0c437409ce6687fc8706877221">initialize</a> (int maxPackets, const std::set&lt; std::string &gt; &amp;channelBlackList=std::set&lt; std::string &gt; {})</td></tr>
+<tr class="memdesc:a48374f0c437409ce6687fc8706877221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the capped collection.  <a href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a48374f0c437409ce6687fc8706877221">More...</a><br /></td></tr>
+<tr class="separator:a48374f0c437409ce6687fc8706877221"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ec6cefad49ff8f161c3f3ad5ab90a7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html#a2ec6cefad49ff8f161c3f3ad5ab90a7f">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:a2ec6cefad49ff8f161c3f3ad5ab90a7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Adding Packets</div></td></tr>
@@ -655,8 +655,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ae8c56a39066781e76e1cf6a3434f986b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8c56a39066781e76e1cf6a3434f986b">&#9670;&nbsp;</a></span>initialize()</h2>
+<a id="a48374f0c437409ce6687fc8706877221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48374f0c437409ce6687fc8706877221">&#9670;&nbsp;</a></span>initialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -665,8 +665,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">void URTS::Services::Scalable::PacketCache::CappedCollection::initialize </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>maxPackets</em></td><td>)</td>
+          <td class="paramname"><em>maxPackets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::set&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>channelBlackList</em> = <code>std::set&lt;&#160;std::string&#160;&gt;&#160;{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -675,6 +685,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">maxPackets</td><td>The maximum number of packets retained in this collection. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">channelBlackList</td><td>This is a list of wildcarded channels that will not be added to the packet cache. <br  />
+ </td></tr>
   </table>
   </dd>
 </dl>
@@ -716,7 +728,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>PacketCache</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html">CappedCollection</a></li>
-    <li class="footer">Generated on Thu Apr 6 2023 16:34:39 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Apr 14 2023 20:18:29 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
