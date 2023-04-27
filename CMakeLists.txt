@@ -193,6 +193,7 @@ if (${BUILD_UI})
        ui/mainWindow.cpp ui/mainWindow.hpp
        ui/waveformViewer/mainWindow.cpp #ui/waveformViewer/mainWindow.hpp 
        #ui/uOperatorOptions.cpp 
+       ui/aqmsDatabaseOptionsDialog.cpp
        ui/uOperatorOptionsDialog.cpp
        ui/waveformViewer/channelSelectorDialog.cpp
        ui/waveformViewer/channelListModel.cpp

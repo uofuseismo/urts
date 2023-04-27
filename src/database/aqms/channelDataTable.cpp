@@ -24,7 +24,12 @@ template<> struct soci::type_conversion<ChannelData>
         data.setNetwork(v.get<std::string> ("net"));
         data.setStation(v.get<std::string> ("sta"));
         data.setChannel(v.get<std::string> ("seedchan"));
-        data.setLocationCode(v.get<std::string> ("location"));
+        auto locationCode = v.get<std::string> ("location");
+        if (locationCode.empty() || locationCode == "  ")
+        {
+            locationCode = "--";
+        }
+        data.setLocationCode(locationCode);
         try
         {
             data.setLatitude(v.get<double> ("lat"));

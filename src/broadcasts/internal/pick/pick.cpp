@@ -261,7 +261,10 @@ bool Pick::haveChannel() const noexcept
 /// Location code
 void Pick::setLocationCode(const std::string &location)
 {
-    if (::isEmpty(location)){throw std::invalid_argument("location is empty");}
+    if (::isEmpty(location))
+    {
+        throw std::invalid_argument("Location code is empty");
+    }
     pImpl->mLocationCode = location;
 }
 

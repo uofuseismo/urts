@@ -224,6 +224,10 @@ public:
         auto northChannel    = mChannelData.getNorthChannel();
         auto eastChannel     = mChannelData.getEastChannel();
         auto locationCode = mChannelData.getLocationCode();
+        if (locationCode.empty() || locationCode == "  ")
+        {
+            locationCode = "--";
+        }
         std::vector<std::string> originalChannels{verticalChannel,
                                                   northChannel,
                                                   eastChannel};
