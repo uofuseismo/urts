@@ -222,9 +222,9 @@ void makeOneAndThreeComponentStation(
             }
             else
             {
-                std::cerr << "Missing channel for: "
-                          << network + "." + station + "."
-                           + channel + "." + locationCode << std::endl;
+                logger->warn("Missing channel for: "
+                            + network + "." + station + "."
+                            + channel + "." + locationCode);
             }
         }
     }
