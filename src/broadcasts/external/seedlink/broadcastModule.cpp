@@ -350,21 +350,21 @@ public:
                         {
                             if (packetEndTime < broadcastTimeStart)
                             {
-                                mLogger->warn("Expired packet skipped for "
-                                            + packet->getNetwork() + "."
-                                            + packet->getStation() + "."
-                                            + packet->getChannel() + "."
-                                            + packet->getLocationCode() 
-                                            + "; not forwarding");
+                                mLogger->debug("Expired packet skipped for "
+                                              + packet->getNetwork() + "."
+                                              + packet->getStation() + "."
+                                              + packet->getChannel() + "."
+                                              + packet->getLocationCode() 
+                                              + "; not forwarding");
                             }
                             if (packetStartTime > broadcastTimeEnd)
                             {
-                                mLogger->warn("Future packet detector for "
-                                            + packet->getNetwork() + "." 
-                                            + packet->getStation() + "." 
-                                            + packet->getChannel() + "." 
-                                            + packet->getLocationCode() 
-                                            + "; not forwarding");
+                                mLogger->debug("Future packet detector for "
+                                             + packet->getNetwork() + "." 
+                                             + packet->getStation() + "." 
+                                             + packet->getChannel() + "." 
+                                             + packet->getLocationCode() 
+                                             + "; not forwarding");
                             }
                         }
                     }
