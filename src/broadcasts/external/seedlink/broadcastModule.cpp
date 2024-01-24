@@ -64,7 +64,8 @@ namespace
     std::string commands;
     commands = "Commands:\n";
     commands = commands + "   quit   Exits the program.\n";
-    commands = commands + "   packetsSent  Number of packets sent in last minute.\n";
+    commands = commands + "   packetsSent    Number of packets sent in last minute.\n";
+    commands = commands + "   packetsSkpped  Number of packets not forwarded in last minute.\n";
     commands = commands + "   help   Displays this message.\n";
     return commands;
 }
@@ -306,7 +307,9 @@ public:
         }
         mLogger->debug("Earthworm broadcast thread is starting");
         int numberOfPacketsSent = 0;
+        int numberOfPacketsSkipped = 0;
         mNumberOfPacketsSent = 0;
+        mNumberOfPacketsSkipped = 0;
         auto packetMonitorStart = std::chrono::high_resolution_clock::now();
         while (keepRunning())
         {
@@ -348,6 +351,7 @@ public:
                         }
                         else
                         {
+                            numberOfPacketsSkipped = numberOfPacketsSkipped + 1;
                             if (packetEndTime < broadcastTimeStart)
                             {
                                 mLogger->debug("Expired packet skipped for "
@@ -393,7 +397,9 @@ public:
             if (duration > std::chrono::seconds {60})
             {
                 mNumberOfPacketsSent = numberOfPacketsSent;
+                mNumberOfPacketsSkipped = numberOfPacketsSkipped;
                 numberOfPacketsSent = 0;
+                numberOfPacketsSkipped = 0;
                 packetMonitorStart = endClock;
             }
         }
@@ -473,7 +479,16 @@ public:
                 response.setResponse("Number of packets sent in last minute: "
                                    + std::to_string(mNumberOfPacketsSent));
                 response.setReturnCode(
-                    USC::CommandResponse::ReturnCode::InvalidCommand);
+                    USC::CommandResponse::ReturnCode::Success);
+            }
+            else if (command == "packetsSkipped")
+            {
+                mLogger->debug("Issuing packetsSkipped command...");
+                response.setResponse(
+                    "Number of packets skipped in last minute: "
+                    + std::to_string(mNumberOfPacketsSent));
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
             }
             else
             {
@@ -513,6 +528,7 @@ public:
     std::chrono::seconds mExpirationTime{std::chrono::minutes {10}}; // 10 Minutes
     std::chrono::seconds mFutureTime{0}; // Do not allow data from future
     int mNumberOfPacketsSent{0};
+    int mNumberOfPacketsSkpped{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
