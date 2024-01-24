@@ -311,6 +311,15 @@ public:
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
+            auto startClockEpoch
+                = std::chrono::duration_cast<std::chrono::microseconds>
+                  (startClock.time_since_epoch());
+            auto broadcastTimeStart
+                = startClockEpoch
+                - std::chrono::microseconds {mExpirationTime};
+            auto broadcastTimeEnd
+                = startClockEpoch
+                + std::chrono::microseconds {mFutureTime};
             // Read from the earthworm ring
             std::vector<UDP::DataPacket> packets;
             // Send the packets off
@@ -324,11 +333,28 @@ public:
                 }
                 else
                 {
+                    // Don't forward empty packets
+                    if (packet->getNumberOfSamples() < 1){continue;}
                     try
                     {
-                        auto now = std::chrono::high_resolution_clock::now();
-                        mPacketPublisher->send(*packet);
-                        numberOfPacketsSent = numberOfPacketsSent + 1;
+                        // Make sure time makes sense
+                        auto packetStartTime = packet->getStartTime();
+                        auto packetEndTime = packet->getEndTime();
+                        if (packetEndTime   >= broadcastTimeStart &&
+                            packetStartTime <= broadcastTimeEnd)
+                        {
+                            mPacketPublisher->send(*packet);
+                            numberOfPacketsSent = numberOfPacketsSent + 1;
+                        }
+                        else
+                        {
+                            mLogger->warn("Packet times for "
+                                         + packet->getNetwork() + "."
+                                         + packet->getStation() + "."
+                                         + packet->getChannel() + "."
+                                         + packet->getLocationCode() 
+                                         + " are invalid; not forwarding");
+                        }
                     }
                     catch (const std::exception &e)
                     {
@@ -472,6 +498,8 @@ public:
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
+    std::chrono::seconds mExpirationTime{std::chrono::minutes {10}}; // 10 Minutes
+    std::chrono::seconds mFutureTime{0}; // Do not allow data from future
     int mNumberOfPacketsSent{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
@@ -562,6 +590,8 @@ int main(int argc, char *argv[])
                                                   std::move(packetPublisher), 
                                                   std::move(seedLinkClient),
                                                   logger);
+        broadcastProcess->mExpirationTime = programOptions.mExpirationTime;
+        broadcastProcess->mFutureTime = programOptions.mFutureTime;
         // Create the remote registry
         auto callbackFunction = std::bind(&BroadcastPackets::commandCallback,
                                           &*broadcastProcess,
