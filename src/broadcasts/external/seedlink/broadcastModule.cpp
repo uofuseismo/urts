@@ -105,6 +105,24 @@ struct ProgramOptions
                 throw std::runtime_error("Failed to make log directory");
             }
         }
+        // Oldest packet time
+        auto expirationTime = static_cast<int> (mExpirationTime.count());
+        expirationTime
+            =  propertyTree.get<int> ("General.expirationTime", expirationTime);
+        if (expirationTime < 0)
+        {
+            throw std::invalid_argument(
+                "General.expirationTime must be non-negative"); 
+        }
+        mExpirationTime = std::chrono::seconds {expirationTime};
+        // Future time
+        auto futureTime = static_cast<int> (mFutureTime.count());
+        if (futureTime < 0)
+        {
+            throw std::invalid_argument(
+                "General.futureTime must be non-negative");
+        }
+        mFutureTime = std::chrono::seconds {futureTime};
         //----------------------------Publisher Options-----------------------//
         mDataPacketBroadcastName
             = propertyTree.get<std::string>
@@ -139,7 +157,9 @@ struct ProgramOptions
     std::string mBroadcastAddress{""};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
-    std::chrono::seconds heartBeatInterval{30};
+    std::chrono::seconds mHeartBeatInterval{30};
+    std::chrono::seconds mExpirationTime{std::chrono::minutes {10}}; // 10 Minutes
+    std::chrono::seconds mFutureTime{0}; // Do not allow data from future
     int mEarthwormWait{0};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
 };
@@ -306,6 +326,7 @@ public:
                 {
                     try
                     {
+                        auto now = std::chrono::high_resolution_clock::now();
                         mPacketPublisher->send(*packet);
                         numberOfPacketsSent = numberOfPacketsSent + 1;
                     }

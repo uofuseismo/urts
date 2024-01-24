@@ -65,10 +65,12 @@ if (${Earthworm_FOUND})
       add_compile_definitions(WITH_MSEED)
    endif()
 endif()
-if (${SEEDLink_FOUND} AND ${MiniSEED_FOUND})
-   message("Will compile SEEDLink")
-   set(BUILD_MSEED TRUE)
-   set(BUILD_SEEDLINK TRUE)
+if (${SEEDLink_FOUND})
+   if (${MiniSEED_FOUND})
+      message("Will compile SEEDLink")
+      set(BUILD_MSEED TRUE)
+      set(BUILD_SEEDLINK TRUE)
+   endif()
 endif()
 add_compile_definitions(URTS_SRC)
 
@@ -474,6 +476,7 @@ if (${WRAP_PYTHON})
                python/urtspy.cpp
                python/broadcasts.cpp
                python/broadcasts/dataPacket.cpp
+               python/broadcasts/pick.cpp
                python/services.cpp
                python/services/scalable/packetCache.cpp)
    set_target_properties(urtspy PROPERTIES
