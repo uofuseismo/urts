@@ -528,7 +528,7 @@ public:
     std::chrono::seconds mExpirationTime{std::chrono::minutes {10}}; // 10 Minutes
     std::chrono::seconds mFutureTime{0}; // Do not allow data from future
     int mNumberOfPacketsSent{0};
-    int mNumberOfPacketsSkpped{0};
+    int mNumberOfPacketsSkipped{0};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
