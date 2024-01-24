@@ -348,12 +348,24 @@ public:
                         }
                         else
                         {
-                            mLogger->warn("Packet times for "
-                                         + packet->getNetwork() + "."
-                                         + packet->getStation() + "."
-                                         + packet->getChannel() + "."
-                                         + packet->getLocationCode() 
-                                         + " are invalid; not forwarding");
+                            if (packetEndTime < broadcastTimeStart)
+                            {
+                                mLogger->warn("Expired packet skipped for "
+                                            + packet->getNetwork() + "."
+                                            + packet->getStation() + "."
+                                            + packet->getChannel() + "."
+                                            + packet->getLocationCode() 
+                                            + "; not forwarding");
+                            }
+                            if (packetStartTime > broadcastTimeEnd)
+                            {
+                                mLogger->warn("Future packet detector for "
+                                            + packet->getNetwork() + "." 
+                                            + packet->getStation() + "." 
+                                            + packet->getChannel() + "." 
+                                            + packet->getLocationCode() 
+                                            + "; not forwarding");
+                            }
                         }
                     }
                     catch (const std::exception &e)
