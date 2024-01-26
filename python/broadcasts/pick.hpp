@@ -74,14 +74,22 @@ public:
     [[nodiscard]] std::string getStation() const;
     void setChannel(const std::string &channel);
     [[nodiscard]] std::string getChannel() const;
+    void setOriginalChannels(const std::vector<std::string> &channels);
+    [[nodiscard]] std::vector<std::string> getOriginalChannels() const;
     void setLocationCode(const std::string &location);
     [[nodiscard]] std::string getLocationCode() const;
-    void setIdentifier(uint64_t identifier) const noexcept;
+    void setIdentifier(uint64_t identifier) noexcept;
     [[nodiscard]] uint64_t getIdentifier() const;
-    void setProcessingAlgorithms(std::vector<std::string> &algorithms);
-    [[nodiscard]] std::vector<std::string> getProcessingAlgorithms() const noexcept;
-    void setLowerAndUpperUncertaintyBounds(const std::pair<UncertaintyBound, UncertaintyBound> &bounds);
-    [[nodiscard]] std::pair<UncertaintyBound, UncertaintyBound> getLowerAndUpperUncertaintyBounds() const;
+    void setPhaseHint(const std::string &hint);
+    [[nodiscard]] std::string getPhaseHint() const;
+    void setFirstMotion(URTS::Broadcasts::Internal::Pick::Pick::FirstMotion fm) noexcept;
+    [[nodiscard]] URTS::Broadcasts::Internal::Pick::Pick::FirstMotion getFirstMotion() const noexcept;
+    void setProcessingAlgorithms(const std::vector<std::string> &algorithms);
+    [[nodiscard]] std::vector<std::string> getProcessingAlgorithms() const;
+    void setLowerAndUpperUncertaintyBound(const std::pair<UncertaintyBound, UncertaintyBound> &bounds);
+    [[nodiscard]] std::pair<UncertaintyBound, UncertaintyBound> getLowerAndUpperUncertaintyBound() const;
+    void setReviewStatus(URTS::Broadcasts::Internal::Pick::Pick::ReviewStatus status) noexcept;
+    [[nodiscard]] URTS::Broadcasts::Internal::Pick::Pick::ReviewStatus getReviewStatus() const noexcept; 
 /*
     void setSamplingRate(const double samplingRate);
     [[nodiscard]] double getSamplingRate() const;

@@ -236,6 +236,7 @@ public:
         mPick.setNetwork(network);
         mPick.setStation(station);
         mPick.setChannel(channel); // Picking happens on untransformed channel
+
         mPick.setLocationCode(locationCode);
         mPick.setPhaseHint("P");
         mPick.setFirstMotion(URTS::Broadcasts::Internal::Pick::Pick::

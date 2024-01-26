@@ -53,6 +53,10 @@ nlohmann::json toJSONObject(const Pick &pick)
     {
         obj["OriginalChannels"] = originalChannels;
     }
+    else
+    {
+        obj["OriginalChannels"] = nullptr;
+    }
     // Phase hint
     auto phaseHint = pick.getPhaseHint();
     if (!phaseHint.empty())
@@ -88,7 +92,7 @@ Pick objectToPick(const nlohmann::json &obj)
     pick.setTime(pickTime);
     pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
     // Optional stuff
-    if (!obj["OriginalChannels"].is_null())
+    if (obj.contains("OriginalChannels"))
     {
         std::vector<std::string> originalChannels = obj["OriginalChannels"];
         if (!originalChannels.empty())
