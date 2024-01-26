@@ -92,7 +92,7 @@ Pick objectToPick(const nlohmann::json &obj)
     pick.setTime(pickTime);
     pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
     // Optional stuff
-    if (obj.contains("OriginalChannels"))
+    if (!obj["OriginalChannels"].is_null())
     {
         std::vector<std::string> originalChannels = obj["OriginalChannels"];
         if (!originalChannels.empty())
