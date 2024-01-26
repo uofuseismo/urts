@@ -1,3 +1,5 @@
+#include <string>
+#include <chrono>
 #include <thread>
 #ifndef NDEBUG
 #include <cassert>
@@ -16,11 +18,13 @@ class Publisher::PublisherImpl
 {
 public:
     PublisherImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                  std::shared_ptr<UMPS::Logging::ILog> logger)
+                  std::shared_ptr<UMPS::Logging::ILog> logger) :
+        mPublisher(std::make_unique<UXPubXSub::Publisher> (context, logger)),
+        mLogger(logger)
     {
-        mPublisher = std::make_unique<UXPubXSub::Publisher> (context, logger);
     }
-    std::unique_ptr<UXPubXSub::Publisher> mPublisher;
+    std::unique_ptr<UXPubXSub::Publisher> mPublisher{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     PublisherOptions mOptions;
 };
 
@@ -89,5 +93,25 @@ Publisher::~Publisher() = default;
 /// Send
 void Publisher::send(const Pick &message)
 {
+    if (pImpl->mLogger)
+    {
+        if (pImpl->mLogger->getLevel() == UMPS::Logging::Level::Debug)
+        {
+            try
+            {
+                auto pickDetails = message.getNetwork() + "."
+                                 + message.getStation() + "."
+                                 + message.getChannel() + "."
+                                 + message.getLocationCode() + "."
+                                 + message.getPhaseHint() + " "
+                                 + std::to_string(
+                                      message.getTime().count()*1.e-6);
+                pImpl->mLogger->debug("Publishing " + pickDetails);
+            }
+            catch (...)
+            {
+            } 
+        }
+    }
     pImpl->mPublisher->send(message); 
 }
