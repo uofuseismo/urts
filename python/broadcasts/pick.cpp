@@ -367,6 +367,16 @@ void Subscriber::initialize(const SubscriberOptions &options)
     mSubscriber->initialize(nativeClass);
 }
 
+std::optional<Pick> Subscriber::receive() const
+{
+    auto umpsPick = mSubscriber->receive();
+    if (umpsPick != nullptr)
+    {
+        return Pick{*umpsPick};
+    }
+    return {};
+}
+
 bool Subscriber::isInitialized() const noexcept
 {
     return mSubscriber->isInitialized();
@@ -650,5 +660,7 @@ Read-Only Properties
     subscriber.def("initialize",
                    &Subscriber::initialize,
                    "Initializes the class and connects the subscriber to the broadcast.");
- 
+    subscriber.def("receive",
+                   &Subscriber::receive,
+                   "Receives a pick from the broadcast.  If this times out the result will be None.");
 }

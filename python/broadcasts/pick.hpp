@@ -1,6 +1,7 @@
 #ifndef URTS_PYTHON_BROADCASTS_INTERNAL_PICK_HPP
 #define URTS_PYTHON_BROADCASTS_INTERNAL_PICK_HPP
 #include <memory>
+#include <optional>
 #include <chrono>
 #include <string>
 #include <vector>
@@ -140,7 +141,7 @@ public:
                UMPS::Python::Logging::ILog &logger);
     void initialize(const SubscriberOptions &options);
     [[nodiscard]] bool isInitialized() const noexcept;
-    [[nodiscard]] std::unique_ptr<Pick> receive() const;
+    [[nodiscard]] std::optional<Pick> receive() const;
     ~Subscriber();
 private:
     std::unique_ptr<URTS::Broadcasts::Internal::Pick::Subscriber> mSubscriber{nullptr};

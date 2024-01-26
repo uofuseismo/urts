@@ -691,6 +691,17 @@ public:
             {
                 try
                 {
+                    if (mLogger->getLevel() == UMPS::Logging::Level::Debug)
+                    {
+                        auto pickDetails = pick.getNetwork() + "."
+                                         + pick.getStation() + "."
+                                         + pick.getChannel() + "."
+                                         + pick.getLocationCode() + "."
+                                         + pick.getPhaseHint() + " "
+                                         + std::to_string(
+                                             pick.getTime().count()*1.e-6);
+                        mLogger->debug("Publishing " + pickDetails);
+                    }
                     mPickPublisher->send(pick);
                 }
                 catch (const std::exception &e)
