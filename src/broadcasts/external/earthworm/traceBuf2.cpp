@@ -581,7 +581,7 @@ std::string TraceBuf2<T>::getNetwork() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumNetworkLength() const
+int TraceBuf2<T>::getMaximumNetworkLength() noexcept 
 {
     return NET_LEN;
 } 
@@ -601,7 +601,7 @@ std::string TraceBuf2<T>::getStation() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumStationLength() const
+int TraceBuf2<T>::getMaximumStationLength() noexcept 
 {
     return STA_LEN;
 }
@@ -621,7 +621,7 @@ std::string TraceBuf2<T>::getChannel() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumChannelLength() const
+int TraceBuf2<T>::getMaximumChannelLength() noexcept
 {
     return CHA_LEN;
 }
@@ -641,7 +641,7 @@ std::string TraceBuf2<T>::getLocationCode() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumLocationCodeLength() const
+int TraceBuf2<T>::getMaximumLocationCodeLength() noexcept 
 {
     return LOC_LEN;
 }

@@ -93,7 +93,7 @@ public:
     /// @result The network name. 
     [[nodiscard]] std::string getNetwork() const noexcept;
     /// @result The maximum network code length.  This is likely 8.
-    [[nodiscard]] static int getMaximumNetworkLength() const;
+    [[nodiscard]] static int getMaximumNetworkLength() noexcept;
 
     /// @brief Sets the station name.
     /// @param[in] station  The station name.
@@ -103,7 +103,7 @@ public:
     /// @result The station name. 
     [[nodiscard]] std::string getStation() const noexcept;
     /// @result The maximum station name length.  This is likely 6.
-    [[nodiscard]] static int getMaximumStationLength() const;
+    [[nodiscard]] static int getMaximumStationLength() noexcept;
 
     /// @brief Sets the channel name.
     /// @param[in] channel  The channel name.
@@ -113,7 +113,7 @@ public:
     /// @result The channel name. 
     [[nodiscard]] std::string getChannel() const noexcept;
     /// @result The maximum channel name length.  This is likely 3.
-    [[nodiscard]] static int getMaximumChannelLength() const;
+    [[nodiscard]] static int getMaximumChannelLength() noexcept;
 
     /// @brief Sets the location code.
     /// @param[in] location   The location code.
@@ -123,7 +123,7 @@ public:
     /// @result The location code.
     [[nodiscard]] std::string getLocationCode() const noexcept;
     /// @result The maximum location code length.  This is likely 2.
-    [[nodiscard]] static int getMaximumLocationCodeLength() const;
+    [[nodiscard]] static int getMaximumLocationCodeLength() noexcept;
 
     /// @result The data type.  This is for earthworm compability.  The 
     ///         underlying template type dictates.
