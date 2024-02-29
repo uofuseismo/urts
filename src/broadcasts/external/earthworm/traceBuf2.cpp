@@ -733,7 +733,7 @@ int TraceBuf2<T>::getNumberOfSamples() const noexcept
 
 /// Maximum number of samples
 template<class T>
-int TraceBuf2<T>::getMaximumNumberOfSamples() const noexcept
+int TraceBuf2<T>::getMaximumNumberOfSamples() noexcept
 {
 #ifndef NDEBUG
     assert(MAX_TRACE_SIZE%sizeof(T) == 0); 
