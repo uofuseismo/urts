@@ -110,6 +110,7 @@ std::string getDataFormat() noexcept
     return result;
 }
 
+/*
 /// Utility function to define the correct message length
 template<typename T>  
 int getMaxTraceLength() noexcept
@@ -119,6 +120,7 @@ int getMaxTraceLength() noexcept
 #endif
     return MAX_TRACE_SIZE/sizeof(T);
 }
+*/
 
 /// Unpacks data
 template<typename T> T unpack(const char *__restrict__ cIn,
@@ -484,8 +486,6 @@ public:
     int mPinNumber = 0;
     /// Data quality
     int mQuality = 0;
-    /// Max trace length
-    const int mMaximumNumberOfSamples = getMaxTraceLength<T>();
 };
 
 /// C'tor
@@ -735,7 +735,10 @@ int TraceBuf2<T>::getNumberOfSamples() const noexcept
 template<class T>
 int TraceBuf2<T>::getMaximumNumberOfSamples() const noexcept
 {
-    return pImpl->mMaximumNumberOfSamples;
+#ifndef NDEBUG
+    assert(MAX_TRACE_SIZE%sizeof(T) == 0); 
+#endif
+    return MAX_TRACE_SIZE/sizeof(T);
 }
 
 /// Set data
