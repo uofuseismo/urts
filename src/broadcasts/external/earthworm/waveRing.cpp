@@ -12,6 +12,9 @@
 #ifdef WITH_EARTHWORM
 extern "C"
 {
+/// TODO: The following ifdef is important for writing to the ring.
+///       It should be lifted from the CMake.
+#define _UNIX
 #include <transport.h>
 #include <earthworm_simple_funcs.h>
 #include <trace_buf.h>

@@ -570,7 +570,8 @@ UDP::DataPacket TraceBuf2<double>::moveToDataPacket()
 template<class T>
 void TraceBuf2<T>::setNetwork(const std::string &network) noexcept
 {
-    copyString(&pImpl->mNetwork, network, getMaximumNetworkLength());
+    ::copyString(&pImpl->mNetwork, network,
+                 TraceBuf2<T>::getMaximumNetworkLength());
 }
 
 template<class T>
@@ -580,7 +581,7 @@ std::string TraceBuf2<T>::getNetwork() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumNetworkLength() const noexcept
+int TraceBuf2<T>::getMaximumNetworkLength() const
 {
     return NET_LEN;
 } 
@@ -589,7 +590,8 @@ int TraceBuf2<T>::getMaximumNetworkLength() const noexcept
 template<class T>
 void TraceBuf2<T>::setStation(const std::string &station) noexcept
 {
-    copyString(&pImpl->mStation, station, getMaximumStationLength());
+    ::copyString(&pImpl->mStation, station,
+                 TraceBuf2<T>::getMaximumStationLength());
 }
 
 template<class T>
@@ -599,7 +601,7 @@ std::string TraceBuf2<T>::getStation() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumStationLength() const noexcept
+int TraceBuf2<T>::getMaximumStationLength() const
 {
     return STA_LEN;
 }
@@ -608,7 +610,8 @@ int TraceBuf2<T>::getMaximumStationLength() const noexcept
 template<class T>
 void TraceBuf2<T>::setChannel(const std::string &channel) noexcept
 {
-    copyString(&pImpl->mChannel, channel, getMaximumChannelLength());
+    ::copyString(&pImpl->mChannel, channel,
+                 TraceBuf2<T>::getMaximumChannelLength());
 }
 
 template<class T>
@@ -618,7 +621,7 @@ std::string TraceBuf2<T>::getChannel() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumChannelLength() const noexcept
+int TraceBuf2<T>::getMaximumChannelLength() const
 {
     return CHA_LEN;
 }
@@ -627,7 +630,8 @@ int TraceBuf2<T>::getMaximumChannelLength() const noexcept
 template<class T>
 void TraceBuf2<T>::setLocationCode(const std::string &location) noexcept
 {
-    copyString(&pImpl->mLocationCode, location, getMaximumLocationCodeLength());
+    ::copyString(&pImpl->mLocationCode, location,
+                 TraceBuf2<T>::getMaximumLocationCodeLength());
 }
 
 template<class T>
@@ -637,7 +641,7 @@ std::string TraceBuf2<T>::getLocationCode() const noexcept
 }
 
 template<class T>
-int TraceBuf2<T>::getMaximumLocationCodeLength() const noexcept
+int TraceBuf2<T>::getMaximumLocationCodeLength() const
 {
     return LOC_LEN;
 }
