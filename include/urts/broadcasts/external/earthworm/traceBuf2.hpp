@@ -83,7 +83,7 @@ public:
 
     /// @result The maximum number of samples that can be packed into a message
     ///         and put onto an earthworm ring.
-    [[nodiscard]] static int getMaximumNumberOfSamples() const;
+    [[nodiscard]] static int getMaximumNumberOfSamples() noexcept;
 
     /// @brief Sets the network code.
     /// @param[in] network   The network name.
