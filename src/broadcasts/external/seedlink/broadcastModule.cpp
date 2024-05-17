@@ -41,6 +41,7 @@
 #include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
 #include "urts/broadcasts/external/seedlink/client.hpp"
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
+#include "urts/broadcasts/utilities/dataPacketSanitizer.hpp"
 #include "private/isEmpty.hpp"
 
  
@@ -64,8 +65,8 @@ namespace
     std::string commands;
     commands = "Commands:\n";
     commands = commands + "   quit   Exits the program.\n";
-    commands = commands + "   packetsSent    Number of packets sent in last minute.\n";
-    commands = commands + "   packetsSkpped  Number of packets not forwarded in last minute.\n";
+    commands = commands + "   packetsSent     Number of packets sent in last minute.\n";
+    commands = commands + "   packetsSkipped  Number of packets not forwarded in last minute.\n";
     commands = commands + "   help   Displays this message.\n";
     return commands;
 }
@@ -231,6 +232,8 @@ public:
                       std::placeholders::_2,
                       std::placeholders::_3));
         mLocalCommand->initialize(localServiceOptions);
+        mDataPacketSanitizer
+            = std::make_unique<URTS::Broadcasts::Utilities::DataPacketSanitizer> (mLogger);
         mInitialized = true;
     }
     /// Initialized?
@@ -314,6 +317,7 @@ public:
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
+/*
             auto startClockEpoch
                 = std::chrono::duration_cast<std::chrono::microseconds>
                   (startClock.time_since_epoch());
@@ -323,6 +327,7 @@ public:
             auto broadcastTimeEnd
                 = startClockEpoch
                 + std::chrono::microseconds {mFutureTime};
+*/
             // Read from the earthworm ring
             std::vector<UDP::DataPacket> packets;
             // Send the packets off
@@ -337,7 +342,37 @@ public:
                 else
                 {
                     // Don't forward empty packets
-                    if (packet->getNumberOfSamples() < 1){continue;}
+                    //if (packet->getNumberOfSamples() < 1){continue;}
+                    bool allow = false;
+                    try
+                    {
+                        allow = mDataPacketSanitizer->allow(*packet);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        allow = false;
+                        mLogger->error("Failed to check packet because "
+                                     + std::string {e.what()}
+                                     + "; not forwarding");
+                    }
+                    if (allow)
+                    {
+                        try
+                        {
+                            mPacketPublisher->send(*packet);
+                            numberOfPacketsSent = numberOfPacketsSent + 1;
+                        }
+                        catch (const std::exception &e)
+                        {
+                            numberOfPacketsSkipped = numberOfPacketsSkipped + 1;
+                            mLogger->error("Failed to publish packet");
+                        }
+                    }
+                    else
+                    {
+                        numberOfPacketsSkipped = numberOfPacketsSkipped + 1;
+                    }
+/*
                     try
                     {
                         // Make sure time makes sense
@@ -376,6 +411,7 @@ public:
                     {
                         mLogger->error(e.what());
                     }
+*/
                 }
             }
             // Update
@@ -524,6 +560,8 @@ public:
          mSEEDLinkClient{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::unique_ptr<URTS::Broadcasts::Utilities::DataPacketSanitizer>
+         mDataPacketSanitizer{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
     std::chrono::seconds mExpirationTime{std::chrono::minutes {10}}; // 10 Minutes
     std::chrono::seconds mFutureTime{0}; // Do not allow data from future
