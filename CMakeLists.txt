@@ -340,7 +340,7 @@ if (${BUILD_SEEDLINK})
 endif()
 
 if (${BUILD_UUSS_MLMODELS})
-   add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
+   #add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(mlPickRegressor src/modules/pickers/mlPicker.cpp)
   #                               src/modules/pickers/triggerWindow.cpp
@@ -355,10 +355,10 @@ if (${BUILD_UUSS_MLMODELS})
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
    add_executable(sPickRegressorService src/services/scalable/pickers/cnnThreeComponentS/serviceModule.cpp)
    add_executable(firstMotionClassifierService src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceModule.cpp)
-   set_target_properties(picksToDatabase PROPERTIES
-                         CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES
-                         CXX_EXTENSIONS NO)
+   #set_target_properties(picksToDatabase PROPERTIES
+   #                      CXX_STANDARD 20
+   #                      CXX_STANDARD_REQUIRED YES
+   #                      CXX_EXTENSIONS NO)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -391,9 +391,9 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
-   target_include_directories(picksToDatabase
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
+   #target_include_directories(picksToDatabase
+    #                          PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    #                          PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
@@ -418,9 +418,9 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
-   target_link_libraries(picksToDatabase
-                         PRIVATE urts ${UMPS_LIBRARY}
-                                 Boost::program_options Threads::Threads SOCI::soci_postgresql)
+   #target_link_libraries(picksToDatabase
+   #                      PRIVATE urts ${UMPS_LIBRARY}
+   #                              Boost::program_options Threads::Threads SOCI::soci_postgresql)
    target_link_libraries(mlDetector
                          PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
