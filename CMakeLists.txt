@@ -125,8 +125,8 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/requestor.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
-    src/services/scalable/travelTimes/service.cpp
-    src/services/scalable/travelTimes/serviceOptions.cpp
+    #src/services/scalable/travelTimes/service.cpp
+    #src/services/scalable/travelTimes/serviceOptions.cpp
     )
 if (${BUILD_UUSS_MLMODELS})
     set(UUSS_SRC
