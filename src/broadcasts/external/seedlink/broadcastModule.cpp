@@ -341,7 +341,6 @@ public:
                 {
                     // Don't forward empty packets
                     if (packet->getNumberOfSamples() < 1){continue;}
-/*
                     bool allow = false;
                     try
                     {
@@ -371,7 +370,7 @@ public:
                     {
                         numberOfPacketsSkipped = numberOfPacketsSkipped + 1;
                     }
-*/
+/*
                     try
                     {
                         // Make sure time makes sense
@@ -410,6 +409,7 @@ public:
                     {
                         mLogger->error(e.what());
                     }
+*/
                 }
             }
             // Update
