@@ -317,7 +317,6 @@ public:
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
-/*
             auto startClockEpoch
                 = std::chrono::duration_cast<std::chrono::microseconds>
                   (startClock.time_since_epoch());
@@ -327,7 +326,6 @@ public:
             auto broadcastTimeEnd
                 = startClockEpoch
                 + std::chrono::microseconds {mFutureTime};
-*/
             // Read from the earthworm ring
             std::vector<UDP::DataPacket> packets;
             // Send the packets off
@@ -342,7 +340,8 @@ public:
                 else
                 {
                     // Don't forward empty packets
-                    //if (packet->getNumberOfSamples() < 1){continue;}
+                    if (packet->getNumberOfSamples() < 1){continue;}
+/*
                     bool allow = false;
                     try
                     {
@@ -372,7 +371,7 @@ public:
                     {
                         numberOfPacketsSkipped = numberOfPacketsSkipped + 1;
                     }
-/*
+*/
                     try
                     {
                         // Make sure time makes sense
@@ -411,7 +410,6 @@ public:
                     {
                         mLogger->error(e.what());
                     }
-*/
                 }
             }
             // Update
