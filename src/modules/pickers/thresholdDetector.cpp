@@ -1,9 +1,9 @@
-#include <iostream>
 #include <cmath>
 #include <vector>
 #ifndef NDEBUG
 #include <cassert>
 #endif
+#include <umps/logging/standardOut.hpp>
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "urts/broadcasts/internal/probabilityPacket/probabilityPacket.hpp"
 #include "thresholdDetector.hpp"
@@ -84,7 +84,8 @@ std::pair<int, NextPacketCategory>
                   const int nSamples,
                   const int64_t samplingPeriodMuS,
                   const int64_t timeToleranceMuS,
-                  const int gapSizeInSamples = 5)
+                  const int gapSizeInSamples, // = 5,
+                  std::shared_ptr<UMPS::Logging::ILog> &logger)
 {
     // Initialize result
     NextPacketCategory category{NextPacketCategory::Normal};
@@ -159,10 +160,13 @@ std::pair<int, NextPacketCategory>
          // Guessing failed - try the brute force approach
          if (!::isClose(desiredNextTimeMuS, iT1Est, timeToleranceMuS))
          {
-             std::string msg = "Doing it slow way: "
-                             + std::to_string(desiredNextTimeMuS) + " "
-                             + std::to_string(::roundToNearestDigit(iT1Est, 1));
-             std::cerr << msg << std::endl;
+             if (logger)
+             {
+                 std::string msg = "Doing it slow way: "
+                                 + std::to_string(desiredNextTimeMuS) + " "
+                                 + std::to_string(::roundToNearestDigit(iT1Est, 1));
+                 logger->warn(msg);
+             }
              bool lFound = false;
              for (int i = 0; i < nSamples; ++i)
              {
@@ -178,7 +182,10 @@ std::pair<int, NextPacketCategory>
              // Algorithmic failure - lets log it and get out of here
              if (!lFound)
              {
-                 std::cerr << "Algorithmic failure" << std::endl;
+                 if (logger)
+                 {
+                     logger->error("Overlap algorithmic failure");
+                 }
                  iStart = nSamples;
                  category = NextPacketCategory::AlgorithmicFailure;
              }
@@ -205,6 +212,15 @@ enum class State
 class ThresholdDetector::ThresholdDetectorImpl
 {
 public:
+    ThresholdDetectorImpl(std::shared_ptr<UMPS::Logging::ILog> logger = nullptr) :
+        mLogger(logger)
+    {
+        if (mLogger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
+        }
+    }
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     TriggerWindow<double> mCurrentTriggerWindow;
     ThresholdDetectorOptions mOptions;
     std::chrono::microseconds mLastEvaluationTime{-2208988800000000}; // 1900
@@ -215,7 +231,13 @@ public:
 
 /// C'tor
 ThresholdDetector::ThresholdDetector() :
-    pImpl(std::make_unique<ThresholdDetectorImpl> ())
+    pImpl(std::make_unique<ThresholdDetectorImpl> (nullptr))
+{
+}
+
+ThresholdDetector::ThresholdDetector(
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ThresholdDetectorImpl> (logger))
 {
 }
 
@@ -344,7 +366,8 @@ void ThresholdDetector::apply(
                            nSamples,
                            iSamplingPeriodInMicroSeconds,
                            timeTolerance,
-                           pImpl->mOptions.getMinimumGapSize());
+                           pImpl->mOptions.getMinimumGapSize(),
+                           pImpl->mLogger);
     if (category != NextPacketCategory::Normal)
     {
         if (category == NextPacketCategory::Expired)
@@ -357,7 +380,14 @@ void ThresholdDetector::apply(
         }
         else
         {
-            throw std::runtime_error("Could not categorize next packet");
+            throw std::runtime_error("Could not categorize next packet (startTime,endTime,lastEval,Samples,dt,timeTol,gapSize)=("
+                                  + std::to_string(startTime.count()) + ","
+                                  + std::to_string(endTime.count()) + ","
+                                  + std::to_string(pImpl->mLastEvaluationTime.count()) + ","
+                                  + std::to_string(nSamples) + ","
+                                  + std::to_string(iSamplingPeriodInMicroSeconds*1.e-6) + ","
+                                  + std::to_string(timeTolerance) + ","
+                                  + std::to_string(pImpl->mOptions.getMinimumGapSize()) );
         }
     }
     // Update the detector

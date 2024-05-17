@@ -497,7 +497,7 @@ public:
                     auto it = mPDetectors.find(name);    
                     if (it == mPDetectors.end())
                     {
-                        URTS::Modules::Pickers::ThresholdDetector detector;
+                        URTS::Modules::Pickers::ThresholdDetector detector{mLogger};
                         try
                         {
                             mLogger->info("Adding P threshold detector: "
@@ -586,7 +586,7 @@ public:
                     auto it = mSDetectors.find(name);
                     if (it == mSDetectors.end())
                     {
-                        URTS::Modules::Pickers::ThresholdDetector detector;
+                        URTS::Modules::Pickers::ThresholdDetector detector{mLogger};
                         try
                         {
                             mLogger->info("Adding S threshold detector: "

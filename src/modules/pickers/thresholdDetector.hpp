@@ -2,6 +2,7 @@
 #define URTS_MODULES_PICKERS_THRESHOLD_DETECTOR_HPP
 #include <memory>
 #include <chrono>
+#include <umps/logging/log.hpp>
 namespace URTS::Broadcasts::Internal
 {
  namespace DataPacket
@@ -34,6 +35,7 @@ public:
 
     /// @brief Constructor.
     ThresholdDetector();
+    ThresholdDetector(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Copy constructor.
     /// @param[in] detector  The threshold detector from which to initialize
     ///                      this class.
