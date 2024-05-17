@@ -108,8 +108,8 @@ std::pair<int, NextPacketCategory>
         category = NextPacketCategory::Normal;
         iStart = 0;
     }
-    // Gap exists - reset and try again
-    else if (iStartTimeMuS > desiredNextTimeMuS + samplingPeriodMuS)
+    // Gap potentially exists 
+    else if (packetStartTime > lastEvaluationTime) //iStartTimeMuS > desiredNextTimeMuS + samplingPeriodMuS)
     {
         // Definite gap
         if (iStartTimeMuS > desiredNextTimeMuS
@@ -120,7 +120,7 @@ std::pair<int, NextPacketCategory>
             category = NextPacketCategory::Gap;
             iStart = 0;
         }
-        else // It's within tolerance
+        else // Let's call this within tolerance
         {
             category = NextPacketCategory::Normal;
             iStart = 0;
