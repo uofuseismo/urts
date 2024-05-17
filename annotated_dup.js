@@ -35,6 +35,9 @@ var annotated_dup =
             [ "Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber" ],
             [ "SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options" ]
           ] ]
+        ] ],
+        [ "Utilities", null, [
+          [ "DataPacketSanitizer", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer" ]
         ] ]
       ] ],
       [ "Database", null, [

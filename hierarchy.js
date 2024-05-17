@@ -8,6 +8,7 @@ var hierarchy =
     [ "URTS::Broadcasts::External::SEEDLink::Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::Counter", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_counter.html", null ],
+    [ "URTS::Broadcasts::Utilities::DataPacketSanitizer", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html", null ],
     [ "URTS::Database::Connection::IConnection", "class_u_r_t_s_1_1_database_1_1_connection_1_1_i_connection.html", [
       [ "URTS::Database::Connection::PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html", null ]
     ] ],

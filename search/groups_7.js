@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['uuss_20scalable_20services_951',['UUSS Scalable Services',['../group___modules___services___u_u_s_s___scalable.html',1,'']]],
-  ['uuss_20standalone_20services_952',['UUSS Standalone Services',['../group___modules___services___u_u_s_s___standalone.html',1,'']]]
+  ['uuss_20scalable_20services_955',['UUSS Scalable Services',['../group___modules___services___u_u_s_s___scalable.html',1,'']]],
+  ['uuss_20standalone_20services_956',['UUSS Standalone Services',['../group___modules___services___u_u_s_s___standalone.html',1,'']]]
 ];
