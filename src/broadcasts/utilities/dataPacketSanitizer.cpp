@@ -135,7 +135,7 @@ public:
                 std::string message{"Future data detected for:"};
                 for (const auto &channel : mFutureChannels)
                 {
-                    message = " " + channel;
+                    message = message + " " + channel;
                 }
                 mLogger->info(message);
                 mFutureChannels.clear();
@@ -145,7 +145,7 @@ public:
                 std::string message{"Duplicate data detected for:"};
                 for (const auto &channel : mDuplicateChannels)
                 {
-                    message = " " + channel;
+                    message = message + " " + channel;
                 }
                 mLogger->info(message);
                 mDuplicateChannels.clear();
@@ -155,7 +155,7 @@ public:
                 std::string message{"Bad timing data detected for:"};
                 for (const auto &channel : mBadTimingChannels)
                 {
-                    message = " " + channel;
+                    message = message + " " + channel;
                 }
                 mLogger->info(message);
                 mBadTimingChannels.clear();
@@ -165,7 +165,7 @@ public:
                 std::string message{"Expired data detected for:"};
                 for (const auto &channel : mExpiredChannels)
                 {
-                    message = " " + channel;
+                    message = message + " " + channel;
                 }
                 mLogger->info(message);
                 mExpiredChannels.clear();
@@ -175,7 +175,7 @@ public:
                 std::string message{"Empty packets detected for:"};
                 for (const auto &channel : mEmptyChannels)
                 {
-                    message = " " + channel;
+                    message = message + " " + channel;
                 }
                 mLogger->info(message);
                 mEmptyChannels.clear();
