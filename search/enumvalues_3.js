@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['event_923',['Event',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html#ab17199e05a9cbfc17ccbb44acb9b2306a322b1bac9af7e73a09cdd613bea4600b',1,'URTS::Services::Standalone::Incrementer::IncrementRequest']]]
+  ['down_935',['Down',['../class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a7b02a6710d0e2f2aa92c79b950360875a0971a3e339e48bd336b7cdc9daf965d7',1,'URTS::Broadcasts::Internal::Pick::Pick::Down()'],['../class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_inference_response.html#aede992a44a806a9465f7a4ad0bd2ad18a83ee6ac7f2b9109107ddeb91b6e690ac',1,'URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceResponse::Down()'],['../class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_response.html#af57fb9b70af0cb650e0ff9b57d179421a13e3273b1d901a6895bf981b47e3c2a9',1,'URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingResponse::Down()']]],
+  ['duplicatedata_936',['DuplicateData',['../class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248ab4f9d0860df193fef365e15abb60af07',1,'URTS::Broadcasts::Utilities::DataPacketSanitizer']]]
 ];

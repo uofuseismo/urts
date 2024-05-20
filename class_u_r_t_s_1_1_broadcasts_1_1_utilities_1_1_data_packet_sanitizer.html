@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_broadcasts_1_1_utili
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -105,29 +106,166 @@ $(document).ready(function(){initNavTree('class_u_r_t_s_1_1_broadcasts_1_1_utili
 
 <p><code>#include &lt;<a class="el" href="data_packet_sanitizer_8hpp_source.html">dataPacketSanitizer.hpp</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a742439e064650a0b82d0fdbb520ab248"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248">Problem</a> { <br />
+&#160;&#160;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248a22346d79d5de79ed84b1717986dca79c">FutureData</a>
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248ab4f9d0860df193fef365e15abb60af07">DuplicateData</a>
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248ad67eb021b95206e9479262af758c0db6">BadTiming</a>
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248adef8371c4daceab745c2cbdad58d0562">ExpiredData</a>
+, <br />
+&#160;&#160;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248a17b1379119f9418558b4a029c3df69f4">EmptyData</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a742439e064650a0b82d0fdbb520ab248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the data problem.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248">More...</a><br /></td></tr>
+<tr class="separator:a742439e064650a0b82d0fdbb520ab248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a08a01b028f5e94b8c197f317a12d4368"><td class="memItemLeft" align="right" valign="top"><a id="a08a01b028f5e94b8c197f317a12d4368"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataPacketSanitizer</b> (std::shared_ptr&lt; UMPS::Logging::ILog &gt; &amp;logger)</td></tr>
-<tr class="separator:a08a01b028f5e94b8c197f317a12d4368"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbbdbeb4c34710567910b53e1fee3640"><td class="memItemLeft" align="right" valign="top"><a id="abbbdbeb4c34710567910b53e1fee3640"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataPacketSanitizer</b> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;sanitizer)</td></tr>
-<tr class="separator:abbbdbeb4c34710567910b53e1fee3640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa3e481b20a1cd4f27dcad3b578c2e4a"><td class="memItemLeft" align="right" valign="top"><a id="afa3e481b20a1cd4f27dcad3b578c2e4a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataPacketSanitizer</b> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&amp;sanitizer) noexcept</td></tr>
-<tr class="separator:afa3e481b20a1cd4f27dcad3b578c2e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7fed90602970c6daa32bfaa86019394"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#ab7fed90602970c6daa32bfaa86019394">allow</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html">URTS::Broadcasts::Internal::DataPacket::DataPacket</a> &amp;packet)</td></tr>
 <tr class="separator:ab7fed90602970c6daa32bfaa86019394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fa629c45d3686f2ad0819432b4849c5"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a3fa629c45d3686f2ad0819432b4849c5">getBadChannels</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248">Problem</a> problem) const noexcept</td></tr>
+<tr class="separator:a3fa629c45d3686f2ad0819432b4849c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Constructors</div></td></tr>
+<tr class="memitem:abe792bd6158709ff7126424ccfd4a2d0"><td class="memItemLeft" align="right" valign="top"><a id="abe792bd6158709ff7126424ccfd4a2d0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#abe792bd6158709ff7126424ccfd4a2d0">DataPacketSanitizer</a> ()</td></tr>
+<tr class="memdesc:abe792bd6158709ff7126424ccfd4a2d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
+<tr class="separator:abe792bd6158709ff7126424ccfd4a2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a01b028f5e94b8c197f317a12d4368"><td class="memItemLeft" align="right" valign="top"><a id="a08a01b028f5e94b8c197f317a12d4368"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a08a01b028f5e94b8c197f317a12d4368">DataPacketSanitizer</a> (std::shared_ptr&lt; UMPS::Logging::ILog &gt; &amp;logger)</td></tr>
+<tr class="memdesc:a08a01b028f5e94b8c197f317a12d4368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with a logger. <br /></td></tr>
+<tr class="separator:a08a01b028f5e94b8c197f317a12d4368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbbdbeb4c34710567910b53e1fee3640"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#abbbdbeb4c34710567910b53e1fee3640">DataPacketSanitizer</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;sanitizer)</td></tr>
+<tr class="memdesc:abbbdbeb4c34710567910b53e1fee3640"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#abbbdbeb4c34710567910b53e1fee3640">More...</a><br /></td></tr>
+<tr class="separator:abbbdbeb4c34710567910b53e1fee3640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa3e481b20a1cd4f27dcad3b578c2e4a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#afa3e481b20a1cd4f27dcad3b578c2e4a">DataPacketSanitizer</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&amp;sanitizer) noexcept</td></tr>
+<tr class="memdesc:afa3e481b20a1cd4f27dcad3b578c2e4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#afa3e481b20a1cd4f27dcad3b578c2e4a">More...</a><br /></td></tr>
+<tr class="separator:afa3e481b20a1cd4f27dcad3b578c2e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Initialization</div></td></tr>
+<tr class="memitem:aba9424a5b9a905a2a103102c2bf407d5"><td class="memItemLeft" align="right" valign="top"><a id="aba9424a5b9a905a2a103102c2bf407d5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aba9424a5b9a905a2a103102c2bf407d5">initialize</a> (const DataPacketSanitizerOptions &amp;options)</td></tr>
+<tr class="memdesc:aba9424a5b9a905a2a103102c2bf407d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the class. <br /></td></tr>
+<tr class="separator:aba9424a5b9a905a2a103102c2bf407d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
+<tr class="memitem:a6981bb69fac78c2e2c04433ac53f1027"><td class="memItemLeft" align="right" valign="top"><a id="a6981bb69fac78c2e2c04433ac53f1027"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a6981bb69fac78c2e2c04433ac53f1027">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a6981bb69fac78c2e2c04433ac53f1027"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the class and releases memory. <br /></td></tr>
+<tr class="separator:a6981bb69fac78c2e2c04433ac53f1027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33e4595213d206a19181629df9c77ae1"><td class="memItemLeft" align="right" valign="top"><a id="a33e4595213d206a19181629df9c77ae1"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a33e4595213d206a19181629df9c77ae1">~DataPacketSanitizer</a> ()</td></tr>
+<tr class="memdesc:a33e4595213d206a19181629df9c77ae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
+<tr class="separator:a33e4595213d206a19181629df9c77ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Operators</div></td></tr>
 <tr class="memitem:aa8f47040e47aa785c34e30d32b73008c"><td class="memItemLeft" align="right" valign="top"><a id="aa8f47040e47aa785c34e30d32b73008c"></a>
-<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;sanitizer)</td></tr>
+<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aa8f47040e47aa785c34e30d32b73008c">operator=</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;sanitizer)</td></tr>
+<tr class="memdesc:aa8f47040e47aa785c34e30d32b73008c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator. <br /></td></tr>
 <tr class="separator:aa8f47040e47aa785c34e30d32b73008c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf5273d4b5732ed35f063b69cc0b8514"><td class="memItemLeft" align="right" valign="top"><a id="aaf5273d4b5732ed35f063b69cc0b8514"></a>
-<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&amp;sanitizer) noexcept</td></tr>
+<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aaf5273d4b5732ed35f063b69cc0b8514">operator=</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&amp;sanitizer) noexcept</td></tr>
+<tr class="memdesc:aaf5273d4b5732ed35f063b69cc0b8514"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator. <br /></td></tr>
 <tr class="separator:aaf5273d4b5732ed35f063b69cc0b8514"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This utility is run before the sending data packets to a broadcast. This utility can: (1) Prevent future packets from being broadcast (2) Prevent very old packets from being broadcast (3) Prevent duplicate packets from being broadcast. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a742439e064650a0b82d0fdbb520ab248"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742439e064650a0b82d0fdbb520ab248">&#9670;&nbsp;</a></span>Problem</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248">URTS::Broadcasts::Utilities::DataPacketSanitizer::Problem</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Defines the data problem. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a742439e064650a0b82d0fdbb520ab248a22346d79d5de79ed84b1717986dca79c"></a>FutureData&#160;</td><td class="fielddoc"><p>The data is from the future (bad timing). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a742439e064650a0b82d0fdbb520ab248ab4f9d0860df193fef365e15abb60af07"></a>DuplicateData&#160;</td><td class="fielddoc"><p>This is a duplicate data packet. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a742439e064650a0b82d0fdbb520ab248ad67eb021b95206e9479262af758c0db6"></a>BadTiming&#160;</td><td class="fielddoc"><p>It appears the GPS clock slipped a bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a742439e064650a0b82d0fdbb520ab248adef8371c4daceab745c2cbdad58d0562"></a>ExpiredData&#160;</td><td class="fielddoc"><p>The data packet was too old to be propagated. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a742439e064650a0b82d0fdbb520ab248a17b1379119f9418558b4a029c3df69f4"></a>EmptyData&#160;</td><td class="fielddoc"><p>An empty data packet was received. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="abbbdbeb4c34710567910b53e1fee3640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbbdbeb4c34710567910b53e1fee3640">&#9670;&nbsp;</a></span>DataPacketSanitizer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">URTS::Broadcasts::Utilities::DataPacketSanitizer::DataPacketSanitizer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&#160;</td>
+          <td class="paramname"><em>sanitizer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sanitizer</td><td>The sanitizer from which to initialize this class. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="afa3e481b20a1cd4f27dcad3b578c2e4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa3e481b20a1cd4f27dcad3b578c2e4a">&#9670;&nbsp;</a></span>DataPacketSanitizer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">URTS::Broadcasts::Utilities::DataPacketSanitizer::DataPacketSanitizer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>sanitizer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">sanitizer</td><td>The sanitizer from which to in initialize this class. On exit, sanitizer's behavior is undefined. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab7fed90602970c6daa32bfaa86019394"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab7fed90602970c6daa32bfaa86019394">&#9670;&nbsp;</a></span>allow()</h2>
 
@@ -143,7 +281,46 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">packet</td><td>The data packet to check if it should be allowed to continue into the data broadcast. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>True indicates the packet should be allowed to be broadcast. </dd></dl>
+
+</div>
+</div>
+<a id="a3fa629c45d3686f2ad0819432b4849c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa629c45d3686f2ad0819432b4849c5">&#9670;&nbsp;</a></span>getBadChannels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; URTS::Broadcasts::Utilities::DataPacketSanitizer::getBadChannels </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a742439e064650a0b82d0fdbb520ab248">Problem</a>&#160;</td>
+          <td class="paramname"><em>problem</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Gets the channels that have experienced the desired error in the past bad data logging interval. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td>The problem category. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -156,7 +333,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Utilities</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html">DataPacketSanitizer</a></li>
-    <li class="footer">Generated on Fri May 17 2024 21:31:55 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Mon May 20 2024 15:39:28 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
