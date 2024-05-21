@@ -94,6 +94,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/broadcasts/utilities/dataPacketSanitizer.cpp
+    src/broadcasts/utilities/dataPacketSanitizerOptions.cpp
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
