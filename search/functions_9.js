@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['movetodatapacket_740',['moveToDataPacket',['../class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#ad15216093974ac4df56a7b5db4695c85',1,'URTS::Broadcasts::External::Earthworm::TraceBuf2']]],
-  ['movetracebuf2messages_741',['moveTraceBuf2Messages',['../class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_wave_ring.html#a4594f77e00aae9db4e51803235d943b8',1,'URTS::Broadcasts::External::Earthworm::WaveRing']]]
+  ['logbaddata_754',['logBadData',['../class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#adcf7fd95ed934dfe463e84cacce8bbad',1,'URTS::Broadcasts::Utilities::DataPacketSanitizerOptions']]]
 ];

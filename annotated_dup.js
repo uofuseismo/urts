@@ -37,7 +37,8 @@ var annotated_dup =
           ] ]
         ] ],
         [ "Utilities", null, [
-          [ "DataPacketSanitizer", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer" ]
+          [ "DataPacketSanitizer", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer" ],
+          [ "DataPacketSanitizerOptions", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options" ]
         ] ]
       ] ],
       [ "Database", null, [

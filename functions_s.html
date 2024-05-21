@@ -160,6 +160,9 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>setAzimuth()
 : <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html#a519e511794299dec95877374ffa4e959">URTS::Database::AQMS::ChannelData</a>
 </li>
+<li>setBadDataLoggingInterval()
+: <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a60d7484700840185b3e528b8f3308c83">URTS::Broadcasts::Utilities::DataPacketSanitizerOptions</a>
+</li>
 <li>setChannel()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html#a59fac26fce0bda9a76fdc4c308aa727e">URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;</a>
 , <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html#a8a809948b0b7a7ff17261d556a663d5b">URTS::Broadcasts::Internal::DataPacket::DataPacket</a>
@@ -304,8 +307,14 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <li>setLowerAndUpperUncertaintyBound()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a90705ed8cd63a0d0dd37f94ae45b8608">URTS::Broadcasts::Internal::Pick::Pick</a>
 </li>
+<li>setMaximumFutureTime()
+: <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a91698242794a27519b6440e81798ef0e">URTS::Broadcasts::Utilities::DataPacketSanitizerOptions</a>
+</li>
 <li>setMaximumInternalQueueSize()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#add686d01dedf3257ab654eec0ad6dcf2">URTS::Broadcasts::External::SEEDLink::ClientOptions</a>
+</li>
+<li>setMaximumLatency()
+: <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a4f03e4705cbfdcb58abc9bebaec21dd0">URTS::Broadcasts::Utilities::DataPacketSanitizerOptions</a>
 </li>
 <li>setMaximumNumberOfPackets()
 : <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_service_options.html#a6ae4b83c278d9538444754c834e739eb">URTS::Services::Scalable::PacketCache::ServiceOptions</a>
@@ -581,7 +590,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_request.html#ade6aada98f73fb7cb9c6ec5ff4f61256">URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a1603c80c2e0ee72fdd850d3ae6971dd9">URTS::Services::Scalable::Detectors::UNetThreeComponentS::InferenceRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_preprocessing_request.html#a90f757cc144ad137a597f4e96311df3c">URTS::Services::Scalable::Detectors::UNetThreeComponentS::PreprocessingRequest</a>
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_preprocessing_response.html#a3e2e8eaa8434cc3cec96e0309b0d849d">URTS::Services::Scalable::Detectors::UNetThreeComponentS::PreprocessingResponse</a>
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_preprocessing_response.html#afa725b3d4d4301bad40f027b4b580bed">URTS::Services::Scalable::Detectors::UNetThreeComponentS::PreprocessingResponse</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_processing_request.html#ac69b956ce476c06357a9f31cf1d2c0f7">URTS::Services::Scalable::Detectors::UNetThreeComponentS::ProcessingRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#a88de3469c53849e727860b62767067bb">URTS::Services::Scalable::Pickers::CNNThreeComponentS::InferenceRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_preprocessing_request.html#a33e25016e745cd2c8d963ceaae317e13">URTS::Services::Scalable::Pickers::CNNThreeComponentS::PreprocessingRequest</a>
@@ -593,7 +602,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_preprocessing_request.html#ad78b131520aefc0a3495f46bc218c113">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_preprocessing_response.html#a3c6d53041386c0968012c9a684cac458">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingResponse</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a6befbf1b012b2f96808f5ebbaa0bcfc4">URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest</a>
-, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a94515e3906438c435c2db126d23de9ce">URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceRequest</a>
+, <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#aaeb4683d5e7ab905f488eda32544279f">URTS::Services::Scalable::Pickers::CNNOneComponentP::InferenceRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_preprocessing_request.html#a7a8ce6da4b93915992d42356ac7a9c3f">URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingRequest</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_preprocessing_response.html#a76ee0cf1a046f540e8ee6e57a872557e">URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingResponse</a>
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_processing_request.html#a33a39580d3c394bdad5c16e2debfa6b6">URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingRequest</a>
@@ -620,7 +629,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service_options.html#aebd11b64ad45d498e9e53f238297a999">URTS::Services::Standalone::Incrementer::ServiceOptions</a>
 </li>
 <li>SingleComponentWaveform()
-: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a05ee566d9c794c1657341526d6c1188e">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
+: <a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_single_component_waveform.html#a708aa23761d0be2f0d165379f5e8482a">URTS::Services::Scalable::PacketCache::SingleComponentWaveform</a>
 </li>
 <li>size()
 : <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html#a25a1e9f5c379abdb7d2725b1f8c57ac5">URTS::Broadcasts::External::SEEDLink::Client</a>
@@ -637,7 +646,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 , <a class="el" href="class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_service.html#a16f70bdec520dae88b8e2c57ca91c2a3">URTS::Services::Standalone::Incrementer::Service</a>
 </li>
 <li>StationData()
-: <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#aa077931cc835b117df311a07461e29e8">URTS::Database::AQMS::StationData</a>
+: <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a497085bec09d77992874fc136fd7f258">URTS::Database::AQMS::StationData</a>
 </li>
 <li>StationDataTable()
 : <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html#a2eeb7de7436c96a6cbea95c509132897">URTS::Database::AQMS::StationDataTable</a>
@@ -697,7 +706,7 @@ $(document).ready(function(){initNavTree('functions_s.html',''); initResizable()
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue May 21 2024 16:26:07 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Tue May 21 2024 16:26:30 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
