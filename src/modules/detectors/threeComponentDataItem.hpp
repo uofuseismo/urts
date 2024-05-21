@@ -41,9 +41,11 @@ public:
                            const double waitPercentage = 30,
                            const int centerWindowStart = 254,
                            const int centerWindowEnd = 754,
-                           const double detectorSamplingRate = 100) :
+                           const double detectorSamplingRate = 100,
+                           std::shared_ptr<UMPS::Logging::ILog> logger = nullptr) :
         mState(channelData.getHash(), ::ThreadSafeState::State::Initializing),
         mChannelData(channelData),
+        mLogger(logger),
         mDetectorWindowDuration(detectorWindowDuration),
         mMaximumSignalLatency(maximumSignalLatency),
         mDetectorProbabilitySignalSamplingRate(detectorSamplingRate),
@@ -443,7 +445,10 @@ public:
         }
         catch (const std::exception &e)
         {
-            std::cerr << "P inference request failed: " << e.what() << std::endl;
+            if (mLogger)
+            {
+                mLogger->warn("P inference request failed: " + std::string{e.what()});
+            }
         } 
         try
         {
@@ -464,7 +469,10 @@ public:
         }
         catch (const std::exception &e)
         {
-            std::cerr << "S inference request failed: " << e.what() << std::endl; 
+            if (mLogger)
+            {   
+                mLogger->warn("S inference request failed: " + std::string{e.what()});
+            }
         }
         if (mInferencedP && mInferencedS)
         {
@@ -530,7 +538,7 @@ public:
             }
             else
             {
-std::cout << "dealing with gaps p" << std::endl;
+                if (mLogger){mLogger->warn("Dealing with P gaps");} //std::cout << "dealing with gaps p" << std::endl;
                 if (!mChangesSamplingRate)
                 {
                     for (int i = i0; i < i1; ++i)
@@ -569,6 +577,7 @@ std::cout << "dealing with gaps p" << std::endl;
             }
             else
             {
+                if (mLogger){mLogger->warn("Dealing with S gaps");}
                 if (!mChangesSamplingRate)
                 {
                     for (int i = i0; i < i1; ++i)
@@ -617,6 +626,7 @@ std::cout << "dealing with gaps p" << std::endl;
             }
             catch (const std::exception &e)
             {
+                if (mLogger){mLogger->warn("Problems broadcasting P");}
                 error = "Problems broadcasting P: " + std::string {e.what()};
             }
         }
@@ -628,6 +638,7 @@ std::cout << "dealing with gaps p" << std::endl;
             }
             catch (const std::exception &e)
             {
+                if (mLogger){mLogger->warn("Problems broadcasting S");}
                 error = error + " Problems broadcast S: "
                       + std::string {e.what()};
             }
@@ -654,6 +665,8 @@ std::cout << "dealing with gaps p" << std::endl;
     ::ThreadSafeState mState;
     /// Channel data
     ::ThreeComponentChannelData mChannelData;
+    /// Logger
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     /// Name of three-component data
     std::string mName;
     /// Utility for interpolating 3C waveforms

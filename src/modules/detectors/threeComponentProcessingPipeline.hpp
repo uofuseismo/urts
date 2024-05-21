@@ -129,7 +129,8 @@ extractSignal(const bool changesSamplingRate,
               const int i0, const int i1,
               const std::vector<double> &pRef,
               const URTS::Services::Scalable::
-                          PacketCache::ThreeComponentWaveform &interpolator)
+                          PacketCache::ThreeComponentWaveform &interpolator,
+              std::shared_ptr<UMPS::Logging::ILog> &logger)
 {
     std::vector<double> pSignal(std::max(0, i1 - i0), 0);
     if (!interpolator.haveGaps())
@@ -153,7 +154,7 @@ extractSignal(const bool changesSamplingRate,
          }
          else
          {
-std::cout << "ruh roh - gaps and changes sampling rate" << std::endl;
+             logger->warn("ruh roh - gaps and changes sampling rate");
              // TODO
              for (int i = i0; i < i1; ++i)
              {
@@ -611,9 +612,10 @@ public:
         if (mInferencedP)
         {
             const auto &pRef = pResponse->getProbabilitySignalReference();
-            auto pSignal = extractSignal(mChangesSamplingRate,
-                                         i0, i1, pRef,
-                                         mInterpolator);
+            auto pSignal = ::extractSignal(mChangesSamplingRate,
+                                           i0, i1, pRef,
+                                           mInterpolator,
+                                           logger);
             if (!pSignal.empty())
             {
                 mPProbabilityPacket.setStartTime(t0Signal + i0*idtMuSec);
@@ -624,9 +626,10 @@ public:
         if (mInferencedS)
         {
             const auto &pRef = sResponse->getProbabilitySignalReference();
-            auto pSignal = extractSignal(mChangesSamplingRate,
-                                         i0, i1, pRef,
-                                         mInterpolator);
+            auto pSignal = ::extractSignal(mChangesSamplingRate,
+                                           i0, i1, pRef,
+                                           mInterpolator,
+                                           logger);
             if (!pSignal.empty())
             {
                 mSProbabilityPacket.setStartTime(t0Signal + i0*idtMuSec);

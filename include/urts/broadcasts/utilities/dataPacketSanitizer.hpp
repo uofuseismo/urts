@@ -14,11 +14,13 @@ namespace URTS::Broadcasts::Utilities
 }
 namespace URTS::Broadcasts::Utilities
 {
+/// @class DataPacketSanitizer dataPacketSanitizer.hpp "urts/broadcasts/utilities/dataPacketSanitizer.hpp"
 /// @brief This utility is run before the sending data packets to a broadcast.
 ///        This utility can:
 ///        (1) Prevent future packets from being broadcast
 ///        (2) Prevent very old packets from being broadcast
 ///        (3) Prevent duplicate packets from being broadcast
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class DataPacketSanitizer
 {
 public:

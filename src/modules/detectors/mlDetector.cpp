@@ -772,7 +772,8 @@ public:
                              mProgramOptions.mDataQueryWaitPercentage,
                              p3CProperties.mWindowStart,
                              p3CProperties.mWindowEnd,
-                             p3CProperties.mSamplingRate);
+                             p3CProperties.mSamplingRate,
+                             mLogger);
                     m3CPSDataItems.insert(std::pair{item.getHash(), item});
                 }
             }
@@ -1270,7 +1271,7 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        //std::cerr << e.what() << std::endl;
         logger->error(e.what());
         return EXIT_FAILURE;
     }
@@ -1282,7 +1283,7 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        //std::cerr << e.what() << std::endl;
         logger->error(e.what());
         return EXIT_FAILURE;
     }

@@ -7,6 +7,7 @@
 #include <boost/circular_buffer.hpp>
 #include <umps/logging/standardOut.hpp>
 #include "urts/broadcasts/utilities/dataPacketSanitizer.hpp"
+#include "urts/broadcasts/utilities/dataPacketSanitizerOptions.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #ifdef WITH_EARTHWORM
 #include "urts/broadcasts/external/earthworm/traceBuf2.hpp"
@@ -202,9 +203,9 @@ public:
             = std::chrono::time_point_cast<std::chrono::microseconds>
               (now).time_since_epoch();
         logBadData(nowMuSeconds);
-        auto earliestTime = nowMuSeconds - mMaxPastTime;
+        auto earliestTime = nowMuSeconds - mMaxLatency;
         // Too old?
-        if (header.startTime < earliestTime)
+        if (header.endTime < earliestTime)
         {
             if (mLogBadData)
             {
@@ -217,8 +218,8 @@ public:
             }
             return false;
         }
-        // From the future
-        auto latestTime   = nowMuSeconds + mMaxFutureTime;
+        // From the future?
+        auto latestTime  = nowMuSeconds + mMaxFutureTime;
         if (header.endTime > latestTime)
         {
             if (mLogBadData)
@@ -329,13 +330,14 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     mutable std::map<std::string, boost::circular_buffer<::DataPacketHeader>>
         mCircularBuffers;
+    DataPacketSanitizerOptions mOptions;
     std::set<std::string> mFutureChannels;
     std::set<std::string> mDuplicateChannels;
     std::set<std::string> mBadTimingChannels;
     std::set<std::string> mExpiredChannels;
     std::set<std::string> mEmptyChannels;
     std::chrono::microseconds mMaxFutureTime{0};
-    std::chrono::microseconds mMaxPastTime{500000000};
+    std::chrono::microseconds mMaxLatency{500000000};
     std::chrono::seconds mLogBadDataInterval{3600};
     std::chrono::seconds mCircularBufferDuration{1800};
     std::chrono::seconds mLastLogTime{0};
@@ -384,6 +386,28 @@ DataPacketSanitizer::operator=(DataPacketSanitizer &&sanitizer) noexcept
     if (&sanitizer == this){return *this;}
     pImpl = std::move(sanitizer.pImpl);
     return *this;
+}
+
+/// Initialize
+void DataPacketSanitizer::initialize(const DataPacketSanitizerOptions &options)
+{
+    clear();
+    pImpl->mMaxFutureTime = options.getMaximumFutureTime();
+    pImpl->mMaxLatency = options.getMaximumLatency();
+    pImpl->mLogBadData = options.logBadData();
+pImpl->mLogger->info("Max latency: " + std::to_string(pImpl->mMaxLatency.count()));
+    if (options.logBadData())
+    {
+         pImpl->mLogBadDataInterval = options.getBadDataLoggingInterval();
+    }
+    pImpl->mCircularBufferDuration = std::chrono::duration_cast<std::chrono::seconds> (3*pImpl->mMaxLatency);
+    pImpl->mOptions = options;
+}
+
+/// Reset the class
+void DataPacketSanitizer::clear() noexcept
+{
+    pImpl = std::make_unique<DataPacketSanitizerImpl> ();
 }
 
 /// Destructor
