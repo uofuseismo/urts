@@ -191,7 +191,8 @@ endif()
 if (${BUILD_SEEDLINK})
    set(SEEDLINK_SRC
        src/broadcasts/external/seedlink/client.cpp
-       src/broadcasts/external/seedlink/clientOptions.cpp)
+       src/broadcasts/external/seedlink/clientOptions.cpp
+       src/broadcasts/external/seedlink/streamSelector.cpp)
 endif()
 if (${BUILD_UI})
    set(UI_SRC

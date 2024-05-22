@@ -11,6 +11,7 @@
 #include <slplatform.h>
 #include "urts/broadcasts/external/seedlink/client.hpp"
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
+#include "urts/broadcasts/external/seedlink/streamSelector.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 
 using namespace URTS::Broadcasts::External::SEEDLink;
@@ -410,15 +411,50 @@ void Client::initialize(const ClientOptions &options)
     // Queue size
     pImpl->mMaximumQueueSize
         = static_cast<size_t> (options.getMaximumInternalQueueSize());
+    // 
     // TODO selectors (sl_addstream(pImpl->mSEEDLinkConnection, net, sta, streamselect, -1, NULL));
+    constexpr int sequenceNumber{-1}; // Start at next data
+    const char *timeStamp{nullptr};
+    auto streamSelectors = pImpl->mOptions.getStreamSelectors();
+    for (const auto &selector : streamSelectors)
+    {
+        try
+        {
+            auto network = selector.getNetwork();
+            auto station = selector.getStation();
+            auto streamSelector = selector.getSelector();
+            auto returnCode = sl_addstream(pImpl->mSEEDLinkConnection,
+                                           network.c_str(),
+                                           station.c_str(),
+                                           streamSelector.c_str(),
+                                           sequenceNumber,
+                                           timeStamp);
+            if (returnCode != 0)
+            {
+                throw std::runtime_error("Failed to add selector: " 
+                                       + network + " " 
+                                       + station + " "
+                                       + streamSelector);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->warn("Could not add selector because "
+                               + std::string {e.what()});
+        }
+    }
     // Configure uni-station mode if no streams were specified
     if (pImpl->mSEEDLinkConnection->streams == nullptr)
     {
         const char *selectors{nullptr};
-        constexpr int sequenceNumber{-1};
-        const char *timeStamp{nullptr};
-        sl_setuniparams(pImpl->mSEEDLinkConnection,
-                        selectors, sequenceNumber, timeStamp);
+        auto returnCode = sl_setuniparams(pImpl->mSEEDLinkConnection,
+                                          selectors, sequenceNumber, timeStamp);
+        if (returnCode != 0)
+        {
+            pImpl->mLogger->error("Could not set SEEDLink uni-station mode");
+            throw std::runtime_error(
+                "Failed to create a SEEDLink uni-station client");
+        }
     }
     // Time out and reconnect delay
     auto networkTimeOut
@@ -430,7 +466,9 @@ void Client::initialize(const ClientOptions &options)
     // Check this worked
     std::string slSite(256, '\0');
     std::string slServerID(256, '\0');
-    auto returnCode = sl_ping(pImpl->mSEEDLinkConnection, slServerID.data(), slSite.data());
+    auto returnCode = sl_ping(pImpl->mSEEDLinkConnection,
+                              slServerID.data(),
+                              slSite.data());
     if (returnCode != 0)
     {
         if (returnCode ==-1)

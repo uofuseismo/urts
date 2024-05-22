@@ -1,7 +1,9 @@
 #include <string>
 #include <chrono>
+#include <vector>
 #include <filesystem>
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
+#include "urts/broadcasts/external/seedlink/streamSelector.hpp"
 
 using namespace URTS::Broadcasts::External::SEEDLink;
 
@@ -10,6 +12,7 @@ class ClientOptions::ClientOptionsImpl
 public:
     std::string mAddress{"rtserve.iris.washington.edu"};
     std::filesystem::path mStateFile;
+    std::vector<StreamSelector> mSelectors;
     std::chrono::seconds mNetworkTimeOut{600};
     std::chrono::seconds mNetworkDelay{30};
     int mSEEDRecordSize{512};
@@ -190,3 +193,24 @@ std::chrono::seconds ClientOptions::getNetworkReconnectDelay() const noexcept
     return pImpl->mNetworkDelay;
 }
 
+/// Stream selectors
+void ClientOptions::addStreamSelector(
+    const StreamSelector &selector)
+{
+    if (!selector.haveNetwork())
+    {
+        throw std::invalid_argument("Network not set");
+    }
+    for (const auto &mySelectors : pImpl->mSelectors)
+    {
+        if (mySelectors.getSelector() == selector.getSelector())
+        {
+            throw std::invalid_argument("Duplicate selector");
+        }
+    }
+    pImpl->mSelectors.push_back(selector);
+}
+std::vector<StreamSelector> ClientOptions::getStreamSelectors() const noexcept
+{
+    return pImpl->mSelectors;
+}

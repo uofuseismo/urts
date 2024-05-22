@@ -1,7 +1,12 @@
 #ifndef URTS_BROADCASTS_EXTERNAL_SEEDLINK_CLIENT_OPTIONS_HPP
 #define URTS_BROADCASTS_EXTERNAL_SEEDLINK_CLIENT_OPTIONS_HPP
 #include <chrono>
+#include <vector>
 #include <memory>
+namespace URTS::Broadcasts::External::SEEDLink
+{
+ class StreamSelector;
+}
 namespace URTS::Broadcasts::External::SEEDLink
 {
 /// @class ClientOptions "clientOptions.hpp" "urts/broadcasts/external/seedlink/clientOptions.hpp"
@@ -108,6 +113,12 @@ public:
     void setNetworkReconnectDelay(const std::chrono::seconds &timeOut);
     /// @result The network re-connect delay in seconds.
     [[nodiscard]] std::chrono::seconds getNetworkReconnectDelay() const noexcept;
+
+    /// @brief Adds a stream selector.
+    /// @throws std::invalid_argument if the selector is not properly set.
+    void addStreamSelector(const StreamSelector &selector);
+    /// @result The stream selectors. 
+    [[nodiscard]] std::vector<StreamSelector> getStreamSelectors() const noexcept;
     /// @}
 
     /// @name Destructors
