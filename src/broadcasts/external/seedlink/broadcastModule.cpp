@@ -165,6 +165,7 @@ struct ProgramOptions
                 boost::split(splitSelectors, *selectorString, boost::is_any_of(","));
                 for (const auto &splitSelector : splitSelectors)
                 {
+std::cout << splitSelector << std::endl;
                     std::vector<std::string> thisSelector; 
                     boost::split(thisSelector, splitSelector, boost::is_any_of(" \t"));
                     UBES::StreamSelector selector;
