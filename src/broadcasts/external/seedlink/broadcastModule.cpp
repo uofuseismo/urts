@@ -162,11 +162,14 @@ struct ProgramOptions
             {
                 namespace UBES = URTS::Broadcasts::External::SEEDLink;
                 std::vector<std::string> splitSelectors;
-                boost::split(splitSelectors, *selectorString, boost::is_any_of(","));
-                for (const auto &splitSelector : splitSelectors)
+                boost::split(splitSelectors, *selectorString, boost::is_any_of(",|"));
+                for (const auto &thisSplitSelector : splitSelectors)
                 {
-std::cout << splitSelector << std::endl;
                     std::vector<std::string> thisSelector; 
+                    auto splitSelector = thisSplitSelector;
+                    boost::algorithm::trim(splitSelector);
+std::cout << splitSelector << std::endl;
+ 
                     boost::split(thisSelector, splitSelector, boost::is_any_of(" \t"));
                     UBES::StreamSelector selector;
                     selector.setNetwork(thisSelector.at(0));
