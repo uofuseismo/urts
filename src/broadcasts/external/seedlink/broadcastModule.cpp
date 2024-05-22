@@ -169,7 +169,6 @@ struct ProgramOptions
                     std::vector<std::string> thisSelector; 
                     auto splitSelector = thisSplitSelector;
                     boost::algorithm::trim(splitSelector);
-std::cout << splitSelector << std::endl;
  
                     boost::split(thisSelector, splitSelector, boost::is_any_of(" \t"));
                     UBES::StreamSelector selector;

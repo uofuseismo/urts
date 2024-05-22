@@ -423,6 +423,10 @@ void Client::initialize(const ClientOptions &options)
             auto network = selector.getNetwork();
             auto station = selector.getStation();
             auto streamSelector = selector.getSelector();
+            pImpl->mLogger->info("Adding: "
+                                + network + " "
+                                + station + " "
+                                + streamSelector);
             auto returnCode = sl_addstream(pImpl->mSEEDLinkConnection,
                                            network.c_str(),
                                            station.c_str(),
