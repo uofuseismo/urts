@@ -10,6 +10,7 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
 #include <umps/logging/dailyFile.hpp>
@@ -41,6 +42,7 @@
 #include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
 #include "urts/broadcasts/external/seedlink/client.hpp"
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
+#include "urts/broadcasts/external/seedlink/streamSelector.hpp"
 #include "urts/broadcasts/utilities/dataPacketSanitizer.hpp"
 #include "private/isEmpty.hpp"
 
@@ -151,6 +153,43 @@ struct ProgramOptions
         mSEEDLinkClientOptions.setPort(
             propertyTree.get<int> ("SEEDLink.port", seedlinkPort)
         );
+        for (int iSelector = 1; iSelector <= 32768; ++iSelector)
+        {
+            std::string selectorName{"SEEDLink.data_selector_1"};
+            auto selectorString
+                = propertyTree.get_optional<std::string> (selectorName);
+            if (selectorString)
+            {
+                namespace UBES = URTS::Broadcasts::External::SEEDLink;
+                std::vector<std::string> splitSelectors;
+                boost::split(splitSelectors, *selectorString, boost::is_any_of(","));
+                for (const auto &splitSelector : splitSelectors)
+                {
+                    std::vector<std::string> thisSelector; 
+                    boost::split(thisSelector, splitSelector, boost::is_any_of(" \t"));
+                    UBES::StreamSelector selector;
+                    selector.setNetwork(thisSelector.at(0));
+                    selector.setStation(thisSelector.at(1));
+                    auto channel = thisSelector.at(2);
+                    auto locationCode = thisSelector.at(3);
+                    UBES::StreamSelector::Type dataType{UBES::StreamSelector::Type::All};
+                    if (thisSelector.at(4) == "D")
+                    {
+                        dataType = UBES::StreamSelector::Type::Data;
+                    }
+                    else if (thisSelector.at(4) == "A")
+                    {
+                        dataType = UBES::StreamSelector::Type::All;
+                    }
+                    selector.setSelector(channel, locationCode, dataType);
+                    mSEEDLinkClientOptions.addStreamSelector(selector);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
     }
     UAuth::ZAPOptions mZAPOptions;
     URTS::Broadcasts::External::SEEDLink::ClientOptions mSEEDLinkClientOptions;

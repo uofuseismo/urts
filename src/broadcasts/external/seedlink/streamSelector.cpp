@@ -103,7 +103,17 @@ std::string StreamSelector::getStation() const noexcept
     return pImpl->mStation;
 }
 
-/// Channel
+/// Set the selector
+void StreamSelector::setSelector(
+    const std::string &channel, const std::string &locationCode,
+    const StreamSelector::Type type)
+{
+    pImpl->mChannel = channel;
+    pImpl->mLocationCode = locationCode;
+    pImpl->mType = type;
+}
+
+/// Build the selector
 std::string StreamSelector::getSelector() const noexcept
 {
     std::string selector;
