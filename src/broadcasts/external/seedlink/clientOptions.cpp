@@ -201,15 +201,18 @@ void ClientOptions::addStreamSelector(
     {
         throw std::invalid_argument("Network not set");
     }
-    for (const auto &mySelectors : pImpl->mSelectors)
+    for (const auto &mySelector : pImpl->mSelectors)
     {
-        if (mySelectors.getSelector() == selector.getSelector())
+        if (mySelector.getNetwork() == selector.getNetwork() &&
+            mySelector.getStation() == selector.getStation() &&
+            mySelector.getSelector() == selector.getSelector())
         {
             throw std::invalid_argument("Duplicate selector");
         }
     }
     pImpl->mSelectors.push_back(selector);
 }
+
 std::vector<StreamSelector> ClientOptions::getStreamSelectors() const noexcept
 {
     return pImpl->mSelectors;
