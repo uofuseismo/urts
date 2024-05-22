@@ -9,7 +9,8 @@ var annotated_dup =
           ] ],
           [ "SEEDLink", null, [
             [ "Client", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client" ],
-            [ "ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options" ]
+            [ "ClientOptions", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options" ],
+            [ "StreamSelector", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector" ]
           ] ]
         ] ],
         [ "Internal", null, [

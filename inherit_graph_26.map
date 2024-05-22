@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_requestor.html" title="A requestor that will interact with the inference service." alt="" coords="5,5,252,61"/>
+<area shape="rect" id="node1" href="$class_u_r_t_s_1_1_observer_pattern_1_1_i_subject.html" title="Abstract base class for subjects. Typically, subjects will be (data) models which widgets (observers)..." alt="" coords="5,39,175,80"/>
+<area shape="rect" id="node2" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html" title="A container for working with the channel_data table." alt="" coords="223,5,396,47"/>
+<area shape="rect" id="node3" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html" title="A container for working with the station_data table." alt="" coords="223,71,396,112"/>
 </map>

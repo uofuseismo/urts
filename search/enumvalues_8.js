@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['magnitude_967',['Magnitude',['../class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html#ab17199e05a9cbfc17ccbb44acb9b2306a5250caf9ed6767b6d593bbab80187569',1,'URTS::Services::Standalone::Incrementer::IncrementRequest']]],
-  ['manual_968',['Manual',['../class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926a61d604c1461ed499397173536dfff9da',1,'URTS::Broadcasts::Internal::Pick::Pick']]]
+  ['log_990',['Log',['../class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#abbe8d67ce2e07c0695839dfaf3dc4b3face0be71e33226e4c1db2bcea5959f16b',1,'URTS::Broadcasts::External::SEEDLink::StreamSelector']]]
 ];

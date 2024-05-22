@@ -167,6 +167,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:acca45ea0adbb29a9f143be7d7e48043c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc801892119593b1e50bcc95a33b9dcc"><td class="memItemLeft" align="right" valign="top">std::chrono::seconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#afc801892119593b1e50bcc95a33b9dcc">getNetworkReconnectDelay</a> () const noexcept</td></tr>
 <tr class="separator:afc801892119593b1e50bcc95a33b9dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab365c5f1c2f49d027391d4c8525f86b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ab365c5f1c2f49d027391d4c8525f86b5">addStreamSelector</a> (const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html">StreamSelector</a> &amp;selector)</td></tr>
+<tr class="memdesc:ab365c5f1c2f49d027391d4c8525f86b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a stream selector.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#ab365c5f1c2f49d027391d4c8525f86b5">More...</a><br /></td></tr>
+<tr class="separator:ab365c5f1c2f49d027391d4c8525f86b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7f2a6781c56668bed9f544514d22b7b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html">StreamSelector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#aa7f2a6781c56668bed9f544514d22b7b">getStreamSelectors</a> () const noexcept</td></tr>
+<tr class="separator:aa7f2a6781c56668bed9f544514d22b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a2eb00058bd2cc3592b4b3ff2d305d71d"><td class="memItemLeft" align="right" valign="top"><a id="a2eb00058bd2cc3592b4b3ff2d305d71d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html#a2eb00058bd2cc3592b4b3ff2d305d71d">clear</a> () noexcept</td></tr>
@@ -242,6 +247,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab365c5f1c2f49d027391d4c8525f86b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab365c5f1c2f49d027391d4c8525f86b5">&#9670;&nbsp;</a></span>addStreamSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::External::SEEDLink::ClientOptions::addStreamSelector </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html">StreamSelector</a> &amp;&#160;</td>
+          <td class="paramname"><em>selector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a stream selector. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the selector is not properly set. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab8c5496d43e331758151e8e1bb6da3b7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab8c5496d43e331758151e8e1bb6da3b7">&#9670;&nbsp;</a></span>getAddress()</h2>
 
@@ -445,6 +476,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The state file update interval in packets. The default is 100. </dd></dl>
+
+</div>
+</div>
+<a id="aa7f2a6781c56668bed9f544514d22b7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7f2a6781c56668bed9f544514d22b7b">&#9670;&nbsp;</a></span>getStreamSelectors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html">StreamSelector</a>&gt; URTS::Broadcasts::External::SEEDLink::ClientOptions::getStreamSelectors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The stream selectors. </dd></dl>
 
 </div>
 </div>
@@ -787,7 +844,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>External</b></li><li class="navelem"><b>SEEDLink</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_client_options.html">ClientOptions</a></li>
-    <li class="footer">Generated on Tue May 21 2024 16:34:58 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed May 22 2024 21:24:29 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
