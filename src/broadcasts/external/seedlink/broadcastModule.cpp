@@ -155,7 +155,8 @@ struct ProgramOptions
         );
         for (int iSelector = 1; iSelector <= 32768; ++iSelector)
         {
-            std::string selectorName{"SEEDLink.data_selector_1"};
+            std::string selectorName{"SEEDLink.data_selector_"};
+            selectorName = selectorName + std::to_string(iSelector);
             auto selectorString
                 = propertyTree.get_optional<std::string> (selectorName);
             if (selectorString)
