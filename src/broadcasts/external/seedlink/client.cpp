@@ -411,11 +411,10 @@ void Client::initialize(const ClientOptions &options)
     // Queue size
     pImpl->mMaximumQueueSize
         = static_cast<size_t> (options.getMaximumInternalQueueSize());
-    // 
-    // TODO selectors (sl_addstream(pImpl->mSEEDLinkConnection, net, sta, streamselect, -1, NULL));
+    // If there are selectors then try to use them
     constexpr int sequenceNumber{-1}; // Start at next data
     const char *timeStamp{nullptr};
-    auto streamSelectors = pImpl->mOptions.getStreamSelectors();
+    auto streamSelectors = options.getStreamSelectors();
     for (const auto &selector : streamSelectors)
     {
         try
