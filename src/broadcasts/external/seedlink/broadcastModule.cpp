@@ -172,18 +172,44 @@ struct ProgramOptions
  
                     boost::split(thisSelector, splitSelector, boost::is_any_of(" \t"));
                     UBES::StreamSelector selector;
-                    selector.setNetwork(thisSelector.at(0));
-                    selector.setStation(thisSelector.at(1));
-                    auto channel = thisSelector.at(2);
-                    auto locationCode = thisSelector.at(3);
-                    UBES::StreamSelector::Type dataType{UBES::StreamSelector::Type::All};
-                    if (thisSelector.at(4) == "D")
+                    if (splitSelector.empty())
                     {
-                        dataType = UBES::StreamSelector::Type::Data;
+                        throw std::invalid_argument("Empty selector");
                     }
-                    else if (thisSelector.at(4) == "A")
+                    // Require a network
+                    boost::algorithm::trim(thisSelector.at(0));
+                    selector.setNetwork(thisSelector.at(0));
+                    if (splitSelector.size() > 1)
                     {
-                        dataType = UBES::StreamSelector::Type::All;
+                        boost::algorithm::trim(thisSelector.at(1));
+                        selector.setStation(thisSelector.at(1));
+                    }
+                    std::string channel{"*"};
+                    std::string locationCode{"??"};
+                    if (splitSelector.size() > 2)
+                    {
+                        boost::algorithm::trim(thisSelector.at(2));
+                        channel = thisSelector.at(2);
+                    }
+                    if (splitSelector.size() > 3)
+                    { 
+                        boost::algorithm::trim(thisSelector.at(3));
+                        locationCode = thisSelector.at(3);
+                    }
+                    // Data type
+                    UBES::StreamSelector::Type dataType{UBES::StreamSelector::Type::All};
+                    if (splitSelector.size() > 4)
+                    {
+                        boost::algorithm::trim(thisSelector.at(4));
+                        if (thisSelector.at(4) == "D")
+                        {
+                            dataType = UBES::StreamSelector::Type::Data;
+                        }
+                        else if (thisSelector.at(4) == "A")
+                        {
+                            dataType = UBES::StreamSelector::Type::All;
+                        }
+                        // TODO other data types
                     }
                     selector.setSelector(channel, locationCode, dataType);
                     mSEEDLinkClientOptions.addStreamSelector(selector);
