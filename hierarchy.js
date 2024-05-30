@@ -55,6 +55,7 @@ var hierarchy =
       [ "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_request.html", null ],
       [ "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html", null ],
       [ "URTS::Services::Scalable::TravelTimes::StationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request.html", null ],
+      [ "URTS::Services::Scalable::TravelTimes::StationResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_response.html", null ],
       [ "URTS::Services::Standalone::Incrementer::IncrementRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html", null ],
       [ "URTS::Services::Standalone::Incrementer::IncrementResponse", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_response.html", null ],
       [ "URTS::Services::Standalone::Incrementer::ItemsRequest", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_request.html", null ],

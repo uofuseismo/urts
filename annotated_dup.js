@@ -148,7 +148,8 @@ var annotated_dup =
           [ "TravelTimes", null, [
             [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_service" ],
             [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_service_options" ],
-            [ "StationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request" ]
+            [ "StationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request" ],
+            [ "StationResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_response" ]
           ] ]
         ] ],
         [ "Standalone", null, [
