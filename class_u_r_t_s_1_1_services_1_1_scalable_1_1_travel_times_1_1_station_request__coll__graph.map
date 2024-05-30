@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::TravelTimes::StationRequest" name="URTS::Services::Scalable::TravelTimes::StationRequest">
+<area shape="rect" id="node1" title="Requests a travel time calculation from a source point to a station." alt="" coords="5,95,221,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="24,5,203,47"/>
+</map>

@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,1717,184,1759"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,1753,184,1795"/>
 <area shape="rect" id="node2" href="$class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html" title="Defines an Earthworm tracebuf2 message format." alt="" coords="281,5,492,47"/>
 <area shape="rect" id="node3" href="$class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html" title="Defines a seismic data packet." alt="" coords="289,71,484,112"/>
 <area shape="rect" id="node4" href="$class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html" title="Defines a pick message." alt="" coords="289,136,484,177"/>
@@ -40,8 +40,9 @@
 <area shape="rect" id="node39" href="$class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_preprocessing_response.html" title="Response from a waveform snippet preprocessing request." alt="" coords="270,2866,503,2922"/>
 <area shape="rect" id="node40" href="$class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_request.html" title="Requests a snippet be preprocessed then inference be performed. It is assumed that the initial S pick..." alt="" coords="270,2946,503,3002"/>
 <area shape="rect" id="node41" href="$class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_processing_response.html" title="Given a three&#45;comopnent waveform with the initial pick centered in the middle of the waveform this is..." alt="" coords="270,3026,503,3082"/>
-<area shape="rect" id="node42" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html" title="To identify items (picks, events, origins, amplitudes, etc.) in the processing pipeline we must assig..." alt="" coords="269,3107,505,3148"/>
-<area shape="rect" id="node43" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_response.html" title="This is a response to an item increment request." alt="" coords="263,3172,510,3213"/>
-<area shape="rect" id="node44" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_request.html" title="To identify items (picks, events, origins, amplitudes, etc.) in the processing pipeline we must assig..." alt="" coords="283,3237,490,3279"/>
-<area shape="rect" id="node45" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_response.html" title="This is a response to an items request." alt="" coords="278,3303,495,3344"/>
+<area shape="rect" id="node42" href="$class_u_r_t_s_1_1_services_1_1_scalable_1_1_travel_times_1_1_station_request.html" title="Requests a travel time calculation from a source point to a station." alt="" coords="279,3107,495,3148"/>
+<area shape="rect" id="node43" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_request.html" title="To identify items (picks, events, origins, amplitudes, etc.) in the processing pipeline we must assig..." alt="" coords="269,3172,505,3213"/>
+<area shape="rect" id="node44" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_increment_response.html" title="This is a response to an item increment request." alt="" coords="263,3237,510,3279"/>
+<area shape="rect" id="node45" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_request.html" title="To identify items (picks, events, origins, amplitudes, etc.) in the processing pipeline we must assig..." alt="" coords="283,3303,490,3344"/>
+<area shape="rect" id="node46" href="$class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_items_response.html" title="This is a response to an items request." alt="" coords="278,3368,495,3409"/>
 </map>
