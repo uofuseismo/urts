@@ -31,6 +31,7 @@ find_package(PostgreSQL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Time REQUIRED)
 find_package(GTest REQUIRED)
+find_package(Catch2 3)
 # Optional
 #set(FindMiniSEED_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
 #set(FindEarthworm_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
@@ -38,6 +39,8 @@ find_package(GTest REQUIRED)
 find_package(Earthworm)
 find_package(SEEDLink)
 find_package(UUSSMLModels)
+find_package(uLocator)
+find_package(MAssociate)
 if (${Earthworm_FOUND} OR ${SEEDLink_FOUND})
    find_package(MiniSEED)
 endif()
@@ -76,18 +79,32 @@ add_compile_definitions(URTS_SRC)
 
 set(VERSION_SRC
     src/version.cpp)
-set(GENERIC_SRC
+set(GENERIC_MESSAGE_SRC
     src/broadcasts/internal/dataPacket/dataPacket.cpp
+    src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
+    src/broadcasts/internal/pick/pick.cpp
+    src/services/standalone/incrementer/incrementRequest.cpp
+    src/services/standalone/incrementer/incrementResponse.cpp
+    src/services/standalone/incrementer/itemsRequest.cpp
+    src/services/standalone/incrementer/itemsResponse.cpp
+    src/services/scalable/packetCache/bulkDataRequest.cpp
+    src/services/scalable/packetCache/bulkDataResponse.cpp
+    src/services/scalable/packetCache/dataRequest.cpp
+    src/services/scalable/packetCache/dataResponse.cpp
+    src/services/scalable/packetCache/sensorRequest.cpp
+    src/services/scalable/packetCache/sensorResponse.cpp)
+set(GENERIC_SRC
+    #src/broadcasts/internal/dataPacket/dataPacket.cpp
     src/broadcasts/internal/dataPacket/publisher.cpp
     src/broadcasts/internal/dataPacket/publisherOptions.cpp
     src/broadcasts/internal/dataPacket/subscriber.cpp
     src/broadcasts/internal/dataPacket/subscriberOptions.cpp
-    src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
+    #src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
     src/broadcasts/internal/probabilityPacket/publisher.cpp
     src/broadcasts/internal/probabilityPacket/publisherOptions.cpp
     src/broadcasts/internal/probabilityPacket/subscriber.cpp
     src/broadcasts/internal/probabilityPacket/subscriberOptions.cpp
-    src/broadcasts/internal/pick/pick.cpp
+    #src/broadcasts/internal/pick/pick.cpp
     src/broadcasts/internal/pick/publisher.cpp
     src/broadcasts/internal/pick/publisherOptions.cpp 
     src/broadcasts/internal/pick/subscriber.cpp
@@ -103,22 +120,22 @@ set(GENERIC_SRC
     src/database/connection/postgresql.cpp
     src/observerPattern/subject.cpp
     src/services/standalone/incrementer/counter.cpp
-    src/services/standalone/incrementer/incrementRequest.cpp
-    src/services/standalone/incrementer/incrementResponse.cpp
-    src/services/standalone/incrementer/itemsRequest.cpp
-    src/services/standalone/incrementer/itemsResponse.cpp
+    #src/services/standalone/incrementer/incrementRequest.cpp
+    #src/services/standalone/incrementer/incrementResponse.cpp
+    #src/services/standalone/incrementer/itemsRequest.cpp
+    #src/services/standalone/incrementer/itemsResponse.cpp
     src/services/standalone/incrementer/service.cpp
     src/services/standalone/incrementer/serviceOptions.cpp
     src/services/standalone/incrementer/requestor.cpp
     src/services/standalone/incrementer/requestorOptions.cpp
-    src/services/scalable/packetCache/bulkDataRequest.cpp
-    src/services/scalable/packetCache/bulkDataResponse.cpp
+    #src/services/scalable/packetCache/bulkDataRequest.cpp
+    #src/services/scalable/packetCache/bulkDataResponse.cpp
     src/services/scalable/packetCache/cappedCollection.cpp
     src/services/scalable/packetCache/circularBuffer.cpp
-    src/services/scalable/packetCache/dataRequest.cpp
-    src/services/scalable/packetCache/dataResponse.cpp
-    src/services/scalable/packetCache/sensorRequest.cpp
-    src/services/scalable/packetCache/sensorResponse.cpp
+    #src/services/scalable/packetCache/dataRequest.cpp
+    #src/services/scalable/packetCache/dataResponse.cpp
+    #src/services/scalable/packetCache/sensorRequest.cpp
+    #src/services/scalable/packetCache/sensorResponse.cpp
     src/services/scalable/packetCache/service.cpp
     src/services/scalable/packetCache/serviceOptions.cpp
     src/services/scalable/packetCache/singleComponentWaveform.cpp
@@ -126,57 +143,95 @@ set(GENERIC_SRC
     src/services/scalable/packetCache/requestor.cpp
     src/services/scalable/packetCache/requestorOptions.cpp
     src/services/scalable/packetCache/wigginsInterpolator.cpp
-    #src/services/scalable/travelTimes/service.cpp
-    #src/services/scalable/travelTimes/serviceOptions.cpp
     )
+if (${uLocator_FOUND})
+   set(GENERIC_MESSAGE_SRC ${GENERIC_MESSAGE_SRC}
+       src/services/scalable/travelTimes/stationRequest.cpp
+       src/services/scalable/travelTimes/stationResponse.cpp)
+   set(GENERIC_SRC ${GENERIC_SRC}
+       src/services/scalable/travelTimes/service.cpp
+       src/services/scalable/travelTimes/serviceOptions.cpp 
+       )
+endif()
 if (${BUILD_UUSS_MLMODELS})
-    set(UUSS_SRC
+    set(UUSS_MESSAGE_SRC
         src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/service.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
         src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
         src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/service.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.cpp
         src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
         src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
         src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
         src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
         src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
         src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
-        src/services/scalable/pickers/cnnOneComponentP/service.cpp
-        src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
         src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
         src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
         src/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.cpp
         src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
         src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp
+        src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp)
+    set(UUSS_SRC
+        #src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/service.cpp
+        src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/service.cpp
+        src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.cpp
+        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
+        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
+        src/services/scalable/pickers/cnnOneComponentP/service.cpp
+        src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp
         src/services/scalable/pickers/cnnThreeComponentS/requestor.cpp
         src/services/scalable/pickers/cnnThreeComponentS/requestorOptions.cpp
         src/services/scalable/pickers/cnnThreeComponentS/service.cpp
@@ -207,19 +262,20 @@ if (${BUILD_UI})
        ui/topics.cpp)
 endif()
 
-add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${UUSS_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
+add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${GENERIC_MESSAGE_SRC} ${UUSS_SRC} ${UUSS_MESSAGE_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO)
 target_include_directories(urts
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                                   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
                            PUBLIC ${UMPS_INCLUDE_DIR}
-                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR} ${uLocator_INCLUDE_DIR}
+                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR} ${uLocator_INCLUDE_DIR} ${MAssociate_INCLUDE_DIR}
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
 target_link_libraries(urts
                       PRIVATE ${UMPS_LIBRARY} ${Time_LIBRARY}
-                              SOCI::soci_postgresql Boost::date_time Threads::Threads ${uLocator_LIBRARY})
+                              SOCI::soci_postgresql Boost::date_time Threads::Threads ${uLocator_LIBRARY} ${MAssociate_LIBRARY})
 if (${BUILD_MSEED})
    target_include_directories(urts PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
    target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
