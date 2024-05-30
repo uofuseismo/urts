@@ -61,6 +61,11 @@ var annotated_dup =
       ] ],
       [ "Services", null, [
         [ "Scalable", null, [
+          [ "Associators", null, [
+            [ "MAssociate", null, [
+              [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service" ]
+            ] ]
+          ] ],
           [ "Detectors", null, [
             [ "UNetThreeComponentP", null, [
               [ "InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request" ],

@@ -87,6 +87,7 @@ var hierarchy =
     [ "URTS::Services::Scalable::Pickers::CNNOneComponentP::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_requestor_options.html", null ],
     [ "URTS::Services::Scalable::Pickers::CNNThreeComponentS::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_requestor_options.html", null ],
     [ "URTS::Services::Standalone::Incrementer::RequestorOptions", "class_u_r_t_s_1_1_services_1_1_standalone_1_1_incrementer_1_1_requestor_options.html", null ],
+    [ "URTS::Services::Scalable::Associators::MAssociate::Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", null ],
     [ "URTS::Services::Scalable::Detectors::UNetThreeComponentP::Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_service.html", null ],
     [ "URTS::Services::Scalable::Detectors::UNetThreeComponentS::Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_service.html", null ],
     [ "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_service.html", null ],
