@@ -147,11 +147,17 @@ set(GENERIC_SRC
 if (${uLocator_FOUND})
    set(GENERIC_MESSAGE_SRC ${GENERIC_MESSAGE_SRC}
        src/services/scalable/travelTimes/stationRequest.cpp
-       src/services/scalable/travelTimes/stationResponse.cpp)
+       src/services/scalable/travelTimes/stationResponse.cpp
+      )
    set(GENERIC_SRC ${GENERIC_SRC}
        src/services/scalable/travelTimes/service.cpp
        src/services/scalable/travelTimes/serviceOptions.cpp 
-       )
+      )
+   if (${MAssociate_FOUND})
+      set(GENERIC_SRC ${GENERIC_SRC}
+          src/services/scalable/associators/massociate/service.cpp
+         )
+   endif()
 endif()
 if (${BUILD_UUSS_MLMODELS})
     set(UUSS_MESSAGE_SRC

@@ -148,7 +148,7 @@ public:
         ULocator::Position::WGS84 stationLocation{stationLatitude,
                                                   stationLongitude, mUTMZone};
     }
-    /// @brief Respond to data requests
+    /// @brief Respond to travel time calculation requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
