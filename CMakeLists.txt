@@ -148,6 +148,7 @@ if (${uLocator_FOUND})
    set(GENERIC_MESSAGE_SRC ${GENERIC_MESSAGE_SRC}
        src/services/scalable/travelTimes/stationRequest.cpp
        src/services/scalable/travelTimes/stationResponse.cpp
+       src/services/scalable/associators/massociate/associationRequest.cpp
       )
    set(GENERIC_SRC ${GENERIC_SRC}
        src/services/scalable/travelTimes/service.cpp
@@ -156,6 +157,7 @@ if (${uLocator_FOUND})
    if (${MAssociate_FOUND})
       set(GENERIC_SRC ${GENERIC_SRC}
           src/services/scalable/associators/massociate/service.cpp
+          src/services/scalable/associators/massociate/serviceOptions.cpp
          )
    endif()
 endif()

@@ -35,7 +35,6 @@ public:
     /// @brief Constructor with a given context for the replier, the broadcast,
     ///        and a logger
     Service(std::shared_ptr<UMPS::Messaging::Context> &responseContext,
-            std::shared_ptr<UMPS::Messaging::Context> &broadcastContext,
             std::shared_ptr<UMPS::Logging::ILog> &logger); 
     /// @}
 

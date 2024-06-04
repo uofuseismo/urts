@@ -29,7 +29,6 @@ class Service::ServiceImpl
 public:
     /// @brief Constructor
     ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> responseContext = nullptr,
-                std::shared_ptr<UMPS::Messaging::Context> dataPacketContext = nullptr,
                 const std::shared_ptr<UMPS::Logging::ILog> &logger = nullptr)
     {
         if (logger == nullptr)
@@ -42,7 +41,6 @@ public:
         }
         mTravelTimesReplier
             = std::make_unique<URouterDealer::Reply> (responseContext, mLogger);
-//        mCappedCollection = std::make_unique<CappedCollection> (mLogger);
     }
 /*
     /// @brief A thread running this function will read data packet messages
@@ -309,7 +307,7 @@ public:
 
 /// Constructor
 Service::Service() :
-    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, nullptr))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr))
 {
 }
 
@@ -323,16 +321,14 @@ Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context)
 
 /// Constructor with logger
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, logger))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
 {
 }
 
 /// Constructor with context and a logger
 Service::Service(std::shared_ptr<UMPS::Messaging::Context> &replierContext,
-                 std::shared_ptr<UMPS::Messaging::Context> &broadcastContext,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ServiceImpl> (replierContext,
-                                         broadcastContext,
                                          logger))
 {
 }

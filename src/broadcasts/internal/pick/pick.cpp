@@ -6,6 +6,7 @@
 #include "urts/broadcasts/internal/pick/pick.hpp"
 #include "urts/broadcasts/internal/pick/uncertaintyBound.hpp"
 #include "private/isEmpty.hpp"
+#include "jsonHelpers.hpp"
 
 #define MESSAGE_TYPE "URTS::Broadcasts::Internal::Pick"
 #define MESSAGE_VERSION "1.0.0"
@@ -15,6 +16,17 @@ using namespace URTS::Broadcasts::Internal::Pick;
 namespace
 {
 
+nlohmann::json toJSONObject(const URTS::Broadcasts::Internal::Pick::Pick &pick)
+{
+    nlohmann::json obj;
+    obj["MessageType"] = pick.getMessageType();
+    obj["MessageVersion"] = pick.getMessageVersion();
+    // Pack the rest of the properties
+    ::propertiesToJSON(pick, obj);
+    return obj;
+}
+
+/*
 nlohmann::json toJSONObject(const Pick &pick)
 {
     nlohmann::json obj;
@@ -75,6 +87,7 @@ nlohmann::json toJSONObject(const Pick &pick)
     obj["ProcessingAlgorithms"] = pick.getProcessingAlgorithms();
     return obj;
 }
+*/
 
 Pick objectToPick(const nlohmann::json &obj)
 {
