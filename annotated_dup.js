@@ -63,7 +63,9 @@ var annotated_dup =
         [ "Scalable", null, [
           [ "Associators", null, [
             [ "MAssociate", null, [
-              [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service" ]
+              [ "AssociationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_request" ],
+              [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service" ],
+              [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options" ]
             ] ]
           ] ],
           [ "Detectors", null, [
