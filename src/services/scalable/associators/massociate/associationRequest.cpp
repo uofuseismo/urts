@@ -18,14 +18,20 @@ std::string toCBORObject(const AssociationRequest &message)
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     const auto &picks = message.getPicksReference();
-/*
     if (!picks.empty())
     {
         nlohmann::json jsonPicks;
         for (const auto &pick : picks)
         {
             nlohmann::json pickObject;
-            propertiesToJSON(pick, pickObject);
+            pickObject["Network"] = pick.getNetwork();
+            pickObject["Station"] = pick.getStation();
+            pickObject["Channel"] = pick.getChannel();
+            pickObject["LocationCode"] = pick.getLocationCode();
+            pickObject["Time"] = static_cast<int64_t> (pick.getTime().count());
+            pickObject["PhaseHint"] = static_cast<int> (pick.getPhaseHint());
+            pickObject["StandardError"] = pick.getStandardError();
+            pickObject["Identifier"] = pick.getIdentifier();
             jsonPicks.push_back(std::move(pickObject)); 
         }
         obj["Picks"] = jsonPicks;
@@ -34,7 +40,6 @@ std::string toCBORObject(const AssociationRequest &message)
     {
         obj["Picks"] = nullptr;
     }
-*/
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -52,10 +57,28 @@ AssociationRequest
     result.setIdentifier(obj["Identifier"].template get<int64_t> ());
     if (!obj["Picks"].is_null())
     {
+        std::vector<Pick> picks;
         for (const auto &pickObject : obj["Picks"])
         {
-            
-        } 
+            Pick pick;
+            pick.setNetwork(pickObject["Network"].template get<std::string> ());
+            pick.setStation(pickObject["Station"].template get<std::string> ());
+            pick.setChannel(pickObject["Channel"].template get<std::string> ());
+            pick.setLocationCode(
+                pickObject["LocationCode"].template get<std::string> ());
+            auto iTime = pickObject["Time"].template get<int64_t> ();
+            pick.setTime(std::chrono::microseconds {iTime});
+            auto phaseHint
+                = static_cast<Pick::PhaseHint>
+                  (pickObject["PhaseHint"].template get<int> ());
+            pick.setPhaseHint(phaseHint);
+            pick.setStandardError(
+                pickObject["StandardError"].template get<double> ());
+            pick.setIdentifier(
+                pickObject["Identifier"].template get<int64_t> ());
+            picks.push_back(std::move(pick));
+        }
+        result.setPicks(picks);
     }
     return result;
 }
@@ -138,45 +161,6 @@ void AssociationRequest::setPicks(const std::vector<Pick> &picks)
         {
             throw std::invalid_argument("Phase hint not set");
         }
-        // Try to figure the phase hint out even though it's optional in the
-        // pick message
-/*
-        auto phaseHint = pick.getPhaseHint();
-        bool guessPhaseHint{false};
-        if (phaseHint.empty())
-        {
-            guessPhaseHint = true;
-        }
-        else
-        {
-            if (phaseHint != "P" && phaseHint != "S")
-            {
-                guessPhaseHint = true;
-            }
-        }
-        if (guessPhaseHint)
-        {
-            auto channel = pick.getChannel();
-            if (channel.size() == 3)
-            {
-                // Vertical channels `should' make P picks...
-                if (channel[2] == 'Z' || channel[2] == 'P')
-                {
-                    phaseHint = "P"; 
-                }
-                else
-                { 
-                    phaseHint = "S";
-                }
-                pick.setPhaseHint(channel);
-            }
-            else
-            {
-                throw std::invalid_argument(
-                    "Phase hint not set and couldn't guess it");
-            }
-        }
-*/
     }
     pImpl->mPicks = picks;
 }
@@ -218,12 +202,6 @@ std::string AssociationRequest::getMessageVersion() const noexcept
 std::string AssociationRequest::toMessage() const
 {
     return ::toCBORObject(*this);
-}
-
-void AssociationRequest::fromMessage(const std::string &message)
-{
-    if (message.empty()){throw std::invalid_argument("Message is empty");}
-    fromMessage(message.data(), message.size());
 }
 
 void AssociationRequest::fromMessage(

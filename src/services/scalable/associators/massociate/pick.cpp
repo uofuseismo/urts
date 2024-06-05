@@ -3,6 +3,10 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#ifndef NDEBUG
+#include <cassert>
+#endif
+#include <boost/math/special_functions/erf.hpp>
 #include "urts/services/scalable/associators/massociate/pick.hpp"
 #include "urts/broadcasts/internal/pick/pick.hpp"
 #include "urts/broadcasts/internal/pick/uncertaintyBound.hpp"
@@ -10,139 +14,75 @@
 
 using namespace URTS::Services::Scalable::Associators::MAssociate;
 
-/*
 namespace
 {
 
-nlohmann::json toJSONObject(const Pick &pick)
+/// @brief This is a convenience function that transforms a perturbation 
+///        tabulated at a given percentile of a Gaussian distribution
+///        to it's perturbation at 1 standard deviation if the probability
+///        is greater than 0.5 or -1 standard deviation if the probability
+///        is less than 0.5.
+double transformPerturbation(const double perturbation,
+                             const double probability)
 {
-    nlohmann::json obj;
-    // Essential stuff (this will throw): 
-    // Network/Station/Channel/Location
-    obj["MessageType"] = pick.getMessageType();
-    obj["MessageVersion"] = pick.getMessageVersion();
-    obj["Network"] = pick.getNetwork();
-    obj["Station"] = pick.getStation();
-    obj["Channel"] = pick.getChannel();
-    obj["LocationCode"] = pick.getLocationCode();
-    // Pick time
-    obj["Time"] = static_cast<int64_t> (pick.getTime().count());
-    // Identifier
-    obj["Identifier"] = pick.getIdentifier();
-    // Non-essential stuff:
-    if (pick.haveLowerAndUpperUncertaintyBound())
+    //const double sqrt2 = std::sqrt(2.0);
+    double perturbationAtOneStandardError{perturbation};
+    if (probability <= 0 || probability >= 1)
     {
-        auto bounds = pick.getLowerAndUpperUncertaintyBound();
-        nlohmann::json jsonBounds;
-        jsonBounds["LowerPercentile"] = bounds.first.getPercentile();
-        jsonBounds["LowerPerturbation"]
-            = bounds.first.getPerturbation().count();
-        jsonBounds["UpperPercentile"] = bounds.second.getPercentile();
-        jsonBounds["UpperPerturbation"]
-            = bounds.second.getPerturbation().count();
-        obj["UncertaintyBounds"] = jsonBounds;
+        throw std::invalid_argument("Probability must be in range (0,1)");
     }
-    else
+    if (std::abs(0.5 - probability) < 1.e-6)
     {
-        obj["UncertaintyBounds"] = nullptr;
+        throw std::invalid_argument("Cannot work with P = 0.5");
     }
-    // Original channels
-    auto originalChannels = pick.getOriginalChannels();
-    if (!originalChannels.empty())
+    if (probability > 0.5)
     {
-        obj["OriginalChannels"] = originalChannels;
+        // 1: P(X < L) = 1/2 + 1/2 erf( (L - mu)/(sqrt(2)*sigma) )
+        // 2: mu = 0 and sigma = 1
+        // 3: P(X < L) = 1/2 + 1/2 erf( L/sqrt(2) )
+        // Note, L is the z-score.  Hence, given a probability we compute:
+        // 4: L = sqrt(2)*erf^{-1}( 2*P(X < L) - 1 )
+        double z = std::sqrt(2.0)*boost::math::erf_inv<double> (2*probability - 1); 
+        // Given the z-score at this probability we now scale it to 1 standard
+        // deviation - i.e., p/z = p1/1 -> p1 = p/z. 
+        perturbationAtOneStandardError = perturbation/z;
     }
-    else
+    else if (probability < 0.5)
     {
-        obj["OriginalChannels"] = nullptr;
-    }
-    // Phase hint
-    auto phaseHint = pick.getPhaseHint();
-    if (!phaseHint.empty())
-    {
-        obj["PhaseHint"] = phaseHint;
-    }
-    else
-    {
-        obj["PhaseHint"] = nullptr;
-    }
-    // First motion
-    obj["FirstMotion"] = static_cast<int> (pick.getFirstMotion()); 
-    // Review
-    obj["ReviewStatus"] = static_cast<int> (pick.getReviewStatus());
-    // Algorithm
-    obj["ProcessingAlgorithms"] = pick.getProcessingAlgorithms();
-    return obj;
+        // Same logic as before, but the convention is we add the perturbation
+        // so this will likely be a negative number and to get the signs to
+        // work out we introduce a negative
+        double z = std::sqrt(2.0)*boost::math::erf_inv<double> (2*probability - 1);
+        perturbationAtOneStandardError =-perturbation/z;
+    } 
+    return perturbationAtOneStandardError;
 }
 
-Pick objectToPick(const nlohmann::json &obj)
+/// @brief Attempts to create a standard error at one standard deviation for
+///        errors at the lower and upper percentils assuming an underlying
+///        slightly non-symmetric Gaussian'ish distribution by averaging
+///        the rescaled perturbation at +/- standard error. 
+double transformPerturbation(
+    const double lowerPerturbation, const double lowerProbability,
+    const double upperPerturbation, const double upperProbability)
 {
-    Pick pick;
-    if (obj["MessageType"] != pick.getMessageType())
+    if (lowerPerturbation >= 0)
     {
-        throw std::invalid_argument("Message has invalid message type");
+        throw std::invalid_argument("Lower perturbation should be negative");
     }
-    // Essential stuff
-    pick.setNetwork(obj["Network"].get<std::string> ());
-    pick.setStation(obj["Station"].get<std::string> ());
-    pick.setChannel(obj["Channel"].get<std::string> ());
-    pick.setLocationCode(obj["LocationCode"].get<std::string> ());
-    auto pickTime = std::chrono::microseconds {obj["Time"].get<int64_t> ()};
-    pick.setTime(pickTime);
-    pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
-    // Optional stuff
-    if (!obj["OriginalChannels"].is_null())
+    if (upperPerturbation <= 0)
     {
-        std::vector<std::string> originalChannels = obj["OriginalChannels"];
-        if (!originalChannels.empty())
-        {
-            pick.setOriginalChannels(originalChannels);
-        }
+        throw std::invalid_argument("Upper perturbation should be positive");
     }
-    pick.setFirstMotion(
-        static_cast<Pick::FirstMotion> (obj["FirstMotion"].get<int> ()));
-    pick.setReviewStatus(
-        static_cast<Pick::ReviewStatus> (obj["ReviewStatus"].get<int> ()));
-    if (!obj["UncertaintyBounds"].is_null())
-    {
-        auto jsonBounds = obj["UncertaintyBounds"];
-        auto lowerPercentile = jsonBounds["LowerPercentile"].get<double> ();
-        std::chrono::microseconds lowerPerturbation
-            {jsonBounds["LowerPerturbation"].get<int64_t> ()};
-        UncertaintyBound lowerBound;
-        lowerBound.setPercentile(lowerPercentile);
-        lowerBound.setPerturbation(lowerPerturbation);
- 
-        auto upperPercentile = jsonBounds["UpperPercentile"].get<double> ();
-        std::chrono::microseconds upperPerturbation
-            {jsonBounds["UpperPerturbation"].get<int64_t> ()};
-        UncertaintyBound upperBound;
-        upperBound.setPercentile(upperPercentile);
-        upperBound.setPerturbation(upperPerturbation);
-
-        pick.setLowerAndUpperUncertaintyBound(
-            std::pair {lowerBound, upperBound} );
-    }
-    if (!obj["PhaseHint"].is_null())
-    {
-        pick.setPhaseHint(obj["PhaseHint"].get<std::string> ());
-    }
-    if (!obj["ProcessingAlgorithms"].is_null())
-    {
-        pick.setProcessingAlgorithms(obj["ProcessingAlgorithms"]
-                                       .get<std::vector<std::string>> ());
-    }
-    return pick;
-}
-
-Pick fromCBORMessage(const uint8_t *message, const size_t length)
-{
-    auto obj = nlohmann::json::from_cbor(message, message + length);
-    return ::objectToPick(obj);
-}
+    auto lowerPerturbationAtOneStandardError
+         = ::transformPerturbation(lowerPerturbation, lowerProbability);
+    auto upperPerturbationAtOneStandardError
+        = ::transformPerturbation(upperPerturbation, upperProbability);
+    return 0.5*(std::abs(lowerPerturbationAtOneStandardError)
+              + std::abs(upperPerturbationAtOneStandardError));
+} 
 
 }
-*/
 
 class Pick::PickImpl
 {
@@ -160,19 +100,118 @@ public:
     bool mHavePhaseHint{false};
 };
 
-/// C'tor
+/// Constructor
 Pick::Pick() :
     pImpl(std::make_unique<PickImpl> ())
 {
 }
 
-/// Copy c'tor
+/// Copy constructor
 Pick::Pick(const Pick &pick)
 {
     *this = pick;
 }
 
-/// Move c'tor
+/// Construct from a pick
+Pick::Pick(const URTS::Broadcasts::Internal::Pick::Pick &pick) :
+    pImpl(std::make_unique<PickImpl> ())
+{
+    if (!pick.haveNetwork())
+    {
+        throw std::invalid_argument("Network not set");
+    }
+    if (!pick.haveStation())
+    {
+        throw std::invalid_argument("Station not set");
+    }
+    if (!pick.haveChannel())
+    {
+        throw std::invalid_argument("Channel not set");
+    }
+    if (!pick.haveLocationCode())
+    {
+        throw std::invalid_argument("Location code not set");
+    }
+    if (!pick.haveTime())
+    {
+        throw std::invalid_argument("Time not set");
+    }
+    auto phaseHint = pick.getPhaseHint();
+    bool guessPhaseHint{false};
+    if (phaseHint.empty())
+    {
+        guessPhaseHint = true;
+    }
+    else
+    {
+        if (phaseHint != "P" && phaseHint != "S")
+        {
+            guessPhaseHint = true;
+        }
+    }
+    if (guessPhaseHint)
+    {
+        auto channel = pick.getChannel();
+        if (channel.back() == 'Z' || channel.back() == 'P')
+        {
+            phaseHint = "P";
+        }
+        else if (channel.back() == 'N' || channel.back() == '1' ||
+                 channel.back() == 'E' || channel.back() == '2' ||
+                 channel.back() == 'S')
+        {
+            phaseHint = "S";
+        }
+        else
+        {
+            throw std::invalid_argument("Could not guess phase hint");
+        }
+    } 
+    // Standard error
+    double standardError{0.1};
+    if (pick.haveLowerAndUpperUncertaintyBound())
+    {
+        auto bounds = pick.getLowerAndUpperUncertaintyBound();
+        auto lowerProbability = bounds.first.getPercentile()/100.0;
+        auto lowerPerturbation = bounds.first.getPerturbation().count()*1.e-6;
+        auto upperProbability = bounds.second.getPercentile()/100.0;
+        auto upperPerturbation = bounds.second.getPerturbation().count()*1.e-6;
+        standardError
+            = ::transformPerturbation(lowerPerturbation, lowerProbability,
+                                      upperPerturbation, upperProbability);
+    }
+    else
+    {
+        standardError = 0.1; // P
+        if (phaseHint == "S"){standardError = 0.2;}
+    }
+    // Build the pick
+    setNetwork(pick.getNetwork());
+    setStation(pick.getStation());
+    setChannel(pick.getChannel());
+    setLocationCode(pick.getLocationCode());
+    setTime(pick.getTime());
+    if (phaseHint == "P")
+    {
+        setPhaseHint(PhaseHint::P);
+    }
+    else if (phaseHint == "S")
+    {
+        setPhaseHint(PhaseHint::S);
+    }
+    else
+    {
+#ifndef NDEBUG
+        assert(false);
+#else
+        throw std::runtime_error("Algorithm failed to guess phase hint");
+#endif
+    }
+    setIdentifier(pick.getIdentifier());
+    setStandardError(standardError);
+} 
+
+/// Move constructor
 Pick::Pick(Pick &&pick) noexcept
 {
     *this = std::move(pick);

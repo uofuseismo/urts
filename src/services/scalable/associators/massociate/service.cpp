@@ -3,6 +3,7 @@
 #include <umps/messageFormats/message.hpp>
 #include <massociate/pick.hpp>
 #include <massociate/associator.hpp>
+#include <massociate/waveformIdentifier.hpp>
 #include <massociate/dbscan.hpp>
 #include <massociate/migrator.hpp>
 #include <uLocator/position/knownUtahEvent.hpp>
@@ -13,14 +14,66 @@
 #include "urts/services/scalable/associators/massociate/service.hpp"
 #include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
 #include "urts/services/scalable/associators/massociate/associationRequest.hpp"
+#include "urts/services/scalable/associators/massociate/associationResponse.hpp"
+#include "urts/services/scalable/associators/massociate/arrival.hpp"
+#include "urts/services/scalable/associators/massociate/origin.hpp"
+#include "urts/services/scalable/associators/massociate/pick.hpp"
 #include "urts/broadcasts/internal/pick/pick.hpp"
-//#include "urts/services/scalable/associators/massociate/assocationResponse.hpp"
 
 namespace MASS = MAssociate;
 using namespace URTS::Services::Scalable::Associators::MAssociate;
 
 namespace
 {
+
+MASS::Pick fromPick(const Pick &pick)
+{
+    MASS::Pick result;
+    MASS::WaveformIdentifier waveformIdentifier;
+
+    waveformIdentifier.setNetwork(pick.getNetwork());
+    waveformIdentifier.setStation(pick.getStation());
+    waveformIdentifier.setChannel(pick.getChannel());
+    waveformIdentifier.setLocationCode(pick.getLocationCode());
+
+    result.setWaveformIdentifier(waveformIdentifier);
+    result.setTime(pick.getTime());
+    result.setStandardError(pick.getStandardError());
+    result.setIdentifier(pick.getIdentifier());
+    if (pick.getPhaseHint() == Pick::PhaseHint::P)
+    {
+        result.setPhaseHint(MASS::Pick::PhaseHint::P);
+    }
+    else
+    {
+        result.setPhaseHint(MASS::Pick::PhaseHint::S);
+    }
+
+    return result;
+}
+
+std::vector<MASS::Pick> fromPicks(const std::vector<Pick> &picks,
+                                  std::shared_ptr<UMPS::Logging::ILog> &logger)
+{
+    std::vector<MASS::Pick> result;
+    result.reserve(picks.size());
+    for (const auto &pick : picks)
+    {
+        try
+        {
+            result.push_back(::fromPick(pick));
+        }
+        catch (const std::exception &e)
+        {
+            if (logger)
+            {
+                logger->warn("Failed to add pick; failed with: "
+                           + std::string {e.what()});
+            }
+        }
+    }
+    return result;
+}
 
 }
 
@@ -91,17 +144,23 @@ public:
     {
         mLogger->debug("Beginning association...");
  
-std::vector<MASS::Pick> picks;
-        if (true)
+        AssociationRequest associationRequest;
+        if (messageType == associationRequest.getMessageType())
         {
+            AssociationResponse response;
+            mLogger->debug("Association request received");
             try
             {
-                mAssociator->setPicks(picks);
+                auto massPicks
+                    = ::fromPicks(associationRequest.getPicksReference(),
+                                  mLogger);
+                mAssociator->setPicks(massPicks);
                 mAssociator->associate();
             }
             catch (const std::exception &e)
             {
             }
+            return response.clone();
         }
         mLogger->error("Unhandled message type: " + messageType);
         UMPS::MessageFormats::Failure response;

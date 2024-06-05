@@ -9,7 +9,7 @@ namespace URTS::Broadcasts::Internal::Pick
 }
 namespace URTS::Services::Scalable::Associators::MAssociate
 {
-/// @class Pick "pick.hpp" "urts/broadcasts/internal/pick/pick.hpp"
+/// @class Pick "pick.hpp" "urts/services/scalable/associators/massociate/pick.hpp"
 /// @brief Defines a pick (an unassociated arrival).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @ingroup Messages_MessageFormats
@@ -40,20 +40,6 @@ public:
     /// @param[in,out] pick  The pick class from which to initialize this
     ///                      class.  On exit, pick's behavior is undefined.
     Pick(Pick &&pick) noexcept;
-    /// @}
-
-    /// @name Operators
-    /// @{
-
-    /// @brief Copy assignment.
-    /// @param[in] pick  The pick class to copy to this.
-    /// @result A deep copy of the pick.
-    Pick& operator=(const Pick &pick);
-    /// @brief Move assignment.
-    /// @param[in,out] pick  The pick class whose memory will be moved to
-    ///                      this.  On exit pick's behavior is undefined.
-    /// @result The memory from pick moved to this.
-    Pick& operator=(Pick &&pick) noexcept;
     /// @}
 
     /// @name Required Information
@@ -152,6 +138,20 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~Pick();
+    /// @}
+
+    /// @name Operators
+    /// @{
+
+    /// @brief Copy assignment.
+    /// @param[in] pick  The pick class to copy to this.
+    /// @result A deep copy of the pick.
+    Pick& operator=(const Pick &pick);
+    /// @brief Move assignment.
+    /// @param[in,out] pick  The pick class whose memory will be moved to
+    ///                      this.  On exit pick's behavior is undefined.
+    /// @result The memory from pick moved to this.
+    Pick& operator=(Pick &&pick) noexcept;
     /// @}
 private:
     class PickImpl;
