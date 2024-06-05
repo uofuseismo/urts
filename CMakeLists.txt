@@ -149,6 +149,7 @@ if (${uLocator_FOUND})
        src/services/scalable/travelTimes/stationRequest.cpp
        src/services/scalable/travelTimes/stationResponse.cpp
        src/services/scalable/associators/massociate/associationRequest.cpp
+       src/services/scalable/associators/massociate/pick.cpp
       )
    set(GENERIC_SRC ${GENERIC_SRC}
        src/services/scalable/travelTimes/service.cpp

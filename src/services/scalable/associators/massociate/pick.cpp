@@ -1,17 +1,16 @@
+#include <cmath>
 #include <iostream>
 #include <chrono>
 #include <string>
 #include <vector>
-#include <nlohmann/json.hpp>
+#include "urts/services/scalable/associators/massociate/pick.hpp"
 #include "urts/broadcasts/internal/pick/pick.hpp"
 #include "urts/broadcasts/internal/pick/uncertaintyBound.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::Broadcasts::Internal::Pick"
-#define MESSAGE_VERSION "1.0.0"
+using namespace URTS::Services::Scalable::Associators::MAssociate;
 
-using namespace URTS::Broadcasts::Internal::Pick;
-
+/*
 namespace
 {
 
@@ -143,26 +142,22 @@ Pick fromCBORMessage(const uint8_t *message, const size_t length)
 }
 
 }
+*/
 
 class Pick::PickImpl
 {
 public:
-    std::vector<std::string> mProcessingAlgorithms;
-    std::vector<std::string> mOriginalChannels;
     std::string mNetwork;
     std::string mStation;
     std::string mChannel;
     std::string mLocationCode;
-    std::string mPhaseHint;
-    std::string mAlgorithm{"unspecified"};
-    std::pair<UncertaintyBound, UncertaintyBound> mUncertaintyBounds;
     std::chrono::microseconds mTime{0};
+    double mStandardError{0.1};
     uint64_t mIdentifier{0};
-    Pick::FirstMotion mFirstMotion{Pick::FirstMotion::Unknown};
-    Pick::ReviewStatus mReviewStatus{Pick::ReviewStatus::Automatic};
-    bool mHaveUncertaintyBounds{false};
+    PhaseHint mPhaseHint;
     bool mHaveTime{false};
     bool mHaveIdentifier{false};
+    bool mHavePhaseHint{false};
 };
 
 /// C'tor
@@ -329,163 +324,36 @@ bool Pick::haveIdentifier() const noexcept
     return pImpl->mHaveIdentifier;
 }
 
-/// First motion
-void Pick::setFirstMotion(const Pick::FirstMotion firstMotion) noexcept
-{
-    pImpl->mFirstMotion = firstMotion;
-}
-
-Pick::FirstMotion Pick::getFirstMotion() const noexcept
-{
-    return pImpl->mFirstMotion;
-}
-
-/// Review status
-void Pick::setReviewStatus(const Pick::ReviewStatus status) noexcept
-{
-    pImpl->mReviewStatus = status;
-}
-
-Pick::ReviewStatus Pick::getReviewStatus() const noexcept
-{
-    return pImpl->mReviewStatus;
-}
-
-/// Algorithms
-void Pick::setProcessingAlgorithms(
-    const std::vector<std::string> &algorithms) noexcept
-{
-    pImpl->mProcessingAlgorithms = algorithms;
-}
-
-std::vector<std::string> Pick::getProcessingAlgorithms() const noexcept
-{
-    return pImpl->mProcessingAlgorithms;
-}
-
 /// Phase hint
-void Pick::setPhaseHint(const std::string &phaseHint) noexcept
+void Pick::setPhaseHint(const PhaseHint phaseHint) noexcept
 {
     pImpl->mPhaseHint = phaseHint;
+    pImpl->mHavePhaseHint = true;
 }
 
-std::string Pick::getPhaseHint() const noexcept
+Pick::PhaseHint Pick::getPhaseHint() const
 {
+    if (!havePhaseHint()){throw std::runtime_error("Phase hint not set");}
     return pImpl->mPhaseHint;
 }
 
-void Pick::setLowerAndUpperUncertaintyBound(
-    const std::pair<UncertaintyBound, UncertaintyBound> &lowerAndUpperBound)
+bool Pick::havePhaseHint() const noexcept
 {
-    auto lowerBound = lowerAndUpperBound.first;
-    auto upperBound = lowerAndUpperBound.second;
-    if (lowerBound.getPercentile() > upperBound.getPercentile())
+    return pImpl->mHavePhaseHint;
+}
+
+/// Uncertainty
+void Pick::setStandardError(const double error)
+{
+    if (error <= 0)
     {
-        throw std::invalid_argument(
-           "Lower percentile greater than upper percentile");
+        throw std::invalid_argument("Standard error must be positive");
     }
-    if (lowerBound.getPerturbation() > upperBound.getPerturbation())
-    {
-        throw std::invalid_argument(
-           "Lower perturbation greater than upper perturbation");
-    }
-    pImpl->mUncertaintyBounds = lowerAndUpperBound;
-    pImpl->mHaveUncertaintyBounds = true;
+    pImpl->mStandardError = error;
 }
 
-std::pair<UncertaintyBound, UncertaintyBound>
-Pick::getLowerAndUpperUncertaintyBound() const
+double Pick::getStandardError() const noexcept
 {
-    if (!haveLowerAndUpperUncertaintyBound())
-    {
-        throw std::runtime_error("Uncertainty bounds not set");
-    }
-    return pImpl->mUncertaintyBounds;
+    return pImpl->mStandardError;
 }
 
-bool Pick::haveLowerAndUpperUncertaintyBound() const noexcept
-{
-    return pImpl->mHaveUncertaintyBounds;
-}
-
-/// Original packets
-void Pick::setOriginalChannels(
-    const std::vector<std::string> &originalChannels) noexcept
-{
-    pImpl->mOriginalChannels = originalChannels;
-}
-
-std::vector<std::string> Pick::getOriginalChannels() const noexcept
-{
-    return pImpl->mOriginalChannels;
-}
-
-///  Convert message
-std::string Pick::toMessage() const
-{
-    auto obj = ::toJSONObject(*this);
-    auto v = nlohmann::json::to_cbor(obj);
-    std::string result(v.begin(), v.end());
-    return result; 
-}
-
-void Pick::fromMessage(const std::string &message)
-{
-    if (message.empty()){throw std::invalid_argument("Message is empty");}
-    fromMessage(message.data(), message.size());   
-}
-
-void Pick::fromMessage(const char *messageIn, const size_t length)
-{
-    if (length == 0){throw std::invalid_argument("No data");}
-    if (messageIn == nullptr)
-    {
-        throw std::invalid_argument("Message is NULL");
-    }
-    auto message = reinterpret_cast<const uint8_t *> (messageIn);
-    *this = ::fromCBORMessage(message, length);
-}
-
-/// Copy this class
-std::unique_ptr<UMPS::MessageFormats::IMessage> Pick::clone() const
-{
-    std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<Pick> (*this);
-    return result;
-}
-
-/// Create an instance of this class 
-std::unique_ptr<UMPS::MessageFormats::IMessage>
-    Pick::createInstance() const noexcept
-{
-    std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<Pick> ();
-    return result;
-}
-
-/// Message type
-std::string Pick::getMessageType() const noexcept
-{
-    return MESSAGE_TYPE;
-}
-
-/// Message version
-std::string Pick::getMessageVersion() const noexcept
-{
-    return MESSAGE_VERSION;
-}
-
-std::ostream&
-URTS::Broadcasts::Internal::Pick::operator<<(std::ostream &os, const Pick &pick)
-{
-    try
-    {
-        auto object = ::toJSONObject(pick);
-        return os << object.dump(4); 
-    }
-    catch (const std::exception &e)
-    {
-        return os << e.what();
-    }
-    return os;
-}

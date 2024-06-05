@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Broadcasts::Internal::Pick
+namespace URTS::Services::Scalable::Associators::MAssociate
 {
  class Pick;
 }
@@ -36,9 +36,11 @@ public:
     /// @param[in] picks  Sets the picks to associate.  The pick must have the
     ///                   network, station, channel, and location code set as
     ///                   well as the pick time and phase hint.
-    void setPicks(const std::vector<URTS::Broadcasts::Internal::Pick::Pick> &picks);
+    void setPicks(const std::vector<Pick> &picks);
     /// @result The picks.
-    [[nodiscard]] std::vector<URTS::Broadcasts::Internal::Pick::Pick> getPicks() const noexcept;
+    [[nodiscard]] std::vector<Pick> getPicks() const noexcept;
+    /// @result A reference to the picks.
+    [[nodiscard]] const std::vector <Pick> &getPicksReference() const noexcept;
 
     /// @brief Sets the request identifier.
     /// @param[in] identifier   A unique identifier for this request.

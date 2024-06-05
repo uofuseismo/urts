@@ -1,8 +1,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 #include "urts/services/scalable/associators/massociate/associationRequest.hpp"
-#include "urts/broadcasts/internal/pick/pick.hpp"
-#include "broadcasts/internal/pick/jsonHelpers.hpp"
+#include "urts/services/scalable/associators/massociate/pick.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Associators::MAssociate::AssocationRequest"
 #define MESSAGE_VERSION "1.0.0"
@@ -18,6 +17,24 @@ std::string toCBORObject(const AssociationRequest &message)
     obj["MessageType"] = message.getMessageType();
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
+    const auto &picks = message.getPicksReference();
+/*
+    if (!picks.empty())
+    {
+        nlohmann::json jsonPicks;
+        for (const auto &pick : picks)
+        {
+            nlohmann::json pickObject;
+            propertiesToJSON(pick, pickObject);
+            jsonPicks.push_back(std::move(pickObject)); 
+        }
+        obj["Picks"] = jsonPicks;
+    }
+    else
+    {
+        obj["Picks"] = nullptr;
+    }
+*/
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -33,6 +50,13 @@ AssociationRequest
         throw std::invalid_argument("Message has invalid message type");
     }
     result.setIdentifier(obj["Identifier"].template get<int64_t> ());
+    if (!obj["Picks"].is_null())
+    {
+        for (const auto &pickObject : obj["Picks"])
+        {
+            
+        } 
+    }
     return result;
 }
 
@@ -41,7 +65,7 @@ AssociationRequest
 class AssociationRequest::AssociationRequestImpl
 {
 public:
-    std::vector<URTS::Broadcasts::Internal::Pick::Pick> mPicks;
+    std::vector<Pick> mPicks;
     int64_t mIdentifier{0};
 };
 
@@ -84,6 +108,88 @@ AssociationRequest::operator=(AssociationRequest &&request) noexcept
 
 /// Destructor
 AssociationRequest::~AssociationRequest() = default;
+
+/// Set the picks
+void AssociationRequest::setPicks(const std::vector<Pick> &picks)
+{
+    for (const auto &pick : picks)
+    {
+        if (!pick.haveNetwork())
+        {
+            throw std::invalid_argument("Network not set");
+        }
+        if (!pick.haveStation())
+        {
+            throw std::invalid_argument("Station not set");
+        }
+        if (!pick.haveChannel())
+        {
+            throw std::invalid_argument("Channel not set");
+        }
+        if (!pick.haveLocationCode())
+        {
+            throw std::invalid_argument("Location code not set");
+        }
+        if (!pick.haveTime())
+        {
+            throw std::invalid_argument("Pick time not set");
+        }
+        if (!pick.havePhaseHint())
+        {
+            throw std::invalid_argument("Phase hint not set");
+        }
+        // Try to figure the phase hint out even though it's optional in the
+        // pick message
+/*
+        auto phaseHint = pick.getPhaseHint();
+        bool guessPhaseHint{false};
+        if (phaseHint.empty())
+        {
+            guessPhaseHint = true;
+        }
+        else
+        {
+            if (phaseHint != "P" && phaseHint != "S")
+            {
+                guessPhaseHint = true;
+            }
+        }
+        if (guessPhaseHint)
+        {
+            auto channel = pick.getChannel();
+            if (channel.size() == 3)
+            {
+                // Vertical channels `should' make P picks...
+                if (channel[2] == 'Z' || channel[2] == 'P')
+                {
+                    phaseHint = "P"; 
+                }
+                else
+                { 
+                    phaseHint = "S";
+                }
+                pick.setPhaseHint(channel);
+            }
+            else
+            {
+                throw std::invalid_argument(
+                    "Phase hint not set and couldn't guess it");
+            }
+        }
+*/
+    }
+    pImpl->mPicks = picks;
+}
+ 
+std::vector<Pick> AssociationRequest::getPicks() const noexcept
+{
+    return pImpl->mPicks;
+}
+
+const std::vector<Pick> &AssociationRequest::getPicksReference() const noexcept
+{
+    return *&pImpl->mPicks;
+}
 
 /// Identifier
 void AssociationRequest::setIdentifier(const int64_t identifier) noexcept
