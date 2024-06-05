@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html":[2,0,0,0,0,4],
+"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a317fbb51f5f7f31777a096d4bd5d28fb":[2,0,0,0,0,4,6],
+"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a53a78cff6a998dd87366dc40f2d81a0c":[2,0,0,0,0,4,1],
+"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a57f1b36335129c971aec57dc25e8f4b6":[2,0,0,0,0,4,2],
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a640fe86ea8526e0c08d56e0afa315b62":[2,0,0,0,0,4,9],
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a7181d6f0eca9febfe65139ca87796923":[2,0,0,0,0,4,7],
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html#a7ed5673a9f793d66d89ecfd2f1921235":[2,0,0,0,0,4,12],
@@ -245,9 +249,5 @@ var NAVTREEINDEX1 =
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#ad1b6898067ed05626fe2dd95edfd05fa":[3,0,0,0,1,2,4,13],
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#ad7477b283202a4c6649aacf19d77ed18":[3,0,0,0,1,2,4,2],
 "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#ae1ceb14938fd8daa278654c73f2ec53e":[3,0,0,0,1,2,4,14],
-"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#aeb354629f089eb01eacb7a4cd6b319f0":[3,0,0,0,1,2,4,4],
-"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#afaec7b70ea9c9dc64b803ecd8aea879b":[3,0,0,0,1,2,4,1],
-"class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html":[3,0,0,0,2,0],
-"class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a08a01b028f5e94b8c197f317a12d4368":[3,0,0,0,2,0,2],
-"class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a33e4595213d206a19181629df9c77ae1":[3,0,0,0,2,0,5]
+"class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html#aeb354629f089eb01eacb7a4cd6b319f0":[3,0,0,0,1,2,4,4]
 };

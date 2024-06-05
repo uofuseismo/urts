@@ -63,7 +63,11 @@ var annotated_dup =
         [ "Scalable", null, [
           [ "Associators", null, [
             [ "MAssociate", null, [
+              [ "Arrival", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_arrival.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_arrival" ],
               [ "AssociationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_request" ],
+              [ "AssociationResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_response" ],
+              [ "Origin", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin" ],
+              [ "Pick", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick" ],
               [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service" ],
               [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options" ]
             ] ]
