@@ -17,6 +17,10 @@ public:
     [[nodiscard]] virtual std::uintptr_t getSession() const = 0;
     /// @result True indicates the connection is formed.
     [[nodiscard]] virtual bool isConnected() const noexcept = 0;
+    /// @brief Connects to the database.
+    virtual void connect() = 0;
+    /// @brief Disconnects from the database.
+    virtual void disconnect() = 0;
     /// @result The database to which we are connected.
     [[nodiscard]] virtual DatabaseType getDatabaseType() const noexcept = 0;
 };

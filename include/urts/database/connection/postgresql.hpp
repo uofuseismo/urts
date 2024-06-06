@@ -118,7 +118,7 @@ public:
     /// @result The connection string.
     [[nodiscard]] std::string getConnectionString() const;
     /// @brief Establishes a connection from the above resources.
-    void connect();
+    void connect() override;
     /// @result True indicates the connection was established.
     [[nodiscard]] bool isConnected() const noexcept override final;
     /// @}
@@ -129,6 +129,14 @@ public:
 
     /// @result The database type.
     [[nodiscard]] DatabaseType getDatabaseType() const noexcept override final;
+
+    /// @name Disconnect
+    /// @{
+
+    /// @brief Disconnects from teh database
+    ///       (provided \c isConnected() is true).
+    void disconnect() override;
+    /// }
 
     /// @brief Loads the database connection information from an
     ///        initialization file.

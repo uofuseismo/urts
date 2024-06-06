@@ -287,6 +287,12 @@ bool PostgreSQL::isConnected() const noexcept
     return pImpl->mSession.is_connected();
 }
 
+/// Disconnect
+void PostgreSQL::disconnect()
+{
+    if (pImpl->mSession.is_connected()){pImpl->mSession.close();}
+}
+
 std::uintptr_t PostgreSQL::getSession() const
 {
     return reinterpret_cast<std::uintptr_t> (pImpl->mSessionPtr);

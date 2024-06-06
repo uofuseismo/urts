@@ -208,7 +208,20 @@ bool StationDataTable::isConnected() const noexcept
 /// Query every station 
 void StationDataTable::queryAll()
 {
-    if (!isConnected()){throw std::runtime_error("Class not connected");}
+    // Ensure the connection is made; if not try to re-establish
+    if (!isConnected())
+    {
+        // Try (re)connecting
+        if (pImpl->mConnection)
+        {
+            pImpl->mLogger->debug("Attempting to (re)connect...");
+            pImpl->mConnection->connect();
+        }
+        if (!isConnected())
+        {
+            throw std::runtime_error("Class not connected");
+        }
+    }
     pImpl->mLogger->debug("Checking for new station_data information...");
     auto session
         = reinterpret_cast<soci::session *> (pImpl->mConnection->getSession());
@@ -266,7 +279,20 @@ void StationDataTable::queryAll()
 /// Query stations currently running
 void StationDataTable::queryCurrent()
 {
-    if (!isConnected()){throw std::runtime_error("Class not connected");}
+    // Ensure the connection is made; if not try to re-establish
+    if (!isConnected())
+    {
+        // Try (re)connecting
+        if (pImpl->mConnection)
+        {
+            pImpl->mLogger->debug("Attempting to (re)connect...");
+            pImpl->mConnection->connect();
+        }
+        if (!isConnected())
+        {
+            throw std::runtime_error("Class not connected");
+        }
+    }
     pImpl->mLogger->debug("Checking for new station_data information...");
     auto session
         = reinterpret_cast<soci::session *> (pImpl->mConnection->getSession());
@@ -322,6 +348,135 @@ void StationDataTable::queryCurrent()
          = std::max(pImpl->mStationSpaceEstimate,
                     static_cast<int> (pImpl->mStationData.size()));
     this->notify(message);
+}
+
+/// Query the station
+void StationDataTable::query(const std::string &network,
+                             const std::string &name,
+                             const bool getCurrent)
+{
+    // Better ways to do this
+    if (network.empty() && name.empty())
+    {
+        if (getCurrent)
+        {
+            queryCurrent(); 
+        }
+        else
+        {
+            queryAll();
+        }
+        return;
+    }
+    // Ensure the connection is made; if not try to re-establish
+    if (!isConnected())
+    {
+        // Try (re)connecting
+        if (pImpl->mConnection)
+        {
+            pImpl->mLogger->debug("Attempting to (re)connect...");
+            pImpl->mConnection->connect();
+        }
+        if (!isConnected())
+        {
+            throw std::runtime_error("Class not connected");
+        }
+    }
+    pImpl->mLogger->debug("Checking for new station_data information...");
+    auto session
+        = reinterpret_cast<soci::session *> (pImpl->mConnection->getSession());
+    // Do I really need an update?
+    auto mostRecentLoadDate
+        = static_cast<int64_t> (std::round(pImpl->mMostRecentLoadDate.count()
+                                          *1.e-6));
+    // This could be more streamlined but should be fast enough
+    /*
+    std::string extraConstraints;
+    if (!network.empty())
+    {
+         extraConstraints = " AND network = '" + network + "'";
+    }
+    if (!name.empty())
+    {
+         extraConstraints = extraConstraints 
+                          + " AND station = '" + name + "'";
+    }
+    */
+    soci::rowset<int> 
+        rowCount(session->prepare << "SELECT COUNT(*) FROM station_data WHERE "
+                                  << "lddate > TO_TIMESTAMP("
+                                  << std::to_string(mostRecentLoadDate)
+                                  << ") AT TIME ZONE 'UTC'");
+    size_t nRows = 0;
+    bool doQuery = true;
+    for (auto &it : rowCount)
+    {
+        if (it == 0){doQuery = false;}
+        nRows = nRows + 1;
+    }
+    if (nRows != 1)
+    {
+        pImpl->mLogger->warn("Unhandled case - querying table");
+        doQuery = true;
+    }
+    if (!doQuery && pImpl->mHaveCurrent)
+    {
+        pImpl->mLogger->debug("No update detected");
+        this->notify(URTS::ObserverPattern::Message::NoChange);
+        return;
+    }
+    // Yeah, let's actually query
+    std::string whereClause;
+    if (getCurrent)
+    {
+        whereClause = " now() BETWEEN ondate AND offdate ";
+    }
+    if (!network.empty())
+    {
+        if (!whereClause.empty()){whereClause = whereClause + " AND ";}
+        whereClause = whereClause + " network = '" + network + "'";
+    }
+    if (!name.empty())
+    {
+        if (!whereClause.empty()){whereClause = whereClause + " AND ";}
+        whereClause = whereClause + " station = '" + name + "'";
+    }
+    // Prepend the WHERE (assuming there are actual conditions)
+    if (!whereClause.empty()){whereClause = " WHERE " + whereClause;}
+    // Get it
+    pImpl->mLogger->debug("Querying station_data information with clause:  "
+                        + whereClause);
+    pImpl->mStationData.clear();
+    soci::rowset<StationData>
+        rows(session->prepare << "SELECT "
+                              << COLUMNS
+                              << " FROM station_data "
+                              << whereClause);
+    std::vector<StationData> data;
+    data.reserve(pImpl->mStationSpaceEstimate);
+    for (auto &it : rows)
+    {
+        // Plus 1 second deals with truncation issue when database
+        // performs equality test.
+        std::chrono::microseconds thisLoadDate{it.getLoadDate().count()
+                                             + 1000000};
+        pImpl->mMostRecentLoadDate
+            = std::max(pImpl->mMostRecentLoadDate, thisLoadDate);
+        data.push_back(it);
+    }
+    pImpl->mStationSpaceEstimate
+         = std::max(pImpl->mStationSpaceEstimate,
+                    static_cast<int> (pImpl->mStationData.size()));
+    if (getCurrent)
+    {
+        auto message = pImpl->update(data, "current");
+        this->notify(message);
+    }
+    else
+    {
+        auto message = pImpl->update(data, "all");
+        this->notify(message);
+    }
 }
 
 /// Return the queried data

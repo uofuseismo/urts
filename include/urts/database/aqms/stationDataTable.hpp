@@ -53,6 +53,17 @@ public:
     /// @brief Queries only station data whose ontime is less than the current
     ///        time and whose offtime is greater than the current time. 
     void queryCurrent();
+    /// @brief Queries specificially for the station with the given
+    ///        network and name. 
+    /// @param[in] network     The network code - e.g., UU.  If this is empty
+    ///                        then it will be ignored and all network codes
+    ///                        will be queried.
+    /// @param[in] name        The station name - e.g., FSU.  If this is empty
+    ///                        then it will be ignored and all station names
+    ///                        will be queried.
+    /// @param[in] getCurrent  If true then fetch the information for the given
+    ///                        station.
+    void query(const std::string &network, const std::string &name, bool getCurrent);
     /// @}
 
     /// @name Query Results
