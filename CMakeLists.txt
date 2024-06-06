@@ -353,8 +353,14 @@ target_include_directories(unitTests
 add_test(NAME unitTests
          COMMAND unitTests)
 
-add_executable(catchTests
-               testing/broadcasts/internal/pick.cpp)
+set(CATCH_TEST_SRC
+    testing/broadcasts/internal/pick.cpp)
+if (${MAssociate_FOUND} AND ${uLocator_FOUND})
+   set(CATCH_TEST_SRC ${CATCH_TEST_SRC}
+       testing/services/scalable/associators/massociate.cpp   
+      )
+endif()
+add_executable(catchTests ${CATCH_TEST_SRC})
 target_link_libraries(catchTests
                       PRIVATE urts
                               ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}

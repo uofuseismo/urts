@@ -9,7 +9,6 @@
 #include "urts/broadcasts/internal/pick/publisherOptions.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
-//#include <gtest/gtest.h>
 
 #define MESSAGE_TYPE "URTS::Broadcasts::Internal::Pick"
 
