@@ -313,17 +313,17 @@ endif()
 #                                         Unit Tests                                     #
 ##########################################################################################
 file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
-set(TEST_SRC
+set(GTEST_TEST_SRC
     testing/main.cpp
     testing/database/aqms.cpp
     testing/broadcasts/internal/dataPacket.cpp
-    testing/broadcasts/internal/pick.cpp
+    #testing/broadcasts/internal/pick.cpp
     testing/broadcasts/internal/probabilityPacket.cpp
     testing/services/standalone/incrementer.cpp
     testing/services/scalable/packetCache.cpp
     )
 if (${BUILD_UUSS_MLMODELS})
-   set(TEST_SRC ${TEST_SRC}
+   set(GTEST_TEST_SRC ${GTEST_TEST_SRC}
        testing/services/scalable/detectors/uNetThreeComponentP.cpp
        testing/services/scalable/detectors/uNetThreeComponentS.cpp
        testing/services/scalable/firstMotionClassifiers/cnnOneComponentP.cpp 
@@ -332,12 +332,12 @@ if (${BUILD_UUSS_MLMODELS})
 )
 endif()
 if (${BUILD_EW})
-   set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/earthworm.cpp)
+   set(GTEST_TEST_SRC ${GTEST_TEST_SRC} testing/broadcasts/external/earthworm.cpp)
 endif()
 if (${BUILD_SEEDLINK})
-   set(TEST_SRC ${TEST_SRC} testing/broadcasts/external/seedlink.cpp)
+   set(GTEST_TEST_SRC ${GTEST_TEST_SRC} testing/broadcasts/external/seedlink.cpp)
 endif()
-add_executable(unitTests ${TEST_SRC})
+add_executable(unitTests ${GTEST_TEST_SRC})
 set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
@@ -349,9 +349,28 @@ target_include_directories(unitTests
                                    ${UUSSMLModels_INCLUDE_DIR}
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
-# Add the tests
+# Migrating to Catch 
 add_test(NAME unitTests
          COMMAND unitTests)
+
+add_executable(catchTests
+               testing/broadcasts/internal/pick.cpp)
+target_link_libraries(catchTests
+                      PRIVATE urts
+                              ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                              Catch2::Catch2 Catch2::Catch2WithMain)
+target_include_directories(catchTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+                                              ${CMAKE_CURRENT_SOURCE_DIR}/src
+                                              ${UMPS_INCLUDE_DIR}
+                                              ${uLocator_INCLUDE_DIR}
+                                              ${UUSSMLModels_INCLUDE_DIR}
+                                              Catch2::Catch2)
+set_target_properties(catchTests PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+add_test(NAME catchTests
+         COMMAND catchTests --rng-seed=2323432)
 
 ##########################################################################################
 #                                            Modules                                     #

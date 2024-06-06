@@ -7,34 +7,36 @@
 #include "urts/broadcasts/internal/pick/pick.hpp"
 #include "urts/broadcasts/internal/pick/subscriberOptions.hpp"
 #include "urts/broadcasts/internal/pick/publisherOptions.hpp"
-#include <gtest/gtest.h>
-namespace
-{
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
+//#include <gtest/gtest.h>
 
 #define MESSAGE_TYPE "URTS::Broadcasts::Internal::Pick"
 
 using namespace URTS::Broadcasts::Internal::Pick;
 
-TEST(BroadcastsInternalPick, UncertaintyBound)
+TEST_CASE("URTS::Broadcasts::Internal::Pick", "[uncertainty_bound]")
 {
     const double percentile{95};
     const std::chrono::microseconds perturbation{1500};
 
     UncertaintyBound bound;
-    EXPECT_NO_THROW(bound.setPercentile(percentile));
+    REQUIRE_NOTHROW(bound.setPercentile(percentile));
     bound.setPerturbation(perturbation);
 
     UncertaintyBound copy(bound);
-    EXPECT_NEAR(bound.getPercentile(), percentile, 1.e-14);
-    EXPECT_EQ(bound.getPerturbation(), perturbation);
+    REQUIRE(std::abs(bound.getPercentile() - percentile) < 1.e-14);
+    REQUIRE(bound.getPerturbation() == perturbation);
  
-    bound.clear();
-    EXPECT_NEAR(bound.getPercentile(), 50, 1.e-14);
-    EXPECT_EQ(bound.getPerturbation(), std::chrono::microseconds {0});
+    SECTION("clear and check defaults")
+    {
+        bound.clear();
+        REQUIRE(std::abs(bound.getPercentile() - 50) < 1.e-14);
+        REQUIRE(bound.getPerturbation() == std::chrono::microseconds {0});
+    }
 }
 
-
-TEST(BroadcastsInternalPick, Pick)
+TEST_CASE("URTS::Broadcasts::Internal::Pick", "[pick]")
 {
     Pick pick;
     const uint64_t pickID{84823};
@@ -64,12 +66,12 @@ TEST(BroadcastsInternalPick, Pick)
 
     pick.setIdentifier(pickID);
     pick.setTime(time);
-    EXPECT_NO_THROW(pick.setNetwork(network));
-    EXPECT_NO_THROW(pick.setStation(station));
-    EXPECT_NO_THROW(pick.setChannel(channel));
-    EXPECT_NO_THROW(pick.setLocationCode(locationCode));
-    EXPECT_EQ(pick.getMessageType(), MESSAGE_TYPE);
-    EXPECT_NO_THROW(pick.setLowerAndUpperUncertaintyBound(
+    REQUIRE_NOTHROW(pick.setNetwork(network));
+    REQUIRE_NOTHROW(pick.setStation(station));
+    REQUIRE_NOTHROW(pick.setChannel(channel));
+    REQUIRE_NOTHROW(pick.setLocationCode(locationCode));
+    REQUIRE(pick.getMessageType() == MESSAGE_TYPE);
+    REQUIRE_NOTHROW(pick.setLowerAndUpperUncertaintyBound(
                     std::pair {lowerBoundRef, upperBoundRef}));
     pick.setFirstMotion(fm);
     pick.setReviewStatus(reviewStatus);
@@ -77,42 +79,48 @@ TEST(BroadcastsInternalPick, Pick)
     pick.setProcessingAlgorithms(algorithms);
     pick.setOriginalChannels(originalChannels);
 
-    Pick copy(pick);
-    auto pickMessage = pick.toMessage();
-    EXPECT_NO_THROW(copy.fromMessage(pickMessage));
+    SECTION("pick deep copy")
+    {
+        Pick copy(pick);
+        auto pickMessage = pick.toMessage();
+        REQUIRE_NOTHROW(copy.fromMessage(pickMessage));
 
-    EXPECT_EQ(copy.getIdentifier(), pickID);
-    EXPECT_EQ(copy.getTime(), timeRef);
-    EXPECT_EQ(copy.getNetwork(), network);
-    EXPECT_EQ(copy.getStation(), station);
-    EXPECT_EQ(copy.getChannel(), channel);
-    EXPECT_EQ(copy.getLocationCode(), locationCode);
-    EXPECT_EQ(copy.getFirstMotion(), fm);
-    EXPECT_EQ(copy.getReviewStatus(), reviewStatus);
-    EXPECT_EQ(copy.getPhaseHint(), phaseHint);
-    auto algorithmsBack = copy.getProcessingAlgorithms();
-    EXPECT_EQ(algorithms.size(), algorithmsBack.size());
-    for (int i = 0; i < static_cast<int> (algorithms.size()); ++i)
-    {
-        EXPECT_EQ(algorithms[i], algorithmsBack[i]);
-    }
-    auto originalChannelsBack = copy.getOriginalChannels();
-    EXPECT_EQ(originalChannels.size(), originalChannelsBack.size());
-    for (int i = 0; i < static_cast<int> (originalChannels.size()); ++i)
-    {
-        EXPECT_EQ(originalChannels[i], originalChannelsBack[i]);
-    }
+        REQUIRE(copy.getIdentifier() == pickID);
+        REQUIRE(copy.getTime() == timeRef);
+        REQUIRE(copy.getNetwork() == network);
+        REQUIRE(copy.getStation() == station);
+        REQUIRE(copy.getChannel() == channel);
+        REQUIRE(copy.getLocationCode() == locationCode);
+        REQUIRE(copy.getFirstMotion() == fm);
+        REQUIRE(copy.getReviewStatus() == reviewStatus);
+        REQUIRE(copy.getPhaseHint() == phaseHint);
+        auto algorithmsBack = copy.getProcessingAlgorithms();
+        REQUIRE(algorithms.size() == algorithmsBack.size());
+        for (int i = 0; i < static_cast<int> (algorithms.size()); ++i)
+        {
+            REQUIRE(algorithms[i] == algorithmsBack[i]);
+        }
+        auto originalChannelsBack = copy.getOriginalChannels();
+        REQUIRE(originalChannels.size() == originalChannelsBack.size());
+        for (int i = 0; i < static_cast<int> (originalChannels.size()); ++i)
+        {
+            REQUIRE(originalChannels[i] == originalChannelsBack[i]);
+        }
  
-    auto [lowerBound, upperBound ] = copy.getLowerAndUpperUncertaintyBound();
-    EXPECT_NEAR(lowerBoundRef.getPercentile(), lowerBound.getPercentile(),
-                1.e-14);
-    EXPECT_EQ(lowerBoundRef.getPerturbation(), lowerBound.getPerturbation()); 
-    EXPECT_NEAR(upperBoundRef.getPercentile(), upperBound.getPercentile(),
-                1.e-14);
-    EXPECT_EQ(upperBoundRef.getPerturbation(), upperBound.getPerturbation());
+        auto [lowerBound, upperBound ]
+             = copy.getLowerAndUpperUncertaintyBound();
+        REQUIRE(std::abs(lowerBoundRef.getPercentile()
+                       - lowerBound.getPercentile()) < 1.e-14);
+        REQUIRE(lowerBoundRef.getPerturbation() ==
+                lowerBound.getPerturbation());
+        REQUIRE(std::abs(upperBoundRef.getPercentile()
+                       - upperBound.getPercentile()) <1.e-14);
+        REQUIRE(upperBoundRef.getPerturbation() ==
+                upperBound.getPerturbation());
+    }
 }
 
-TEST(BroadcastsInternalDataPacket, SubscriberOptions)
+TEST_CASE("URTS::Broadcasts::Internal::Pick", "[subscriber_options]")
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int recvHWM{106};
@@ -121,27 +129,30 @@ TEST(BroadcastsInternalDataPacket, SubscriberOptions)
     zapOptions.setStrawhouseClient();
 
     SubscriberOptions options;
-    EXPECT_NO_THROW(options.setAddress(address));
-    EXPECT_NO_THROW(options.setHighWaterMark(recvHWM));
-    EXPECT_NO_THROW(options.setTimeOut(recvTimeOut));
-    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    REQUIRE_NOTHROW(options.setAddress(address));
+    REQUIRE_NOTHROW(options.setHighWaterMark(recvHWM));
+    REQUIRE_NOTHROW(options.setTimeOut(recvTimeOut));
+    REQUIRE_NOTHROW(options.setZAPOptions(zapOptions));
 
     SubscriberOptions copy(options);
-    EXPECT_EQ(options.getAddress(), address);
-    EXPECT_EQ(options.getHighWaterMark(), recvHWM);
-    EXPECT_EQ(options.getTimeOut(), recvTimeOut);
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+    REQUIRE(options.getAddress() == address);
+    REQUIRE(options.getHighWaterMark() == recvHWM);
+    REQUIRE(options.getTimeOut() == recvTimeOut);
+    REQUIRE(options.getZAPOptions().getSecurityLevel() ==
               zapOptions.getSecurityLevel());    
 
-    options.clear();
-    EXPECT_FALSE(options.haveAddress());
-    EXPECT_EQ(options.getHighWaterMark(), 0);
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds {10});
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UMPS::Authentication::SecurityLevel::Grasslands);
+    SECTION("clear and check defaults")
+    {
+        options.clear();
+        REQUIRE(!options.haveAddress());
+        REQUIRE(options.getHighWaterMark() == 0);
+        REQUIRE(options.getTimeOut() == std::chrono::milliseconds {10});
+        REQUIRE(options.getZAPOptions().getSecurityLevel() ==
+                UMPS::Authentication::SecurityLevel::Grasslands);
+    }
 }
 
-TEST(BroadcastsInternalDataPacket, PublisherOptions)
+TEST_CASE("URTS::Broadcasts::Internal::Pick", "[publisher_options]")
 {
     PublisherOptions options;
     const std::string address{"tcp://127.0.0.1:8080"};
@@ -150,24 +161,26 @@ TEST(BroadcastsInternalDataPacket, PublisherOptions)
     UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
 
-    EXPECT_NO_THROW(options.setAddress(address));
-    EXPECT_NO_THROW(options.setHighWaterMark(sendHWM));
-    EXPECT_NO_THROW(options.setTimeOut(sendTimeOut));
-    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    REQUIRE_NOTHROW(options.setAddress(address));
+    REQUIRE_NOTHROW(options.setHighWaterMark(sendHWM));
+    REQUIRE_NOTHROW(options.setTimeOut(sendTimeOut));
+    REQUIRE_NOTHROW(options.setZAPOptions(zapOptions));
 
     PublisherOptions copy(options);
-    EXPECT_EQ(options.getAddress(), address);
-    EXPECT_EQ(options.getHighWaterMark(), sendHWM);
-    EXPECT_EQ(options.getTimeOut(), sendTimeOut);
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+    REQUIRE(options.getAddress() == address);
+    REQUIRE(options.getHighWaterMark() == sendHWM);
+    REQUIRE(options.getTimeOut() == sendTimeOut);
+    REQUIRE(options.getZAPOptions().getSecurityLevel() ==
               zapOptions.getSecurityLevel());    
 
-    options.clear();
-    EXPECT_FALSE(options.haveAddress());
-    EXPECT_EQ(options.getHighWaterMark(), 0);
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds {1000});
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UMPS::Authentication::SecurityLevel::Grasslands);
+    SECTION("clear and check defaults")
+    {
+        options.clear();
+        REQUIRE(!options.haveAddress());
+        REQUIRE(options.getHighWaterMark() == 0);
+        REQUIRE(options.getTimeOut() == std::chrono::milliseconds {1000});
+        REQUIRE(options.getZAPOptions().getSecurityLevel() ==
+                UMPS::Authentication::SecurityLevel::Grasslands);
+    }
 }
 
-}
