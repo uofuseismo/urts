@@ -124,9 +124,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a37ec265bc57bfa9fa93c0c9e8dccd45f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3f13bd88fb19d53de68009bfe5e6733"><td class="memItemLeft" align="right" valign="top">DatabaseType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#ab3f13bd88fb19d53de68009bfe5e6733">getDatabaseType</a> () const noexcept override final</td></tr>
 <tr class="separator:ab3f13bd88fb19d53de68009bfe5e6733"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3754171f8ab8a5a2f6fecf3c67276011"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3754171f8ab8a5a2f6fecf3c67276011">parseInitializationFile</a> (const std::string &amp;fileName, const std::string &amp;section=&quot;AQMSPostgreSQL&quot;)</td></tr>
-<tr class="memdesc:a3754171f8ab8a5a2f6fecf3c67276011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the database connection information from an initialization file.  <a href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3754171f8ab8a5a2f6fecf3c67276011">More...</a><br /></td></tr>
-<tr class="separator:a3754171f8ab8a5a2f6fecf3c67276011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86f53a07f55776b544d4f9452cdf3793"><td class="memItemLeft" align="right" valign="top"><a id="a86f53a07f55776b544d4f9452cdf3793"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PostgreSQL</b> (const <a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html">PostgreSQL</a> &amp;pg)=delete</td></tr>
 <tr class="separator:a86f53a07f55776b544d4f9452cdf3793"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -205,12 +202,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td colspan="2"><div class="groupHeader">Connect</div></td></tr>
 <tr class="memitem:a8150de7556e3086a5e53018800091374"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8150de7556e3086a5e53018800091374">getConnectionString</a> () const</td></tr>
 <tr class="separator:a8150de7556e3086a5e53018800091374"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a846eaa50244f4f761f3c24f4ae5f3293"><td class="memItemLeft" align="right" valign="top"><a id="a846eaa50244f4f761f3c24f4ae5f3293"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a846eaa50244f4f761f3c24f4ae5f3293">connect</a> ()</td></tr>
-<tr class="memdesc:a846eaa50244f4f761f3c24f4ae5f3293"><td class="mdescLeft">&#160;</td><td class="mdescRight">Establishes a connection from the above resources. <br /></td></tr>
-<tr class="separator:a846eaa50244f4f761f3c24f4ae5f3293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92a2c2fd9736552e68050061366feaf7"><td class="memItemLeft" align="right" valign="top"><a id="a92a2c2fd9736552e68050061366feaf7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a92a2c2fd9736552e68050061366feaf7">connect</a> () override</td></tr>
+<tr class="memdesc:a92a2c2fd9736552e68050061366feaf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Establishes a connection from the above resources. <br /></td></tr>
+<tr class="separator:a92a2c2fd9736552e68050061366feaf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f17d166fdef83b284232bc38b4ca1c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8f17d166fdef83b284232bc38b4ca1c9">isConnected</a> () const noexcept override final</td></tr>
 <tr class="separator:a8f17d166fdef83b284232bc38b4ca1c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Disconnect</div></td></tr>
+<tr class="memitem:a20b59fcf917540032316c1ed32543ce0"><td class="memItemLeft" align="right" valign="top"><a id="a20b59fcf917540032316c1ed32543ce0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a20b59fcf917540032316c1ed32543ce0">disconnect</a> () override</td></tr>
+<tr class="memdesc:a20b59fcf917540032316c1ed32543ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnects from teh database (provided <code><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8f17d166fdef83b284232bc38b4ca1c9">isConnected()</a></code> is true). <br /></td></tr>
+<tr class="separator:a20b59fcf917540032316c1ed32543ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3754171f8ab8a5a2f6fecf3c67276011"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3754171f8ab8a5a2f6fecf3c67276011">parseInitializationFile</a> (const std::string &amp;fileName, const std::string &amp;section=&quot;AQMSPostgreSQL&quot;)</td></tr>
+<tr class="memdesc:a3754171f8ab8a5a2f6fecf3c67276011"><td class="mdescLeft">&#160;</td><td class="mdescRight">}  <a href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3754171f8ab8a5a2f6fecf3c67276011">More...</a><br /></td></tr>
+<tr class="separator:a3754171f8ab8a5a2f6fecf3c67276011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a8453a2bb7552aebd600f33c01427215a"><td class="memItemLeft" align="right" valign="top"><a id="a8453a2bb7552aebd600f33c01427215a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8453a2bb7552aebd600f33c01427215a">~PostgreSQL</a> ()</td></tr>
@@ -689,8 +694,8 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Loads the database connection information from an initialization file. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>} </p>
+<p>Loads the database connection information from an initialization file. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fileName</td><td>The name of the initialization file. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">section</td><td>The section of the initialization file with the requisite connection information. </td></tr>
@@ -838,7 +843,7 @@ Static Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Database</b></li><li class="navelem"><b>Connection</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html">PostgreSQL</a></li>
-    <li class="footer">Generated on Wed Jun 5 2024 22:00:21 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Jun 6 2024 20:37:10 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

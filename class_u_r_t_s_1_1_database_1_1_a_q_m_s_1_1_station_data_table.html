@@ -163,6 +163,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a9b368703ae59b3cd43aa10f1028a688c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries only station data whose ontime is less than the current time and whose offtime is greater than the current time. <br  />
  <br /></td></tr>
 <tr class="separator:a9b368703ae59b3cd43aa10f1028a688c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cc20193a40b3cb7d1e5418b08c276b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html#a21cc20193a40b3cb7d1e5418b08c276b">query</a> (const std::string &amp;network, const std::string &amp;name, bool getCurrent)</td></tr>
+<tr class="memdesc:a21cc20193a40b3cb7d1e5418b08c276b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries specificially for the station with the given network and name.  <a href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html#a21cc20193a40b3cb7d1e5418b08c276b">More...</a><br /></td></tr>
+<tr class="separator:a21cc20193a40b3cb7d1e5418b08c276b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Query Results</div></td></tr>
 <tr class="memitem:aa2a1ecfdb355b330711d5197e8be872f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html">StationData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html#aa2a1ecfdb355b330711d5197e8be872f">getStationData</a> () const</td></tr>
 <tr class="separator:aa2a1ecfdb355b330711d5197e8be872f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -306,6 +309,50 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 
 </div>
 </div>
+<a id="a21cc20193a40b3cb7d1e5418b08c276b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cc20193a40b3cb7d1e5418b08c276b">&#9670;&nbsp;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Database::AQMS::StationDataTable::query </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>network</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>getCurrent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries specificially for the station with the given network and name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">network</td><td>The network code - e.g., UU. If this is empty then it will be ignored and all network codes will be queried. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>The station name - e.g., FSU. If this is empty then it will be ignored and all station names will be queried. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">getCurrent</td><td>If true then fetch the information for the given station. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/urts/database/aqms/<a class="el" href="station_data_table_8hpp_source.html">stationDataTable.hpp</a></li>
 </ul>
@@ -315,7 +362,7 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Database</b></li><li class="navelem"><b>AQMS</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html">StationDataTable</a></li>
-    <li class="footer">Generated on Wed Jun 5 2024 22:00:21 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Jun 6 2024 20:37:10 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
