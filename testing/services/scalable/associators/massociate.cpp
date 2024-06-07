@@ -71,6 +71,41 @@ bool equals(const UMASS::Pick &lhs, const UMASS::Pick &rhs)
     return true;
 }
 
+bool equals(const UMASS::Origin &lhs, const UMASS::Origin &rhs)
+{
+    if (lhs.getTime() != rhs.getTime()){return false;}
+    if (std::abs(lhs.getLatitude() - rhs.getLatitude()) > 1.e-10)
+    {
+        return false;
+    }
+    if (std::abs(lhs.getLongitude() - rhs.getLongitude()) > 1.e-10)
+    {
+        return false;
+    }
+    if (std::abs(lhs.getDepth() - rhs.getDepth()) > 1.e-10)
+    {
+        return false;
+    }
+    auto arrivals1 = lhs.getArrivals();
+    auto arrivals2 = rhs.getArrivalsReference();
+    if (arrivals1.size() != arrivals2.size()){return false;}
+    auto nArrivals = static_cast<int> (arrivals1.size());
+    for (int i = 0; i < nArrivals; ++i)
+    {
+        bool matched{false};
+        for (int j = 0; j < nArrivals; ++j)
+        {
+            if (::equals(arrivals1.at(i), arrivals2.at(j)))
+            {
+                matched = true;
+                break;
+            }
+        }
+        if (!matched){return false;}
+    }
+    return true;
+}
+
 UMASS::Arrival createArrival(const std::string &network,
                              const std::string &station,
                              const std::string &channel,
@@ -127,6 +162,41 @@ UMASS::Pick createPick(const std::string &network,
     return pick;
 }
 
+UMASS::Origin createBogusOrigin1()
+{
+    UMASS::Origin origin;
+    std::vector<UMASS::Arrival> arrivals;
+    arrivals.push_back( ::createArrival("UU", "LTU", "EHZ", "02", "P", 1, 1714951814 + 3.2, 3.2) );  
+    arrivals.push_back( ::createArrival("UU", "ETW", "ENN", "01", "P", 2, 1714951814 + 5.1, 5.1) );
+    arrivals.push_back( ::createArrival("UU", "LTU", "ENN", "01", "S", 3, 1714951814 + 5.5, 5.5) );    
+    arrivals.push_back( ::createArrival("UU", "SPU", "HHZ", "01", "P", 4, 1714951814 + 5.8, 5.8) );
+    arrivals.push_back( ::createArrival("UU", "SPU", "HHN", "01", "S", 5, 1714951814 +10.1,10.1) );
+ 
+    origin.setArrivals(arrivals);
+    origin.setLatitude(41);
+    origin.setLongitude(-112);
+    origin.setDepth(8600);
+    origin.setTime(1714951814);
+    return origin;
+}
+
+UMASS::Origin createBogusOrigin2()
+{   
+    UMASS::Origin origin;
+    std::vector<UMASS::Arrival> arrivals;
+    arrivals.push_back( ::createArrival("UU", "LTU", "EHZ", "02", "P", 1, 1714951884 + 3.2, 3.2) );
+    arrivals.push_back( ::createArrival("UU", "ETW", "ENN", "01", "P", 2, 1714951884 + 5.1, 5.1) );    
+    arrivals.push_back( ::createArrival("UU", "LTU", "ENN", "01", "S", 3, 1714951884 + 5.5, 5.5) );
+    arrivals.push_back( ::createArrival("UU", "SPU", "HHZ", "01", "P", 4, 1714951884 + 5.8, 5.8) );
+    arrivals.push_back( ::createArrival("UU", "SPU", "HHN", "01", "S", 5, 1714951884 +10.1,10.1) );
+
+    origin.setArrivals(arrivals);
+    origin.setLatitude(40);
+    origin.setLongitude(-111);
+    origin.setDepth(8680);
+    origin.setTime(1714951884);
+    return origin;
+}
           
 }
 
@@ -295,6 +365,9 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[messages]")
         response.setIdentifier(identifier);
         response.setUnassociatedPicks(picks);
         response.setReturnCode(returnCode);
+        std::vector<UMASS::Origin> origins{createBogusOrigin1(),
+                                           createBogusOrigin2()};
+        response.setOrigins(origins);
 
         auto message = response.toMessage();
 
@@ -302,5 +375,22 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[messages]")
         responseFromMessage.fromMessage(message);
         REQUIRE(responseFromMessage.getIdentifier() == identifier);
         REQUIRE(responseFromMessage.getReturnCode() == returnCode);
+        auto originsBack = response.getOrigins();
+        REQUIRE(originsBack.size() == origins.size());
+        auto nOrigins = static_cast<int> (origins.size());        
+        for (int i = 0; i < nOrigins; ++i)
+        {
+            bool matched = false;
+            for (int j = 0; j < nOrigins; ++j)
+            {
+                if (::equals(origins.at(i), originsBack.at(j)))
+                {
+                    matched = true;
+                    break;
+                }
+            } 
+            REQUIRE(matched);
+        }
+
     }
 }
