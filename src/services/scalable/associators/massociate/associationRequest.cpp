@@ -211,6 +211,13 @@ void AssociationRequest::fromMessage(
     *this = ::fromCBORMessage(message, length);
 }
 
+void AssociationRequest::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());   
+}
+
+
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage>
     AssociationRequest::clone() const

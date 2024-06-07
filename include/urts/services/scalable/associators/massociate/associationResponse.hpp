@@ -87,6 +87,8 @@ public:
     /// @note Though the container is a string the message need not be
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
+    /// @brief Creates the class forom a message.
+    void fromMessage(const std::string &message) final;
     /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 

@@ -11,6 +11,8 @@
 #include "urts/services/scalable/associators/massociate/arrival.hpp"
 #include "urts/services/scalable/associators/massociate/origin.hpp"
 #include "urts/services/scalable/associators/massociate/pick.hpp"
+#include "urts/services/scalable/associators/massociate/associationRequest.hpp"
+#include "urts/services/scalable/associators/massociate/associationResponse.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
@@ -30,6 +32,7 @@ bool equals(const UMASS::Arrival &lhs, const UMASS::Arrival &rhs)
     }
     if (lhs.getPhase() != rhs.getPhase()){return false;}
     if (lhs.getTime() != rhs.getTime()){return false;}
+    if (lhs.getIdentifier() != rhs.getIdentifier()){return false;}
     if (lhs.getTravelTime())
     {
         if (rhs.getTravelTime())
@@ -51,11 +54,29 @@ bool equals(const UMASS::Arrival &lhs, const UMASS::Arrival &rhs)
     return true;
 }
 
+bool equals(const UMASS::Pick &lhs, const UMASS::Pick &rhs)
+{
+    if (lhs.getNetwork() != rhs.getNetwork()){return false;}
+    if (lhs.getStation() != rhs.getStation()){return false;}
+    if (lhs.getChannel() != rhs.getChannel()){return false;}
+    if (lhs.getLocationCode() != rhs.getLocationCode())
+    {   
+        return false;
+    }   
+    if (lhs.getPhaseHint() != rhs.getPhaseHint()){return false;}
+    if (lhs.getTime() != rhs.getTime()){return false;}
+    if (lhs.getIdentifier() != rhs.getIdentifier()){return false;}
+    if (std::abs(lhs.getStandardError() 
+               - rhs.getStandardError()) > 1.e-10){return false;}
+    return true;
+}
+
 UMASS::Arrival createArrival(const std::string &network,
                              const std::string &station,
                              const std::string &channel,
                              const std::string &locationCode,
                              const std::string &phase,
+                             const int64_t identifier,
                              const double time,
                              const double travelTime)
 {
@@ -74,8 +95,38 @@ UMASS::Arrival createArrival(const std::string &network,
     }
     arrival.setTime(time);
     arrival.setTravelTime(travelTime);
+    arrival.setIdentifier(identifier);
     return arrival;
 }
+
+UMASS::Pick createPick(const std::string &network,
+                       const std::string &station,
+                       const std::string &channel,
+                       const std::string &locationCode,
+                       const std::string &phaseHint,
+                       const int64_t identifier,
+                       const double time,
+                       const double standardError)
+{
+    UMASS::Pick pick;
+    pick.setNetwork(network);
+    pick.setStation(station);
+    pick.setChannel(channel);
+    pick.setLocationCode(locationCode);
+    if (phaseHint == "P")
+    {   
+        pick.setPhaseHint(UMASS::Pick::PhaseHint::P);
+    }   
+    else
+    {   
+        pick.setPhaseHint(UMASS::Pick::PhaseHint::S);
+    }   
+    pick.setTime(time);
+    pick.setStandardError(standardError);
+    pick.setIdentifier(identifier);
+    return pick;
+}
+
           
 }
 
@@ -170,11 +221,11 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[models]")
         origin.setTime(std::chrono::microseconds {1717710340200000});
 
         std::vector<UMASS::Arrival> arrivals;
-        arrivals.push_back( ::createArrival("UU", "LTU", "EHZ", "02", "P", 1714951814 + 3.2, 3.2) ); 
-        arrivals.push_back( ::createArrival("UU", "ETW", "ENN", "01", "P", 1714951814 + 5.1, 5.1) );
-        arrivals.push_back( ::createArrival("UU", "LTU", "ENN", "01", "S", 1714951814 + 5.5, 5.5) );        
-        arrivals.push_back( ::createArrival("UU", "SPU", "HHZ", "01", "P", 1714951814 + 5.8, 5.8) );
-        arrivals.push_back( ::createArrival("UU", "SPU", "HHN", "01", "S", 1714951814 +10.1,10.1) );
+        arrivals.push_back( ::createArrival("UU", "LTU", "EHZ", "02", "P", 1, 1714951814 + 3.2, 3.2) ); 
+        arrivals.push_back( ::createArrival("UU", "ETW", "ENN", "01", "P", 2, 1714951814 + 5.1, 5.1) );
+        arrivals.push_back( ::createArrival("UU", "LTU", "ENN", "01", "S", 3, 1714951814 + 5.5, 5.5) );        
+        arrivals.push_back( ::createArrival("UU", "SPU", "HHZ", "01", "P", 4, 1714951814 + 5.8, 5.8) );
+        arrivals.push_back( ::createArrival("UU", "SPU", "HHN", "01", "S", 5, 1714951814 +10.1,10.1) );
         origin.setArrivals(arrivals);
         
         REQUIRE(std::abs(origin.getLatitude() - 41) < 1.e-10);
@@ -190,3 +241,66 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[models]")
     }
 }
 
+TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[messages]")
+{
+    SECTION("association request")
+    {
+        std::vector<UMASS::Pick> picks;
+        picks.push_back( ::createPick("UU", "LTU", "EHZ", "02", "P", 1, 1714951814 + 3.2, 0.1) );  
+        picks.push_back( ::createPick("UU", "ETW", "ENN", "01", "P", 2, 1714951814 + 5.1, 0.1) );
+        picks.push_back( ::createPick("UU", "LTU", "ENN", "01", "S", 3, 1714951814 + 5.5, 0.2) );    
+        picks.push_back( ::createPick("UU", "SPU", "HHZ", "01", "P", 4, 1714951814 + 5.8, 0.1) );
+        picks.push_back( ::createPick("UU", "SPU", "HHN", "01", "S", 5, 1714951814 +10.1, 0.2) );
+
+        int64_t identifier{64};
+        UMASS::AssociationRequest request;
+        request.setIdentifier(identifier);
+        request.setPicks(picks);
+        auto message = request.toMessage();
+
+        UMASS::AssociationRequest requestFromMessage;
+        requestFromMessage.fromMessage(message);
+        REQUIRE(requestFromMessage.getIdentifier() == identifier);
+        auto picksBack = requestFromMessage.getPicks();
+        REQUIRE(picksBack.size() == picks.size());
+        for (size_t i = 0; i < picks.size(); ++i)
+        {
+            bool matched{false};
+            for (size_t j = 0; j < picksBack.size(); ++j)
+            {
+                if (::equals(picks.at(i), picksBack.at(j)))
+                {
+                    matched = true;
+                    break;
+                }
+            }
+            REQUIRE(matched);
+       }
+    }
+
+    SECTION("association response")
+    {
+
+        std::vector<UMASS::Pick> picks;
+        picks.push_back( ::createPick("UU", "LTU", "EHZ", "02", "P", 1, 1714951814 + 3.2, 0.1) );  
+        picks.push_back( ::createPick("UU", "ETW", "ENN", "01", "P", 2, 1714951814 + 5.1, 0.1) );
+        picks.push_back( ::createPick("UU", "LTU", "ENN", "01", "S", 3, 1714951814 + 5.5, 0.2) );    
+        picks.push_back( ::createPick("UU", "SPU", "HHZ", "01", "P", 4, 1714951814 + 5.8, 0.1) );
+        picks.push_back( ::createPick("UU", "SPU", "HHN", "01", "S", 5, 1714951814 +10.1, 0.2) );
+
+        int64_t identifier{65};
+        UMASS::AssociationResponse::ReturnCode returnCode{
+            UMASS::AssociationResponse::ReturnCode::Success};
+        UMASS::AssociationResponse response;
+        response.setIdentifier(identifier);
+        response.setUnassociatedPicks(picks);
+        response.setReturnCode(returnCode);
+
+        auto message = response.toMessage();
+
+        UMASS::AssociationResponse responseFromMessage;
+        responseFromMessage.fromMessage(message);
+        REQUIRE(responseFromMessage.getIdentifier() == identifier);
+        REQUIRE(responseFromMessage.getReturnCode() == returnCode);
+    }
+}

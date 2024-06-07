@@ -341,6 +341,7 @@ int64_t AssociationResponse::getIdentifier() const noexcept
 void AssociationResponse::setReturnCode(ReturnCode returnCode) noexcept
 {
     pImpl->mReturnCode = returnCode;
+    pImpl->mHaveReturnCode = true;
 }
 
 AssociationResponse::ReturnCode AssociationResponse::getReturnCode() const
@@ -370,6 +371,12 @@ std::string AssociationResponse::getMessageVersion() const noexcept
 std::string AssociationResponse::toMessage() const
 {
     return ::toCBORObject(*this);
+}
+
+void AssociationResponse::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());   
 }
 
 void AssociationResponse::fromMessage(
