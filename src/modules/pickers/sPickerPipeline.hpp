@@ -14,6 +14,7 @@
 #include "urts/services/scalable/pickers/cnnThreeComponentS.hpp"
 #include "urts/services/standalone/incrementer.hpp"
 #include "private/threadSafeQueue.hpp"
+#include "pickToRefine.hpp"
 
 namespace
 {

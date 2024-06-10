@@ -15,6 +15,7 @@
 #include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP.hpp"
 #include "urts/services/standalone/incrementer.hpp"
 #include "private/threadSafeQueue.hpp"
+#include "pickToRefine.hpp"
 
 namespace
 {
@@ -830,9 +831,9 @@ public:
     std::shared_ptr<URTS::Database::AQMS::ChannelDataTablePoller>
         mDatabasePoller{nullptr};
     std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-         mPickProcessorQueue{nullptr};
+        mPickProcessorQueue{nullptr};
     std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-         mPickPublisherQueue{nullptr};
+        mPickPublisherQueue{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<URTS::Services::Scalable::PacketCache::Requestor>
         mPacketCacheRequestor{nullptr};
