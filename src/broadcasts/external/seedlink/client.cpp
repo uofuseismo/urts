@@ -397,8 +397,8 @@ void Client::initialize(const ClientOptions &options)
     auto address = options.getAddress();
     auto port = options.getPort();
     auto seedLinkAddress = address +  ":" + std::to_string(port);
-    pImpl->mLogger->debug("Connecting to SEEDLink server "
-                        + seedLinkAddress + "...");
+    pImpl->mLogger->info("Connecting to SEEDLink server "
+                       + seedLinkAddress + "...");
     pImpl->mSEEDLinkConnection->sladdr = strdup(seedLinkAddress.c_str());
     // Set the record size and state file
     pImpl->mSEEDRecordSize = options.getSEEDRecordSize();
