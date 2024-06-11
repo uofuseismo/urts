@@ -21,6 +21,14 @@ var annotated_dup =
             [ "Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber" ],
             [ "SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options" ]
           ] ],
+          [ "Origin", null, [
+            [ "Arrival", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival" ],
+            [ "Origin", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin" ],
+            [ "Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher" ],
+            [ "PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher_options" ],
+            [ "Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber" ],
+            [ "SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber_options.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber_options" ]
+          ] ],
           [ "Pick", null, [
             [ "Pick", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick" ],
             [ "Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher" ],

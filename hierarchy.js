@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "URTS::Broadcasts::Internal::Origin::Arrival", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html", null ],
     [ "URTS::Services::Scalable::Associators::MAssociate::Arrival", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_arrival.html", null ],
     [ "URTS::Services::Scalable::PacketCache::CappedCollection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html", null ],
     [ "URTS::Database::AQMS::ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", null ],
@@ -17,6 +18,7 @@ var hierarchy =
     [ "UMPS::MessageFormats::IMessage", null, [
       [ "URTS::Broadcasts::External::Earthworm::TraceBuf2< T >", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_earthworm_1_1_trace_buf2.html", null ],
       [ "URTS::Broadcasts::Internal::DataPacket::DataPacket", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_data_packet.html", null ],
+      [ "URTS::Broadcasts::Internal::Origin::Origin", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html", null ],
       [ "URTS::Broadcasts::Internal::Pick::Pick", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html", null ],
       [ "URTS::Broadcasts::Internal::ProbabilityPacket::ProbabilityPacket", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_probability_packet.html", null ],
       [ "URTS::Services::Scalable::Associators::MAssociate::AssociationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_request.html", null ],
@@ -73,9 +75,11 @@ var hierarchy =
     [ "URTS::Services::Scalable::Associators::MAssociate::Origin", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin.html", null ],
     [ "URTS::Services::Scalable::Associators::MAssociate::Pick", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
+    [ "URTS::Broadcasts::Internal::Origin::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::ProbabilityPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher_options.html", null ],
+    [ "URTS::Broadcasts::Internal::Origin::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_publisher_options.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher_options.html", null ],
     [ "URTS::Broadcasts::Internal::ProbabilityPacket::PublisherOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_publisher_options.html", null ],
     [ "URTS::Services::Scalable::Detectors::UNetThreeComponentP::Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_requestor.html", null ],
@@ -114,9 +118,11 @@ var hierarchy =
     [ "URTS::Database::AQMS::StationData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html", null ],
     [ "URTS::Broadcasts::External::SEEDLink::StreamSelector", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber.html", null ],
+    [ "URTS::Broadcasts::Internal::Origin::Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber.html", null ],
     [ "URTS::Broadcasts::Internal::ProbabilityPacket::Subscriber", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_subscriber_options.html", null ],
+    [ "URTS::Broadcasts::Internal::Origin::SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_subscriber_options.html", null ],
     [ "URTS::Broadcasts::Internal::Pick::SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_subscriber_options.html", null ],
     [ "URTS::Broadcasts::Internal::ProbabilityPacket::SubscriberOptions", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_probability_packet_1_1_subscriber_options.html", null ],
     [ "URTS::Services::Scalable::PacketCache::ThreeComponentWaveform", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_three_component_waveform.html", null ],

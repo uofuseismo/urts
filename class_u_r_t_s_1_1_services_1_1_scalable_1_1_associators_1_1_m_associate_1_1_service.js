@@ -11,6 +11,7 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_
     [ "isRunning", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#aeb50b9cdc0a7cd0b2c2d9f341b9317bc", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#ac9a4858b23a36e2e4f58c20d9e381f60", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#a8fd3e8369e018466505c22980ed31563", null ],
+    [ "setTravelTimeCalculatorMap", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#a4a6617a9bcc8c161ff2aaea25d9fde8e", null ],
     [ "start", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#abbb4ef1a98bde2f607a89f6dd6ff116f", null ],
     [ "stop", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html#a6f55533e320bd931db59328dd2a47a16", null ]
 ];
