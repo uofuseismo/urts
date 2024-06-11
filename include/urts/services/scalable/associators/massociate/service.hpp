@@ -12,6 +12,14 @@ namespace UMPS
   class Context;
  }
 }
+namespace ULocator
+{
+ class TravelTimeCalculatorMap;
+}
+namespace URTS::Database::Connection
+{
+ class IConnection;
+}
 namespace URTS::Services::Scalable::Associators::MAssociate
 {
  class ServiceOptions;
@@ -49,6 +57,8 @@ public:
     void initialize(const ServiceOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
+
+    void setTravelTimeCalculatorMap(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map);
     /// @}
 
     /// @name Step 2: Start 

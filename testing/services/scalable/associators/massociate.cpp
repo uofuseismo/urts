@@ -13,6 +13,8 @@
 #include "urts/services/scalable/associators/massociate/pick.hpp"
 #include "urts/services/scalable/associators/massociate/associationRequest.hpp"
 #include "urts/services/scalable/associators/massociate/associationResponse.hpp"
+#include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
+#include "urts/services/scalable/associators/massociate/service.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
@@ -391,6 +393,38 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[messages]")
             } 
             REQUIRE(matched);
         }
+    }
+}
 
+TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[ServiceOptions]")
+{
+    double dbscanEpsilon{0.30};
+    int dbscanMinimumClusterSize{5};
+    double maximumDistance{120000};
+    std::pair<double, double> searchDepths{-1000, 15000};
+    UMASS::ServiceOptions serviceOptions;  
+    serviceOptions.setRegion(UMASS::ServiceOptions::Region::Utah);
+    serviceOptions.setDBSCANEpsilon(dbscanEpsilon);
+    serviceOptions.setDBSCANMinimumClusterSize(dbscanMinimumClusterSize);
+    serviceOptions.setMaximumDistanceToAssociate(maximumDistance);
+    serviceOptions.setExtentInDepth(searchDepths);
+    serviceOptions.setReceiveHighWaterMark(500);
+    serviceOptions.setSendHighWaterMark(1000);
+    SECTION("service options copy")
+    {
+        UMASS::ServiceOptions optionsCopy{serviceOptions}; 
+        REQUIRE(optionsCopy.getRegion() == UMASS::ServiceOptions::Region::Utah);
+        REQUIRE(std::abs(optionsCopy.getDBSCANEpsilon() - dbscanEpsilon)
+                       < 1.e-10);
+        REQUIRE(optionsCopy.getDBSCANMinimumClusterSize() ==
+                dbscanMinimumClusterSize);
+        REQUIRE(std::abs(optionsCopy.getMaximumDistanceToAssociate()
+                       - maximumDistance) < 1.e-8);
+        REQUIRE(std::abs(optionsCopy.getExtentInDepth().first
+                       - searchDepths.first) < 1.e-8);
+        REQUIRE(std::abs(optionsCopy.getExtentInDepth().second
+                       - searchDepths.second) < 1.e-8);
+        REQUIRE(optionsCopy.getReceiveHighWaterMark() == 500);
+        REQUIRE(optionsCopy.getSendHighWaterMark() == 1000);
     }
 }

@@ -1,6 +1,9 @@
 #include <string>
 #include <filesystem>
 #include <umps/authentication/zapOptions.hpp>
+#include <boost/program_options.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 #include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
 #include "private/isEmpty.hpp"
 
@@ -145,6 +148,7 @@ int ServiceOptions::getReceiveHighWaterMark() const noexcept
 void ServiceOptions::setRegion(const Region region) noexcept
 { 
     pImpl->mRegion = region;
+    pImpl->mHaveRegion = true;
 }
 
 ServiceOptions::Region ServiceOptions::getRegion() const
@@ -291,3 +295,100 @@ std::pair<double, double> ServiceOptions::getExtentInDepth() const noexcept
 {
     return pImpl->mExtentInDepth;
 }
+
+/// Parses the initialization file
+void ServiceOptions::parseInitializationFile(
+    const std::string &fileName,
+    const std::string &section)
+{
+    if (!std::filesystem::exists(fileName))
+    {
+        throw std::invalid_argument("Initialization file "
+                                  + fileName
+                                  + " does not exist");
+    }
+    boost::property_tree::ptree propertyTree;
+    boost::property_tree::ini_parser::read_ini(fileName, propertyTree);
+    // Load the essentials
+    ServiceOptions options;
+    auto region = propertyTree.get<std::string> (section + ".region");
+    if (region == "utah" || region == "Utah")
+    {
+        options.setRegion(ServiceOptions::Region::Utah);
+        options.setExtentInDepth(std::pair {-17000, 22000});
+        options.setDBSCANEpsilon(0.25);
+    }
+    else if (region == "YNP" || region == "ynp" || region == "Yellowstone")
+    {
+        options.setRegion(ServiceOptions::Region::YNP);
+        options.setExtentInDepth(std::pair {-1000, 16000});
+        options.setDBSCANEpsilon(0.2);
+    }
+    else
+    {
+        throw std::invalid_argument("Unhandled region: " + region);
+    }
+    // Load the variables with defaults
+    // Association properties
+    auto minimumSearchDepth
+        = propertyTree.get<double> (section + ".minimumSearchDepth",
+                                    options.getExtentInDepth().first);
+    auto maximumSearchDepth
+        = propertyTree.get<double> (section + ".maximumSearchDepth",
+                                    options.getExtentInDepth().second);
+    options.setExtentInDepth(
+        std::pair {minimumSearchDepth, maximumSearchDepth});
+    auto maximumDistance 
+        = propertyTree.get<double> (section + ".maximumDistanceToAssociate",
+                                    options.getMaximumDistanceToAssociate());
+    options.setMaximumDistanceToAssociate(maximumDistance);
+    // DBSCAN: epsilon
+    auto dbscanEpsilon
+        = propertyTree.get<double> (section + ".dbscanEpsilon",
+                                    options.getDBSCANEpsilon());
+    options.setDBSCANEpsilon(dbscanEpsilon);
+    // DBSCAN: minimum cluster size
+    auto dbscanMinimumClusterSize
+        = propertyTree.get<int> (section + ".dbscanMinimumClusterSize",
+                                 options.getDBSCANMinimumClusterSize());
+    options.setDBSCANMinimumClusterSize(dbscanMinimumClusterSize);
+    // PSO: number of epochs
+    auto nPSOEpochs
+       = propertyTree.get<int> (section + ".numberOfEpochs",
+                                options.getNumberOfEpochs());
+    options.setNumberOfEpochs(nPSOEpochs);
+    auto nPSOParticles
+       = propertyTree.get<int> (section + ".numberOfParticles",
+                                options.getNumberOfParticles());
+    options.setNumberOfParticles(nPSOParticles);
+    // Corrections files
+    auto staticCorrectionFile
+        = propertyTree.get<std::string> (section + ".staticCorrections");
+    if (!staticCorrectionFile.empty())
+    {
+        options.setStaticCorrectionFile(staticCorrectionFile);
+    }
+    auto sourceSpecificCorrectionFile
+        = propertyTree.get<std::string>
+          (section + ".sourceSpecificCorrections"); 
+    if (!sourceSpecificCorrectionFile.empty())
+    {
+        options.setSourceSpecificCorrectionFile(sourceSpecificCorrectionFile);
+    }
+/*
+    auto password = std::string(std::getenv("URTS_AQMS_RDONLY_PASSWORD"));
+    password = propertyTree.get<std::string> (section + ".password", password);
+    int port = getPort();
+    port = propertyTree.get<int> (section + ".port", getPort());
+    auto address = propertyTree.get<std::string> (section + ".address",
+                                                  getAddress());
+    auto databaseName
+        = propertyTree.get<std::string> (section + ".databaseName");
+    auto applicationName
+        = propertyTree.get<std::string> (section + ".application",
+                                          getApplication()); 
+*/
+    // I guess this worked
+    *this = options;
+}
+

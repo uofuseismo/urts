@@ -83,6 +83,8 @@ set(GENERIC_MESSAGE_SRC
     src/broadcasts/internal/dataPacket/dataPacket.cpp
     src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
     src/broadcasts/internal/pick/pick.cpp
+    src/broadcasts/internal/origin/arrival.cpp
+    src/broadcasts/internal/origin/origin.cpp
     src/services/standalone/incrementer/incrementRequest.cpp
     src/services/standalone/incrementer/incrementResponse.cpp
     src/services/standalone/incrementer/itemsRequest.cpp
@@ -99,6 +101,10 @@ set(GENERIC_SRC
     src/broadcasts/internal/dataPacket/publisherOptions.cpp
     src/broadcasts/internal/dataPacket/subscriber.cpp
     src/broadcasts/internal/dataPacket/subscriberOptions.cpp
+    src/broadcasts/internal/origin/publisher.cpp
+    src/broadcasts/internal/origin/publisherOptions.cpp
+    src/broadcasts/internal/origin/subscriber.cpp
+    src/broadcasts/internal/origin/subscriberOptions.cpp
     #src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
     src/broadcasts/internal/probabilityPacket/publisher.cpp
     src/broadcasts/internal/probabilityPacket/publisherOptions.cpp
@@ -354,6 +360,7 @@ add_test(NAME unitTests
          COMMAND unitTests)
 
 set(CATCH_TEST_SRC
+    testing/broadcasts/internal/origin.cpp
     testing/broadcasts/internal/pick.cpp)
 if (${MAssociate_FOUND} AND ${uLocator_FOUND})
    set(CATCH_TEST_SRC ${CATCH_TEST_SRC}
@@ -487,8 +494,8 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
    #target_include_directories(picksToDatabase
-    #                          PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-    #                          PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
+   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+   #                           PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
@@ -548,6 +555,32 @@ if (${BUILD_UUSS_MLMODELS})
                                pPickRegressorService
                                sPickRegressorService
                                firstMotionClassifierService)
+endif()
+
+if (${MAssociate_FOUND})
+   add_executable(mAssociateService src/services/scalable/associators/massociate/serviceModule.cpp)
+   set_target_properties(mAssociateService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   target_link_libraries(mAssociateService
+                         PRIVATE urts ${UMPS_LIBRARY} ${MAssociate_LIBRARY} ${uLocator_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_include_directories(mAssociateService
+                              PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                                      ${UMPS_INCLUDE_DIR} ${Massociate_INCLUDE_DIR} ${uLocator_INCLUDE_DIR})
+   add_executable(mAssociator src/modules/associators/massociate.cpp)
+   set_target_properties(mAssociator PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   target_link_libraries(mAssociator
+                         PRIVATE urts ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                                 ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
+   target_include_directories(mAssociator
+                              PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                                      ${UMPS_INCLUDE_DIR})
+   set(URTS_MODULES ${URTS_MODULES} mAssociateService mAssociator)
 endif()
 
 ##########################################################################################

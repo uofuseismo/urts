@@ -238,6 +238,7 @@ public:
         {
             mLogger = logger;
         }
+        mAssociator = std::make_unique<MASS::Associator> (mLogger);
     }
     void initialize(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map)
     {
@@ -409,5 +410,40 @@ public:
     std::unique_ptr<ULocator::Position::IGeographicRegion> mRegion{nullptr};
 };
 
+/// Constructor
+Service::Service() :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr))
+{
+}
+
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
+{
+}
+
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &responseContext,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (responseContext, logger))
+{
+}
+
+
 /// Destructor
 Service::~Service() = default;
+
+/// Initialize
+void Service::initialize(const ServiceOptions &options)
+{
+    // Set the geographic region
+    if (options.getRegion() == ServiceOptions::Region::Utah)
+    {
+        pImpl->mRegion = ULocator::Position::UtahRegion {}.clone(); 
+    }
+    else
+    {
+        pImpl->mRegion = ULocator::Position::YNPRegion {}.clone();
+    }
+    auto clusterer = std::make_unique<MASS::DBSCAN> ();
+    clusterer->initialize(options.getDBSCANEpsilon(),
+                          options.getDBSCANMinimumClusterSize());
+}
