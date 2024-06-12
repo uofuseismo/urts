@@ -144,12 +144,9 @@ public:
     /// @brief Sets the arrival's seismic phase.
     /// @param[in] phase  The phase - e.g., P or S.
     void setPhase(const Phase phase) noexcept;
-    /// @brief Sets the arrival's seismic phase.
-    /// @param[in] phase  The phase hint - e.g., P or S.
-    void setPhase(const std::string &phase);
     /// @result The phase.
     /// @throws std::runtime_error if \c havePhase() is false.
-    [[nodiscard]] std::string getPhase() const; 
+    [[nodiscard]] Phase getPhase() const; 
     /// @result True indicates the phase was set.
     [[nodiscard]] bool havePhase() const noexcept;
     /// @}

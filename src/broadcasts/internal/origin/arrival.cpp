@@ -146,18 +146,19 @@ public:
     std::string mStation;
     std::string mChannel;
     std::string mLocationCode;
-    std::string mPhase;
-    std::string mAlgorithm{"unspecified"};
+    //std::string mAlgorithm{"unspecified"};
     std::pair<UPick::UncertaintyBound, UPick::UncertaintyBound>
         mUncertaintyBounds;
     std::chrono::microseconds mTime{0};
     double mResidual{0};
     uint64_t mIdentifier{0};
     uint64_t mOriginIdentifier{0};
+    Arrival::Phase mPhase;
     Arrival::FirstMotion mFirstMotion{Arrival::FirstMotion::Unknown};
     Arrival::ReviewStatus mReviewStatus{Arrival::ReviewStatus::Automatic};
     bool mHaveUncertaintyBounds{false};
     bool mHaveTime{false};
+    bool mHavePhase{false};
     bool mHaveIdentifier{false};
     bool mHaveResidual{false};
     bool mHaveOriginIdentifier{false};
@@ -364,29 +365,11 @@ std::vector<std::string> Arrival::getProcessingAlgorithms() const noexcept
 /// Phase hint
 void Arrival::setPhase(const Phase phase) noexcept
 {
-    if (phase == Phase::P)
-    {
-        setPhase("P");
-    }
-    else if (phase == Phase::S)
-    {
-        setPhase("S");
-    }
-#ifndef NDEBUG
-    else
-    {
-        assert(false);
-    }
-#endif
-}
-
-void Arrival::setPhase(const std::string &phase)
-{
-    if (::isEmpty(phase)){throw std::invalid_argument("Phase is empty");} 
     pImpl->mPhase = phase;
+    pImpl->mHavePhase = true;
 }
 
-std::string Arrival::getPhase() const
+Arrival::Phase Arrival::getPhase() const
 {
     if (!havePhase()){throw std::runtime_error("Phase not set");}
     return pImpl->mPhase;
@@ -394,7 +377,7 @@ std::string Arrival::getPhase() const
 
 bool Arrival::havePhase() const noexcept
 {
-    return !pImpl->mPhase.empty();
+    return pImpl->mHavePhase;
 }
 
 void Arrival::setLowerAndUpperUncertaintyBound(

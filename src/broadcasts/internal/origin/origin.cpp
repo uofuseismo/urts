@@ -6,7 +6,7 @@
 #include "urts/broadcasts/internal/pick/uncertaintyBound.hpp"
 #include "database/aqms/utilities.hpp"
 
-#define MESSAGE_TYPE "URTS::Broadcasts::Internal::Origin::Origin"
+#define MESSAGE_TYPE "URTS::Broadcasts::Internal::Origin"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Broadcasts::Internal::Origin;
@@ -29,7 +29,51 @@ nlohmann::json toJSONObject(const Origin &origin)
     const auto &arrivals = origin.getArrivalsReference();
     if (!arrivals.empty())
     {
-
+        nlohmann::json arrivalObjects;
+        for (const auto &arrival : arrivals)
+        {
+             nlohmann::json arrivalObject;
+             arrivalObject["Identifier"] = arrival.getIdentifier();
+             arrivalObject["Network"] = arrival.getNetwork();
+             arrivalObject["Station"] = arrival.getStation();
+             arrivalObject["Channel"] = arrival.getChannel();
+             arrivalObject["LocationCode"] = arrival.getLocationCode();
+             arrivalObject["Time"]
+                = static_cast<int64_t> (arrival.getTime().count());
+             arrivalObject["Phase"] = static_cast<int> (arrival.getPhase());
+             arrivalObject["OriginalChannels"] = arrival.getOriginalChannels();
+             arrivalObject["ProcessingAlgorithms"]
+                = arrival.getProcessingAlgorithms();
+             arrivalObject["FirstMotion"]
+                = static_cast<int> (arrival.getFirstMotion());
+             arrivalObject["ReviewStatus"]
+                = static_cast<int> (arrival.getReviewStatus());
+             auto originIdentifier = arrival.getOriginIdentifier();
+             if (originIdentifier)
+             {
+                 arrivalObject["OriginIdentifier"] = *originIdentifier;
+             }
+             auto residual = arrival.getResidual();
+             if (residual){arrivalObject["Residual"] = *residual;}
+             auto uncertainty = arrival.getLowerAndUpperUncertaintyBound();
+             if (uncertainty)
+             {
+                 nlohmann::json uncertaintyObject;
+                 uncertaintyObject["LowerPercentile"]
+                    = uncertainty->first.getPercentile();
+                 uncertaintyObject["LowerPerturbation"]
+                    = static_cast<int64_t>
+                      (uncertainty->first.getPerturbation().count());
+                 uncertaintyObject["UpperPercentile"]
+                    = uncertainty->second.getPercentile();
+                 uncertaintyObject["UpperPerturbation"]
+                    = static_cast<int64_t>
+                      (uncertainty->second.getPerturbation().count());
+                 arrivalObject["Uncertainty"] = uncertaintyObject;
+             }
+             arrivalObjects.push_back(std::move(arrivalObject));
+        }
+        obj["Arrivals"] = arrivalObjects;
     }
     return obj;
 }
@@ -57,9 +101,78 @@ Origin objectToOrigin(const nlohmann::json &obj)
     ); 
     if (obj.contains("Arrivals"))
     {
+        std::vector<Arrival> arrivals;
         for (const auto &arrivalObject : obj["Arrivals"])
         {
+            Arrival arrival;
+            arrival.setIdentifier(
+                arrivalObject["Identifier"].template get<int64_t> ());
+            arrival.setNetwork(
+                arrivalObject["Network"].template get<std::string> ());
+            arrival.setStation(
+                arrivalObject["Station"].template get<std::string> ());
+            arrival.setChannel(
+                arrivalObject["Channel"].template get<std::string> ());
+            arrival.setLocationCode(
+                arrivalObject["LocationCode"].template get<std::string> ());
+            arrival.setTime(
+                std::chrono::microseconds {
+                   arrivalObject["Time"].template get<int64_t> ()
+                });
+            arrival.setPhase(
+                static_cast<Arrival::Phase> (
+                   arrivalObject["Phase"].template get<int> ()));
+            arrival.setOriginalChannels(
+                arrivalObject["OriginalChannels"].template
+                   get<std::vector<std::string>> ());
+            arrival.setProcessingAlgorithms(
+                arrivalObject["ProcessingAlgorithms"].template
+                   get<std::vector<std::string>> ());
+            arrival.setFirstMotion(
+                static_cast<Arrival::FirstMotion> (
+                   arrivalObject["FirstMotion"].template get<int> ())); 
+            arrival.setReviewStatus(
+                static_cast<Arrival::ReviewStatus> (
+                   arrivalObject["ReviewStatus"].template get<int> ()));
+            if (arrivalObject.contains("OriginIdentifier"))
+            {
+                arrival.setOriginIdentifier(
+                   arrivalObject["OriginIdentifier"].template get<int64_t> ());
+            }
+            if (arrivalObject.contains("Residual"))
+            {
+                arrival.setResidual(
+                   arrivalObject["Residual"].template get<double> ());
+            }
+            if (arrivalObject.contains("Uncertainty"))
+            {
+                auto uncertaintyObject = arrivalObject["Uncertainty"];
+                URTS::Broadcasts::Internal::Pick::UncertaintyBound
+                    lowerBound, upperBound;   
+                lowerBound.setPercentile(
+                    uncertaintyObject["LowerPercentile"].template
+                        get<double> ());
+                lowerBound.setPerturbation(
+                    std::chrono::microseconds
+                    {
+                        uncertaintyObject["LowerPerturbation"].template
+                            get<int64_t> ()
+                    });
+                upperBound.setPercentile(
+                    uncertaintyObject["UpperPercentile"].template
+                        get<double> ());
+                upperBound.setPerturbation(
+                    std::chrono::microseconds
+                    {
+                        uncertaintyObject["UpperPerturbation"].template
+                            get<int64_t> ()
+                    });
+                arrival.setLowerAndUpperUncertaintyBound(
+                    std::pair {lowerBound, upperBound});
+            }
+            arrivals.push_back(std::move(arrival));
         }
+        if (!arrivals.empty()){origin.setArrivals(std::move(arrivals));}
     }
     return origin;
 }
@@ -248,6 +361,27 @@ void Origin::setArrivals(const std::vector<Arrival> &arrivals)
 
 void Origin::setArrivals(std::vector<Arrival> &&arrivals)
 {
+    for (const auto &arrival : arrivals)
+    {
+        if (!arrival.haveNetwork())
+        {
+            throw std::invalid_argument("Network not set");
+        }
+        if (!arrival.haveStation())
+        {
+            throw std::invalid_argument("Station not set");
+        }
+        if (!arrival.haveChannel())
+        {
+            throw std::invalid_argument("Channel not set");
+        }
+        if (!arrival.haveLocationCode())
+        {
+            throw std::invalid_argument("Location code not set");
+        }
+        if (!arrival.haveTime()){throw std::invalid_argument("Time not set");}
+        if (!arrival.havePhase()){throw std::invalid_argument("Phase not set");}
+    }
     pImpl->mArrivals = std::move(arrivals);
     if (haveIdentifier())
     {
