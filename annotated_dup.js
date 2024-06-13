@@ -76,6 +76,8 @@ var annotated_dup =
               [ "AssociationResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_association_response" ],
               [ "Origin", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin" ],
               [ "Pick", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick" ],
+              [ "Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_requestor.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_requestor" ],
+              [ "RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_requestor_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_requestor_options" ],
               [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service" ],
               [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_service_options" ]
             ] ]
