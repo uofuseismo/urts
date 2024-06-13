@@ -15,6 +15,7 @@
 #include "urts/services/scalable/associators/massociate/associationResponse.hpp"
 #include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
 #include "urts/services/scalable/associators/massociate/service.hpp"
+#include "urts/services/scalable/associators/massociate/requestorOptions.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
@@ -428,3 +429,49 @@ TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[ServiceOptions]
         REQUIRE(optionsCopy.getSendHighWaterMark() == 1000);
     }
 }
+
+TEST_CASE("URTS::Services::Scalable::Associators::MAssociate", "[RequestorOptions]")
+{
+    const std::string address{"tcp://127.0.0.1:5550"};
+    const int sendHWM{105};
+    const int recvHWM{106};
+    const std::chrono::milliseconds sendTimeOut{120};
+    const std::chrono::milliseconds recvTimeOut{145};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    UMASS::RequestorOptions options;
+    REQUIRE_NOTHROW(options.setAddress(address));
+    REQUIRE_NOTHROW(options.setSendHighWaterMark(sendHWM));
+    REQUIRE_NOTHROW(options.setReceiveHighWaterMark(recvHWM));
+    options.setSendTimeOut(sendTimeOut);
+    options.setReceiveTimeOut(recvTimeOut);
+    options.setZAPOptions(zapOptions);
+
+    SECTION("from copy constructor")
+    {
+        UMASS::RequestorOptions copy(options);
+        REQUIRE(copy.getAddress() == address);
+        REQUIRE(copy.getSendHighWaterMark() == sendHWM);
+        REQUIRE(copy.getReceiveHighWaterMark() == recvHWM);
+        REQUIRE(copy.getSendTimeOut() == sendTimeOut); 
+        REQUIRE(copy.getReceiveTimeOut() == recvTimeOut);
+        REQUIRE(copy.getZAPOptions().getSecurityLevel() ==
+                zapOptions.getSecurityLevel());
+    }
+
+    SECTION("clear and check defaults")
+    {
+        options.clear();
+        REQUIRE(options.getSendHighWaterMark() == 2048);
+        REQUIRE(options.getReceiveHighWaterMark() == 0);
+        REQUIRE(options.getSendTimeOut() ==
+                std::chrono::milliseconds {0});
+        REQUIRE(options.getReceiveTimeOut() ==
+                std::chrono::milliseconds {60000});
+        zapOptions.setGrasslandsClient();
+        REQUIRE(options.getZAPOptions().getSecurityLevel() ==
+                zapOptions.getSecurityLevel());
+    }
+}
+

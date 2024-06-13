@@ -168,6 +168,8 @@ if (${uLocator_FOUND})
       set(GENERIC_SRC ${GENERIC_SRC}
           src/services/scalable/associators/massociate/service.cpp
           src/services/scalable/associators/massociate/serviceOptions.cpp
+          src/services/scalable/associators/massociate/requestorOptions.cpp
+          src/services/scalable/associators/massociate/requestor.cpp
          )
    endif()
 endif()

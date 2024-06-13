@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_SCALABLE_PACKET_CACHE_REQUESTOR_OPTIONS_HPP
-#define UMPS_SERVICES_SCALABLE_PACKET_CACHE_REQUESTOR_OPTIONS_HPP
+#ifndef UMPS_SERVICES_SCALABLE_ASSOCIATORS_MASSOCIATE_REQUESTOR_OPTIONS_HPP
+#define UMPS_SERVICES_SCALABLE_ASSOCIATORS_MASSOCIATE_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 // Forward declarations
@@ -7,10 +7,10 @@ namespace UMPS::Authentication
 {
 class ZAPOptions;
 }
-namespace URTS::Services::Scalable::PacketCache
+namespace URTS::Services::Scalable::Associators::MAssociate
 {
-/// @class RequestorOptions "requestorOptions.hpp" "urts/services/scalable/packetCache/requestorOptions.hpp"
-/// @brief Defines the options for the data packet cache requestor.
+/// @class RequestorOptions "requestorOptions.hpp" "urts/services/scalable/associators/massociate/requestorOptions.hpp"
+/// @brief Defines the options for the association requestor.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RequestorOptions
 {
@@ -81,7 +81,7 @@ public:
     ///                     timing out.  A negative number will make this
     ///                     "infinite".
     void setReceiveTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
-    /// @result The receive timeout.  The default is 5 seconds.
+    /// @result The receive timeout.  The default is 60 seconds.
     [[nodiscard]] std::chrono::milliseconds getReceiveTimeOut() const noexcept;
     /// @param[in] timeOut  The amount of time to wait to send a request before
     ///                     timing out.  A negative number will make this

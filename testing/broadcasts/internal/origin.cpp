@@ -99,7 +99,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Arrival", "[arrival]")
 
 TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
 {
-    uint64_t identifier{3923};
+    int64_t identifier{3923};
     double latitude{42.2};
     double longitude{-111.9};
     double depth{6400};

@@ -12,6 +12,10 @@
 #include <umps/logging/standardOut.hpp>
 #include <umps/messaging/context.hpp>
 #include <umps/modules/processManager.hpp>
+#include "urts/services/scalable/associators/massociate/associationRequest.hpp"
+#include "urts/services/scalable/associators/massociate/associationResponse.hpp"
+#include "urts/services/scalable/associators/massociate/requestor.hpp"
+#include "urts/services/scalable/associators/massociate/requestorOptions.hpp"
 #include "programOptions.hpp"
 
 #define MODULE_NAME "mAssociator"
