@@ -106,7 +106,7 @@ public:
     /// @result The station elevation in meters.
     /// @throws std::runtime_error if \c haveElevation() is false.
     [[nodiscard]] double getElevation() const;
-    /// @result True indicates that longitude was set.
+    /// @result True indicates that the elevation was set.
     [[nodiscard]] bool haveElevation() const noexcept;
     /// @}
 

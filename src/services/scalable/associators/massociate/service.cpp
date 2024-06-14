@@ -446,4 +446,6 @@ void Service::initialize(const ServiceOptions &options)
     auto clusterer = std::make_unique<MASS::DBSCAN> ();
     clusterer->initialize(options.getDBSCANEpsilon(),
                           options.getDBSCANMinimumClusterSize());
+    // Create the default travel time tables
+  
 }

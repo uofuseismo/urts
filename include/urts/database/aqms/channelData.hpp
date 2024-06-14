@@ -134,13 +134,13 @@ public:
     /// @name Elevation 
     /// @{
 
-    /// @brief Sets the station elevation.
-    /// @param[in] elevation  The station elevation in meters.
+    /// @brief Sets the channel's elevation.
+    /// @param[in] elevation  The channel's elevation in meters.
     void setElevation(double elevation) noexcept;
-    /// @result The station elevation in meters.
+    /// @result The channel elevation in meters.
     /// @throws std::runtime_error if \c haveElevation() is false.
     [[nodiscard]] double getElevation() const;
-    /// @result True indicates that longitude was set.
+    /// @result True indicates that channel was set.
     [[nodiscard]] bool haveElevation() const noexcept;
     /// @}
 

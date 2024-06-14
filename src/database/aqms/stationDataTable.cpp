@@ -176,17 +176,26 @@ public:
     bool mHaveCurrent{false};
 };
 
-/// C'tor
+/// Constructor
 StationDataTable::StationDataTable() :
     pImpl(std::make_unique<StationDataTableImpl> (nullptr)) 
 {
 }
 
-/// C'tor
+/// Constructor
 StationDataTable::StationDataTable(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<StationDataTableImpl> (logger))
 {
+}
+
+/// Constructor
+StationDataTable::StationDataTable(
+    std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+    std::shared_ptr<UMPS::Logging::ILog> logger) :
+    pImpl(std::make_unique<StationDataTableImpl> (logger))
+{
+    if (connection){setConnection(connection);}
 }
 
 /// Destructor

@@ -27,19 +27,25 @@ void broadcast(const int instance,
 {
     try
     {
-        if (logger->getLevel() >= UMPS::Logging::Level::Debug)
+        if (logger != nullptr)
         {
-            logger->debug("Instance " + std::to_string(instance)
-                        + " broadcasting S packet for " + name);
+            if (logger->getLevel() >= UMPS::Logging::Level::Debug)
+            {
+                logger->debug("Instance " + std::to_string(instance)
+                           + " broadcasting packet for " + name);
+            }
         }
         publisher.send(packet);
     }
     catch (const std::exception &e)
     {
-        logger->error("Instance " + std::to_string(instance)
-                    + " had problems broadcasting S for " + name
-                    + ": "
-                    + std::string {e.what()});
+        if (logger != nullptr)
+        {
+            logger->error("Instance " + std::to_string(instance)
+                        + " had problems broadcasting for " + name
+                        + ": "
+                        + std::string {e.what()});
+        }
     }
 }
 
@@ -78,7 +84,6 @@ inference3C(const URTS::Services::Scalable::PacketCache::
     }
     if (!response->haveProbabilitySignal())
     {
-       
         throw std::runtime_error("P probability signal not computed");
     }
     return response;
@@ -118,7 +123,6 @@ inference3C(const URTS::Services::Scalable::PacketCache::
     }   
     if (!response->haveProbabilitySignal())
     {
-    
         throw std::runtime_error("S probability signal not computed");
     }   
     return response;
@@ -145,22 +149,30 @@ extractSignal(const bool changesSamplingRate,
     else
     {
         const auto &gapIndicator = interpolator.getGapIndicatorReference();
-         if (!changesSamplingRate)
-         {
-             for (int i = i0; i < i1; ++i)
-             {
-                 pSignal[i - i0] = pRef[i]*gapIndicator[i];
-             }
-         }
-         else
-         {
-             logger->warn("ruh roh - gaps and changes sampling rate");
-             // TODO
-             for (int i = i0; i < i1; ++i)
-             {
-                 pSignal[i - i0] = pRef[i];
-             }
-         }
+        if (!changesSamplingRate)
+        {
+            for (int i = i0; i < i1; ++i)
+            {
+#ifdef NDEBUG
+                pSignal.at(i - i0) = pRef.at(i)*gapIndicator.at(i);
+#else
+                pSignal[i - i0] = pRef[i]*gapIndicator[i];
+#endif
+            }
+        }
+        else
+        {
+            logger->warn("ruh roh - gaps and changes sampling rate");
+            // TODO
+            for (int i = i0; i < i1; ++i)
+            {
+#ifdef NDEBUG
+                pSignal.at(i - i0) = pRef.at(i);
+#else
+                pSignal[i - i0] = pRef[i];
+#endif
+            }
+        }
     }
     return pSignal;
 } 
@@ -545,9 +557,9 @@ public:
         int nPSamplesOut = 0;
         try
         {
-            pResponse = inference3C(mInterpolator, 
-                                    pRequestor,
-                                    mPInferenceRequest);
+            pResponse = ::inference3C(mInterpolator, 
+                                      pRequestor,
+                                      mPInferenceRequest);
             mInferencedP = true;
             nPSamplesOut = static_cast<int>
                            (pResponse->getProbabilitySignalReference().size());
@@ -566,9 +578,9 @@ public:
         int nSSamplesOut = 0;
         try
         {
-            sResponse = inference3C(mInterpolator, 
-                                    sRequestor,
-                                    mSInferenceRequest);
+            sResponse = ::inference3C(mInterpolator, 
+                                      sRequestor,
+                                      mSInferenceRequest);
             mInferencedS = true;
             nSSamplesOut = static_cast<int>
                            (sResponse->getProbabilitySignalReference().size());
@@ -638,7 +650,7 @@ public:
             }
         }
         // At this point we are `successful.'  Sure, the broadcast could fail,
-        // or now data was extracted, but the machine must move forward and
+        // or no data was extracted, but the machine must move forward and
         // iterate at our last valid probability time.
         mLastProbabilityTime = t0Signal
                              + i1*std::chrono::microseconds

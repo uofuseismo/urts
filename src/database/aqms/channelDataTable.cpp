@@ -174,17 +174,26 @@ public:
     bool mHaveCurrent{false};
 };
 
-/// C'tor
+/// Constructor
 ChannelDataTable::ChannelDataTable() :
     pImpl(std::make_unique<ChannelDataTableImpl> (nullptr)) 
 {
 }
 
-/// C'tor
+/// Constructor
 ChannelDataTable::ChannelDataTable(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ChannelDataTableImpl> (logger))
 {
+}
+
+/// Constructor
+ChannelDataTable::ChannelDataTable(
+    std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+    std::shared_ptr<UMPS::Logging::ILog> logger) :
+    pImpl(std::make_unique<ChannelDataTableImpl> (logger))
+{
+    if (connection){setConnection(connection);}
 }
 
 /// Destructor

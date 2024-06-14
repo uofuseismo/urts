@@ -20,19 +20,32 @@
 #include <umps/services/command/serviceOptions.hpp>
 #include <umps/services/command/terminateRequest.hpp>
 #include <umps/services/command/terminateResponse.hpp>
+#include <uLocator/travelTimeCalculatorMap.hpp>
+#include <uLocator/uussRayTracer.hpp>
+#include <uLocator/station.hpp>
+#include <uLocator/corrections/sourceSpecific.hpp>
+#include <uLocator/corrections/static.hpp>
+#include <uLocator/position/wgs84.hpp>
+#include <uLocator/position/utahRegion.hpp>
+#include <uLocator/position/ynpRegion.hpp>
 #include "urts/services/scalable/associators/massociate/service.hpp"
 #include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
 #include "urts/broadcasts/internal/pick/subscriberOptions.hpp"
 #include "urts/broadcasts/internal/pick/subscriber.hpp"
 #include "urts/broadcasts/internal/origin/publisherOptions.hpp"
 #include "urts/broadcasts/internal/origin/publisher.hpp"
+#include "urts/database/aqms/stationData.hpp"
+#include "urts/database/aqms/stationDataTable.hpp"
+#include "urts/database/connection/postgresql.hpp"
 #include "private/isEmpty.hpp"
 
 namespace UAuth = UMPS::Authentication;
 namespace UMASS = URTS::Services::Scalable::Associators::MAssociate;
+namespace UDatabase = URTS::Database;
 
 #define MODULE_NAME "mAssociate"
 
+struct ProgramOptions;
 std::pair<std::string, int> parseCommandLineOptions(int argc, char *argv[]);
 std::shared_ptr<UMPS::Logging::ILog>
     createLogger(const std::string &moduleName = MODULE_NAME,
@@ -42,6 +55,8 @@ std::shared_ptr<UMPS::Logging::ILog>
                  const int hour = 0,
                  const int minute = 0);
 [[nodiscard]] std::string getInputOptions() noexcept;
+[[nodiscard]] std::shared_ptr<UDatabase::Connection::IConnection> 
+    createAQMSDatabaseConnection(const ::ProgramOptions options);
 
 /// @brief Defines the module options.
 struct ProgramOptions
@@ -178,6 +193,60 @@ struct ProgramOptions
                                      originTimeOut);
         mOriginPublisherOptions.setTimeOut(
             std::chrono::milliseconds {originTimeOut} );
+        //---------------------------- Database ------------------------------//
+        const auto databaseHost = std::getenv("URTS_AQMS_DATABASE_HOST");
+        const auto databaseName = std::getenv("URTS_AQMS_DATABASE_NAME");
+        const auto readOnlyUser = std::getenv("URTS_AQMS_RDONLY_USER");
+        const auto readOnlyPassword = std::getenv("URTS_AQMS_RDONLY_PASSWORD");
+        if (databaseHost != nullptr)
+        {
+            mDatabaseAddress = std::string {databaseHost};
+        }
+        if (databaseName != nullptr)
+        {
+            mDatabaseName = std::string {databaseName};
+        }
+        if (readOnlyUser != nullptr)
+        {
+            mDatabaseReadOnlyUser = std::string {readOnlyUser};
+        }
+        if (readOnlyPassword != nullptr)
+        {
+            mDatabaseReadOnlyPassword = std::string {readOnlyPassword};
+        }
+        mDatabaseReadOnlyUser
+            = propertyTree.get<std::string> (
+                 section + ".databaseReadOnlyUser",
+                 mDatabaseReadOnlyUser);
+        if (mDatabaseReadOnlyUser.empty())
+        {
+            throw std::runtime_error("Database read-only user not set");
+        }
+        mDatabaseReadOnlyPassword
+            = propertyTree.get<std::string> (
+                section + ".databaseReadOnlyPassword",
+                mDatabaseReadOnlyPassword);
+        if (mDatabaseReadOnlyPassword.empty())
+        {
+            throw std::runtime_error("Database read-only password not set");
+        }
+        mDatabasePort
+            = propertyTree.get<int> (section + ".databasePort", mDatabasePort);
+        mDatabaseAddress
+            = propertyTree.get<std::string> (
+                  section + ".databaseAddress",
+                  mDatabaseAddress);
+        if (mDatabaseAddress.empty())
+        {
+            throw std::runtime_error("Database address not set");
+        }
+        mDatabaseName
+            = propertyTree.get<std::string>
+              (section + ".databaseName", mDatabaseName);
+        if (mDatabaseName.empty())
+        {
+            throw std::runtime_error("Database name not set");
+        }
         //--------------------------Associator options------------------------//
         auto region = propertyTree.get<std::string> (section + ".region");
         if (region == "utah" || region == "Utah")
@@ -263,7 +332,11 @@ struct ProgramOptions
     std::string mServiceName{"MAssociate"};
     std::string mPickBroadcastName{"Pick"};
     std::string mOriginBroadcastName{"Origin"};
-    std::string mHeartbeatBroadcastName{"Heartbeat"};
+    std::string mHeartbeatBroadcastName{"Heartbeat"}; // TODO do i need this?
+    std::string mDatabaseAddress;
+    std::string mDatabaseName;
+    std::string mDatabaseReadOnlyUser;
+    std::string mDatabaseReadOnlyPassword;
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
     URTS::Broadcasts::Internal::Pick::SubscriberOptions mPickSubscriberOptions;
     URTS::Broadcasts::Internal::Origin::PublisherOptions
@@ -272,6 +345,7 @@ struct ProgramOptions
     UAuth::ZAPOptions mZAPOptions;
     std::chrono::seconds heartBeatInterval{30};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
+    int mDatabasePort{5432};
     int mInstance{0};
 };
 
@@ -471,6 +545,8 @@ private:
     bool mInitialized{false};
 };
 
+///--------------------------------------------------------------------------///
+
 int main(int argc, char *argv[])
 {
     // Get the ini file from the command line
@@ -507,9 +583,128 @@ int main(int argc, char *argv[])
                                  programOptions.mVerbosity,
                                  programOptions.mInstance,
                                  hour, minute);
+    // Get the database connection
+    std::shared_ptr<UDatabase::Connection::IConnection>
+        aqmsDatabaseConnection{nullptr};
+    std::vector<UDatabase::AQMS::StationData> aqmsStations;
+    try
+    {
+        aqmsDatabaseConnection = ::createAQMSDatabaseConnection(programOptions); 
+        UDatabase::AQMS::StationDataTable
+            stationDataTable{aqmsDatabaseConnection, logger}; 
+        stationDataTable.queryCurrent();
+        aqmsStations = stationDataTable.getStationData();
+    }
+    catch (const std::exception &e)
+    {
+        logger->error(std::string {e.what()});
+        return EXIT_FAILURE;
+    }
+    // Initialize
+    bool isUtah{true};
+    std::unique_ptr<ULocator::Position::IGeographicRegion>
+        geographicRegion{nullptr};
+    if (programOptions.mMAssociateServiceOptions.getRegion() ==
+        UMASS::ServiceOptions::Region::YNP)
+    {
+        isUtah = false;
+        geographicRegion = std::make_unique<ULocator::Position::YNPRegion> ();
+    }
+    else if (programOptions.mMAssociateServiceOptions.getRegion() ==
+        UMASS::ServiceOptions::Region::Utah)
+    {
+        geographicRegion = std::make_unique<ULocator::Position::UtahRegion> (); 
+        isUtah = true;
+    }
+    else
+    {
+        logger->error("Unhandled region!");
+        return EXIT_FAILURE;
+    }
+
+    // Get the travel time calculators.  Since 1D calculators are cheap we'll
+    // make one for everything in the database.
+    logger->info("Creating travel time calculators...");
+    auto travelTimeCalculatorMap
+        = std::make_unique<ULocator::TravelTimeCalculatorMap> (); 
+    bool doStaticCorrections{false};
+    auto staticCorrectionsFile
+        = programOptions.mMAssociateServiceOptions.getStaticCorrectionFile();
+    if (std::filesystem::exists(staticCorrectionsFile))
+    {
+        doStaticCorrections = true;
+    }
+    bool doSourceSpecificCorrections{false};
+    auto sourceSpecificCorrectionsFile
+        = programOptions.mMAssociateServiceOptions.getSourceSpecificCorrectionFile();
+    if (std::filesystem::exists(sourceSpecificCorrectionsFile))
+    {
+        doSourceSpecificCorrections = true;
+    }
+    for (const auto &aqmsStation : aqmsStations)
+    {
+        ULocator::Station station;
+        station.setNetwork(aqmsStation.getNetwork());
+        station.setName(aqmsStation.getStation());
+        ULocator::Position::WGS84 
+            location{aqmsStation.getLatitude(), aqmsStation.getLongitude()};
+        station.setElevation(aqmsStation.getElevation());
+        station.setGeographicPosition(location, *geographicRegion);
+        // Travel time calculator
+        if (isUtah)
+        {
+            ULocator::Corrections::Static pStatic;
+            ULocator::Corrections::SourceSpecific pSSSC; 
+            auto pRayTracer
+                = std::make_unique<ULocator::UUSSRayTracer>
+                  (station,
+                   ULocator::UUSSRayTracer::Phase::P,
+                   ULocator::UUSSRayTracer::Region::Utah,
+                   std::move(pStatic),
+                   std::move(pSSSC),
+                   logger);
+            if (doStaticCorrections)
+            {
+                pStatic.setStationNameAndPhase(station.getNetwork(),
+                                               station.getName(),
+                                               "P");
+                try
+                {
+                    pStatic.load(staticCorrectionsFile);
+                }
+                catch (...)
+                {
+                }
+            }
+            if (doSourceSpecificCorrections)
+            {
+                pSSSC.setStationNameAndPhase(station.getNetwork(),
+                                             station.getName(),
+                                             "P");
+                try
+                {
+                    pSSSC.load(sourceSpecificCorrectionsFile);
+                }
+                catch (...)
+                {
+                }
+            }
+            travelTimeCalculatorMap->insert(station, "P", std::move(pRayTracer));
+        }
+        else
+        {
+        }
+std::cout << aqmsStation.getStation() << " " << aqmsStation.getElevation() << std::endl;
+    }
+    
+
+    // Create the travel time calculators
+     
 
     return EXIT_SUCCESS;
 }
+
+///--------------------------------------------------------------------------///
 
 /// Read the program options from the command line
 std::pair<std::string, int> parseCommandLineOptions(int argc, char *argv[])
@@ -593,5 +788,20 @@ Commands:
    help       Displays this message.
 )"""};
     return commands;
+}
+
+
+std::shared_ptr<UDatabase::Connection::IConnection> 
+createAQMSDatabaseConnection(const ::ProgramOptions options)
+{
+    auto databaseConnection
+       = std::make_shared<UDatabase::Connection::PostgreSQL> ();
+    databaseConnection->setAddress(options.mDatabaseAddress);
+    databaseConnection->setDatabaseName(options.mDatabaseName);
+    databaseConnection->setUser(options.mDatabaseReadOnlyUser);
+    databaseConnection->setPassword(options.mDatabaseReadOnlyPassword);
+    databaseConnection->setPort(options.mDatabasePort);
+    databaseConnection->connect();
+    return databaseConnection;
 }
 

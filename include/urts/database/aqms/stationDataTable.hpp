@@ -34,6 +34,10 @@ public:
     StationDataTable();
     /// @brief Constructor with given logger.
     explicit StationDataTable(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given connection and logger.
+    /// @note Provided the connection is set, you can skip the setConnection() method.
+    explicit StationDataTable(std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+                              std::shared_ptr<UMPS::Logging::ILog> logger = nullptr); 
     /// @}
 
     /// @name Initialization
