@@ -2,6 +2,7 @@ var class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table =
 [
     [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#ac45181cd8721177cc3c34e69fcf50798", null ],
     [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#a5b298c98401784d7d1fc354d90cdf983", null ],
+    [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#a6d1c7fb2643f0940016a43b4e50e89c1", null ],
     [ "~ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#acda22d6081ab41c18bed1dcf9f48438d", null ],
     [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#aaaec7f0b79800d0481623bb12c7f85d4", null ],
     [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html#a416d4fe31dd554947a15f95c08052d2f", null ],
