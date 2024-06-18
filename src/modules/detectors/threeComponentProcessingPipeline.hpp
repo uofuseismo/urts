@@ -153,7 +153,7 @@ extractSignal(const bool changesSamplingRate,
         {
             for (int i = i0; i < i1; ++i)
             {
-#ifdef NDEBUG
+#ifndef NDEBUG
                 pSignal.at(i - i0) = pRef.at(i)*gapIndicator.at(i);
 #else
                 pSignal[i - i0] = pRef[i]*gapIndicator[i];
@@ -166,7 +166,7 @@ extractSignal(const bool changesSamplingRate,
             // TODO
             for (int i = i0; i < i1; ++i)
             {
-#ifdef NDEBUG
+#ifndef NDEBUG
                 pSignal.at(i - i0) = pRef.at(i);
 #else
                 pSignal[i - i0] = pRef[i];

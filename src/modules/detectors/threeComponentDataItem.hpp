@@ -273,12 +273,14 @@ public:
             {
                 indices[2] = i;
             }
-#ifndef NDEBUG
             else
             {
+#ifndef NDEBUG
                 assert(false);
-            }
+#else
+                throw std::runtime_error("Unhandled index");
 #endif
+            }
         }
 #ifndef NDEBUG
         assert(indices[0] != -1 && indices[1] != -1 && indices[2] != -2);

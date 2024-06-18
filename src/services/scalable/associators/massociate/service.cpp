@@ -1,6 +1,12 @@
+#include <thread>
+#include <mutex>
+#include <string>
+#include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messageFormats/failure.hpp>
 #include <umps/messageFormats/message.hpp>
+#include <umps/messaging/routerDealer/reply.hpp>
+#include <umps/messaging/routerDealer/replyOptions.hpp>
 #include <massociate/pick.hpp>
 #include <massociate/associator.hpp>
 #include <massociate/waveformIdentifier.hpp>
@@ -26,6 +32,7 @@
 #include "urts/database/connection/connection.hpp"
 #include "urts/database/aqms/stationDataTable.hpp"
 #include "urts/database/aqms/stationData.hpp"
+#include "createTravelTimeCalculator.hpp"
 
 namespace MASS = MAssociate;
 using namespace URTS::Services::Scalable::Associators::MAssociate;
@@ -238,7 +245,9 @@ public:
         {
             mLogger = logger;
         }
-        mAssociator = std::make_unique<MASS::Associator> (mLogger);
+        mReplier
+            = std::make_unique<UMPS::Messaging::RouterDealer::Reply>
+              (responseContext, mLogger);
     }
     void initialize(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map)
     {
@@ -357,10 +366,17 @@ public:
             }
             // Ensure we have the travel time tables for the pick.
             // This is an iterative loop
+            bool canCreateTable{false};
+            if (mAQMSConnection){canCreateTable = true;}
             for (int k = 0; k < nPicks; ++k)
             {
-                bool createdTables{false};
-                if (!createdTables){break;}
+                bool createTables{false};
+                if (!createTables){break;}
+                // Build the table
+                if (canCreateTable)
+                {
+
+                }
             }
             // Time to associate 
             try
@@ -405,9 +421,12 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<URTS::Database::Connection::IConnection>
         mAQMSConnection{nullptr};
+    std::unique_ptr<UMPS::Messaging::RouterDealer::Reply> mReplier{nullptr};
     ServiceOptions mOptions;
     std::unique_ptr<MASS::Associator> mAssociator{nullptr};
     std::unique_ptr<ULocator::Position::IGeographicRegion> mRegion{nullptr};
+    bool mIsUtah{true};
+    bool mInitialized{false};
 };
 
 /// Constructor
@@ -432,20 +451,68 @@ Service::Service(std::shared_ptr<UMPS::Messaging::Context> &responseContext,
 Service::~Service() = default;
 
 /// Initialize
-void Service::initialize(const ServiceOptions &options)
+void Service::initialize(
+    const ServiceOptions &options,
+    std::unique_ptr<::MAssociate::Associator> &&associator,
+    std::shared_ptr<URTS::Database::Connection::IConnection> &connection)
 {
-    // Set the geographic region
+    if (associator == nullptr)
+    {
+        throw std::invalid_argument("Associator is NULL");
+    }
+    if (!associator->haveOptimizer())
+    {
+        throw std::invalid_argument("Optimizer not set on associator");
+    }
+    if (!associator->haveClusterer())
+    {
+        throw std::invalid_argument("Clustered not set on associator");
+    }
+    // Database connection
+    pImpl->mAQMSConnection = nullptr;
+    if (connection != nullptr){pImpl->mAQMSConnection = connection;}
+    // Create the replier
+    pImpl->mLogger->debug("Creating replier...");
+    UMPS::Messaging::RouterDealer::ReplyOptions replierOptions;
+    replierOptions.setAddress(options.getAddress());
+    replierOptions.setZAPOptions(options.getZAPOptions());
+    replierOptions.setPollingTimeOut(options.getPollingTimeOut());
+    replierOptions.setSendHighWaterMark(options.getSendHighWaterMark());
+    replierOptions.setReceiveHighWaterMark(
+        options.getReceiveHighWaterMark());
+    replierOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                         &*this->pImpl,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2,
+                                         std::placeholders::_3));
+    pImpl->mReplier->initialize(replierOptions); 
+    std::this_thread::sleep_for(std::chrono::milliseconds {10});
+    // Create the associator
     if (options.getRegion() == ServiceOptions::Region::Utah)
     {
-        pImpl->mRegion = ULocator::Position::UtahRegion {}.clone(); 
+        pImpl->mRegion = ULocator::Position::UtahRegion {}.clone();
+        pImpl->mIsUtah = true;
     }
     else
     {
         pImpl->mRegion = ULocator::Position::YNPRegion {}.clone();
+        pImpl->mIsUtah = false;
     }
-    auto clusterer = std::make_unique<MASS::DBSCAN> ();
-    clusterer->initialize(options.getDBSCANEpsilon(),
-                          options.getDBSCANMinimumClusterSize());
-    // Create the default travel time tables
-  
+    pImpl->mAssociator = std::move(associator);
+    // Initialized?
+    pImpl->mInitialized = pImpl->mReplier->isInitialized();
+    if (pImpl->mInitialized)
+    {
+        pImpl->mLogger->debug("Service initialized!");
+        pImpl->mOptions = options;
+    }
+    else
+    {
+        pImpl->mLogger->error("Failed to initialize service.");
+    }
+}
+
+bool Service::isInitialized() const noexcept
+{
+    return pImpl->mInitialized;
 }

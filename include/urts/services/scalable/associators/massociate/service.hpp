@@ -1,6 +1,8 @@
 #ifndef URTS_SERVICES_SCALABLE_SERVICE_ASSOCIATORS_MASSOCIATE_SERVICE_HPP
 #define URTS_SERVICES_SCALABLE_SERVICE_ASSOCIATORS_MASSOCIATE_SERVICE_HPP
 #include <memory>
+#include <massociate/associator.hpp>
+#include <uLocator/position/geographicRegion.hpp>
 namespace UMPS
 {
  namespace Logging
@@ -11,10 +13,6 @@ namespace UMPS
  {
   class Context;
  }
-}
-namespace ULocator
-{
- class TravelTimeCalculatorMap;
 }
 namespace URTS::Database::Connection
 {
@@ -48,17 +46,20 @@ public:
     /// @{
 
     /// @brief Initializes the class.
-    /// @param[in] options  The options defining the replier and associator
-    ///                     options.
+    /// @param[in] options   The options defining the replier.
+    /// @param[in,out] associator  The initialized associator.  On exit,
+    ///                            associator's behavior is undefined.
+    /// @param[in] aqmsConnection  A connection to the AQMS database.
     /// @throws std::invalid_argument if the replier information is not set
     ///         or the associator options are invalid.
     /// @throws std::runtime_error if there is an error connecting or
     ///         initializing associator.
-    void initialize(const ServiceOptions &options);
+    void initialize(const ServiceOptions &options,
+                    std::unique_ptr<::MAssociate::Associator> &&associator,
+                    std::shared_ptr<URTS::Database::Connection::IConnection> &aqmsConnection);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-
-    void setTravelTimeCalculatorMap(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map);
+//void setTravelTimeCalculatorMap(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map);
     /// @}
 
     /// @name Step 2: Start 

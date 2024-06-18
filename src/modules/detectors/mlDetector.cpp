@@ -782,6 +782,8 @@ public:
         {
 #ifndef NDEBUG
             assert(false);
+#else
+            throw std::runtime_error("Inputs are unequal");
 #endif
         }
 /*

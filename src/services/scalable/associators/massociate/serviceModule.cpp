@@ -7,10 +7,16 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <massociate/associator.hpp>
+#include <massociate/dbscan.hpp>
+#include <massociate/migrator.hpp>
+#include <massociate/optimizer.hpp>
+#include <massociate/particleSwarm.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/modules/process.hpp>
+#include <umps/modules/processManager.hpp>
 #include <umps/services/command/service.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
@@ -37,8 +43,10 @@
 #include "urts/database/aqms/stationData.hpp"
 #include "urts/database/aqms/stationDataTable.hpp"
 #include "urts/database/connection/postgresql.hpp"
+#include "createTravelTimeCalculator.hpp"
 #include "private/isEmpty.hpp"
 
+namespace MASS = MAssociate;
 namespace UAuth = UMPS::Authentication;
 namespace UMASS = URTS::Services::Scalable::Associators::MAssociate;
 namespace UDatabase = URTS::Database;
@@ -270,6 +278,19 @@ struct ProgramOptions
             throw std::invalid_argument("Unhandled region: " + region);
         }
         // Load the variables with defaults
+        mMinimumNumberOfArrivals
+            = propertyTree.get<int> (section + ".minimumNumberOfArrivals",
+                                     mMinimumNumberOfArrivals);
+        if (mMinimumNumberOfArrivals < 4)
+        {
+            throw std::invalid_argument(
+               "Minimum number of arrivals must be positive");
+        }
+        mMinimumNumberOfPArrivals 
+            = propertyTree.get<int> (section + ".minimumNumberOfPArrivals",
+                                     mMinimumNumberOfPArrivals);
+        mMinimumNumberOfPArrivals = std::max(mMinimumNumberOfPArrivals, 0);
+
         auto minimumSearchDepth
             = propertyTree.get<double>
               (section + ".minimumSearchDepth",
@@ -345,6 +366,8 @@ struct ProgramOptions
     UAuth::ZAPOptions mZAPOptions;
     std::chrono::seconds heartBeatInterval{30};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
+    int mMinimumNumberOfArrivals{7};
+    int mMinimumNumberOfPArrivals{4};
     int mDatabasePort{5432};
     int mInstance{0};
 };
@@ -636,7 +659,8 @@ int main(int argc, char *argv[])
     }
     bool doSourceSpecificCorrections{false};
     auto sourceSpecificCorrectionsFile
-        = programOptions.mMAssociateServiceOptions.getSourceSpecificCorrectionFile();
+        = programOptions.mMAssociateServiceOptions
+                        .getSourceSpecificCorrectionFile();
     if (std::filesystem::exists(sourceSpecificCorrectionsFile))
     {
         doSourceSpecificCorrections = true;
@@ -644,62 +668,97 @@ int main(int argc, char *argv[])
     for (const auto &aqmsStation : aqmsStations)
     {
         ULocator::Station station;
-        station.setNetwork(aqmsStation.getNetwork());
-        station.setName(aqmsStation.getStation());
-        ULocator::Position::WGS84 
-            location{aqmsStation.getLatitude(), aqmsStation.getLongitude()};
-        station.setElevation(aqmsStation.getElevation());
-        station.setGeographicPosition(location, *geographicRegion);
-        // Travel time calculator
         if (isUtah)
         {
-            ULocator::Corrections::Static pStatic;
-            ULocator::Corrections::SourceSpecific pSSSC; 
-            auto pRayTracer
-                = std::make_unique<ULocator::UUSSRayTracer>
-                  (station,
-                   ULocator::UUSSRayTracer::Phase::P,
-                   ULocator::UUSSRayTracer::Region::Utah,
-                   std::move(pStatic),
-                   std::move(pSSSC),
-                   logger);
-            if (doStaticCorrections)
-            {
-                pStatic.setStationNameAndPhase(station.getNetwork(),
-                                               station.getName(),
-                                               "P");
-                try
-                {
-                    pStatic.load(staticCorrectionsFile);
-                }
-                catch (...)
-                {
-                }
-            }
-            if (doSourceSpecificCorrections)
-            {
-                pSSSC.setStationNameAndPhase(station.getNetwork(),
-                                             station.getName(),
-                                             "P");
-                try
-                {
-                    pSSSC.load(sourceSpecificCorrectionsFile);
-                }
-                catch (...)
-                {
-                }
-            }
-            travelTimeCalculatorMap->insert(station, "P", std::move(pRayTracer));
+            station = ::createUtahStation(aqmsStation);
         }
         else
         {
+            station = ::createYNPStation(aqmsStation);
         }
-std::cout << aqmsStation.getStation() << " " << aqmsStation.getElevation() << std::endl;
-    }
-    
+        // Travel time calculator for each phase 
+        std::vector<std::string> phases{"P", "S"};
+        for (const auto &thisPhase : phases)
+        {
+            try
+            {
+                std::filesystem::path staticsFile;
+                if (doStaticCorrections){staticsFile = staticCorrectionsFile;}
+                std::filesystem::path ssscFile;
+                if (doSourceSpecificCorrections)
+                {
+                    ssscFile = sourceSpecificCorrectionsFile;
+                }
+                auto rayTracer = ::createTravelTimeCalculator(station,
+                                                              thisPhase,
+                                                              isUtah,
+                                                              staticsFile,
+                                                              ssscFile,
+                                                              logger);
+                travelTimeCalculatorMap->insert(station, thisPhase,
+                                                std::move(rayTracer));
+            }
+            catch (const std::exception &e)
+            {
+                logger->warn("Did not add calculator because "
+                           + std::string {e.what()});
+            }
 
-    // Create the travel time calculators
-     
+        } // Loop on phases
+    } // Loop on stations in database
+    // Create the clusterer
+    auto clusterer = std::make_unique<MASS::DBSCAN> (); 
+    clusterer->initialize(
+        programOptions.mMAssociateServiceOptions.getDBSCANEpsilon(),
+        programOptions.mMAssociateServiceOptions.getDBSCANMinimumClusterSize());
+    // Create the migrator
+    auto migrator = std::make_unique<MASS::IMigrator> (logger);
+    migrator->setTravelTimeCalculatorMap(std::move(travelTimeCalculatorMap));
+    migrator->setGeographicRegion(*geographicRegion->clone());
+    migrator->setPickSignalToMigrate(MASS::IMigrator::PickSignal::Boxcar);
+    migrator->setMaximumEpicentralDistance(
+        programOptions.mMAssociateServiceOptions
+                      .getMaximumDistanceToAssociate());
+    // Create the optimizer for the migrator
+    auto psoOptimizer = std::make_unique<MAssociate::ParticleSwarm> (logger);
+    auto searchDepthExtent
+        = programOptions.mMAssociateServiceOptions.getExtentInDepth();
+    if (std::abs(searchDepthExtent.second - searchDepthExtent.first) > 1.)
+    {
+        psoOptimizer->setExtentInZ(searchDepthExtent);
+        psoOptimizer->enableSearchDepth();
+    }
+    else
+    {
+        auto searchDepth
+            = 0.5*(searchDepthExtent.first + searchDepthExtent.second); 
+        psoOptimizer->setDepth(searchDepth);
+        psoOptimizer->disableSearchDepth();
+    }
+    psoOptimizer->setNumberOfParticles(
+        programOptions.mMAssociateServiceOptions.getNumberOfParticles());
+    psoOptimizer->setNumberOfGenerations(
+        programOptions.mMAssociateServiceOptions.getNumberOfEpochs());
+    psoOptimizer->setMigrator(std::move(migrator));
+    auto associator = std::make_unique<MASS::Associator> (logger); 
+    try
+    {
+        associator->initialize(programOptions.mMinimumNumberOfArrivals,
+                               programOptions.mMinimumNumberOfPArrivals);
+        associator->setOptimizer(std::move(psoOptimizer));
+        associator->setClusterer(std::move(clusterer));
+    }
+    catch (const std::exception &e)
+    {
+        logger->error(std::string {e.what()});
+        return EXIT_FAILURE;
+    }
+    // Create a communication context
+    auto context = std::make_shared<UMPS::Messaging::Context> (1);
+    // Initialize the various processes
+    logger->info("Initializing processes...");
+    UMPS::Modules::ProcessManager processManager{logger};
+ 
 
     return EXIT_SUCCESS;
 }
@@ -769,6 +828,12 @@ std::shared_ptr<UMPS::Logging::ILog>
                  const int hour,
                  const int minute)
 {
+{
+auto logger = std::make_shared<UMPS::Logging::StandardOut> (verbosity);
+logger->error("fix me");
+return logger;
+}
+
     auto logFileName = moduleName + "_" + std::to_string(instance) + ".log";
     auto fullLogFileName = logFileDirectory / logFileName;
     auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
