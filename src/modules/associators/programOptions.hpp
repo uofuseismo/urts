@@ -51,6 +51,7 @@ public:
                 throw std::runtime_error("Failed to make log directory");
             }
         }
+/*
         //---------------------------- Database ------------------------------//
         const auto readOnlyUser = std::getenv("URTS_AQMS_RDONLY_USER");
         const auto readOnlyPassword = std::getenv("URTS_AQMS_RDONLY_PASSWORD");
@@ -92,7 +93,6 @@ public:
         {
             throw std::runtime_error("Database name not set");
         }
-/*
         auto databasePollerInterval
             = propertyTree.get<int> ("MLDetector.databasePollerInterval",
                                      mDatabasePollerInterval.count());
@@ -101,79 +101,72 @@ public:
             throw std::runtime_error("Database poll interval must be positive");
         }
         mDatabasePollerInterval = std::chrono::seconds {databasePollerInterval};
-*/
+ */
         //------------------------- Associator Options -----------------------//
-        mThreads = propertyTree.get<int> ("MLDetector.nThreads", mThreads);
-        if (mThreads < 1)
+        std::string section{"MAssociator"};
+
+        auto region = propertyTree.get<std::string> (section + ".region");
+        if (region == "utah" || region == "Utah")
         {
-            throw std::runtime_error("At least one thread required");
+            mIsUtah = true;
+        }
+        else if (region == "YNP" || region == "ynp" || region == "Yellowstone")
+        {
+            mIsUtah = false;
+        }
+        else
+        {
+            throw std::invalid_argument("Unhandled region: " + region);
         }
 
-/*
-        mProbabilityPacketBroadcastName
+        mPickBroadcastName
             = propertyTree.get<std::string> (
-                 "MLDetector.probabilityPacketBroadcastName",
-                 mProbabilityPacketBroadcastName);
-        mProbabilityPacketBroadcastAddress
+                 section + ".pickBroadcastName",
+                 mPickBroadcastName);
+        mPickBroadcastAddress
             = propertyTree.get<std::string> (
-                 "MLDetector.probabilityPacketBroadcastAddress",
-                 mProbabilityPacketBroadcastAddress);
-        if (::isEmpty(mProbabilityPacketBroadcastName) &&
-            ::isEmpty(mProbabilityPacketBroadcastAddress))
+                 section + ".pickBroadcastAddress",
+                 mPickBroadcastAddress);
+        if (::isEmpty(mPickBroadcastName) &&
+            ::isEmpty(mPickBroadcastAddress))
         {
-            throw std::runtime_error("Probability broadcast indeterminable");
+            throw std::runtime_error("Pick broadcast indeterminable");
         }
-        mP3CDetectorServiceName
+
+        mOriginBroadcastName
             = propertyTree.get<std::string> (
-                "MLDetector.pThreeComponentDetectorServiceName",
-                mP3CDetectorServiceName);
-        mP3CDetectorServiceAddress
+                 section + ".originBroadcastName",
+                 mOriginBroadcastName);
+        mOriginBroadcastAddress
             = propertyTree.get<std::string> (
-                "MLDetector.pThreeComponentDetectorServiceAddress",
-                mP3CDetectorServiceAddress);
-        mS3CDetectorServiceName
+                 section + ".originBroadcastAddress",
+                 mOriginBroadcastAddress);
+        if (::isEmpty(mOriginBroadcastName) &&
+            ::isEmpty(mOriginBroadcastAddress))
+        {
+            throw std::runtime_error("Origin broadcast indeterminable");
+        }
+
+        mAssociatorServiceName
             = propertyTree.get<std::string> (
-                "MLDetector.sThreeComponentDetectorServiceName",
-                mS3CDetectorServiceName);
-        mS3CDetectorServiceAddress
+                section + ".associatorServiceName",
+                mAssociatorServiceName);
+        mAssociatorServiceAddress
             = propertyTree.get<std::string> (
-                "MLDetector.sThreeComponentDetectorServiceAddress",
-                mS3CDetectorServiceAddress);
-        mP1CDetectorServiceName
-            = propertyTree.get<std::string> (
-                "MLDetector.pOneComponentDetectorServiceName",
-                mP1CDetectorServiceName);
-        mP1CDetectorServiceAddress
-            = propertyTree.get<std::string> (
-                "MLDetector.pOneComponentDetectorServiceAddress",
-                mP1CDetectorServiceAddress);
-        mPacketCacheServiceName
-            = propertyTree.get<std::string> (
-                "MLDetector.packetCacheServiceName",
-                mPacketCacheServiceName);
-        mPacketCacheServiceAddress
-            = propertyTree.get<std::string> (
-                "MLDetector.packetCacheServiceAddress",
-                mPacketCacheServiceAddress);
+                section + ".associatorServiceAddress",
+                mAssociatorServiceAddress);
         // Request time outs
         auto requestTimeOut
-            = propertyTree.get<int> ("MLDetector.inferenceRequestTimeOut",
-                                     mInferenceRequestReceiveTimeOut.count());
+            = propertyTree.get<int> (section + ".associatorRequestTimeOut",
+                                     mAssociatorRequestReceiveTimeOut.count());
         if (requestTimeOut < 0)
         {
             throw std::invalid_argument("Requests cannot indefinitely block");
         }
-        mInferenceRequestReceiveTimeOut
-            = std::chrono::milliseconds {requestTimeOut};
+        mAssociatorRequestReceiveTimeOut
+            = std::chrono::seconds {requestTimeOut};
 
-        requestTimeOut
-            = propertyTree.get<int> ("MLDetector.packetCacheRequestTimeOut",
-                                     mDataRequestReceiveTimeOut.count());
-        if (requestTimeOut < 0)
-        {
-            throw std::invalid_argument("Requests cannot indefinitely block");
-        }
-        mDataRequestReceiveTimeOut = std::chrono::milliseconds {requestTimeOut};
+/*
         // Signal latency
         auto maximumSignalLatency
             = propertyTree.get<int> ("MLDetector.maximumSignalLatency",
@@ -277,7 +270,7 @@ public:
         }
 */
     }
-    std::string mModuleName{"MLDetector"};
+    std::string mModuleName{"MAssociator"};
     std::string mAssociatorServiceName{"MAssociator"};
     std::string mAssociatorServiceAddress;
     std::string mPickBroadcastName{"Pick"};
@@ -285,24 +278,24 @@ public:
     std::string mOriginBroadcastName{"PreliminaryOrigin"};
     std::string mOriginBroadcastAddress;
 
-    std::string mDatabaseAddress;
-    std::string mDatabaseName;
-    std::string mDatabaseReadOnlyUser;
-    std::string mDatabaseReadOnlyPassword;
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
     //std::chrono::seconds mDatabasePollerInterval{3600};
-    std::chrono::seconds mMaximumPickLatency{180};
-    std::chrono::milliseconds mAssociationRequestReceiveTimeOut{30000}; // 30 seconds
+    std::chrono::seconds mAssociationWindowDuration{180};
+    std::chrono::seconds mPickLatency{60};
+    std::chrono::seconds mMaximumMoveout{45};
+    std::chrono::seconds mAssociatorRequestReceiveTimeOut{60};
     std::set<std::string> mActiveNetworks;
-//    URTS::Services::Scalable::Associators::MAssociate::RequestorOptions
-//         mAssociatorRequestorOptions;
+    URTS::Services::Scalable::Associators::MAssociate::RequestorOptions
+         mAssociatorRequestorOptions;
+    URTS::Broadcasts::Internal::Pick::SubscriberOptions mPickSubscriberOptions;
     URTS::Broadcasts::Internal::Origin::PublisherOptions
          mOriginPublisherOptions;
     double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};
     int mOriginHighWaterMark{0}; // Infinite
-    int mThreads{1};
+    //int mThreads{1};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
+    bool mIsUtah{true};
 };
 }
 #endif

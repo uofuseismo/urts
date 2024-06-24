@@ -413,7 +413,7 @@ void Service::start()
     {
         throw std::runtime_error("PacketCache service not initialized");
     }
-    pImpl->mLogger->debug("Starting service...");
+    pImpl->mLogger->debug("Starting packet cache service...");
     pImpl->start();
 }
 
@@ -426,7 +426,7 @@ bool Service::isRunning() const noexcept
 /// Stop service
 void Service::stop()
 {
-    pImpl->mLogger->debug("Stopping service...");
+    pImpl->mLogger->debug("Stopping packet cache service...");
     pImpl->stop();
 }
 

@@ -1,6 +1,7 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include <algorithm>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/standardOut.hpp>
 #include <umps/messageFormats/failure.hpp>
@@ -63,6 +64,45 @@ MASS::Pick fromPick(const Pick &pick)
         result.setPhaseHint(MASS::Pick::PhaseHint::S);
     }
 
+    return result;
+}
+
+Pick fromPick(const MASS::Pick &pick)
+{
+    Pick result;
+    const auto &waveformIdentifier = pick.getWaveformIdentifier();
+    result.setNetwork(waveformIdentifier.getNetwork());
+    result.setStation(waveformIdentifier.getStation());
+    result.setChannel(waveformIdentifier.getChannel());
+    result.setLocationCode(waveformIdentifier.getLocationCode());
+    result.setIdentifier(pick.getIdentifier());
+    result.setTime(pick.getTime());
+    result.setStandardError(pick.getStandardError());
+    if (pick.getPhaseHint() == "P")
+    {
+        result.setPhaseHint(Pick::PhaseHint::P);
+    }
+    else
+    {
+        result.setPhaseHint(Pick::PhaseHint::S);
+    }
+    return result;
+}
+
+std::vector<Pick> fromPicks(const std::vector<MASS::Pick> &picks)
+{
+    std::vector<Pick> result;
+    result.reserve(picks.size());
+    for (const auto &pick : picks)
+    {
+        try
+        {
+            result.push_back(::fromPick(pick));
+        }
+        catch (...)
+        {
+        }
+    }
     return result;
 }
 
@@ -182,6 +222,7 @@ std::vector<MASS::Pick> fromPicks(const std::vector<Pick> &picks,
     return result;
 }
 
+/*
 ULocator::Station
 getStationInformation(
     const std::string &networkCode,
@@ -227,6 +268,7 @@ getStationInformation(
     stationInformation.setGeographicPosition(position, region);
     return stationInformation;
 }
+*/
 
 }
 
@@ -249,6 +291,7 @@ public:
             = std::make_unique<UMPS::Messaging::RouterDealer::Reply>
               (responseContext, mLogger);
     }
+/*
     void initialize(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map)
     {
         // Geographic region
@@ -293,6 +336,35 @@ public:
             mOptions.getMaximumDistanceToAssociate());
 
     }
+*/
+    /// @brief Starts the service
+    void start()
+    {
+        stop();
+        setRunning(true);
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mLogger->debug("Starting replier service...");
+        mReplier->start();
+    }
+    /// @brief Stops the threads
+    void stop()
+    {
+        mLogger->debug("MAssociate associator service stopping threads...");
+        setRunning(false);
+        if (mReplier != nullptr){mReplier->stop();}
+    }
+    /// @result True indicates the threads should keep running
+    [[nodiscard]] bool keepRunning() const
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mKeepRunning;
+    }
+    /// @brief Toggles this as running or not running
+    void setRunning(const bool running)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mKeepRunning = running;
+    }
     /// @brief Respond to travel time calculation requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
@@ -307,7 +379,8 @@ public:
             // Unpack the message
             try
             {
-                associationRequest.fromMessage(reinterpret_cast<const char *> (messageContents), length);
+                associationRequest.fromMessage(
+                    reinterpret_cast<const char *> (messageContents), length);
                 response.setIdentifier(associationRequest.getIdentifier());
             }
             catch (const std::exception &e)
@@ -363,31 +436,116 @@ public:
                     AssociationResponse::ReturnCode::AlgorithmicFailure);
                 mLogger->error("Failed to adjust identifiers "
                              + std::string {e.what()});
+                return response.clone();
+            }
+            // Convert to MAssociate picks
+            std::vector<MASS::Pick> massPicks;
+            try
+            {
+                massPicks = ::fromPicks(picks, mLogger);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to convert picks");
+                response.setReturnCode(
+                   AssociationResponse::ReturnCode::AlgorithmicFailure);
+                return response.clone();
+            }
+            // Insufficient number of picks were converted
+            if (static_cast<int> (massPicks.size()) < 4)
+            {
+                response.setUnassociatedPicks(picks);
+                response.setReturnCode(
+                    AssociationResponse::ReturnCode::Success);
+                return response.clone(); 
             }
             // Ensure we have the travel time tables for the pick.
-            // This is an iterative loop
-            bool canCreateTable{false};
-            if (mAQMSConnection){canCreateTable = true;}
-            for (int k = 0; k < nPicks; ++k)
+            if (mAQMSConnection)
             {
-                bool createTables{false};
-                if (!createTables){break;}
-                // Build the table
-                if (canCreateTable)
+                for (const auto &pick : massPicks)
                 {
-
+                    if (!mAssociator->haveTravelTimeCalculator(pick))
+                    {
+                        // Attempt ot create the table
+                        try
+                        {
+                            // Create the station information from the database
+                            auto identifier = pick.getWaveformIdentifier();
+                            auto calculatorName = identifier.getNetwork()
+                                                + identifier.getStation()
+                                                + pick.getPhaseHint();
+                            mLogger->debug("Attempting to create 1D calculator "
+                                         + calculatorName);
+                            auto uStation
+                                = ::createStation(identifier.getNetwork(),
+                                                  identifier.getStation(),
+                                                  mIsUtah,
+                                                  mAQMSConnection,
+                                                  mLogger);
+                            // If we haven't read it now then we don't have the
+                            // corrections
+                            std::filesystem::path staticCorrectionsFile; 
+                            std::filesystem::path sourceSpecificCorrectionsFile;
+                            auto calculator
+                                = ::createTravelTimeCalculator(
+                                      uStation,
+                                      pick.getPhaseHint(),
+                                      mIsUtah,
+                                      staticCorrectionsFile,
+                                      sourceSpecificCorrectionsFile,
+                                      mLogger);
+                            mAssociator->addTravelTimeCalculator(
+                                uStation,
+                                pick.getPhaseHint(),
+                                std::move(calculator));
+                        }
+                        catch (const std::exception &e)
+                        {
+                            mLogger->warn(e.what());
+                        } 
+                    }
                 }
+            }
+            // Now, if we don't have a table we purge the pick
+            massPicks.erase
+            (
+                std::remove_if(massPicks.begin(), massPicks.end(),
+                               [&](const MASS::Pick &massPick)
+                {
+                    try
+                    {
+                        return !mAssociator->haveTravelTimeCalculator(massPick);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->warn(e.what());
+                        return true;
+                    }
+                }),
+                massPicks.end()
+            );
+            // Insufficient number of picks have travel time calculators
+            if (static_cast<int> (massPicks.size()) < 4)
+            {
+                response.setUnassociatedPicks(picks);
+                response.setReturnCode(
+                    AssociationResponse::ReturnCode::Success);
+                return response.clone();
             }
             // Time to associate 
             try
             {
-                auto massPicks = ::fromPicks(picks, mLogger);
+                //auto massPicks = ::fromPicks(picks, mLogger);
+                mLogger->debug("Performing association with "
+                             + std::to_string(massPicks.size())
+                             + " picks");
                 mAssociator->setPicks(massPicks);
                 mAssociator->associate();
                 auto associatedEvents = mAssociator->getEvents(); 
                 // No events - this is easy
                 if (associatedEvents.empty())
                 {
+                    mLogger->debug("Not events created"); 
                     response.setUnassociatedPicks(picks);
                     response.setReturnCode(
                         AssociationResponse::ReturnCode::Success);
@@ -396,10 +554,32 @@ public:
                 {
                     // Build the events
                     auto origins = ::fromEvents(associatedEvents, mLogger);
+                    mLogger->debug("Created " + std::to_string(origins.size()) + " events!");
                     response.setOrigins(origins); 
                     // Set the unassociated picks
-                    mAssociator->getUnassociatedPicks();
-
+                    auto massUnassociatedPicks
+                        = mAssociator->getUnassociatedPicks();
+                    auto unassociatedPicks = ::fromPicks(massUnassociatedPicks);
+                    // And for any pick not in the unassociated picks b/c of
+                    // random problems along the way - add it
+                    for (auto &pick : picks)
+                    {
+                        bool exists{false};
+                        for (const auto &unassociatedPick : unassociatedPicks)
+                        {
+                            if (unassociatedPick.getIdentifier() ==
+                                pick.getIdentifier())
+                            {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists)
+                        {
+                            unassociatedPicks.push_back(std::move(pick));
+                        }
+                    }
+                    response.setUnassociatedPicks(unassociatedPicks);
                     response.setReturnCode(
                         AssociationResponse::ReturnCode::Success);
                 }
@@ -418,6 +598,7 @@ public:
         response.setDetails("Unhandled message type");
         return response.clone();
     }
+    mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<URTS::Database::Connection::IConnection>
         mAQMSConnection{nullptr};
@@ -426,6 +607,7 @@ public:
     std::unique_ptr<MASS::Associator> mAssociator{nullptr};
     std::unique_ptr<ULocator::Position::IGeographicRegion> mRegion{nullptr};
     bool mIsUtah{true};
+    bool mKeepRunning{false};
     bool mInitialized{false};
 };
 
@@ -512,7 +694,30 @@ void Service::initialize(
     }
 }
 
+/// Initialized?
 bool Service::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
 }
+
+/// Start the service
+void Service::start()
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    pImpl->mLogger->debug("Starting MAssociator associator service");
+    pImpl->start();
+}
+
+/// Stop the service
+void Service::stop()
+{
+    pImpl->mLogger->debug("stopping MAssociator associator service");
+    pImpl->stop();
+}
+
+/// Running?
+bool Service::isRunning() const noexcept
+{
+    return pImpl->keepRunning();
+}
+

@@ -7,10 +7,15 @@
 #include <uLocator/uussRayTracer.hpp>
 #include <uLocator/corrections/sourceSpecific.hpp>
 #include <uLocator/corrections/static.hpp>
+#include <uLocator/position/knownUtahEvent.hpp>
+#include <uLocator/position/knownUtahQuarry.hpp>
+#include <uLocator/position/knownYNPEvent.hpp>
 #include <uLocator/position/utahRegion.hpp>
 #include <uLocator/position/wgs84.hpp>
 #include <uLocator/position/ynpRegion.hpp>
 #include "urts/database/aqms/stationData.hpp"
+#include "urts/database/aqms/stationDataTable.hpp"
+#include "urts/database/connection/connection.hpp"
 namespace 
 {
 
@@ -70,6 +75,36 @@ ULocator::Station createYNPStation(
                               station.getLongitude(),
                               station.getElevation());
 }
+
+[[maybe_unused]] [[nodiscard]] ULocator::Station createStation(
+    const std::string &network, const std::string station,
+    const bool isUtah,
+    std::shared_ptr<URTS::Database::Connection::IConnection> &connection,
+    std::shared_ptr<UMPS::Logging::ILog> &logger)
+{
+    constexpr bool queryCurrent{true};
+    URTS::Database::AQMS::StationDataTable stationDataTable{connection, logger};
+    stationDataTable.query(network, station, queryCurrent);
+    auto stationData = stationDataTable.getStationData();
+    if (stationData.empty())
+    {
+        throw std::runtime_error("No entry in AQMS database for "
+                                + network + "." + station); 
+    }
+    if (stationData.size() > 1 && logger != nullptr)
+    {
+        logger->warn("Multiple entries found for " 
+                   + network + "." + station + ".  Using first one");
+    }
+    if (isUtah)
+    {
+        return ::createUtahStation(stationData.at(0));
+    }
+    else
+    {
+        return ::createYNPStation(stationData.at(0));
+    }
+} 
 
 /// @brief Creates a 1D travel time calculator.
 /// @param[in] station   The station information.
@@ -183,6 +218,82 @@ ULocator::Station createYNPStation(
         rayTracer = nullptr;
     }
     return rayTracer;
+}
+
+/// Creates the Utah search locations
+class LocalUtahQuarry : public ULocator::Position::IKnownLocalLocation
+{
+public:
+    explicit LocalUtahQuarry(const ULocator::Position::UtahQuarry &quarry)
+    {
+        auto [x, y] = quarry.getLocalCoordinates();
+        mX = x;
+        mY = y;
+        mZ =-quarry.getElevation();
+    }
+    LocalUtahQuarry() = delete;
+    LocalUtahQuarry(const LocalUtahQuarry &quarry){*this = quarry;}
+    ~LocalUtahQuarry() = default;
+    double x() const override{return mX;}
+    double y() const override{return mY;}
+    double z() const override{return mZ;}
+    LocalUtahQuarry& operator=(LocalUtahQuarry &&quarry) noexcept
+    {
+        mX = quarry.mX;
+        mY = quarry.mY;
+        mZ = quarry.mZ;
+        return *this;
+    }
+    LocalUtahQuarry& operator=(const LocalUtahQuarry &quarry)
+    {
+        mX = quarry.mX;
+        mY = quarry.mY;
+        mZ = quarry.mZ;
+        return *this;
+    }
+    std::unique_ptr<ULocator::Position::IKnownLocalLocation> clone() const override
+    {
+        std::unique_ptr<ULocator::Position::IKnownLocalLocation> result
+            = std::make_unique<LocalUtahQuarry> (*this);
+        return result;
+    }
+    double mX{0};
+    double mY{0};
+    double mZ{0};
+};
+
+[[maybe_unused]]
+std::vector<std::unique_ptr<ULocator::Position::IKnownLocalLocation>>
+    createKnownUtahSearchLocations()
+{
+    std::vector<std::unique_ptr<ULocator::Position::IKnownLocalLocation>>
+        searchLocations;
+    auto knownEvents = ULocator::Position::getKnownUtahEvents();
+    for (const auto &event : knownEvents)
+    {
+        searchLocations.push_back(event.clone());
+    }
+    auto knownQuarries = ULocator::Position::getUtahQuarries();
+    for (const auto &quarry : knownQuarries)
+    {
+        LocalUtahQuarry localQuarry{quarry};
+        searchLocations.push_back(localQuarry.clone());
+    }
+    return searchLocations;
+}
+
+[[maybe_unused]]
+std::vector<std::unique_ptr<ULocator::Position::IKnownLocalLocation>>
+    createKnownYNPSearchLocations()
+{
+    std::vector<std::unique_ptr<ULocator::Position::IKnownLocalLocation>>
+        searchLocations;
+    auto knownEvents = ULocator::Position::getKnownYNPEvents();
+    for (const auto &event : knownEvents)
+    {   
+        searchLocations.push_back(event.clone());
+    }
+    return searchLocations;
 }
 
 }

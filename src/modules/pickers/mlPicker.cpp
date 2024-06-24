@@ -721,8 +721,8 @@ int main(int argc, char *argv[])
 
         auto pickerProcess = std::make_unique<::Picker> (programOptions, logger);
         // Create the remote replier
-logger->error("create module registry process");
-/*
+        //logger->error("create module registry process");
+
         logger->debug("Creating module registry replier process...");
         namespace URemoteCommand = UMPS::ProxyServices::Command;
         URemoteCommand::ModuleDetails moduleDetails;
@@ -740,14 +740,13 @@ logger->error("create module registry process");
                                                    "ModuleRegistry",
                                                    nullptr, // Make new context
                                                    logger);
-*/
+
         // Add the remote replier and inference engine
-        //processManager.insert(std::move(remoteReplierProcess));
+        processManager.insert(std::move(remoteReplierProcess));
         processManager.insert(std::move(pickerProcess));
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
         logger->error(e.what());
         return EXIT_FAILURE;
     }
@@ -759,7 +758,6 @@ logger->error("create module registry process");
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
         logger->error(e.what());
         return EXIT_FAILURE;
     }

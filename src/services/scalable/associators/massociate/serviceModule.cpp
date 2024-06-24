@@ -12,12 +12,16 @@
 #include <massociate/migrator.hpp>
 #include <massociate/optimizer.hpp>
 #include <massociate/particleSwarm.hpp>
+#include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
-#include <umps/authentication/zapOptions.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
-#include <umps/services/command/service.hpp>
+#include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
 #include <umps/services/command/commandRequest.hpp>
@@ -26,6 +30,11 @@
 #include <umps/services/command/serviceOptions.hpp>
 #include <umps/services/command/terminateRequest.hpp>
 #include <umps/services/command/terminateResponse.hpp>
+#include <umps/services/connectionInformation/details.hpp>
+#include <umps/services/connectionInformation/requestorOptions.hpp>
+#include <umps/services/connectionInformation/requestor.hpp>
+#include <umps/services/connectionInformation/socketDetails/dealer.hpp>
+#include <umps/services/connectionInformation/details.hpp>
 #include <uLocator/travelTimeCalculatorMap.hpp>
 #include <uLocator/uussRayTracer.hpp>
 #include <uLocator/station.hpp>
@@ -155,6 +164,7 @@ struct ProgramOptions
         mMAssociateServiceOptions.setPollingTimeOut(
             std::chrono::milliseconds {pollingTimeOut} );
         //--------------------------Pick Subscriber---------------------------//
+/*
         mPickBroadcastName = propertyTree.get<std::string>
                              (section + ".pickBroadcastName",
                               mPickBroadcastName);
@@ -201,6 +211,7 @@ struct ProgramOptions
                                      originTimeOut);
         mOriginPublisherOptions.setTimeOut(
             std::chrono::milliseconds {originTimeOut} );
+*/
         //---------------------------- Database ------------------------------//
         const auto databaseHost = std::getenv("URTS_AQMS_DATABASE_HOST");
         const auto databaseName = std::getenv("URTS_AQMS_DATABASE_NAME");
@@ -372,14 +383,14 @@ struct ProgramOptions
     int mInstance{0};
 };
 
-class Associator : public UMPS::Modules::IProcess
+class AssociatorProcess : public UMPS::Modules::IProcess
 {
 public:
-    Associator() = delete;
+    AssociatorProcess() = delete;
     /// @brief Constructor.
-    Associator(const std::string &moduleName,
-               std::unique_ptr<UMASS::Service> &&associator,
-               std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    AssociatorProcess(const std::string &moduleName,
+                      std::unique_ptr<UMASS::Service> &&associator,
+                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mAssociator(std::move(associator)),
         mLogger(logger)
     {
@@ -406,7 +417,7 @@ public:
         UMPS::Services::Command::ServiceOptions localServiceOptions;
         localServiceOptions.setModuleName(moduleName);
         localServiceOptions.setCallback(
-            std::bind(&Associator::commandCallback,
+            std::bind(&AssociatorProcess::commandCallback,
                       this,
                       std::placeholders::_1,
                       std::placeholders::_2,
@@ -415,14 +426,14 @@ public:
         mInitialized = true;
     }
     /// @brief Destructor
-    ~Associator() override
+    ~AssociatorProcess() override
     {
         stop();
     }
     /// @result True indicates the class is initialized
     [[nodiscard]] bool isInitialized() const noexcept
     {
-        std::scoped_lock lock(mMutex); 
+        //std::scoped_lock lock(mMutex); 
         return mInitialized;
     }
     /// @result True indicates this should keep running
@@ -430,7 +441,12 @@ public:
     {
         return mKeepRunning; 
     }
-    /// @brief Stops the process.
+    /// @result True indicates this is still running
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return keepRunning();
+    }
+    /// @brief Stops the processes.
     void stop() override
     {
         setRunning(false);
@@ -442,6 +458,20 @@ public:
         {
             if (mLocalCommand->isRunning()){mLocalCommand->stop();}
         }
+    }
+    /// @brief Starts the processes.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::invalid_argument("Associator not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the associator service...");
+        mAssociator->start();
+        mLogger->debug("Starting the local command proxy...");
+        mLocalCommand->start();
     }
     /// @brief Toggles this as running or not running
     void setRunning(const bool running)
@@ -560,12 +590,12 @@ public:
         return commandsResponse.clone();
     }
 private:
-    mutable std::mutex mMutex;
+    //mutable std::mutex mMutex;
     std::unique_ptr<UMASS::Service> mAssociator{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::atomic<bool> mKeepRunning{true};
-    bool mInitialized{false};
+    std::atomic<bool> mInitialized{false};
 };
 
 ///--------------------------------------------------------------------------///
@@ -713,6 +743,14 @@ int main(int argc, char *argv[])
         programOptions.mMAssociateServiceOptions.getDBSCANMinimumClusterSize());
     // Create the migrator
     auto migrator = std::make_unique<MASS::IMigrator> (logger);
+    if (isUtah)
+    {
+        migrator->setDefaultSearchLocations(::createKnownUtahSearchLocations());
+    }
+    else
+    {
+        migrator->setDefaultSearchLocations(::createKnownYNPSearchLocations());
+    }
     migrator->setTravelTimeCalculatorMap(std::move(travelTimeCalculatorMap));
     migrator->setGeographicRegion(*geographicRegion->clone());
     migrator->setPickSignalToMigrate(MASS::IMigrator::PickSignal::Boxcar);
@@ -758,8 +796,93 @@ int main(int argc, char *argv[])
     // Initialize the various processes
     logger->info("Initializing processes...");
     UMPS::Modules::ProcessManager processManager{logger};
- 
+    try
+    {
+        // Connect to the operator
+        logger->debug("Connecting to uOperator...");
+        const std::string operatorSection{"uOperator"};
+        auto uOperator
+            = UMPS::Services::ConnectionInformation::createRequestor(
+                 iniFile, operatorSection, context, logger);
+        programOptions.mZAPOptions = uOperator->getZAPOptions();
 
+        // Create a heartbeat
+        logger->debug("Creating heartbeat process...");
+        namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+        auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
+                                                            "Heartbeat",
+                                                            context,
+                                                            logger);
+        processManager.insert(std::move(heartbeat));
+
+        // Create the module command replier
+        logger->debug("Creating module registry replier process...");
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        moduleDetails.setInstance(instance);
+
+        // Get the backend service connection details
+        if (!programOptions.mMAssociateServiceOptions.haveAddress())
+        {
+            auto address = uOperator->getProxyServiceBackendDetails(
+                              programOptions.mServiceName).getAddress();
+            programOptions.mMAssociateServiceOptions.setAddress(address);
+        }
+        programOptions.mMAssociateServiceOptions.setZAPOptions(
+            programOptions.mZAPOptions);
+
+        // Create the service and the subsequent process
+        auto associatorService
+            = std::make_unique<UMASS::Service> (context, logger);
+        associatorService->initialize(programOptions.mMAssociateServiceOptions,
+                                      std::move(associator),
+                                      aqmsDatabaseConnection);
+        auto associatorProcess
+            = std::make_unique<::AssociatorProcess>
+                 (programOptions.mModuleName,
+                  std::move(associatorService),
+                  logger);
+
+        // Create the remote replier
+        auto callbackFunction = std::bind(&AssociatorProcess::commandCallback,
+                                          &*associatorProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        auto remoteReplierProcess
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        // Add the remote replier and inference engine
+        processManager.insert(std::move(remoteReplierProcess));
+        processManager.insert(std::move(associatorProcess));
+    } 
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // Start the processes
+    logger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e) 
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // The main thread waits and, when requested, sends a stop to all processes
+    logger->info("Starting main thread...");
+    processManager.handleMainThread();
     return EXIT_SUCCESS;
 }
 

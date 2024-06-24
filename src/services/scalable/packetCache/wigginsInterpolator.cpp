@@ -23,10 +23,18 @@ std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
     {
         for (int i = 1; i < nPackets; ++i)
         {
-            auto t0 = packetStartEndTimes[i-1].second;
+            auto t0 = packetStartEndTimes[i - 1].second;
             auto t1 = packetStartEndTimes[i].first;
 #ifndef NDEBUG
             assert(t1 - t0 >= 0);
+#else
+            if (t1 < t0)
+            {
+                throw std::runtime_error(
+                    "::createGapStartEnd algorhmic failure t1 < t0; "
+                  + std::to_string(t1.count()) + " "
+                  + std::to_string(t0.count()));
+            }
 #endif
             if (t1 - t0 > gapTolerance)
             {

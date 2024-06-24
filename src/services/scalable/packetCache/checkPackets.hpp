@@ -48,6 +48,13 @@ checkPacketsAndGetStartEndTime(
         {
             throw std::invalid_argument("Inconsistent location codes");
         }
+        if (packet.getStartTime() > packet.getEndTime())
+        {
+            auto name = network + "." + station + "."
+                      + channel + "." + locationCode; 
+            throw std::invalid_argument(
+               "Packet start time > packet end time for " + name);
+        }              
     }
     if (t0Packets == tMax || t1Packets == tMin)
     {
