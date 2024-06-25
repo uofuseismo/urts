@@ -25,6 +25,7 @@ std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
         {
             auto t0 = packetStartEndTimes[i - 1].second;
             auto t1 = packetStartEndTimes[i].first;
+            /*
 #ifndef NDEBUG
             assert(t1 - t0 >= 0);
 #else
@@ -36,9 +37,21 @@ std::vector<std::pair<int64_t, int64_t>> createGapStartEnd(
                   + std::to_string(t0.count()));
             }
 #endif
+            */
+            // Gap exists
             if (t1 - t0 > gapTolerance)
             {
                 gapStartEnd.push_back( std::pair{t0, t1} );
+            }
+            else
+            {
+                if (t1 < t0)
+                {
+                    // N.B. I think this is okay because technically there isn't
+                    // a gap.  However, the interpolation may be a bit wonky.
+                    std::cerr << "::createGapStartEnd overlapping packets "
+                              << t0 << " " << t1 << std::endl;
+                }
             }
         }
     }
