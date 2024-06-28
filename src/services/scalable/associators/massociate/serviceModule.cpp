@@ -666,8 +666,8 @@ int main(int argc, char *argv[])
     else if (programOptions.mMAssociateServiceOptions.getRegion() ==
         UMASS::ServiceOptions::Region::Utah)
     {
-        geographicRegion = std::make_unique<ULocator::Position::UtahRegion> (); 
         isUtah = true;
+        geographicRegion = std::make_unique<ULocator::Position::UtahRegion> (); 
     }
     else
     {

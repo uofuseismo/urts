@@ -577,7 +577,7 @@ if (${MAssociate_FOUND})
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
    target_link_libraries(mAssociator
-                         PRIVATE urts ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                         PRIVATE urts 
                                  ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
    target_include_directories(mAssociator
                               PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src

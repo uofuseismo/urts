@@ -304,6 +304,16 @@ public:
                 {
                     URTS::Services::Scalable::Associators::MAssociate::Pick massPick{*pick};
                     auto network = massPick.getNetwork();
+//std::cout << massPick.getStandardError() << " " << static_cast<int> (massPick.getPhaseHint()) << std::endl;
+// TODO fix this
+if (massPick.getPhaseHint() == URTS::Services::Scalable::Associators::MAssociate::Pick::PhaseHint::P)
+{
+ massPick.setStandardError(0.1);
+}
+else
+{
+ massPick.setStandardError(0.2);
+}
                     bool sendUtah{false};
                     bool sendYNP{false};
                     if (network == "UU" || network == "NN" ||
@@ -495,10 +505,46 @@ identifier++;
                     if (pick.getTime() >= oldestProcessingTime)// &&
                     //    pick.getTime() <= newestProcessingTime)
                     {
-                        picksToAssociate.push_back(pick);
+                        // Check the other picks for a duplicate
+                        bool duplicate{false};
+                        for (const auto &existingPick : picksToAssociate)
+                        {
+                            auto channel1 = existingPick.getChannel();
+                            channel1.pop_back();
+                            auto channel2 = pick.getChannel();
+                            channel2.pop_back();                              
+                            constexpr std::chrono::microseconds tolerance{1000000};
+                            if (existingPick.getNetwork() == pick.getNetwork() &&
+                                existingPick.getStation() == pick.getStation() &&
+                                channel1 == channel2 && //existingPick.getChannel() == pick.getChannel() &&
+                                existingPick.getLocationCode() == pick.getLocationCode() &&
+                                existingPick.getPhaseHint() == pick.getPhaseHint() &&
+                                std::abs(existingPick.getTime().count() - pick.getTime().count()) < tolerance.count())
+                            {
+                                duplicate = true;
+                                break;
+                            } 
+                        }
+                        if (!duplicate)
+                        {
+                             picksToAssociate.push_back(pick);
+                        }
+                        else
+                        {
+                            std::string phaseHint{"P"};
+                            if (pick.getPhaseHint() == URTS::Services::Scalable::Associators::MAssociate::Pick::PhaseHint::S)
+                            {
+                                phaseHint = "S";
+                            }
+                            auto pickName = pick.getNetwork() + "."
+                                          + pick.getStation() + "."
+                                          + pick.getChannel() + "."
+                                          + pick.getLocationCode() + "."
+                                          + phaseHint;
+                            mLogger->debug("Skipping duplicate " + pickName);
+                        }
                     }
                 }
-std::cout << picks.size() << " " << picksToAssociate.size() << std::endl;
                 if (picksToAssociate.size() > 4)
                 {
                     try
@@ -522,11 +568,21 @@ std::cout << picks.size() << " " << picksToAssociate.size() << std::endl;
                             // Make the remaining origins publishable and remove associated picks
                             for (const auto &origin : origins)
                             {
+
+/*
                                 mLogger->info("Created origin at "
-                                            + std::to_string(origin.getTime().count()*1.e-6) + " "
+                                            + std::to_string(origin.getTime().count()*1.e-6) + " " 
                                             + std::to_string(origin.getLatitude()) + " " 
-                                            + std::to_string(origin.getLongitude()) + " "
+                                            + std::to_string(origin.getLongitude()) + " " 
                                             + std::to_string(origin.getDepth())); 
+                                for (const auto &arrival : origin.getArrivalsReference())
+                                {
+                                    auto phase = "P";
+                                    if (arrival.getPhase() == URTS::Services::Scalable::Associators::MAssociate::Arrival::Phase::S){phase = "S";} 
+ auto time = arrival.getTime().count()*1.e-6;
+                                    mLogger->info("Arrival " + arrival.getNetwork() + "." + arrival.getStation() + "." + arrival.getChannel() + "." + arrival.getLocationCode() + "." + phase + " " + std::to_string(time));
+                                }
+*/
                                 try
                                 {
                                     mOriginPublisherQueue.push(::fromOrigin(origin));
@@ -537,13 +593,6 @@ std::cout << picks.size() << " " << picksToAssociate.size() << std::endl;
                                 }
                                 // Purge associated picks
                                 const auto &arrivalsReference = origin.getArrivalsReference();
-                                for (const auto &arrival : arrivalsReference)
-                                {
-                                    auto phase = "P";
-                                    if (arrival.getPhase() == URTS::Services::Scalable::Associators::MAssociate::Arrival::Phase::S){phase = "S";} 
- auto time = arrival.getTime().count()*1.e-6;
-                                    mLogger->info("Arrival " + arrival.getNetwork() + "." + arrival.getStation() + "." + arrival.getChannel() + "." + arrival.getLocationCode() + "." + phase + " " + std::to_string(time));
-                                }
                                 for (const auto &arrival : arrivalsReference)
                                 {
                                     auto arrivalIdentifier = arrival.getIdentifier();

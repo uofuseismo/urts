@@ -1,4 +1,5 @@
 #include <thread>
+#include <cmath>
 #include <mutex>
 #include <string>
 #include <algorithm>
@@ -40,6 +41,44 @@ using namespace URTS::Services::Scalable::Associators::MAssociate;
 
 namespace
 {
+
+/*
+std::vector<MASS::Pick> deduplicate(const std::vector<MASS::Pick> &picks,
+                 const std::chrono::microseconds &tolerance = std::chrono::microseconds {500000})
+{
+    std::vector<MASS::Pick> result;
+    result.reserve(picks.size());
+    auto nPicks = static_cast<int> (picks.size());
+    std::vector<bool> keep(picks.size(), true);
+    for (int i = 0; i < nPicks; ++i)
+    {
+        auto waveformIdentifier = picks[i].getWaveformIdentifier();
+        auto network = waveformIdentifier.getNetwork();
+        auto station = waveformIdentifier.getStation();
+        auto channel = waveformIdentifier.getChannel();
+        auto locationCode = waveformIdentifier.getLocationCode();
+        auto phaseHint = picks[i].getPhaseHint();
+        auto time = picks[i].getTime();
+        if (!keep[i]){continue;} // Already marked duplicate - skip
+        // Check for copycats
+        for (int j = i + 1; j < nPicks; ++j)
+        {
+            waveformIdentifier = picks[j].getWaveformIdentifier();
+            if (network == waveformIdentifier.getNetwork() &&
+                station == waveformIdentifier.getStation() &&
+                channel == waveformIdentifier.getChannel() &&
+                locationCode == waveformIdentifier.getLocationCode() &&
+                phaseHint  == picks[j].getPhaseHint() &&
+                std::abs(time.count() - picks[j].getTime().count()) < tolerance.count())
+            {
+                keep[j] = false;
+            }
+        }
+        result.push_back(picks[i]); 
+    }
+    return result;
+}
+*/
 
 MASS::Pick fromPick(const Pick &pick)
 {
@@ -443,6 +482,7 @@ public:
             try
             {
                 massPicks = ::fromPicks(picks, mLogger);
+                //massPicks = ::deduplicate(massPicks);
             }
             catch (const std::exception &e)
             {
@@ -536,16 +576,18 @@ public:
             try
             {
                 //auto massPicks = ::fromPicks(picks, mLogger);
-                mLogger->debug("Performing association with "
+                mLogger->info("Performing association with "
                              + std::to_string(massPicks.size())
                              + " picks");
                 mAssociator->setPicks(massPicks);
-                mAssociator->associate();
+                const std::chrono::seconds minimumOriginTime{0};
+                const std::chrono::seconds maximumOriginTime{4070908800}; 
+                mAssociator->associate(minimumOriginTime, maximumOriginTime);
                 auto associatedEvents = mAssociator->getEvents(); 
                 // No events - this is easy
                 if (associatedEvents.empty())
                 {
-                    mLogger->debug("Not events created"); 
+                    mLogger->debug("No events created"); 
                     response.setUnassociatedPicks(picks);
                     response.setReturnCode(
                         AssociationResponse::ReturnCode::Success);
@@ -555,6 +597,24 @@ public:
                     // Build the events
                     auto origins = ::fromEvents(associatedEvents, mLogger);
                     mLogger->debug("Created " + std::to_string(origins.size()) + " events!");
+                    for (const auto &origin : origins)
+                    {
+                        mLogger->info("Origin " + std::to_string(origin.getTime().count()*1.e-6) + " "
+                                                + std::to_string(origin.getLatitude()) + " " 
+                                                + std::to_string(origin.getLongitude()) + " "
+                                                + std::to_string(origin.getDepth()));
+                        for (const auto &arrival : origin.getArrivals())
+                        {
+                            std::string phase{"P"};
+                            if (arrival.getPhase() == Arrival::Phase::S){phase = "S";}
+                            mLogger->info(arrival.getNetwork() + "."
+                                        + arrival.getStation() + "."
+                                        + arrival.getChannel() + "."
+                                        + arrival.getLocationCode() + "."
+                                        + phase + " "
+                                        + std::to_string(arrival.getTime().count()*1.e-6));
+                        }
+                    }
                     response.setOrigins(origins); 
                     // Set the unassociated picks
                     auto massUnassociatedPicks
