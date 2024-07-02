@@ -52,9 +52,11 @@ var annotated_dup =
       ] ],
       [ "Database", null, [
         [ "AQMS", null, [
+          [ "Arrival", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_arrival.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_arrival" ],
           [ "ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data" ],
           [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table" ],
           [ "ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller" ],
+          [ "Origin", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin" ],
           [ "StationData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data" ],
           [ "StationDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table" ]
         ] ],

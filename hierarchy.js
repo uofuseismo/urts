@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "URTS::Broadcasts::Internal::Origin::Arrival", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html", null ],
+    [ "URTS::Database::AQMS::Arrival", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_arrival.html", null ],
     [ "URTS::Services::Scalable::Associators::MAssociate::Arrival", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_arrival.html", null ],
     [ "URTS::Services::Scalable::PacketCache::CappedCollection", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_capped_collection.html", null ],
     [ "URTS::Database::AQMS::ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", null ],
@@ -72,6 +73,7 @@ var hierarchy =
       [ "URTS::Database::AQMS::StationDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html", null ]
     ] ],
     [ "Message", "class_message.html", null ],
+    [ "URTS::Database::AQMS::Origin", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html", null ],
     [ "URTS::Services::Scalable::Associators::MAssociate::Origin", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin.html", null ],
     [ "URTS::Services::Scalable::Associators::MAssociate::Pick", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_pick.html", null ],
     [ "URTS::Broadcasts::Internal::DataPacket::Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_data_packet_1_1_publisher.html", null ],
