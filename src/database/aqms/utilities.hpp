@@ -1,6 +1,7 @@
 #ifndef PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #define PRIVATE_DATABASE_AQMS_UTILITIES_HPP
 #include <iostream>
+#include <string>
 #include <chrono>
 #include <date/date.h>
 //#include <time/utc.hpp>
@@ -124,6 +125,16 @@ std::string formatTimeUTC(const std::chrono::microseconds &time)
             year, month, dayOfMonth,
             hour, minute, second,
             microSecond);
+    return result;
+}
+
+[[maybe_unused]]
+[[nodiscard]]
+std::string convertString(const std::string &input)
+{
+    auto result = input;
+    std::remove_if(result.begin(), result.end(), ::isspace);
+    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
     return result;
 }
 

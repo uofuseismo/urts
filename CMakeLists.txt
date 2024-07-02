@@ -3,7 +3,7 @@ project(URTS VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
 # Some options
-option(BUILD_UI "Build the Qt-based user interface" OFF)
+#option(BUILD_UI "Build the Qt-based user interface" OFF)
 option(WRAP_PYTHON "Compile the Python bindings" OFF)
 
 include(CheckCXXCompilerFlag)
@@ -48,10 +48,10 @@ if (${UUSSMLModels_FOUND})
    message("Enabling UUSS machine-learning models")
    set(BUILD_UUSS_MLMODELS TRUE)
 endif() 
-if (${BUILD_UI})
-   find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED)
-   find_package(QPhase REQUIRED)
-endif()
+#if (${BUILD_UI})
+#   find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED)
+#   find_package(QPhase REQUIRED)
+#endif()
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
@@ -118,6 +118,7 @@ set(GENERIC_SRC
     src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/broadcasts/utilities/dataPacketSanitizer.cpp
     src/broadcasts/utilities/dataPacketSanitizerOptions.cpp
+    src/database/aqms/arrival.cpp
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
@@ -323,7 +324,7 @@ endif()
 file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(GTEST_TEST_SRC
     testing/main.cpp
-    testing/database/aqms.cpp
+    #testing/database/aqms.cpp
     testing/broadcasts/internal/dataPacket.cpp
     #testing/broadcasts/internal/pick.cpp
     testing/broadcasts/internal/probabilityPacket.cpp
@@ -362,6 +363,7 @@ add_test(NAME unitTests
          COMMAND unitTests)
 
 set(CATCH_TEST_SRC
+    testing/database/aqms.cpp
     testing/broadcasts/internal/origin.cpp
     testing/broadcasts/internal/pick.cpp)
 if (${MAssociate_FOUND} AND ${uLocator_FOUND})
@@ -588,27 +590,27 @@ endif()
 ##########################################################################################
 #                                       User Interface                                   #
 ##########################################################################################
-if (${BUILD_UI})
-   qt6_add_resources(QURTS_RESOURCES
-                     ${CMAKE_SOURCE_DIR}/ui/resources/qurts.qrc)
-   add_executable(qurts ${UI_SRC} ${QURTS_RESOURCES})
-   set_target_properties(qurts PROPERTIES
-                         CXX_STANDARD 17
-                         CXX_STANDARD_REQUIRED YES
-                         CXX_EXTENSIONS NO
-                         AUTOMOC ON
-                         AUTORCC ON
-                         AUTOUIC ON)
-   target_include_directories(qurts
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/ui>
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
-                              PRIVATE Qt6::Core Qt6::Widgets Qt6::Network
-                                      ${QPHASE_INCLUDE_DIR}
-                              PRIVATE ${UMPS_INCLUDE_DIR})
-   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets Qt6::Network
-                                       ${UMPS_LIBRARY} ${QPHASE_LIBRARY})
-endif()
+#if (${BUILD_UI})
+#   qt6_add_resources(QURTS_RESOURCES
+#                     ${CMAKE_SOURCE_DIR}/ui/resources/qurts.qrc)
+#   add_executable(qurts ${UI_SRC} ${QURTS_RESOURCES})
+#   set_target_properties(qurts PROPERTIES
+#                         CXX_STANDARD 17
+#                         CXX_STANDARD_REQUIRED YES
+#                         CXX_EXTENSIONS NO
+#                         AUTOMOC ON
+#                         AUTORCC ON
+#                         AUTOUIC ON)
+#   target_include_directories(qurts
+#                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+#                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/ui>
+#                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+#                              PRIVATE Qt6::Core Qt6::Widgets Qt6::Network
+#                                      ${QPHASE_INCLUDE_DIR}
+#                              PRIVATE ${UMPS_INCLUDE_DIR})
+#   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets Qt6::Network
+#                                       ${UMPS_LIBRARY} ${QPHASE_LIBRARY})
+#endif()
 
 ##########################################################################################
 #                                      Python Wrapping                                   #

@@ -78,6 +78,9 @@ public:
     [[nodiscard]] bool haveStation() const noexcept;
     /// @}
 
+    /// @name Channel
+    /// @{
+
     /// @brief Sets the channel name.
     /// @param[in] channel  The channel name.
     void setChannel(const std::string &channel);

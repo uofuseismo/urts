@@ -1,15 +1,15 @@
 #include <string>
+#include <cmath>
 #include <chrono>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/aqms/stationData.hpp"
-#include <gtest/gtest.h>
-
-namespace
-{
+#include "urts/database/aqms/arrival.hpp"
 
 using namespace URTS::Database::AQMS;
 
-TEST(DatabaseAQMS, StationData)
+TEST_CASE("URTS::Database::AQMS", "[StationData]")
 {
     const std::string network{"UU"};
     const std::string station{"IMU"};
@@ -31,18 +31,18 @@ TEST(DatabaseAQMS, StationData)
     data.setLoadDate(loadDate);
 
     StationData dataCopy(data);
-    EXPECT_EQ(dataCopy.getNetwork(), network);
-    EXPECT_EQ(dataCopy.getStation(), station);
-    EXPECT_EQ(dataCopy.getDescription(), description);
-    EXPECT_NEAR(dataCopy.getLatitude(),  latitude,  1.e-10);
-    EXPECT_NEAR(dataCopy.getLongitude(), longitude, 1.e-10);
-    EXPECT_NEAR(dataCopy.getElevation(), elevation, 1.e-10);
-    EXPECT_EQ(dataCopy.getOnDate(),  tOn);
-    EXPECT_EQ(dataCopy.getOffDate(), tOff);
-    EXPECT_EQ(dataCopy.getLoadDate(), loadDate);
+    REQUIRE(dataCopy.getNetwork() == network);
+    REQUIRE(dataCopy.getStation() == station);
+    REQUIRE(dataCopy.getDescription() == description);
+    REQUIRE(std::abs(dataCopy.getLatitude() - latitude) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getLongitude() - longitude) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getElevation() - elevation) < 1.e-10);
+    REQUIRE(dataCopy.getOnDate() == tOn);
+    REQUIRE(dataCopy.getOffDate() == tOff);
+    REQUIRE(dataCopy.getLoadDate() == loadDate);
 }
 
-TEST(DatabaseAQMS, ChannelData)
+TEST_CASE("URTS::Database::AQMS", "[ChannelData]")
 {
     const std::string network{"UU"};
     const std::string station{"IMU"};
@@ -72,19 +72,63 @@ TEST(DatabaseAQMS, ChannelData)
     data.setLoadDate(loadDate);
 
     ChannelData dataCopy(data);
-    EXPECT_EQ(dataCopy.getNetwork(), network);
-    EXPECT_EQ(dataCopy.getStation(), station);
-    EXPECT_EQ(dataCopy.getChannel(), channel);
-    EXPECT_EQ(dataCopy.getLocationCode(), locationCode);
-    EXPECT_NEAR(dataCopy.getLatitude(),     latitude,     1.e-10);
-    EXPECT_NEAR(dataCopy.getLongitude(),    longitude,    1.e-10);
-    EXPECT_NEAR(dataCopy.getElevation(),    elevation,    1.e-10);
-    EXPECT_NEAR(dataCopy.getDip(),          dip,          1.e-10);
-    EXPECT_NEAR(dataCopy.getAzimuth(),      azimuth,      1.e-10);
-    EXPECT_NEAR(dataCopy.getSamplingRate(), samplingRate, 1.e-10);
-    EXPECT_EQ(dataCopy.getOnDate(),  tOn);
-    EXPECT_EQ(dataCopy.getOffDate(), tOff);
-    EXPECT_EQ(dataCopy.getLoadDate(), loadDate);
+    REQUIRE(dataCopy.getNetwork() == network);
+    REQUIRE(dataCopy.getStation() == station);
+    REQUIRE(dataCopy.getChannel() == channel);
+    REQUIRE(dataCopy.getLocationCode() == locationCode);
+    REQUIRE(std::abs(dataCopy.getLatitude() - latitude) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getLongitude() - longitude) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getElevation() - elevation) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getDip() - dip) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getAzimuth() - azimuth) < 1.e-10);
+    REQUIRE(std::abs(dataCopy.getSamplingRate() - samplingRate) < 1.e-10);
+    REQUIRE(dataCopy.getOnDate() == tOn);
+    REQUIRE(dataCopy.getOffDate() == tOff);
+    REQUIRE(dataCopy.getLoadDate() == loadDate);
 }
 
+TEST_CASE("URTS::Database::AQMS", "Arrival")
+{
+    const std::string authority{"UU"};
+    const std::string network{"UU"};
+    const std::string station{"BHUT"};
+    const std::string channel{"HHZ"};
+    const std::string locationCode{"01"};
+    const std::string phase{"P"};
+    const std::string subSource{"ML1"};
+    const std::chrono::microseconds time{123456789};
+    const Arrival::FirstMotion firstMotion{Arrival::FirstMotion::Up};
+    const Arrival::ReviewFlag reviewFlag{Arrival::ReviewFlag::Human};
+    const int64_t identifier{9423};
+    const double quality{0.5};
+    Arrival arrival;
+    arrival.setAuthority(authority);
+    arrival.setSubSource(subSource);
+    arrival.setNetwork(network);
+    arrival.setStation(station);
+    arrival.setSEEDChannel(channel);
+    arrival.setLocationCode(locationCode);
+    arrival.setPhase(phase);
+    arrival.setTime(time);
+    arrival.setFirstMotion(firstMotion);
+    arrival.setReviewFlag(reviewFlag);
+    arrival.setQuality(quality);
+    arrival.setIdentifier(identifier);
+    SECTION("Copy")
+    {
+        Arrival copy{arrival}; 
+        REQUIRE(copy.getAuthority() == authority);
+        REQUIRE(*copy.getNetwork() == network);
+        REQUIRE(copy.getStation() == station);
+        REQUIRE(*copy.getSEEDChannel() == channel);
+        REQUIRE(*copy.getLocationCode() == locationCode);
+        REQUIRE(*copy.getPhase() == phase);
+        REQUIRE(std::abs(copy.getTime() - time.count()*1.e-6) < 1.e-14);
+        REQUIRE(copy.getFirstMotion() == firstMotion);
+        REQUIRE(*copy.getReviewFlag() == reviewFlag);
+        REQUIRE(std::abs(*copy.getQuality() - quality) < 1.e-14);
+        REQUIRE(*copy.getSubSource() == subSource);
+        REQUIRE(*copy.getIdentifier() == identifier);
+    }
+    
 }
