@@ -122,9 +122,10 @@ public:
 
     /// @name Longitude
     /// @{
+
     /// @brief Sets the station longitude.
     /// @param[in] longitude  The station latitude in degrees.
-    /// @throws std::invalid_argument if the latitude is not in
+    /// @throws std::invalid_argument if the longitude is not in
     ///         the range [-540,540).
     void setLongitude(double longitude);
     /// @result The station longitude in degrees.

@@ -59,6 +59,12 @@ Arrival& Arrival::operator=(Arrival &&arrival) noexcept
     return *this;
 }
 
+/// Reset class 
+void Arrival::clear() noexcept
+{
+    pImpl = std::make_unique<ArrivalImpl> ();
+}
+
 /// Destructor
 Arrival::~Arrival() = default;
 
@@ -262,6 +268,10 @@ std::optional<Arrival::ReviewFlag> Arrival::getReviewFlag() const noexcept
 /// Subsource
 void Arrival::setSubSource(const std::string &subSource)
 {
+    if (subSource.size() > 8)
+    {
+        throw std::invalid_argument("Sub-source must be 8 characters or less");
+    }
     pImpl->mSubSource = subSource;
 }
 

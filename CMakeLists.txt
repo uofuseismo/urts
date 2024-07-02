@@ -122,6 +122,7 @@ set(GENERIC_SRC
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
+    src/database/aqms/origin.cpp
     src/database/aqms/stationData.cpp
     src/database/aqms/stationDataTable.cpp
     src/database/connection/postgresql.cpp

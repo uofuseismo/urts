@@ -6,6 +6,9 @@
 #include <optional>
 namespace URTS::Database::AQMS
 {
+/// @class Arrival "arrival.hpp" "urts/database/aqms/arrival.hpp"
+/// @brief Defines an arrival (a pick that is associated to an origin) in AQMS.
+/// @copyright Ben Baker (UUSS) distributed under the MIT license.
 class Arrival
 {
 public:
@@ -44,6 +47,15 @@ public:
     /// @name Properties Required by Database
     /// @{
 
+    /// @brief Sets the authority that created the arrival.
+    /// @param[in] authority   The authority that created the arrival.
+    void setAuthority(const std::string &authority);
+    /// @result The authority that created the arrival.
+    /// @throws std::runtime_error if \c haveAuthority() is false.
+    [[nodiscard]] std::string getAuthority() const;
+    /// @result True indicates the authority was set.
+    [[nodiscard]] bool haveAuthority() const noexcept;
+
     /// @brief Sets the station name.
     /// @param[in] station  The station name.
     void setStation(const std::string &station);
@@ -67,15 +79,6 @@ public:
 
     /// @name Other Properties
     /// @{
-
-    /// @brief Sets the authority that created the arrival.
-    /// @param[in] authority   The authority that created the arrival.
-    void setAuthority(const std::string &authority);
-    /// @result The authority that created the arrival.
-    /// @throws std::runtime_error if \c haveAuthority() is false.
-    [[nodiscard]] std::string getAuthority() const;
-    /// @result True indicates the authority was set.
-    [[nodiscard]] bool haveAuthority() const noexcept;
 
     /// @brief Sets the network name.
     /// @param[in] network  The network name.
