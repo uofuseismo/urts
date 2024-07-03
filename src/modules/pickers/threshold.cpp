@@ -223,7 +223,7 @@ public:
                 mIncrementerServiceName);
         mIncrementerServiceAddress
             = propertyTree.get<std::string> (
-                "ThresholdPicker.pickBroadcastAddress",
+                "ThresholdPicker.incrementerServiceAddress",
                 mIncrementerServiceAddress);
         if (::isEmpty(mIncrementerServiceName) &&
             ::isEmpty(mIncrementerServiceAddress))
@@ -963,6 +963,8 @@ int main(int argc, char *argv[])
                    programOptions.mIncrementerServiceName).getAddress()
             );
         }
+        irOptions.setReceiveTimeOut(
+            programOptions.mIncrementRequestReceiveTimeOut);
         irOptions.setZAPOptions(zapOptions);
         programOptions.mIncrementerRequestorOptions = irOptions;
 
