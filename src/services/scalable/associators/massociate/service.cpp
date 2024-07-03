@@ -597,22 +597,28 @@ public:
                     // Build the events
                     auto origins = ::fromEvents(associatedEvents, mLogger);
                     mLogger->debug("Created " + std::to_string(origins.size()) + " events!");
-                    for (const auto &origin : origins)
+                    if (mLogger->getLevel() >= UMPS::Logging::Level::Info)
                     {
-                        mLogger->info("Origin " + std::to_string(origin.getTime().count()*1.e-6) + " "
-                                                + std::to_string(origin.getLatitude()) + " " 
-                                                + std::to_string(origin.getLongitude()) + " "
-                                                + std::to_string(origin.getDepth()));
-                        for (const auto &arrival : origin.getArrivals())
+                        for (const auto &origin : origins)
                         {
-                            std::string phase{"P"};
-                            if (arrival.getPhase() == Arrival::Phase::S){phase = "S";}
-                            mLogger->info(arrival.getNetwork() + "."
-                                        + arrival.getStation() + "."
-                                        + arrival.getChannel() + "."
-                                        + arrival.getLocationCode() + "."
-                                        + phase + " "
-                                        + std::to_string(arrival.getTime().count()*1.e-6));
+                            mLogger->info("Origin " + std::to_string(origin.getTime().count()*1.e-6) + " "
+                                                    + std::to_string(origin.getLatitude()) + " " 
+                                                    + std::to_string(origin.getLongitude()) + " "
+                                                    + std::to_string(origin.getDepth()));
+                            if (mLogger->getLevel() >= UMPS::Logging::Level::Debug)
+                            {
+                                for (const auto &arrival : origin.getArrivals())
+                                {
+                                    std::string phase{"P"};
+                                    if (arrival.getPhase() == Arrival::Phase::S){phase = "S";}
+                                    mLogger->debug(arrival.getNetwork() + "."
+                                                 + arrival.getStation() + "."
+                                                 + arrival.getChannel() + "."
+                                                 + arrival.getLocationCode() + "."
+                                                 + phase + " "
+                                                 + std::to_string(arrival.getTime().count()*1.e-6));
+                                }
+                            }
                         }
                     }
                     response.setOrigins(origins); 

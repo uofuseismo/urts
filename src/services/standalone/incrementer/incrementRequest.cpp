@@ -62,19 +62,19 @@ public:
     uint64_t mIdentifier{0};
 };
 
-/// C'tor
+/// Constructor
 IncrementRequest::IncrementRequest() :
     pImpl(std::make_unique<IncrementRequestImpl> ())
 {
 }
 
-/// Copy c'tor
+/// Copy constructor
 IncrementRequest::IncrementRequest(const IncrementRequest &request)
 {
     *this = request;
 }
 
-/// Move c'tor
+/// Move constructor
 IncrementRequest::IncrementRequest(IncrementRequest &&request) noexcept
 {
     *this = std::move(request);

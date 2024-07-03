@@ -173,8 +173,8 @@ public:
     [[nodiscard]] std::optional<double> getDistanceToNearestStation() const noexcept;
 
     /// @brief Sets the weighted root mean squared error of the solution.
-    /// @param[in] rmse  The weighted root mean squared error in seconds.
-    void setWeightedRootMeanSquaredError(double rmse);
+    /// @param[in] wrmse  The weighted root mean squared error in seconds.
+    void setWeightedRootMeanSquaredError(double wrmse);
     /// @result The weighted root mean squared error of the solution.
     [[nodiscard]] std::optional<double> getWeightedRootMeanSquaredError() const noexcept;
 

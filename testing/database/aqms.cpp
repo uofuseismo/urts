@@ -6,6 +6,7 @@
 #include "urts/database/aqms/channelData.hpp"
 #include "urts/database/aqms/stationData.hpp"
 #include "urts/database/aqms/arrival.hpp"
+#include "urts/database/aqms/origin.hpp"
 
 using namespace URTS::Database::AQMS;
 
@@ -130,5 +131,60 @@ TEST_CASE("URTS::Database::AQMS", "Arrival")
         REQUIRE(*copy.getSubSource() == subSource);
         REQUIRE(*copy.getIdentifier() == identifier);
     }
-    
+}
+
+TEST_CASE("URTS::Database::AQMS", "[Origin]")
+{
+    const std::chrono::microseconds time{1720031875794000};
+    const double latitude{41.};
+    const double longitude{-112.};
+    const double depth{8};
+    const double distance{11.2};
+    const double gap{123.};
+    const double wrmse{0.13};
+    const std::string algorithm{"MAssociator"};
+    const std::string subSource{"ML1"};
+    const std::string authority{"UU"};
+    const int64_t identifier{83832};
+    const int64_t eventIdentifier{9293023};
+    const int64_t magIdentifier{323};
+    const int64_t mecIdentifier{48};
+    const auto geographicType = Origin::GeographicType::Local;
+    const auto reviewFlag = Origin::ReviewFlag::Human;
+    Origin origin;
+    origin.setAuthority(authority);
+    origin.setIdentifier(identifier);
+    origin.setEventIdentifier(eventIdentifier);
+    origin.setLatitude(latitude);
+    origin.setLongitude(longitude);
+    origin.setTime(time);
+    origin.setDepth(depth);
+    origin.setSubSource(subSource);
+    origin.setAlgorithm(algorithm);
+    origin.setGap(gap);
+    origin.setDistanceToNearestStation(distance);
+    origin.setGeographicType(geographicType);
+    origin.setPreferredMagnitudeIdentifier(magIdentifier);
+    origin.setPreferredMechanismIdentifier(mecIdentifier);
+    origin.setReviewFlag(reviewFlag);
+    origin.setWeightedRootMeanSquaredError(wrmse);
+    SECTION("Copy")
+    {
+        Origin copy{origin};
+        REQUIRE(copy.getAuthority() == authority);
+        REQUIRE(copy.getIdentifier() == identifier);
+        REQUIRE(copy.getEventIdentifier() == eventIdentifier);
+        REQUIRE(std::abs(copy.getTime() - time.count()*1.e-6) < 1.e-8);
+        REQUIRE(std::abs(copy.getLatitude() - latitude) < 1.e-13);
+        REQUIRE(std::abs(copy.getLongitude() - longitude) < 1.e-13);
+        REQUIRE(std::abs(*copy.getDepth() - depth) < 1.e-14);
+        REQUIRE(!copy.isBogus()); 
+        REQUIRE(*copy.getGeographicType() == geographicType);
+        REQUIRE(std::abs(*copy.getGap() - gap) < 1.e-13);
+        REQUIRE(std::abs(*copy.getDistanceToNearestStation() - distance) < 1.e-13);
+        REQUIRE(*copy.getPreferredMagnitudeIdentifier() == magIdentifier);
+        REQUIRE(*copy.getPreferredMechanismIdentifier() == mecIdentifier);
+        REQUIRE(*copy.getReviewFlag() == reviewFlag);
+        REQUIRE(std::abs(*copy.getWeightedRootMeanSquaredError() - wrmse) < 1.e-13);
+    }
 }

@@ -47,6 +47,7 @@
 #include "urts/services/scalable/associators/massociate/pick.hpp"
 #include "urts/services/scalable/associators/massociate/requestor.hpp"
 #include "urts/services/scalable/associators/massociate/requestorOptions.hpp"
+#include "urts/services/standalone/incrementer.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "programOptions.hpp"
 
@@ -198,6 +199,13 @@ public:
         mOriginPublisher->initialize(
             mProgramOptions.mOriginPublisherOptions);
 
+        // Create the incremnenter client
+        mIncrementerClient
+            = std::make_unique<URTS::Services::Standalone::Incrementer
+                                   ::Requestor> (mContext, mLogger);
+        mIncrementerClient->initialize(
+            mProgramOptions.mIncrementerRequestorOptions);
+
         // Create the associator client
         mAssociatorClient
             = std::make_unique<URTS::Services::Scalable::Associators
@@ -213,6 +221,14 @@ public:
         if (!mOriginPublisher->isInitialized())
         {
             throw std::runtime_error("Origin publisher not initialized");
+        }
+        if (!mIncrementerClient->isInitialized())
+        {
+            throw std::runtime_error("Incrementer client not initialized");
+        }
+        if (!mAssociatorClient->isInitialized())
+        {
+            throw std::runtime_error("Associator client not initialized");
         }
 
         // Instantiate the local command replier
@@ -369,8 +385,17 @@ else
     {
 int64_t identifier{1};
 #ifndef NDEBUG
+        assert(mIncrementerClient->isInitialized());
         assert(mOriginPublisher->isInitialized());
 #endif
+        int64_t requestIdentifier{0};
+        URTS::Services::Standalone::Incrementer::IncrementRequest originRequest;
+        originRequest.setItem(URTS::Services::Standalone::
+                              Incrementer::IncrementRequest::Item::Origin);
+        URTS::Services::Standalone::Incrementer::IncrementRequest arrivalRequest;
+        arrivalRequest.setItem(URTS::Services::Standalone::Incrementer::
+                               IncrementRequest::Item::PhaseArrival);
+
         mLogger->debug("Starting the origin publisher...");
         constexpr std::chrono::milliseconds timeOut{10};
         while (keepRunning())
@@ -381,11 +406,67 @@ int64_t identifier{1};
                                                            timeOut);
             if (gotOrigin)
             {
+                // Attempt to update the identifiers
+                auto originIdentifier = identifier;
+                try
+                {
+                    requestIdentifier = requestIdentifier + 1;
+                    originRequest.setIdentifier(requestIdentifier);
+                    auto response = mIncrementerClient->request(originRequest);
+                    originIdentifier = response->getValue();
+                    origin.setIdentifier(originIdentifier);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->warn("Failed get new origin identifier");
+                    originIdentifier = identifier;
+                    identifier = identifier + 1;
+                }
+                auto arrivals = origin.getArrivals();
+                for (auto &arrival : arrivals)
+                {
+                    requestIdentifier = requestIdentifier + 1;
+                    arrivalRequest.setIdentifier(requestIdentifier);
+                    arrival.setOriginIdentifier(originIdentifier);
+                    try
+                    {
+                        auto response
+                            = mIncrementerClient->request(arrivalRequest);
+                        arrival.setIdentifier(response->getValue());
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->warn(
+                           "Failed to get arrival identifier.  Failed with: "
+                          + std::string {e.what()});
+                    }
+                }
+                origin.setArrivals(arrivals);
+                // Write out some information
+                if (mLogger->getLevel() >= UMPS::Logging::Level::Info)
+                {
+                    mLogger->info("Origin " + std::to_string(origin.getIdentifier()) + " "
+                                            + std::to_string(origin.getTime().count()*1.e-6) + " " 
+                                            + std::to_string(origin.getLatitude()) + " " 
+                                            + std::to_string(origin.getLongitude()) + " " 
+                                            + std::to_string(origin.getDepth()));
+                    for (const auto &arrival : origin.getArrivals())
+                    {
+                        std::string phase{"P"};
+                        if (arrival.getPhase() == URTS::Broadcasts::Internal::Origin::Arrival::Phase::S){phase = "S";}
+                        mLogger->info(std::to_string(arrival.getIdentifier()) + " "
+                                    + arrival.getNetwork() + "." 
+                                    + arrival.getStation() + "." 
+                                    + arrival.getChannel() + "." 
+                                    + arrival.getLocationCode() + "." 
+                                    + phase + " " 
+                                    + std::to_string(arrival.getTime().count()*1.e-6));
+                    }
+                }
+
                 try
                 {
                     mLogger->debug("Publishing origin...");
-origin.setIdentifier(identifier);
-identifier++;
                     mOriginPublisher->send(origin);
                 }
                 catch (const std::exception &e)
@@ -401,7 +482,7 @@ identifier++;
     void associate()
     {
         int64_t associationRequestIdentifier{0};
-// TODO assocation window should be > pickLatency + maximumMoveout
+// TODO add check to ensure assocation window should be > pickLatency + maximumMoveout
         auto associationWindow = std::chrono::duration_cast<std::chrono::microseconds> (mProgramOptions.mAssociationWindowDuration);
         auto pickLatency = std::chrono::duration_cast<std::chrono::microseconds> (mProgramOptions.mPickLatency);
         auto maximumMoveout = std::chrono::duration_cast<std::chrono::microseconds> (mProgramOptions.mMaximumMoveout);
@@ -422,15 +503,6 @@ identifier++;
                                    - maximumMoveout;
             auto newestProcessingTime = now - pickLatency; //maximumOriginTime + maximumMoveout;
             auto oldestProcessingTime = newestProcessingTime - associationWindow; //maximumOriginTime - associationWindow;
-/* 
-            auto oldestProcessingTime = now 
-                                      - pickLatency
-                                      - associationWindow
-                                      - fiveSeconds; // TODO need a smarter padding
-            auto newestProcessingTime = oldestProcessingTime
-                                      + associationWindow;
-            auto minOriginTime = oldestProcessingTime;
-*/
             // First purge the old picks
             picks.erase(
                 std::remove_if(picks.begin(), picks.end(),
@@ -514,6 +586,11 @@ identifier++;
                             auto channel2 = pick.getChannel();
                             channel2.pop_back();                              
                             constexpr std::chrono::microseconds tolerance{1000000};
+                            if (existingPick.getIdentifier() == pick.getIdentifier())
+                            {
+                                duplicate = true;
+                                break;
+                            }
                             if (existingPick.getNetwork() == pick.getNetwork() &&
                                 existingPick.getStation() == pick.getStation() &&
                                 channel1 == channel2 && //existingPick.getChannel() == pick.getChannel() &&
@@ -748,6 +825,7 @@ identifier++;
         mPickSubscriber{nullptr};
     std::unique_ptr<URTS::Broadcasts::Internal::Origin::Publisher>
         mOriginPublisher{nullptr};
+    std::unique_ptr<URTS::Services::Standalone::Incrementer::Requestor> mIncrementerClient{nullptr};
     std::unique_ptr<URTS::Services::Scalable::Associators::MAssociate::Requestor> mAssociatorClient{nullptr};
     ::ThreadSafeQueue<URTS::Services::Scalable::Associators::MAssociate::Pick>
           mPickSubscriberQueue;//{nullptr};
@@ -839,7 +917,8 @@ int main(int argc, char *argv[])
                   programOptions.mPickBroadcastName).getAddress());
         }
         subscriberOptions.setZAPOptions(zapOptions);
-        subscriberOptions.setHighWaterMark(0); // Infinite 
+        subscriberOptions.setHighWaterMark(1024); // We get these off fast 
+        subscriberOptions.setTimeOut(std::chrono::milliseconds {10});
         programOptions.mPickSubscriberOptions = subscriberOptions;
 
         // Output origin publisher 
@@ -859,6 +938,26 @@ int main(int argc, char *argv[])
         publisherOptions.setZAPOptions(zapOptions);
         publisherOptions.setHighWaterMark(0); // Infinite 
         programOptions.mOriginPublisherOptions = publisherOptions;
+
+        // Incrementer service
+        logger->debug("Creating incrementer service...");
+        URTS::Services::Standalone::Incrementer::RequestorOptions
+             incrementerOptions;
+        if (!programOptions.mIncrementerServiceAddress.empty())
+        {
+            incrementerOptions.setAddress(
+                programOptions.mIncrementerServiceAddress);
+        }
+        else
+        {
+            incrementerOptions.setAddress(
+               uOperator->getProxyServiceFrontendDetails(
+                   programOptions.mIncrementerServiceName).getAddress());
+        }
+        incrementerOptions.setReceiveTimeOut(
+             programOptions.mIncrementRequestReceiveTimeOut);
+        incrementerOptions.setZAPOptions(zapOptions);
+        programOptions.mIncrementerRequestorOptions = incrementerOptions;
 
         // Associator requestor
         URTS::Services::Scalable::Associators::MAssociate::RequestorOptions

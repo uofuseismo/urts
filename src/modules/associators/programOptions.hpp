@@ -4,6 +4,7 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include "urts/services/standalone/incrementer.hpp"
 #include "urts/broadcasts/internal/origin.hpp"
 #include "urts/broadcasts/internal/pick.hpp"
 //#include "urts/services/associator/massociate.hpp"
@@ -166,6 +167,34 @@ public:
         mAssociatorRequestReceiveTimeOut
             = std::chrono::seconds {requestTimeOut};
 
+        // Incrementer
+        mIncrementerServiceName
+            = propertyTree.get<std::string> (
+                section + ".incrementerServiceName",
+                mIncrementerServiceName);
+        mIncrementerServiceAddress
+            = propertyTree.get<std::string> (
+                section + ".incrementerServiceAddress",
+                mIncrementerServiceAddress);
+        if (::isEmpty(mIncrementerServiceName) &&
+            ::isEmpty(mIncrementerServiceAddress))
+        {
+            throw std::runtime_error("Incrementer service indeterminable");
+        }
+        // Increment time out
+        requestTimeOut
+            = propertyTree.get<int>
+                (section + ".incrementRequestTimeOut",
+                 mIncrementRequestReceiveTimeOut.count());
+        if (requestTimeOut < 0) 
+        {
+            throw std::invalid_argument(
+                "Increment request cannot indefinitely block");
+        }
+        mIncrementRequestReceiveTimeOut
+            = std::chrono::milliseconds {requestTimeOut};
+
+
 /*
         // Signal latency
         auto maximumSignalLatency
@@ -277,6 +306,8 @@ public:
     std::string mPickBroadcastAddress;
     std::string mOriginBroadcastName{"PreliminaryOrigin"};
     std::string mOriginBroadcastAddress;
+    std::string mIncrementerServiceName{"Incrementer"};
+    std::string mIncrementerServiceAddress;
 
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
     //std::chrono::seconds mDatabasePollerInterval{3600};
@@ -284,12 +315,15 @@ public:
     std::chrono::seconds mPickLatency{60};
     std::chrono::seconds mMaximumMoveout{45};
     std::chrono::seconds mAssociatorRequestReceiveTimeOut{60};
+    std::chrono::milliseconds mIncrementRequestReceiveTimeOut{1000}; // 1 s
     std::set<std::string> mActiveNetworks;
     URTS::Services::Scalable::Associators::MAssociate::RequestorOptions
          mAssociatorRequestorOptions;
     URTS::Broadcasts::Internal::Pick::SubscriberOptions mPickSubscriberOptions;
     URTS::Broadcasts::Internal::Origin::PublisherOptions
          mOriginPublisherOptions;
+    URTS::Services::Standalone::Incrementer::RequestorOptions
+         mIncrementerRequestorOptions;
     double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};
     int mOriginHighWaterMark{0}; // Infinite

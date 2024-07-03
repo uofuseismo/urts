@@ -8,7 +8,6 @@ using namespace URTS::Database::AQMS;
 class Origin::OriginImpl
 {
 public:
-    std::vector<Arrival> mArrivals;
     std::string mAlgorithm;
     std::string mAuthority;
     std::string mSubSource;
@@ -18,6 +17,7 @@ public:
     double mDepth;
     double mGap;
     double mDistanceToNearestStation;
+    double mWRMSE;
     int64_t mIdentifier;
     int64_t mEventIdentifier;
     int64_t mPreferredMagnitudeIdentifier;
@@ -37,6 +37,7 @@ public:
     bool mBogusFlag{false};
     bool mHaveGap{false};
     bool mHaveDistanceToNearestStation{false};
+    bool mHaveWRMSE{false};
 };
 
 /// Constructor
@@ -362,4 +363,21 @@ std::optional<double> Origin::getDistanceToNearestStation() const noexcept
     return pImpl->mHaveDistanceToNearestStation ?
            std::optional<double> {pImpl->mDistanceToNearestStation} :
            std::nullopt;
+}
+
+/// WRMSE
+void Origin::setWeightedRootMeanSquaredError(const double wrmse)
+{
+    if (wrmse < 0)
+    {
+        throw std::invalid_argument("Weighted RMSE cannot be negative");
+    }
+    pImpl->mWRMSE = wrmse;
+    pImpl->mHaveWRMSE = true;
+}
+
+std::optional<double> Origin::getWeightedRootMeanSquaredError() const noexcept
+{
+    return pImpl->mHaveWRMSE ?
+           std::optional<double> {pImpl->mWRMSE} : std::nullopt;
 }
