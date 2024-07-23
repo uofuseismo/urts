@@ -104,7 +104,6 @@ public:
     /// @result The arrival identifier.
     [[nodiscard]] std::optional<int64_t> getIdentifier() const noexcept;
 
-    /// @brief Sets the arrival time.
     /// @brief Sets the phase arrival.
     /// @param[in] phase   The phase - e.g., P or S.
     void setPhase(const std::string &phase);
@@ -164,5 +163,6 @@ private:
     class ArrivalImpl;
     std::unique_ptr<ArrivalImpl> pImpl;
 };
+[[nodiscard]] std::string toInsertString(const Arrival &arrival);
 }
 #endif 

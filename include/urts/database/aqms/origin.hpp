@@ -7,7 +7,6 @@
 #include <optional>
 namespace URTS::Database::AQMS
 {
-class Arrival;
 /// @class Origin "origin.hpp" "urts/database/aqms/origin.hpp"
 /// @brief Defines an origin in AQMS.
 /// @copyright Ben Baker (UUSS) distributed under the MIT license.
@@ -211,5 +210,6 @@ private:
     class OriginImpl;
     std::unique_ptr<OriginImpl> pImpl;
 };
+[[nodiscard]] std::string toInsertString(const Origin &origin);
 }
 #endif

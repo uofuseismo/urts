@@ -1,4 +1,6 @@
+#include <iostream>
 #include <string>
+#include <boost/format.hpp>
 #include "urts/database/aqms/arrival.hpp"
 #include "utilities.hpp"
 
@@ -281,3 +283,143 @@ std::optional<std::string> Arrival::getSubSource() const noexcept
            std::optional<std::string> {pImpl->mSubSource} :
            std::nullopt;       
 }
+
+/// Insertion string
+std::string URTS::Database::AQMS::toInsertString(const Arrival &arrival)
+{
+    if (!arrival.haveStation())
+    {
+        throw std::invalid_argument("Station is not set");
+    } 
+    if (!arrival.haveTime())
+    {
+        throw std::invalid_argument("Arrival time not set");
+    }
+    if (!arrival.haveAuthority())
+    {
+        throw std::invalid_argument("Authority not set");
+    }
+    std::string insertStatement{"INSERT INTO arrival "};
+/*
+    std::string keys;
+    double mTime;
+    double mQuality{-1}; // Valid range is [0, 1]
+    int64_t mIdentifier;
+    std::string mAuthority;
+    std::string mNetwork;
+    std::string mStation;
+    std::string mChannel;
+    std::string mLocationCode;
+    std::string mPhase;
+    std::string mSubSource;
+    ReviewFlag mReviewFlag;
+    FirstMotion mFirstMotion{FirstMotion::Unknown};
+    bool mHaveIdentifier{false};
+    bool mHaveLocationCode{false};
+    bool mHaveReviewFlag{false};
+    bool mHaveTime{false};
+    std::string identifier{"NULL"};
+    if (arrival.getIdentifier()){identifier = std::to_string(*arrival.getIdentifier());}
+    std::string network{"NULL"};
+    if (arrival.getNetwork()){network = *arrival.getNetwork();}
+    std::string channel{"NULL"};
+    if (arrival.getSEEDChannel()){channel = *arrival.getSEEDChannel();}
+    std::string location{"NULL"};
+    if (arrival.getLocationCode()){location = *arrival.getLocationCode();}
+        
+    std::string subsource{"NULL"};
+    if (arrival.getSubSource()){subsource = *arrival.getSubSource();}
+*/
+
+    std::string keys = {"(auth, datetime, sta,"};
+    std::string values
+        = str(boost::format(" VALUES ('%1%', TrueTime.putEpoch(%2$.6f, 'UTC'), '%3%',")
+              %arrival.getAuthority()
+              %arrival.getTime()
+              %arrival.getStation()
+             );
+    if (arrival.getIdentifier())
+    {
+        keys = keys + " arid,";
+        values = values + str(boost::format(" %1$d,")% *arrival.getIdentifier() );
+    }
+    if (arrival.getSubSource())
+    {
+        keys = keys + " subsource,";
+        values = values + str(boost::format(" '%1%',")% *arrival.getSubSource() ); 
+    }
+    if (arrival.getNetwork())
+    {   
+        keys = keys + " net,";
+        values = values + str(boost::format(" '%1%',")% *arrival.getNetwork() );
+    }
+    if (arrival.getSEEDChannel())
+    {
+        keys = keys + " seedchan, channel,";
+        auto seedChannel = *arrival.getSEEDChannel();
+        values = values + str(boost::format(" '%1%', '%2%',")
+                             %seedChannel%seedChannel);
+    }
+    if (arrival.getLocationCode())
+    {
+        keys = keys + " location,";
+        values = values + str(boost::format(" '%1%',")% *arrival.getLocationCode() );
+    }
+    if (arrival.getPhase())
+    {
+        keys = keys + " iphase,";
+        values = values + str(boost::format(" '%1%',")% *arrival.getPhase() );
+    }
+    if (arrival.getFirstMotion() == Arrival::FirstMotion::Up)
+    {
+        keys = keys + " fm,";
+        values = values + " 'c.',";
+    }
+    else if (arrival.getFirstMotion() == Arrival::FirstMotion::Down)
+    {
+        keys = keys + " fm,";
+        values = values + " 'd.',";
+    }
+    if (arrival.getQuality())
+    {
+        keys = keys + " quality,";
+        values = values + str(boost::format(" %1$.3f,")% *arrival.getQuality() );
+    }
+    if (arrival.getReviewFlag())
+    {
+        if (*arrival.getReviewFlag() == Arrival::ReviewFlag::Automatic)
+        {
+            keys = keys + " rflag,";
+            values = values + " 'A',";
+        }
+        else if (*arrival.getReviewFlag() == Arrival::ReviewFlag::Human)
+        {
+            keys = keys + " rflag,";
+            values = values + " 'H',";
+        }
+        else if (*arrival.getReviewFlag() == Arrival::ReviewFlag::Finalized)
+        {   
+            keys = keys + " rflag,";
+            values = values + " 'F',";
+        }
+    }
+    // Tack this on
+    keys = keys + " channelsrc,";
+    values = values + " 'SEED',";
+
+    // Delete the trailing comma and make it a ")"
+    keys.back() = ')';
+    values.back()= ')';
+//                  %arrival.getAuthority()
+                  //%arrival.getTime()
+//                  %arrival.getStation();
+    // Now build up the rest
+    
+//                         arrival.getAuthority(),
+//                         arrival.getTime(),
+//                         arrival.getStation());
+    // Put it all together
+    insertStatement = insertStatement + keys + values + ";";
+    return insertStatement;
+}
+

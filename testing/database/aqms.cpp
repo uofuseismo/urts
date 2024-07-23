@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <cmath>
 #include <chrono>
@@ -7,6 +8,8 @@
 #include "urts/database/aqms/stationData.hpp"
 #include "urts/database/aqms/arrival.hpp"
 #include "urts/database/aqms/origin.hpp"
+#include "urts/database/aqms/assocaro.hpp"
+#include "urts/database/aqms/event.hpp"
 
 using namespace URTS::Database::AQMS;
 
@@ -131,6 +134,7 @@ TEST_CASE("URTS::Database::AQMS", "Arrival")
         REQUIRE(*copy.getSubSource() == subSource);
         REQUIRE(*copy.getIdentifier() == identifier);
     }
+std::cout << toInsertString(arrival) << std::endl; 
 }
 
 TEST_CASE("URTS::Database::AQMS", "[Origin]")
@@ -188,3 +192,89 @@ TEST_CASE("URTS::Database::AQMS", "[Origin]")
         REQUIRE(std::abs(*copy.getWeightedRootMeanSquaredError() - wrmse) < 1.e-13);
     }
 }
+
+TEST_CASE("URTS::Database::AQMS", "[Event]")
+{
+    const std::string authority{"UU"};
+    const std::string subSource{"ML1"};
+    const int64_t identifier{83232};
+    const int64_t originIdentifier{992323};
+    const int64_t magnitudeIdentifier{29932};
+    const int64_t mechanismIdentifier{2323};
+    const int64_t commentIdentifier{8};
+    const Event::Type type{Event::Type::Earthquake};
+    const int version{32};
+    Event event;
+ 
+    event.setIdentifier(identifier);
+    event.setAuthority(authority);
+    event.setPreferredOriginIdentifier(originIdentifier);
+    event.setPreferredMagnitudeIdentifier(magnitudeIdentifier);
+    event.setPreferredMechanismIdentifier(mechanismIdentifier);
+    event.setCommentIdentifier(commentIdentifier);
+    event.setType(type);
+    event.setVersion(version);
+    event.setSubSource(subSource);
+    event.setSelectFlag();
+
+    SECTION("Copy")
+    {
+        Event copy{event};
+        REQUIRE(copy.getIdentifier() == identifier);
+        REQUIRE(copy.getAuthority() == authority);
+        REQUIRE(*copy.getPreferredOriginIdentifier() == originIdentifier);
+        REQUIRE(*copy.getPreferredMagnitudeIdentifier() == magnitudeIdentifier);
+        REQUIRE(*copy.getPreferredMechanismIdentifier() == mechanismIdentifier);
+        REQUIRE(*copy.getCommentIdentifier() == commentIdentifier);
+        REQUIRE(copy.getType() == type);
+        REQUIRE(copy.getVersion() == version);
+        REQUIRE(*copy.getSubSource() == subSource);
+        REQUIRE(copy.getSelectFlag());
+    }
+
+std::cout << toInsertString(event) << std::endl;
+
+}
+
+TEST_CASE("URTS::Database::AQMS", "[AssocArO]")
+{
+    const int64_t originIdentifier{83232};
+    const int64_t arrivalIdentifier{292233};
+    const std::string authority{"UU"};
+    const std::string subSource{"ML1"};
+    const std::string phase{"P"};
+    const double sourceReceiverDistance{10};
+    const double azimuth{37};
+    const double inputWeight{0.75};
+    const double residual{-0.02};
+    const AssocArO::ReviewFlag reviewFlag{AssocArO::ReviewFlag::Automatic};
+
+    AssocArO assocaro;
+    assocaro.setOriginIdentifier(originIdentifier);
+    assocaro.setArrivalIdentifier(arrivalIdentifier);
+    assocaro.setAuthority(authority); 
+    assocaro.setSubSource(subSource);
+    assocaro.setPhase(phase);
+    assocaro.setSourceReceiverDistance(sourceReceiverDistance);
+    assocaro.setSourceToReceiverAzimuth(azimuth);
+    assocaro.setInputWeight(inputWeight);
+    assocaro.setTravelTimeResidual(residual);
+    assocaro.setReviewFlag(reviewFlag);
+
+    SECTION("Copy")
+    {
+        AssocArO copy{assocaro};
+        REQUIRE(copy.getOriginIdentifier() == originIdentifier);
+        REQUIRE(copy.getArrivalIdentifier() == arrivalIdentifier);
+        REQUIRE(copy.getAuthority() == authority);
+        REQUIRE(*copy.getSubSource() == subSource);
+        REQUIRE(*copy.getPhase() == phase);
+        REQUIRE(std::abs(*copy.getSourceReceiverDistance() - sourceReceiverDistance) < 1.e-10);
+        REQUIRE(std::abs(*copy.getSourceToReceiverAzimuth() - azimuth) < 1.e-10);
+        REQUIRE(std::abs(*copy.getInputWeight() - inputWeight) < 1.e-10);
+        REQUIRE(std::abs(*copy.getTravelTimeResidual() - residual) < 1.e-10);
+        REQUIRE(*copy.getReviewFlag() == reviewFlag);
+    }
+std::cout << toInsertString(assocaro) << std::endl;
+}
+
