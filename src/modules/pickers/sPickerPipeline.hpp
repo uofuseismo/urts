@@ -711,11 +711,19 @@ public:
                 // should be closest to now.
                 if (mReprocessingQueue.back().isReadyToProcess())
                 {
-                    mLogger->info("Will reprocess old S pick");
                     initialPick = mReprocessingQueue.back();
+                    auto network = initialPick.pick.getNetwork();
+                    auto station = initialPick.pick.getStation();
+                    auto channel = initialPick.pick.getOriginalChannels().at(0);
+                    auto locationCode = initialPick.pick.getLocationCode();
+                    auto name = ::toName(network, station,
+                                         channel, locationCode);
                     mReprocessingQueue.pop_back();
                     gotPick = true;
                     isRetry = true;
+                    mLogger->info("Will reprocess old P pick for: "
+                                + name + ".  Queue size is now: "
+                                + std::to_string(mReprocessingQueue.size()));
                 }
             }
             if (gotPick)

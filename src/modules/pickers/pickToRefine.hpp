@@ -36,7 +36,7 @@ struct PickToRefine
             throw std::runtime_error("Exceeded number of tries");
         }
     }
-    [[nodiscard]] bool isReadyToProcess()
+    [[nodiscard]] bool isReadyToProcess() const noexcept
     {
         if (mTries == 0){return true;}
         auto now
