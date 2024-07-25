@@ -211,6 +211,7 @@ set(MESSAGE_SRC ${MESSAGE_SRC}
     src/services/scalable/detectors/uNetOneComponentP/preprocessingResponse.cpp
     src/services/scalable/detectors/uNetOneComponentP/processingRequest.cpp
     src/services/scalable/detectors/uNetOneComponentP/processingResponse.cpp
+    src/services/scalable/detectors/uNetOneComponentP/requestor.cpp
     src/services/scalable/detectors/uNetOneComponentP/requestorOptions.cpp
     src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
     src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
@@ -430,7 +431,8 @@ add_test(NAME unitTests
 set(CATCH_TEST_SRC
     testing/database/aqms.cpp
     testing/broadcasts/internal/origin.cpp
-    testing/broadcasts/internal/pick.cpp)
+    testing/broadcasts/internal/pick.cpp
+    testing/services/scalable/detectors/uNetOneComponentP.cpp)
 if (${MAssociate_FOUND} AND ${uLocator_FOUND})
    set(CATCH_TEST_SRC ${CATCH_TEST_SRC}
        testing/services/scalable/associators/massociate.cpp   
