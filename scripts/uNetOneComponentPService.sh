@@ -6,7 +6,7 @@ source urts.sh
 # Workspace directory
 WORKDIR=`dirname $0`
 # Config file
-CONFIG_FILE=$(pwd)/pDetector3C.ini
+CONFIG_FILE=$(pwd)/pDetector1C.ini
 # Name of executable
 EXECUTABLE=uNetOneComponentPService
 # Instance of service
