@@ -24,7 +24,6 @@ var class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_compon
     [ "getVerticalSignal", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#aaf3cfb881e327a7a0c994774627f1b5f", null ],
     [ "getVerticalSignalReference", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a803be6cd6df0079ac94262d87e1480bb", null ],
     [ "haveSignals", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#ac15ae05daca43eb4a6d9453631876dd1", null ],
-    [ "isValidSignalLength", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#afb86362a65ae3b085fc9d483bc0b75e3", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#acdd12ec996d55785c78e442d9eaea229", null ],
     [ "operator=", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#a11866f4d22776f62466a68a49261c88b", null ],
     [ "setIdentifier", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html#ab055b9e9b41aaeca7b14f2deb9e15b9f", null ],

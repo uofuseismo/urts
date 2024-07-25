@@ -59,6 +59,6 @@ var class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin =
     [ "setSubSource", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a46bf274794d780ea3208bc0017d9fc61", null ],
     [ "setTime", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a926e89b7d82604dbef31e64b97194d28", null ],
     [ "setTime", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a90f37d956764ecea5721eac312f7e951", null ],
-    [ "setWeightedRootMeanSquaredError", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a1a1aeaf4b862041fd7e31e7cc8258b79", null ],
+    [ "setWeightedRootMeanSquaredError", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a357e47468461a33b84967d1b0ac4e8d7", null ],
     [ "unsetBogus", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html#a39f4e5fae56a968eeb9d78cae388413d", null ]
 ];

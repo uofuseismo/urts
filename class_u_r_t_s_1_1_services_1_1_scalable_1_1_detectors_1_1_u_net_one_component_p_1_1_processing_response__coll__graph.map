@@ -1,0 +1,4 @@
+<map id="URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingResponse" name="URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingResponse">
+<area shape="rect" id="node1" title="The probability of each sample in an unprocessed single&#45;channel waveform being a P arrival or noise." alt="" coords="5,95,248,151"/>
+<area shape="rect" id="node2" title=" " alt="" coords="37,5,216,47"/>
+</map>

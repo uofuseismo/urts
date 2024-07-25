@@ -206,10 +206,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a333a162c6ebcbd7ba0c4b57e6db3e4ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37dc29cdef58c4b4abcd00d10657773a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ad1987630420a5dc2cca03186a3490784">InferenceStrategy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a37dc29cdef58c4b4abcd00d10657773a">getInferenceStrategy</a> () const</td></tr>
 <tr class="separator:a37dc29cdef58c4b4abcd00d10657773a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02df60a7223956df9e8969c43f245ce5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a02df60a7223956df9e8969c43f245ce5">isValidSignalLength</a> (int nSamples) noexcept</td></tr>
-<tr class="separator:a02df60a7223956df9e8969c43f245ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab11cae5f82940be1805a89b059469cc2"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ab11cae5f82940be1805a89b059469cc2">getMinimumSignalLength</a> () noexcept</td></tr>
 <tr class="separator:ab11cae5f82940be1805a89b059469cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad262dcf30c683d51bb6aac634259664c"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ad262dcf30c683d51bb6aac634259664c">isValidSignalLength</a> (int nSamples) noexcept</td></tr>
+<tr class="separator:ad262dcf30c683d51bb6aac634259664c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a947e2dc0f302b1c36e4e287357ac6af9"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a947e2dc0f302b1c36e4e287357ac6af9">getSamplingRate</a> () noexcept</td></tr>
 <tr class="separator:a947e2dc0f302b1c36e4e287357ac6af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -785,8 +785,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a02df60a7223956df9e8969c43f245ce5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02df60a7223956df9e8969c43f245ce5">&#9670;&nbsp;</a></span>isValidSignalLength()</h2>
+<a id="ad262dcf30c683d51bb6aac634259664c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad262dcf30c683d51bb6aac634259664c">&#9670;&nbsp;</a></span>isValidSignalLength()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -795,7 +795,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool URTS::Services::Scalable::Detectors::UNetThreeComponentS::InferenceRequest::isValidSignalLength </td>
+          <td class="memname">static bool URTS::Services::Scalable::Detectors::UNetThreeComponentS::InferenceRequest::isValidSignalLength </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>nSamples</em></td><td>)</td>
@@ -804,7 +804,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -943,7 +943,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ab11cae5f82940be1805a89b059469cc2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a02df60a7223956df9e8969c43f245ce5">isValidSignalLength()</a></code> must be true. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ab11cae5f82940be1805a89b059469cc2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ad262dcf30c683d51bb6aac634259664c">isValidSignalLength()</a></code> must be true. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1000,7 +1000,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ab11cae5f82940be1805a89b059469cc2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#a02df60a7223956df9e8969c43f245ce5">isValidSignalLength()</a></code> must be true. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>the signals are not the same size, If the inference strategy is SlidingWindow then the signal must be at least <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ab11cae5f82940be1805a89b059469cc2">getMinimumSignalLength()</a></code>. If the inference straetgy is FixedWindow then the <code><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html#ad262dcf30c683d51bb6aac634259664c">isValidSignalLength()</a></code> must be true. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1051,7 +1051,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Scalable</b></li><li class="navelem"><b>Detectors</b></li><li class="navelem"><b>UNetThreeComponentS</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_s_1_1_inference_request.html">InferenceRequest</a></li>
-    <li class="footer">Generated on Tue Jul 2 2024 22:06:37 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Jul 25 2024 16:59:17 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

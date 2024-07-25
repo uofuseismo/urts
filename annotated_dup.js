@@ -53,9 +53,11 @@ var annotated_dup =
       [ "Database", null, [
         [ "AQMS", null, [
           [ "Arrival", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_arrival.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_arrival" ],
+          [ "AssocArO", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_assoc_ar_o.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_assoc_ar_o" ],
           [ "ChannelData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data" ],
           [ "ChannelDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table" ],
           [ "ChannelDataTablePoller", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller" ],
+          [ "Event", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_event.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_event" ],
           [ "Origin", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_origin" ],
           [ "StationData", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data" ],
           [ "StationDataTable", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table" ]
@@ -85,11 +87,21 @@ var annotated_dup =
             ] ]
           ] ],
           [ "Detectors", null, [
+            [ "UNetOneComponentP", null, [
+              [ "InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_inference_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_inference_request" ],
+              [ "InferenceResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_inference_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_inference_response" ],
+              [ "ProcessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_processing_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_processing_request" ],
+              [ "ProcessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_processing_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_processing_response" ],
+              [ "Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_requestor.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_requestor" ],
+              [ "RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_requestor_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_requestor_options" ],
+              [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_service" ],
+              [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_one_component_p_1_1_service_options" ]
+            ] ],
             [ "UNetThreeComponentP", null, [
-              [ "InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request" ],
-              [ "InferenceResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_response" ],
               [ "PreprocessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_preprocessing_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_preprocessing_request" ],
               [ "PreprocessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_preprocessing_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_preprocessing_response" ],
+              [ "InferenceRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_request" ],
+              [ "InferenceResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_inference_response" ],
               [ "ProcessingRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_request" ],
               [ "ProcessingResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_processing_response" ],
               [ "Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_requestor.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_detectors_1_1_u_net_three_component_p_1_1_requestor" ],
