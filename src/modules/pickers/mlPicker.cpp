@@ -52,6 +52,7 @@
 #include "programOptions.hpp"
 #include "pPickerPipeline.hpp"
 #include "sPickerPipeline.hpp"
+#include "pickToRefine.hpp"
 #include "thresholdDetectorOptions.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "private/isEmpty.hpp"
@@ -105,12 +106,22 @@ public:
         mChannelDataPoller(std::make_shared<URTS::Database::
                                             AQMS::ChannelDataTablePoller> ()),
         mProgramOptions(programOptions),
-        mInitialPPickQueue(
-            std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
-                                               Internal::Pick::Pick>> ()),
-        mInitialSPickQueue(
-            std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
-                                               Internal::Pick::Pick>> ()),
+        mInitialPPickQueue
+        (
+            std::make_shared
+            <
+               ::ThreadSafeQueue<::PickToRefine>
+            > ()
+        ),
+        //URTS::Broadcasts::Internal::Pick::Pick>> ()),
+        mInitialSPickQueue
+        (
+            std::make_shared
+            <
+               ::ThreadSafeQueue<::PickToRefine>
+            > ()
+        ),
+        //URTS::Broadcasts::Internal::Pick::Pick>> ()),
         mRefinedPickPublisherQueue(
             std::make_shared<::ThreadSafeQueue<URTS::Broadcasts::
                                                Internal::Pick::Pick>> ()),
@@ -404,7 +415,8 @@ public:
                         mLogger->warn("Overfull P queue - popping pick");
                         mInitialPPickQueue->pop();
                     }
-                    mInitialPPickQueue->push(std::move(*pick));
+                    ::PickToRefine pickToRefine{std::move(*pick)};
+                    mInitialPPickQueue->push(std::move(pickToRefine)); //std::move(*pick));
                 }
                 else if (phaseHint == "S")
                 {
@@ -413,8 +425,9 @@ public:
                     {
                         mLogger->warn("Overfull S queue - popping pick");
                         mInitialSPickQueue->pop();
-                    }   
-                    mInitialSPickQueue->push(std::move(*pick));
+                    }
+                    ::PickToRefine pickToRefine{std::move(*pick)};
+                    mInitialSPickQueue->push(std::move(pickToRefine)); //std::move(*pick));
                 }
                 else
                 {
@@ -469,15 +482,18 @@ public:
     std::unique_ptr<URTS::Broadcasts::Internal::Pick::Publisher>
         mRefinedPickPublisher{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
-    std::shared_ptr<
-        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-          mInitialPPickQueue;
-    std::shared_ptr<
-        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-          mInitialSPickQueue; 
-    std::shared_ptr<
-        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-          mRefinedPickPublisherQueue;
+    std::shared_ptr
+    <
+        ::ThreadSafeQueue<::PickToRefine>
+    > mInitialPPickQueue{nullptr};
+    std::shared_ptr
+    <
+        ::ThreadSafeQueue<::PickToRefine>
+    > mInitialSPickQueue{nullptr};
+    std::shared_ptr
+    <
+        ::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>
+    > mRefinedPickPublisherQueue{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::atomic<bool> mKeepRunning{true};
     std::atomic<bool> mInitialized{false};

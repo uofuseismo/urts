@@ -554,10 +554,8 @@ public:
                     const ::ProgramOptions &programOptions,
                     std::shared_ptr<URTS::Database::AQMS::
                                     ChannelDataTablePoller> &databasePoller,
-                    std::shared_ptr<
-                         ::ThreadSafeQueue<URTS::Broadcasts::
-                                           Internal::Pick::Pick>>
-                           &pickProcessorQueue,
+                    std::shared_ptr<::ThreadSafeQueue<::PickToRefine>>
+                         &pickProcessorQueue,
                     std::shared_ptr<
                          ::ThreadSafeQueue<URTS::Broadcasts::
                                            Internal::Pick::Pick>>
@@ -696,20 +694,33 @@ public:
     void run()
     {
         std::chrono::milliseconds timeOut{10};
-        URTS::Broadcasts::Internal::Pick::Pick initialPick;
+        ::PickToRefine initialPick;
         while (keepRunning())
         {
             auto gotPick = mPickProcessorQueue->wait_until_and_pop(
                                 &initialPick, timeOut);
+            // If I didn't get a pick try to go through my internal queue
+            if (!gotPick && !mReprocessingQueue.empty())
+            {
+                // This is sorted in descneding order so the last element
+                // should be closest to now.
+                if (mReprocessingQueue.back().isReadyToProcess())
+                {
+                    mLogger->debug("Will reprocess old S pick");
+                    initialPick = mReprocessingQueue.back();
+                    mReprocessingQueue.pop_back();
+                    gotPick = true;
+                }
+            }
             if (gotPick)
             {
                 try
                 {
                     // Figure out a name  
-                    auto originalChannels = initialPick.getOriginalChannels();
-                    auto network = initialPick.getNetwork();
-                    auto station = initialPick.getStation();
-                    auto locationCode = initialPick.getLocationCode();
+                    auto originalChannels = initialPick.pick.getOriginalChannels();
+                    auto network = initialPick.pick.getNetwork();
+                    auto station = initialPick.pick.getStation();
+                    auto locationCode = initialPick.pick.getLocationCode();
                     std::string verticalChannel;
                     std::string northChannel;
                     std::string eastChannel;
@@ -740,7 +751,7 @@ public:
                     }
                     else
                     {
-                        auto channel = initialPick.getChannel();
+                        auto channel = initialPick.pick.getChannel();
                         verticalChannel = channel;
                         northChannel = channel;
                         eastChannel = channel;
@@ -789,7 +800,7 @@ public:
                     assert(it != mProcessingItems.end());
 #endif
                     auto refinedPick
-                        = it->second.refinePick(initialPick,
+                        = it->second.refinePick(initialPick.pick,
                                                 *mPacketCacheRequestor,
                                                 *mPickerRequestor,
                                                 mLogger);
@@ -797,8 +808,54 @@ public:
                 }
                 catch (const std::exception &e)
                 {
+                    if (initialPick.mTries == 0)
+                    {
+                        mLogger->warn(std::string {e.what()}
+                          + "; will add S pick to reprocessing list");
+                    }
+                    else
+                    {
+                        mLogger->warn(std::string {e.what()}
+                          + "; re-inserting into S reprocessing list");
+                    }
+                    try
+                    {
+                        initialPick.setNextTry();
+                        mReprocessingQueue.push_back(std::move(initialPick));
+                        if (mReprocessingQueue.size() >
+                            mMaximumReprocessingQueueSize)
+                        {
+                            mLogger->warn("Reprocessing S queue is full; popping oldest");
+                            try
+                            {
+                                auto pickToPublish = mReprocessingQueue.back().pick;
+                                mReprocessingQueue.pop_back();
+                                mPickPublisherQueue->push(std::move(pickToPublish));
+                            }
+                            catch (const std::exception &e)
+                            {
+                                mLogger->error("S reprocessing pop queue failed with: "
+                                             + std::string {e.what()});
+                            }
+                        }
+                        // Sort is descending order so we can use vector
+                        // intrinsics to remove last element
+                        std::sort(mReprocessingQueue.begin(),
+                                  mReprocessingQueue.end(),
+                                  [](const auto &lhs, const auto &rhs)
+                                  {
+                                     return lhs.nextTry > rhs.nextTry;
+                                  });
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->error(e.what());
+                        mPickPublisherQueue->push(initialPick.pick);
+                    }
+/*
                     mLogger->error(e.what());
-                    mPickPublisherQueue->push(initialPick);
+                    mPickPublisherQueue->push(initialPick.pick);
+*/
                 }
             } // End check on getting a pick
         }
@@ -820,10 +877,11 @@ public:
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<URTS::Database::AQMS::ChannelDataTablePoller>
         mDatabasePoller{nullptr};
+    std::vector<::PickToRefine> mReprocessingQueue;
+    std::shared_ptr<::ThreadSafeQueue<::PickToRefine>>
+        mPickProcessorQueue{nullptr};
     std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-         mPickProcessorQueue{nullptr};
-    std::shared_ptr<::ThreadSafeQueue<URTS::Broadcasts::Internal::Pick::Pick>>
-         mPickPublisherQueue{nullptr};
+        mPickPublisherQueue{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<URTS::Services::Scalable::PacketCache::Requestor>
         mPacketCacheRequestor{nullptr};
@@ -831,6 +889,7 @@ public:
                     Pickers::CNNThreeComponentS::Requestor>
         mPickerRequestor{nullptr};
     std::map<std::string, ::ThreeComponentProcessingItem> mProcessingItems;
+    size_t mMaximumReprocessingQueueSize{128};
     int mInstance{0};
     bool mInputsEqual{true};
     std::atomic<bool> mKeepRunning{true};

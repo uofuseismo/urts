@@ -7,32 +7,45 @@ namespace
 
 struct PickToRefine
 {
-    URTS::Broadcasts::Internal::Pick::Pick mPick;
-    std::chrono::seconds mFirstTry
+    PickToRefine() = default;
+    explicit PickToRefine(URTS::Broadcasts::Internal::Pick::Pick &&initialPick) :
+        pick(std::move(initialPick))
+    {
+    }
+    URTS::Broadcasts::Internal::Pick::Pick pick;
+    std::chrono::milliseconds firstTry
     {   
-        std::chrono::duration_cast<std::chrono::seconds> (
-            std::chrono::system_clock::now().time_since_epoch())
+        std::chrono::duration_cast<std::chrono::milliseconds> (
+            std::chrono::high_resolution_clock::now().time_since_epoch())
     };  
-    std::chrono::seconds mNextTry{mFirstTry};
+    std::chrono::milliseconds nextTry{firstTry};
     int mTries{0};
     void setNextTry()
     {   
         mTries = mTries + 1;
         if (mTries == 1)
         {
-            mNextTry = mFirstTry + std::chrono::seconds{3};
+            nextTry = firstTry + std::chrono::milliseconds{3000};
         }
         else if (mTries == 2)
         {
-            mNextTry = mNextTry + std::chrono::seconds {10};
+            nextTry = firstTry + std::chrono::milliseconds {10000};
         }
         else
         {
             throw std::runtime_error("Exceeded number of tries");
         }
     }
+    [[nodiscard]] bool isReadyToProcess()
+    {
+        if (mTries == 0){return true;}
+        auto now
+            = std::chrono::duration_cast<std::chrono::milliseconds> (
+                 std::chrono::high_resolution_clock::now().time_since_epoch());
+        if (now > nextTry){return true;}
+        return false;
+    }  
 };
-
 
 }
 #endif
