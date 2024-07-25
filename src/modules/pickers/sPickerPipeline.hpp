@@ -701,6 +701,7 @@ public:
         ::PickToRefine initialPick;
         while (keepRunning())
         {
+            bool isRetry{false};
             auto gotPick = mPickProcessorQueue->wait_until_and_pop(
                                 &initialPick, timeOut);
             // If I didn't get a pick try to go through my internal queue
@@ -710,10 +711,11 @@ public:
                 // should be closest to now.
                 if (mReprocessingQueue.back().isReadyToProcess())
                 {
-                    mLogger->debug("Will reprocess old S pick");
+                    mLogger->info("Will reprocess old S pick");
                     initialPick = mReprocessingQueue.back();
                     mReprocessingQueue.pop_back();
                     gotPick = true;
+                    isRetry = true;
                 }
             }
             if (gotPick)
@@ -809,6 +811,10 @@ public:
                                                 *mPickerRequestor,
                                                 mLogger);
                     mPickPublisherQueue->push(refinedPick); 
+                    if (isRetry)
+                    {   
+                        mLogger->info("Successfully reprocessed S pick");
+                    }
                 }
                 catch (const std::exception &e)
                 {
