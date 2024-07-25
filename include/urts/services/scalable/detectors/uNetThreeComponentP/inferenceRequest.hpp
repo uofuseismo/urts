@@ -112,7 +112,7 @@ public:
     /// @result The minimum signal length. 
     [[nodiscard]] static int getMinimumSignalLength() noexcept;
     /// @result True indicates this is a valid signal length.
-    [[nodiscard]] bool isValidSignalLength(int nSamples) noexcept;
+    [[nodiscard]] static bool isValidSignalLength(int nSamples) noexcept;
     /// @result The sampling rate of the input signals in Hz.
     [[nodiscard]] static double getSamplingRate() noexcept;
     /// @}

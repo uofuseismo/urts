@@ -1,64 +1,47 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_S_INFERENCE_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_S_INFERENCE_REQUEST_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS
+namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
 {
-/// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.hpp"
-/// @brief Requests inference be performed on a preprocessed waveform snippet.
+/// @class PreprocessingRequest "preprocessingRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
+/// @brief Requests a waveform snippet be pre-processed.
+/// @note Typically you would use a service request that will pre-process and
+///       apply the model as that is more efficient.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class InferenceRequest : public UMPS::MessageFormats::IMessage
+class PreprocessingRequest : public UMPS::MessageFormats::IMessage
 {
-public:
-    /// @brief Defines the method used to apply the inference utility.
-    ///        Inference can be performed using a sliding window for
-    ///        signals exceeding some minimum length or can be applied
-    ///        for a fixed-sized window.
-    enum class InferenceStrategy
-    {
-        SlidingWindow = 0, /*!< By default a sliding window will be applied
-                                to the input signals.  In this case, the signals
-                                must be at least \c getMiniumumSignalLength(). */ 
-        FixedWindow = 1,   /*!< An inference will be performed on a single 
-                                window.  In this case, the input signals must
-                                be a valid signal length. */
-    };
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    InferenceRequest();
+    PreprocessingRequest();
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
-    InferenceRequest(const InferenceRequest &request);
+    PreprocessingRequest(const PreprocessingRequest &request);
     /// @brief Move constructor.
     /// @param[in,out] request  The request from which to initialize this class.
     ///                         On exit, request's behavior is undefined.
-    InferenceRequest(InferenceRequest &&request) noexcept;
+    PreprocessingRequest(PreprocessingRequest &&request) noexcept;
     /// @}
 
     /// @name Signals to Process
     /// @{
 
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
-    /// @param[in] verticalSignal   The signal on the vertical channel.
-    /// @param[in] northSignal      The signal on the north (1) channel.
-    /// @param[in] eastSignal       The signal on the east (2) channel.
-    /// @param[in] strategy         The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    /// @brief Sets the signals on the vertical, north, and east channels that
+    ///        will be pre-processed.
+    /// @param[in] verticalSignal  The signal on the vertical channel.
+    /// @param[in] northSignal     The signal on the north (1) channel.
+    /// @param[in] eastSignal      The signal on the east (2) channel.
+    /// @throws std::invalid_argument the signals are not the same size
+    ///         or empty.
     void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
                                     const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
+                                    const std::vector<double> &eastSignal);
+    /// @brief Sets the signals on the vertical, north, and east channels that
+    ///        will be pre-processed.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
@@ -68,16 +51,11 @@ public:
     /// @param[in,out] eastSignal      The signal on the east (2) channel.
     ///                                On exit, eastSignal's behavior is
     ///                                undefined.
-    /// @param[in] strategy            The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
+    /// @throws std::invalid_argument the signals are not the same size
+    ///         or empty.
     void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
                                     std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
+                                    std::vector<double> &&eastSignal);
     /// @result The vertical signal.
     /// @throws std::runtime_error if \c haveSignals() is false.
     [[nodiscard]] std::vector<double> getVerticalSignal() const;
@@ -106,15 +84,19 @@ public:
 
     /// @result True indicates the signals were set.
     [[nodiscard]] bool haveSignals() const noexcept;
-    /// @result The inference strategy.
-    /// @throws std::invalid_argument if \c haveSignals() is false.
-    [[nodiscard]] InferenceStrategy getInferenceStrategy() const;
-    /// @result The minimum signal length. 
-    [[nodiscard]] static int getMinimumSignalLength() noexcept;
-    /// @result True indicates this is a valid signal length.
-    [[nodiscard]] static bool isValidSignalLength(int nSamples) noexcept;
-    /// @result The sampling rate of the input signals in Hz.
-    [[nodiscard]] static double getSamplingRate() noexcept;
+    /// @}
+
+
+    /// @name Sampling Rate
+    /// @{
+
+    /// @brief Sets the sampling rate of the signals to be processed.
+    /// @param[in] samplingRate  The sampling rate of the signals in Hz.
+    /// @throws std::invalid_argument if the sampling rate is not positive.
+    void setSamplingRate(double samplingRate);
+    /// @result The sampling rate of the signal.
+    /// @note By default this is 100 Hz.
+    [[nodiscard]] double getSamplingRate() const noexcept;
     /// @}
 
     /// @name Request Identifier
@@ -164,9 +146,9 @@ public:
     /// @{
 
     /// @result A deep copy of the request.
-    InferenceRequest& operator=(const InferenceRequest &request);
+    PreprocessingRequest& operator=(const PreprocessingRequest &request);
     /// @result The memory moved from the request to this.
-    InferenceRequest& operator=(InferenceRequest &&request) noexcept;
+    PreprocessingRequest& operator=(PreprocessingRequest &&request) noexcept;
     /// @}
 
     /// @name Destructors
@@ -175,7 +157,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~InferenceRequest() override;
+    ~PreprocessingRequest() override;
     /// @} 
 private:
     class RequestImpl;

@@ -1,14 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
 #include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::InferenceResponse"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
-namespace MLModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 namespace
 {

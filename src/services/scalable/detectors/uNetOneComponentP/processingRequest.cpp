@@ -1,13 +1,14 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.hpp"
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
+#include <uussmlmodels/detectors/uNetOneComponentP/inference.hpp>
+#include "urts/services/scalable/detectors/uNetOneComponentP/processingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::ProcessingRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::Detectors::UNetOneComponentP;
 
 namespace
 {
@@ -19,9 +20,10 @@ std::string toCBORObject(const ProcessingRequest &message)
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
-    obj["Threshold"] = message.getThreshold();
     if (!message.haveSignal()){throw std::runtime_error("Signal not set");}
-    obj["VerticalSignal"] = message.getVerticalSignal();
+    obj["VerticalSignal"] = message.getSignal();
+    obj["InferenceStrategy"]
+        = static_cast<int> (message.getInferenceStrategy());
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -38,9 +40,11 @@ ProcessingRequest
     }
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setSamplingRate(obj["SamplingRate"].get<double> ());
-    result.setThreshold(obj["Threshold"].get<double> ());
+    auto strategy
+        = static_cast<ProcessingRequest::InferenceStrategy>
+          (obj["InferenceStrategy"].get<int> ());
     std::vector<double> vertical = obj["VerticalSignal"];
-    result.setVerticalSignal(std::move(vertical));
+    result.setSignal(std::move(vertical), strategy);
     return result;
 }
 
@@ -51,9 +55,12 @@ class ProcessingRequest::RequestImpl
 {
 public:
     std::vector<double> mVerticalSignal;
+    std::vector<double> mNorthSignal;
+    std::vector<double> mEastSignal;
     int64_t mIdentifier{0};
-    double mThreshold{1.0/3.0};
     double mSamplingRate{InferenceRequest::getSamplingRate()};
+    ProcessingRequest::InferenceStrategy mInferenceStrategy{
+        ProcessingRequest::InferenceStrategy::SlidingWindow};
     bool mHaveSignal{false};
 };
 
@@ -102,10 +109,10 @@ void ProcessingRequest::clear() noexcept
 /// Destructor
 ProcessingRequest::~ProcessingRequest() = default;
 
-/// Expected signal length
-int ProcessingRequest::getExpectedSignalLength() noexcept
+/// Minimum signal length
+int ProcessingRequest::getMinimumSignalLength() noexcept
 {
-    return InferenceRequest::getExpectedSignalLength();
+    return InferenceRequest::getMinimumSignalLength();
 }
 
 /// Identifier
@@ -135,56 +142,98 @@ double ProcessingRequest::getSamplingRate() const noexcept
 }
 
 /// Set signals
-void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
+void ProcessingRequest::setSignal(
+    std::vector<double> &&vertical,
+    const InferenceStrategy strategy)
 {
-    /// Try to head off a problem.  Can still be tricked by setting the signal
-    /// then the sampling rate.
     if (vertical.empty())
     {
-        throw std::invalid_argument("Signals cannot be empty");
+        throw std::invalid_argument("Vertical signal is empty");
     }
-    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
-    double expectedDuration
-        = (InferenceRequest::getExpectedSignalLength() - 1)
-         *expectedSamplingPeriod;
-    double signalDuration = (vertical.size() - 1)/getSamplingRate();
-    if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
+    /// Try to head off a problem.  Can still be tricked by setting the signal
+    /// then the sampling rate.
+    if (std::abs(getSamplingRate() - InferenceRequest::getSamplingRate())
+       < 1.e-5)
     {
-        throw std::invalid_argument("Signal time is too short");
+        if (strategy == ProcessingRequest::InferenceStrategy::SlidingWindow)
+        {
+            if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+            {
+                throw std::invalid_argument(
+                    "Signal must have length at least: "
+                  + std::to_string(getMinimumSignalLength()));
+            }
+        }
+        else
+        {
+            if (!InferenceRequest::isValidSignalLength(vertical.size()))
+            {
+                throw std::invalid_argument("Invalid signal length");
+            }
+        }
+    }
+    else
+    {
+        if (vertical.empty())
+        {
+            throw std::invalid_argument("Signal cannot be empty");
+        }
     }
     pImpl->mVerticalSignal = std::move(vertical);
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignal = true;
 }
 
-void ProcessingRequest::setVerticalSignal(const std::vector<double> &vertical)
+void ProcessingRequest::setSignal(
+    const std::vector<double> &vertical,
+    const InferenceStrategy strategy)
 {
-    /// Try to head off a problem.  Can still be tricked by setting the signal
-    /// then the sampling rate.
     if (vertical.empty())
     {
-        throw std::invalid_argument("Signals cannot be empty");
+        throw std::invalid_argument("Vertical signal is empty");
     }
-    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
-    double expectedDuration
-        = (InferenceRequest::getExpectedSignalLength() - 1)
-         *expectedSamplingPeriod;
-    double signalDuration = (vertical.size() - 1)/getSamplingRate();
-    if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
+    /// Try to head off a problem.  Can still be tricked by setting the signal
+    /// then the sampling rate.
+    if (std::abs(getSamplingRate() - InferenceRequest::getSamplingRate())
+       < 1.e-5)
     {
-        throw std::invalid_argument("Signal time is too short");
+        if (strategy == ProcessingRequest::InferenceStrategy::SlidingWindow)
+        {
+            if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+            {
+                throw std::invalid_argument(
+                    "Signal must have length at least: "
+                  + std::to_string(getMinimumSignalLength()));
+            }
+        }
+        else
+        {
+            if (!InferenceRequest::isValidSignalLength(vertical.size()))
+            {
+                throw std::invalid_argument("Invalid signal length");
+            }
+        }
+    }
+    else
+    {
+        if (vertical.empty())
+        {
+            throw std::invalid_argument("Signal cannot be empty");
+        }
     }
     pImpl->mVerticalSignal = vertical;
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignal = true;
 }
 
-std::vector<double> ProcessingRequest::getVerticalSignal() const
+std::vector<double> ProcessingRequest::getSignal() const
 {
     if (!haveSignal()){throw std::runtime_error("Signal not set");}
     return pImpl->mVerticalSignal;
 }
 
 const std::vector<double>
-&ProcessingRequest::getVerticalSignalReference() const
+&ProcessingRequest::getSignalReference() const
 {
     if (!haveSignal()){throw std::runtime_error("Signal not set");}
     return pImpl->mVerticalSignal;
@@ -195,19 +244,11 @@ bool ProcessingRequest::haveSignal() const noexcept
     return pImpl->mHaveSignal;
 }
 
-/// Probability threshold
-void ProcessingRequest::setThreshold(const double threshold)
+ProcessingRequest::InferenceStrategy
+ProcessingRequest::getInferenceStrategy() const
 {
-    if (threshold < 0 || threshold > 1)
-    {
-        throw std::invalid_argument("Threshold must be in range [0,1]");
-    }
-    pImpl->mThreshold = threshold;
-}
-
-double ProcessingRequest::getThreshold() const noexcept
-{
-    return pImpl->mThreshold;
+    if (!haveSignal()){throw std::runtime_error("Signal not set");}
+    return pImpl->mInferenceStrategy;
 }
 
 /// Message type

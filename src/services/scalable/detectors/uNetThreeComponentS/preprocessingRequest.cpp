@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/detectors/uNetThreeComponentS/inference.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentS::PreprocessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS;
-namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentS;
 
 namespace
 {
@@ -57,9 +56,7 @@ public:
     std::vector<double> mVerticalSignal;
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
-    double mSamplingRate{
-        MLModels::Inference::getSamplingRate()
-    };
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     int64_t mIdentifier{0};
     bool mHaveSignals{false};
 };

@@ -1,14 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::InferenceRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
-namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentP;
 
 namespace
 {
@@ -115,13 +113,21 @@ InferenceRequest::~InferenceRequest() = default;
 /// Minimum signal length
 int InferenceRequest::getMinimumSignalLength() noexcept
 {
-    return MLModels::Inference::getMinimumSignalLength();
+    return 1008;
 }
 
 /// Sampling rate
 double InferenceRequest::getSamplingRate() noexcept
 {
-    return MLModels::Inference::getSamplingRate();
+    return 100;
+}
+
+/// Valid sampling rate?
+bool InferenceRequest::isValidSignalLength(const int nSamples) noexcept
+{
+    if (nSamples < InferenceRequest::getMinimumSignalLength()){return false;}
+    if (nSamples%16 != 0){return false;}
+    return true;
 }
 
 /// Identifier
@@ -156,7 +162,7 @@ void InferenceRequest::setVerticalNorthEastSignal(
     }
     else
     {
-        if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+        if (!InferenceRequest::isValidSignalLength(vertical.size()))
         {
             throw std::invalid_argument("Invalid signal length");
         }
@@ -188,7 +194,7 @@ void InferenceRequest::setVerticalNorthEastSignal(
     }
     else
     {
-        if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+        if (!InferenceRequest::isValidSignalLength(vertical.size()))
         {
             throw std::invalid_argument("Invalid signal length");
         }

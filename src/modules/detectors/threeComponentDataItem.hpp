@@ -322,11 +322,11 @@ public:
         }
 
         // Okay, let's extract some signals.
+#ifndef NDEBUG
         const auto &vReference = mInterpolator.getVerticalSignalReference();
         const auto &nReference = mInterpolator.getNorthSignalReference();
         const auto &eReference = mInterpolator.getEastSignalReference();
         const auto &gReference = mInterpolator.getGapIndicatorReference();
-#ifndef NDEBUG
         assert(vReference.size() == nReference.size());
         assert(vReference.size() == eReference.size());
         assert(vReference.size() == gReference.size());
@@ -481,8 +481,11 @@ public:
 #ifndef NDEBUG
             assert(nPSamplesOut == nSSamplesOut);
 #else
-            setState(::ThreadSafeState::State::ReadyToQueryData);
-            throw std::runtime_error("P and S requests different result sizes");
+            if (nPSamplesOut != nSSamplesOut)
+            {
+                setState(::ThreadSafeState::State::ReadyToQueryData);
+                throw std::runtime_error("P and S requests different result sizes");
+            }
 #endif
         }
         auto dtMuSec = std::round(1e6/mDetectorProbabilitySignalSamplingRate);

@@ -79,7 +79,7 @@ add_compile_definitions(URTS_SRC)
 
 set(VERSION_SRC
     src/version.cpp)
-set(GENERIC_MESSAGE_SRC
+set(MESSAGE_SRC
     src/broadcasts/internal/dataPacket/dataPacket.cpp
     src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
     src/broadcasts/internal/pick/pick.cpp
@@ -95,8 +95,7 @@ set(GENERIC_MESSAGE_SRC
     src/services/scalable/packetCache/dataResponse.cpp
     src/services/scalable/packetCache/sensorRequest.cpp
     src/services/scalable/packetCache/sensorResponse.cpp)
-set(GENERIC_SRC
-    #src/broadcasts/internal/dataPacket/dataPacket.cpp
+set(CLIENT_SRC
     src/broadcasts/internal/dataPacket/publisher.cpp
     src/broadcasts/internal/dataPacket/publisherOptions.cpp
     src/broadcasts/internal/dataPacket/subscriber.cpp
@@ -105,23 +104,51 @@ set(GENERIC_SRC
     src/broadcasts/internal/origin/publisherOptions.cpp
     src/broadcasts/internal/origin/subscriber.cpp
     src/broadcasts/internal/origin/subscriberOptions.cpp
-    #src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
     src/broadcasts/internal/probabilityPacket/publisher.cpp
     src/broadcasts/internal/probabilityPacket/publisherOptions.cpp
     src/broadcasts/internal/probabilityPacket/subscriber.cpp
     src/broadcasts/internal/probabilityPacket/subscriberOptions.cpp
-    #src/broadcasts/internal/pick/pick.cpp
     src/broadcasts/internal/pick/publisher.cpp
-    src/broadcasts/internal/pick/publisherOptions.cpp 
+    src/broadcasts/internal/pick/publisherOptions.cpp
     src/broadcasts/internal/pick/subscriber.cpp
     src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
+    src/services/standalone/incrementer/requestor.cpp
+    src/services/standalone/incrementer/requestorOptions.cpp
+    src/services/scalable/packetCache/singleComponentWaveform.cpp
+    src/services/scalable/packetCache/threeComponentWaveform.cpp
+    src/services/scalable/packetCache/requestor.cpp
+    src/services/scalable/packetCache/requestorOptions.cpp
+    src/services/scalable/packetCache/wigginsInterpolator.cpp
+)
+set(SERVER_SRC
+    #src/broadcasts/internal/dataPacket/dataPacket.cpp
+    #src/broadcasts/internal/dataPacket/publisher.cpp
+    #src/broadcasts/internal/dataPacket/publisherOptions.cpp
+    #src/broadcasts/internal/dataPacket/subscriber.cpp
+    #src/broadcasts/internal/dataPacket/subscriberOptions.cpp
+    #src/broadcasts/internal/origin/publisher.cpp
+    #src/broadcasts/internal/origin/publisherOptions.cpp
+    #src/broadcasts/internal/origin/subscriber.cpp
+    #src/broadcasts/internal/origin/subscriberOptions.cpp
+    #src/broadcasts/internal/probabilityPacket/probabilityPacket.cpp
+    #src/broadcasts/internal/probabilityPacket/publisher.cpp
+    #src/broadcasts/internal/probabilityPacket/publisherOptions.cpp
+    #src/broadcasts/internal/probabilityPacket/subscriber.cpp
+    #src/broadcasts/internal/probabilityPacket/subscriberOptions.cpp
+    #src/broadcasts/internal/pick/pick.cpp
+    #src/broadcasts/internal/pick/publisher.cpp
+    #src/broadcasts/internal/pick/publisherOptions.cpp 
+    #src/broadcasts/internal/pick/subscriber.cpp
+    #src/broadcasts/internal/pick/subscriberOptions.cpp
+    #src/broadcasts/internal/pick/uncertaintyBound.cpp
     src/broadcasts/utilities/dataPacketSanitizer.cpp
     src/broadcasts/utilities/dataPacketSanitizerOptions.cpp
     src/database/aqms/arrival.cpp
     src/database/aqms/channelData.cpp
     src/database/aqms/channelDataTable.cpp
     src/database/aqms/channelDataTablePoller.cpp
+    src/database/aqms/assocaro.cpp
     src/database/aqms/event.cpp
     src/database/aqms/origin.cpp
     src/database/aqms/stationData.cpp
@@ -135,8 +162,8 @@ set(GENERIC_SRC
     #src/services/standalone/incrementer/itemsResponse.cpp
     src/services/standalone/incrementer/service.cpp
     src/services/standalone/incrementer/serviceOptions.cpp
-    src/services/standalone/incrementer/requestor.cpp
-    src/services/standalone/incrementer/requestorOptions.cpp
+    #src/services/standalone/incrementer/requestor.cpp
+    #src/services/standalone/incrementer/requestorOptions.cpp
     #src/services/scalable/packetCache/bulkDataRequest.cpp
     #src/services/scalable/packetCache/bulkDataResponse.cpp
     src/services/scalable/packetCache/cappedCollection.cpp
@@ -147,14 +174,14 @@ set(GENERIC_SRC
     #src/services/scalable/packetCache/sensorResponse.cpp
     src/services/scalable/packetCache/service.cpp
     src/services/scalable/packetCache/serviceOptions.cpp
-    src/services/scalable/packetCache/singleComponentWaveform.cpp
-    src/services/scalable/packetCache/threeComponentWaveform.cpp
-    src/services/scalable/packetCache/requestor.cpp
-    src/services/scalable/packetCache/requestorOptions.cpp
-    src/services/scalable/packetCache/wigginsInterpolator.cpp
+    #src/services/scalable/packetCache/singleComponentWaveform.cpp
+    #src/services/scalable/packetCache/threeComponentWaveform.cpp
+    #src/services/scalable/packetCache/requestor.cpp
+    #src/services/scalable/packetCache/requestorOptions.cpp
+    #src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
 if (${uLocator_FOUND})
-   set(GENERIC_MESSAGE_SRC ${GENERIC_MESSAGE_SRC}
+   set(MESSAGE_SRC ${MESSAGE_SRC}
        src/services/scalable/travelTimes/stationRequest.cpp
        src/services/scalable/travelTimes/stationResponse.cpp
        src/services/scalable/associators/massociate/associationRequest.cpp
@@ -163,60 +190,79 @@ if (${uLocator_FOUND})
        src/services/scalable/associators/massociate/origin.cpp
        src/services/scalable/associators/massociate/pick.cpp
       )
-   set(GENERIC_SRC ${GENERIC_SRC}
+   set(SERVER_SRC ${SERVER_SRC}
        src/services/scalable/travelTimes/service.cpp
        src/services/scalable/travelTimes/serviceOptions.cpp 
       )
    if (${MAssociate_FOUND})
-      set(GENERIC_SRC ${GENERIC_SRC}
+      set(SERVER_SRC ${SERVER_SRC}
           src/services/scalable/associators/massociate/service.cpp
-          src/services/scalable/associators/massociate/serviceOptions.cpp
+          src/services/scalable/associators/massociate/serviceOptions.cpp)
+      set(CLIENT_SRC ${CLIENT_SRC}
           src/services/scalable/associators/massociate/requestorOptions.cpp
           src/services/scalable/associators/massociate/requestor.cpp
          )
    endif()
 endif()
+set(MESSAGE_SRC ${MESSAGE_SRC}
+    src/services/scalable/detectors/uNetOneComponentP/inferenceRequest.cpp
+    src/services/scalable/detectors/uNetOneComponentP/inferenceResponse.cpp
+    src/services/scalable/detectors/uNetOneComponentP/processingRequest.cpp
+    src/services/scalable/detectors/uNetOneComponentP/processingResponse.cpp
+    src/services/scalable/detectors/uNetOneComponentP/requestorOptions.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
+    src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
+    src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
+    src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
+    src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
+    src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
+    src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp)
+set(CLIENT_SRC ${CLIENT_SRC}
+    src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
+    src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
+    src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
+    src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
+    src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
+    src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/requestor.cpp
+    src/services/scalable/pickers/cnnThreeComponentS/requestorOptions.cpp
+)
+
 if (${BUILD_UUSS_MLMODELS})
-    set(UUSS_MESSAGE_SRC
-        src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
-        src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp)
-    set(UUSS_SRC
+    set(SERVER_SRC ${SERVER_SRC}
         #src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
-        src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
+        #src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/service.cpp
         src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp
         #src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
@@ -225,8 +271,8 @@ if (${BUILD_UUSS_MLMODELS})
         #src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
         #src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
         #src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
-        src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
+        #src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentS/service.cpp
         src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
         #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
@@ -235,8 +281,8 @@ if (${BUILD_UUSS_MLMODELS})
         #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
         #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
         #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
-        src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
+        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.cpp
         #src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
@@ -245,8 +291,8 @@ if (${BUILD_UUSS_MLMODELS})
         #src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
         #src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
         #src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
-        src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
+        #src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
         src/services/scalable/pickers/cnnOneComponentP/service.cpp
         src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
         #src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
@@ -255,8 +301,8 @@ if (${BUILD_UUSS_MLMODELS})
         #src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
         #src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
         #src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/requestor.cpp
-        src/services/scalable/pickers/cnnThreeComponentS/requestorOptions.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/requestor.cpp
+        #src/services/scalable/pickers/cnnThreeComponentS/requestorOptions.cpp
         src/services/scalable/pickers/cnnThreeComponentS/service.cpp
         src/services/scalable/pickers/cnnThreeComponentS/serviceOptions.cpp
         )
@@ -285,39 +331,51 @@ if (${BUILD_UI})
        ui/topics.cpp)
 endif()
 
-add_library(urts ${VERSION_SRC} ${GENERIC_SRC} ${GENERIC_MESSAGE_SRC} ${UUSS_SRC} ${UUSS_MESSAGE_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
-set_target_properties(urts PROPERTIES
+add_library(urts_client ${VERSION_SRC} ${CLIENT_SRC} ${MESSAGE_SRC})
+set_target_properties(urts_client PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_include_directories(urts_client
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                                   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+                           PUBLIC ${UMPS_INCLUDE_DIR}
+                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
+target_link_libraries(urts_client PRIVATE ${UMPS_LIBRARY})
+
+add_library(urts_server ${VERSION_SRC} ${SERVER_SRC} ${EARTHWORM_SRC} ${SEEDLINK_SRC})
+set_target_properties(urts_server PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO)
-target_include_directories(urts
+target_include_directories(urts_server
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                                    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
                            PUBLIC ${UMPS_INCLUDE_DIR}
                            PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR} ${uLocator_INCLUDE_DIR} ${MAssociate_INCLUDE_DIR}
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
-target_link_libraries(urts
-                      PRIVATE ${UMPS_LIBRARY} ${Time_LIBRARY}
+target_link_libraries(urts_server
+                      PRIVATE urts_client ${UMPS_LIBRARY} ${Time_LIBRARY}
                               SOCI::soci_postgresql Boost::date_time Threads::Threads ${uLocator_LIBRARY} ${MAssociate_LIBRARY})
 if (${BUILD_MSEED})
-   target_include_directories(urts PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
-   target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
+   target_include_directories(urts_server PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
+   target_link_libraries(urts_server PRIVATE ${MINISEED_LIBRARY})
 endif()
 if (${BUILD_SEEDLINK})
-   target_include_directories(urts PRIVATE ${SEEDLINK_INCLUDE_DIR})
-   target_link_libraries(urts PRIVATE ${SEEDLINK_LIBRARY})
+   target_include_directories(urts_server PRIVATE ${SEEDLINK_INCLUDE_DIR})
+   target_link_libraries(urts_server PRIVATE ${SEEDLINK_LIBRARY})
 endif()
 # Earthworm screws everything up.  They ripped a specific version of libmseed and
 # jammed it into the earthworm include directory.  This stomps over the appropriate
 # limbseed version.
 if (${BUILD_EW})
-    target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
-    target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
-    target_compile_definitions(urts PRIVATE WITH_EARTHWORM)
+    target_include_directories(urts_server PRIVATE ${EARTHWORM_INCLUDE_DIR})
+    target_link_libraries(urts_server PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+    target_compile_definitions(urts_server PRIVATE WITH_EARTHWORM)
 endif()
 if (${BUILD_UUSS_MLMODELS})
-   target_include_directories(urts PRIVATE ${UUSSMLModels_INCLUDE_DIR})
-   target_link_libraries(urts PRIVATE ${UUSSMLModels_LIBRARY})
+   target_include_directories(urts_server PRIVATE ${UUSSMLModels_INCLUDE_DIR})
+   target_link_libraries(urts_server PRIVATE ${UUSSMLModels_LIBRARY})
 endif()
 
 ##########################################################################################
@@ -353,8 +411,9 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(unitTests PRIVATE urts ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES}
-                                             ${UUSSMLModels_LIBRARY})
+target_link_libraries(unitTests PRIVATE urts_server urts_client
+                                        ${UMPS_LIBRARY} ${GTEST_BOTH_LIBRARIES}
+                                        ${UUSSMLModels_LIBRARY})
 target_include_directories(unitTests
                            PRIVATE ${UMPS_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS}
                                    ${UUSSMLModels_INCLUDE_DIR}
@@ -375,7 +434,7 @@ if (${MAssociate_FOUND} AND ${uLocator_FOUND})
 endif()
 add_executable(catchTests ${CATCH_TEST_SRC})
 target_link_libraries(catchTests
-                      PRIVATE urts
+                      PRIVATE urts_server urts_client
                               ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                               Catch2::Catch2 Catch2::Catch2WithMain)
 target_include_directories(catchTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -403,7 +462,7 @@ target_include_directories(incrementerService
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
 target_link_libraries(incrementerService
-                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
+                      PRIVATE urts_server urts_client ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
 add_executable(packetCacheService src/services/scalable/packetCache/serviceModule.cpp)
 set_target_properties(packetCacheService PROPERTIES
@@ -414,7 +473,7 @@ target_include_directories(packetCacheService
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            Boost::program_options)
 target_link_libraries(packetCacheService
-                      PRIVATE urts ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
+                      PRIVATE urts_server urts_client ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
 
 set(URTS_MODULES incrementerService packetCacheService)
 
@@ -428,7 +487,7 @@ if (${BUILD_EW})
                               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_link_libraries(broadcastWaveRing
-                         PRIVATE urts ${UMPS_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} broadcastWaveRing)
 endif()
@@ -442,7 +501,7 @@ if (${BUILD_SEEDLINK})
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               Boost::program_options)
    target_link_libraries(broadcastSEEDLink
-                         PRIVATE urts ${UMPS_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} broadcastSEEDLink)
 endif()
@@ -527,31 +586,31 @@ if (${BUILD_UUSS_MLMODELS})
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    #target_link_libraries(picksToDatabase
-   #                      PRIVATE urts ${UMPS_LIBRARY}
+   #                      PRIVATE urts_server urts_client ${UMPS_LIBRARY}
    #                              Boost::program_options Threads::Threads SOCI::soci_postgresql)
    target_link_libraries(mlDetector
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(mlPickRegressor
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(thresholdPicker
-                         PRIVATE urts ${UMPS_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentSService
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(pPickRegressorService
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(sPickRegressorService
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(firstMotionClassifierService
-                         PRIVATE urts ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    set(URTS_MODULES ${MODULES} mlDetector
                                mlPickRegressor
@@ -570,7 +629,7 @@ if (${MAssociate_FOUND})
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO) 
    target_link_libraries(mAssociateService
-                         PRIVATE urts ${UMPS_LIBRARY} ${MAssociate_LIBRARY} ${uLocator_LIBRARY}
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${MAssociate_LIBRARY} ${uLocator_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_include_directories(mAssociateService
                               PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
@@ -581,7 +640,7 @@ if (${MAssociate_FOUND})
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
    target_link_libraries(mAssociator
-                         PRIVATE urts 
+                         PRIVATE urts_server urts_client
                                  ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
    target_include_directories(mAssociator
                               PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
@@ -610,7 +669,7 @@ endif()
 #                              PRIVATE Qt6::Core Qt6::Widgets Qt6::Network
 #                                      ${QPHASE_INCLUDE_DIR}
 #                              PRIVATE ${UMPS_INCLUDE_DIR})
-#   target_link_libraries(qurts PRIVATE urts Qt6::Core Qt6::Widgets Qt6::Network
+#   target_link_libraries(qurts PRIVATE urts_server urts_client Qt6::Core Qt6::Widgets Qt6::Network
 #                                       ${UMPS_LIBRARY} ${QPHASE_LIBRARY})
 #endif()
 
@@ -639,7 +698,7 @@ if (${WRAP_PYTHON})
                                       $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
    target_link_libraries(urtspy
                          PRIVATE pybind11::module pybind11::pybind11 pybind11::lto
-                                 urts ${UMPS_PYTHON_LIBRARY} ${UMPS_LIBRARY})
+                                 urts_client ${UMPS_PYTHON_LIBRARY} ${UMPS_LIBRARY})
 
 endif()
 
@@ -655,13 +714,13 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 if (WRAP_PYTHON)
-   install(TARGETS urts urtspy ${URTS_MODULES}
+   install(TARGETS urts_server urts_client urtspy ${URTS_MODULES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else()
-   install(TARGETS urts ${URTS_MODULES}
+   install(TARGETS urts_server urts_client ${URTS_MODULES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/urts
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -69,6 +69,7 @@
 #include "splitWork.hpp"
 #include "threeComponentChannelData.hpp"
 #include "threeComponentDataItem.hpp"
+#include "oneComponentDataItem.hpp"
 #include "getNow.hpp"
 #include "threadSafeState.hpp"
 #include "threeComponentProcessingPipeline.hpp"
@@ -819,11 +820,26 @@ S3CDetectorProperties s3CProperties;
                 }
             }
         }
+*/
         if (mRun1CPDetector)
         {
             mLogger->warn("1c p detector not done");
+            P3CDetectorProperties p1CProperties;
+            for (const auto &oneComponentSensor : oneComponentSensors)
+            {
+                ::OneComponentDataItem
+                    item(oneComponentSensor,
+                         p1CProperties.mDetectorWindowDuration,
+                         mProgramOptions.mMaximumSignalLatency,
+                         mProgramOptions.mGapTolerance,
+                         mProgramOptions.mDataQueryWaitPercentage,
+                         p1CProperties.mWindowStart,
+                         p1CProperties.mWindowEnd,
+                         p1CProperties.mSamplingRate,
+                         mLogger);
+                m1CPDataItems.insert( std::pair{item.getHash(), item} );
+            }
         }
-*/
     }
     /// @brief This is the manager thread.  It basically monitors the pipeline.
     void createTasks()
@@ -1066,7 +1082,7 @@ S3CDetectorProperties s3CProperties;
     std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
     std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
     std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
-    std::map<size_t, ::ThreeComponentDataItem> m1CPDataItems;
+    std::map<size_t, ::OneComponentDataItem>   m1CPDataItems;
     size_t mMaxInferenceItems{100};
     bool mPS3CInputsAreEqual{true};
     bool mRun3CPDetector{false};
@@ -1232,9 +1248,31 @@ int main(int argc, char *argv[])
 //            inference3CSRequestor->initialize(requestOptions);
             programOptions.mS3CDetectorRequestorOptions = requestOptions;
         }
+
+        namespace UNetP1C = UDetectors::UNetThreeComponentP;
         if (programOptions.mRunP1CDetector)
         {
             logger->error("1c p not done");
+/*
+            UNet1CP::RequestorOptions requestOptions;
+            if (!programOptions.mP3CDetectorServiceAddress.empty())
+            {
+                requestOptions.setAddress(
+                    programOptions.mP3CDetectorServiceAddress);
+            }
+            else
+            {
+                requestOptions.setAddress(
+                    uOperator->getProxyServiceFrontendDetails(
+                        programOptions.mP3CDetectorServiceName).getAddress());
+            }
+            requestOptions.setZAPOptions(zapOptions);
+            requestOptions.setReceiveTimeOut(
+                programOptions.mInferenceRequestReceiveTimeOut);
+            inference1CPRequestor
+                = std::make_unique<UNetP1C::Requestor> (clientContext, logger);
+            programOptions.mP3CDetectorRequestorOptions = requestOptions;
+*/
         }
 
         // Create the detector

@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
 #include "urts/services/scalable/pickers/cnnOneComponentP/processingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNOneComponentP::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::Pickers::CNNOneComponentP;
 
 namespace
 {
@@ -51,7 +50,7 @@ class ProcessingRequest::RequestImpl
 public:
     std::vector<double> mVerticalSignal;
     int64_t mIdentifier{0};
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     bool mHaveSignal{false};
 };
 
@@ -103,7 +102,7 @@ ProcessingRequest::~ProcessingRequest() = default;
 /// Expected signal length
 int ProcessingRequest::getExpectedSignalLength() noexcept
 {
-    return MLModels::Inference::getExpectedSignalLength();
+    return InferenceRequest::getExpectedSignalLength();
 }
 
 /// Identifier
@@ -141,9 +140,9 @@ void ProcessingRequest::setVerticalSignal(std::vector<double> &&vertical)
     {
         throw std::invalid_argument("Signals cannot be empty");
     }
-    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
     double expectedDuration
-        = (MLModels::Inference::getExpectedSignalLength() - 1)
+        = (InferenceRequest::getExpectedSignalLength() - 1)
          *expectedSamplingPeriod;
     double signalDuration = (vertical.size() - 1)/getSamplingRate();
     if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
@@ -162,9 +161,9 @@ void ProcessingRequest::setVerticalSignal(const std::vector<double> &vertical)
     {
         throw std::invalid_argument("Signals cannot be empty");
     }
-    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
     double expectedDuration
-        = (MLModels::Inference::getExpectedSignalLength() - 1)
+        = (InferenceRequest::getExpectedSignalLength() - 1)
          *expectedSamplingPeriod;
     double signalDuration = (vertical.size() - 1)/getSamplingRate();
     if (signalDuration < expectedDuration - expectedSamplingPeriod/2)

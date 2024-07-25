@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/detectors/uNetThreeComponentS/inference.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentS/processingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentS::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS;
-namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentS;
 
 namespace
 {
@@ -65,7 +64,7 @@ public:
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
     int64_t mIdentifier{0};
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     ProcessingRequest::InferenceStrategy mInferenceStrategy{
         ProcessingRequest::InferenceStrategy::SlidingWindow};
     bool mHaveSignals{false};
@@ -119,7 +118,7 @@ ProcessingRequest::~ProcessingRequest() = default;
 /// Minimum signal length
 int ProcessingRequest::getMinimumSignalLength() noexcept
 {
-    return MLModels::Inference::getMinimumSignalLength();
+    return InferenceRequest::getMinimumSignalLength();
 }
 
 /// Identifier
@@ -161,7 +160,7 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    if (std::abs(getSamplingRate() - MLModels::Inference::getSamplingRate())
+    if (std::abs(getSamplingRate() - InferenceRequest::getSamplingRate())
         < 1.e-5)
     {
         if (strategy == ProcessingRequest::InferenceStrategy::SlidingWindow)
@@ -175,7 +174,7 @@ void ProcessingRequest::setVerticalNorthEastSignal(
         }
         else
         {
-            if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+            if (!InferenceRequest::isValidSignalLength(vertical.size()))
             {
                 throw std::invalid_argument("Invalid signal length");
             }
@@ -207,7 +206,7 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    if (std::abs(getSamplingRate() - MLModels::Inference::getSamplingRate()) 
+    if (std::abs(getSamplingRate() - InferenceRequest::getSamplingRate()) 
         < 1.e-5)
     {
         if (strategy == ProcessingRequest::InferenceStrategy::SlidingWindow)
@@ -221,7 +220,7 @@ void ProcessingRequest::setVerticalNorthEastSignal(
         }
         else
         {
-            if (!MLModels::Inference::isValidSignalLength(vertical.size()))
+            if (!InferenceRequest::isValidSignalLength(vertical.size()))
             {
                 throw std::invalid_argument("Invalid signal length");
             }

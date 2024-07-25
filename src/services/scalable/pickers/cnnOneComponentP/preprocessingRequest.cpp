@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
 #include "urts/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnOneComponentP/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNOneComponentP;
-namespace MLModels = UUSSMLModels::Pickers::CNNOneComponentP;
 
 namespace
 {
@@ -49,7 +48,7 @@ class PreprocessingRequest::RequestImpl
 {
 public:
     std::vector<double> mVerticalSignal;
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     int64_t mIdentifier{0};
     bool mHaveSignal{false};
 };

@@ -1,9 +1,54 @@
 #include <string>
+#include <boost/format.hpp>
 #include "urts/database/aqms/origin.hpp"
 #include "urts/database/aqms/arrival.hpp"
 #include "utilities.hpp"
 
 using namespace URTS::Database::AQMS;
+
+namespace
+{
+[[nodiscard]] std::string typeToString(const Origin::GeographicType type)
+{
+    if (type == Origin::GeographicType::Local)
+    {
+        return "l";
+    }
+    else if (type == Origin::GeographicType::Regional)
+    {
+        return "r";
+    }
+    else if (type == Origin::GeographicType::Teleseismic)
+    {
+        return "t";
+    } 
+    return "l";
+}
+[[nodiscard]] std::string reviewFlagToString(const Origin::ReviewFlag flag)
+{
+    if (flag == Origin::ReviewFlag::Automatic)
+    {   
+        return "A";
+    }
+    else if (flag == Origin::ReviewFlag::Incomplete)
+    {
+        return "I";
+    }   
+    else if (flag == Origin::ReviewFlag::Human)
+    {   
+        return "H";
+    }   
+    else if (flag == Origin::ReviewFlag::Finalized)
+    {   
+        return "F";
+    }
+    else if (flag == Origin::ReviewFlag::Cancelled)
+    {   
+        return "C";
+    }
+    return "A";
+}
+}
 
 class Origin::OriginImpl
 {
@@ -380,4 +425,106 @@ std::optional<double> Origin::getWeightedRootMeanSquaredError() const noexcept
 {
     return pImpl->mHaveWRMSE ?
            std::optional<double> {pImpl->mWRMSE} : std::nullopt;
+}
+
+/// Insertion string
+std::string URTS::Database::AQMS::toInsertString(const Origin &origin)
+{
+    if (!origin.haveAuthority())
+    {   
+        throw std::invalid_argument("Authority not set");
+    }
+    if (!origin.haveEventIdentifier())
+    {
+        throw std::invalid_argument("Event identifier not set");
+    }
+    if (!origin.haveLatitude())
+    {
+        throw std::invalid_argument("Latitude not set");
+    }
+    if (!origin.haveLongitude())
+    {
+        throw std::invalid_argument("Longitude not set");
+    }
+    if (!origin.haveTime())
+    {
+        throw std::invalid_argument("Time not set");
+    }
+    int isBogus = 0;
+    if (origin.isBogus()){isBogus = 1;}
+
+    std::string keys = {"(auth, evid, lat, lon, datetime, bogusflag,"};
+    std::string values
+        = str(boost::format(" VALUES ('%1%', %2$d, %3$.8f, %4$.8f, TrueTime.putEpoch(%5$.6f, 'UTC'), %6$d,")
+              %origin.getAuthority()
+              %origin.getEventIdentifier()
+              %origin.getLatitude()
+              %origin.getLongitude()
+              %origin.getTime()
+              %isBogus
+             );
+
+    if (origin.haveIdentifier())
+    {   
+        keys = keys + " orid,";
+        values = values + str(boost::format(" %1$d,")%origin.getIdentifier() );
+    }
+    if (origin.getPreferredMagnitudeIdentifier())
+    {   
+        keys = keys + " prefmag,";
+        values = values + str(boost::format(" %1$d,")%*origin.getPreferredMagnitudeIdentifier() );
+    }
+    if (origin.getPreferredMechanismIdentifier())
+    {
+        keys = keys + " prefmec,";
+        values = values + str(boost::format(" %1$d,")%*origin.getPreferredMechanismIdentifier() );
+    }
+    if (origin.getSubSource())
+    {   
+        keys = keys + " subsource,";
+        values = values + str(boost::format(" '%1%',")%*origin.getSubSource() );  
+    }
+    if (origin.getAlgorithm())
+    {   
+        keys = keys + " algorithm,";
+        values = values + str(boost::format(" '%1%',")%*origin.getAlgorithm() );  
+    }
+    if (origin.getDepth())
+    {
+        keys = keys + " depth,";
+        values = values + str(boost::format(" %1$.4f,")%*origin.getDepth() );
+    }
+    if (origin.getGap())
+    {
+        keys = keys + " gap,";
+        values = values + str(boost::format(" %1$.3f,")%*origin.getGap() );
+    }
+    if (origin.getDistanceToNearestStation())
+    {
+        keys = keys + " distance,";
+        values = values + str(boost::format(" %1$.3f,")%*origin.getDistanceToNearestStation() );
+    }
+    if (origin.getWeightedRootMeanSquaredError())
+    {
+        keys = keys + " wrms,";
+        values = values + str(boost::format(" %1$.6f,")%*origin.getWeightedRootMeanSquaredError() );
+    }
+    if (origin.getGeographicType())
+    {
+        keys = keys + " gtype,";
+        values = values + str(boost::format(" '%1%',")% ::typeToString(*origin.getGeographicType()) );
+    }
+    if (origin.getReviewFlag())
+    {
+        keys = keys + " rflag,";
+        values = values + str(boost::format(" '%1%',")% ::reviewFlagToString(*origin.getReviewFlag()) );
+    }
+
+    // Delete the trailing comma and make it a ")"
+    keys.back() = ')';
+    values.back()= ')';
+    // Put it all together
+    std::string insertStatement{"INSERT INTO origin "};
+    insertStatement = insertStatement + keys + values + ";";
+    return insertStatement;
 }

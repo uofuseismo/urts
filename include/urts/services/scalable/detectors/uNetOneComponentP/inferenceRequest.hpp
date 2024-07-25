@@ -1,11 +1,11 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_S_INFERENCE_REQUEST_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_S_INFERENCE_REQUEST_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_ONE_COMPONENT_P_INFERENCE_REQUEST_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_ONE_COMPONENT_P_INFERENCE_REQUEST_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentS
+namespace URTS::Services::Scalable::Detectors::UNetOneComponentP
 {
-/// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.hpp"
+/// @class InferenceRequest "inferenceRequest.hpp" "urts/services/scalable/detectors/uNetOneComponentP/inferenceRequest.hpp"
 /// @brief Requests inference be performed on a preprocessed waveform snippet.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class InferenceRequest : public UMPS::MessageFormats::IMessage
@@ -42,70 +42,40 @@ public:
     /// @name Signals to Process
     /// @{
 
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
+    /// @brief Sets the signals on the vertical channel on which the
+    ///        inference will be performed.
     /// @param[in] verticalSignal   The signal on the vertical channel.
-    /// @param[in] northSignal      The signal on the north (1) channel.
-    /// @param[in] eastSignal       The signal on the east (2) channel.
     /// @param[in] strategy         The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
-    void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
-                                    const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal,
+    /// @throws std::invalid_argument when the inference strategy is SlidingWindow
+    ///         and the signal is less than \c getMinimumSignalLength() or
+    ///         when the inference strategy is FixedWindow and the
+    ///         \c isValidSignalLength() is false.
+    void setSignal(const std::vector<double> &verticalSignal,
                                     InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
-    /// @brief Sets the signals on the vertical, north, and east channels
-    ///        on which inference will be performed.
+    /// @brief Sets the signals on the vertical channel on which the
+    ///        inference will be performed.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
-    /// @param[in,out] northSignal     The signal on the north (1) channel.
-    ///                                On exit, northSignal's behavior is
-    ///                                undefined.
-    /// @param[in,out] eastSignal      The signal on the east (2) channel.
-    ///                                On exit, eastSignal's behavior is
-    ///                                undefined.
     /// @param[in] strategy            The inference strategy.
-    /// @throws std::invalid_argument the signals are not the same size,
-    ///         If the inference strategy is SlidingWindow then the signal
-    ///         must be at least \c getMinimumSignalLength().  If the
-    ///         inference straetgy is FixedWindow then the 
-    ///         \c isValidSignalLength() must be true.
-    void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
-                                    std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal,
-                                    InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
+    /// @throws std::invalid_argument when the inference strategy is SlidingWindow
+    ///         and the signal is less than \c getMinimumSignalLength() or
+    ///         when the inference strategy is FixedWindow and the
+    ///         \c isValidSignalLength() is false.
+    void setSignal(std::vector<double> &&verticalSignal,
+                   InferenceStrategy strategy = InferenceStrategy::SlidingWindow);
     /// @result The vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getVerticalSignal() const;
-    /// @result The north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getNorthSignal() const;
-    /// @result The east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getEastSignal() const;
+    /// @throws std::runtime_error if \c haveSignal() is false.
+    [[nodiscard]] std::vector<double> getSignal() const;
 
     /// @result A reference to the vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
+    /// @throws std::runtime_error if \c haveSignal() is false.
     /// @note This exists for performance reasons.  You should use
-    ///       \c getVerticalSignal(). 
-    [[nodiscard]] const std::vector<double> &getVerticalSignalReference() const;
-    /// @result A reference to the north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    /// @note This exists for performance reasons.  You should use
-    ///       \c getNorthSignal(). 
-    [[nodiscard]] const std::vector<double> &getNorthSignalReference() const;
-    /// @result A reference to the east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    /// @note This exists for performance reasons.  You should use
-    ///       \c getEastSignal(). 
-    [[nodiscard]] const std::vector<double> &getEastSignalReference() const;
+    ///       \c getSignal(). 
+    [[nodiscard]] const std::vector<double> &getSignalReference() const;
 
     /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveSignals() const noexcept;
+    [[nodiscard]] bool haveSignal() const noexcept;
     /// @result The inference strategy.
     /// @throws std::invalid_argument if \c haveSignals() is false.
     [[nodiscard]] InferenceStrategy getInferenceStrategy() const;

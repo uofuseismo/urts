@@ -191,6 +191,9 @@ TEST_CASE("URTS::Database::AQMS", "[Origin]")
         REQUIRE(*copy.getReviewFlag() == reviewFlag);
         REQUIRE(std::abs(*copy.getWeightedRootMeanSquaredError() - wrmse) < 1.e-13);
     }
+
+std::cout << toInsertString(origin) << std::endl;
+
 }
 
 TEST_CASE("URTS::Database::AQMS", "[Event]")

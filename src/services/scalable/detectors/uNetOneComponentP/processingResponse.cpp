@@ -1,12 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/pickers/cnnThreeComponentS/processingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP/processingResponse.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
+using namespace URTS::Services::Scalable::Detectors::UNetOneComponentP;
 
 namespace
 {
@@ -17,15 +17,13 @@ std::string toCBORObject(const ProcessingResponse &message)
     obj["MessageType"] = message.getMessageType();
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
+    obj["SamplingRate"] = message.getSamplingRate();
     obj["ReturnCode"] = static_cast<int> (message.getReturnCode());
-    if (!message.haveCorrection())
-    {   
-        throw std::runtime_error("Pick correction not set");
-    }   
-    if (message.getReturnCode() == ProcessingResponse::ReturnCode::Success)
+    if (!message.haveProbabilitySignal())
     {
-        obj["Correction"] = message.getCorrection();
+        throw std::runtime_error("Probability signal not set");
     }
+    obj["ProbabilitySignal"] = message.getProbabilitySignal();
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -40,15 +38,14 @@ ProcessingResponse
     {
         throw std::invalid_argument("Message has invalid message type");
     }
+    result.setSamplingRate(obj["SamplingRate"].get<double> ());
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
     result.setReturnCode(
        static_cast<ProcessingResponse::ReturnCode> (
          obj["ReturnCode"].get<int> ()
     ));
-    if (result.getReturnCode() == ProcessingResponse::ReturnCode::Success)
-    {
-        result.setCorrection(obj["Correction"].get<double> ());
-    }
+    std::vector<double> probabilitySignal = obj["ProbabilitySignal"];
+    result.setProbabilitySignal(std::move(probabilitySignal));
     return result;
 }
 
@@ -57,10 +54,11 @@ ProcessingResponse
 class ProcessingResponse::ResponseImpl
 {
 public:
-    double mCorrection{0};
+    std::vector<double> mProbabilitySignal;
+    double mSamplingRate{100};
     int64_t mIdentifier{0};
     ProcessingResponse::ReturnCode mReturnCode;
-    bool mHaveCorrection{false};
+    bool mHaveProbabilitySignal{false};
     bool mHaveReturnCode{false};
 };
 
@@ -112,6 +110,22 @@ void ProcessingResponse::clear() noexcept
 ProcessingResponse::~ProcessingResponse()
     = default;
 
+/// Sampling rate
+void ProcessingResponse::setSamplingRate(
+    const double samplingRate)
+{
+    if (samplingRate <= 0)
+    {
+        throw std::invalid_argument("Sampling rate must be positive");
+    }
+    pImpl->mSamplingRate = samplingRate;
+}
+
+double ProcessingResponse::getSamplingRate() const noexcept
+{
+    return pImpl->mSamplingRate;
+}
+
 /// Identifier
 void ProcessingResponse::setIdentifier(
     const int64_t identifier) noexcept
@@ -143,25 +157,49 @@ bool ProcessingResponse::haveReturnCode() const noexcept
     return pImpl->mHaveReturnCode;
 }
 
-/// Correction
-void ProcessingResponse::setCorrection(const double correction) noexcept
+/// Set signals
+void ProcessingResponse::setProbabilitySignal(const std::vector<double> &signal)
 {
-    pImpl->mCorrection = correction;
-    pImpl->mHaveCorrection = true;
-}
-
-double ProcessingResponse::getCorrection() const
-{
-    if (!haveCorrection())
+    if (signal.empty())
     {
-        throw std::runtime_error("Pick correction not set");
+        throw std::invalid_argument("Probability signal is empty");
     }
-    return pImpl->mCorrection;
+    pImpl->mProbabilitySignal = signal;
+    pImpl->mHaveProbabilitySignal = true;
 }
 
-bool ProcessingResponse::haveCorrection() const noexcept
+void ProcessingResponse::setProbabilitySignal(std::vector<double> &&signal)
 {
-    return pImpl->mHaveCorrection;
+    if (signal.empty())
+    {
+        throw std::invalid_argument("Probability signal is empty");
+    }
+    pImpl->mProbabilitySignal = signal;
+    pImpl->mHaveProbabilitySignal = true;
+}
+
+std::vector<double> ProcessingResponse::getProbabilitySignal() const
+{
+    if (!haveProbabilitySignal())
+    {
+        throw std::runtime_error("Probability signal not set");
+    }
+    return pImpl->mProbabilitySignal;
+}
+
+const std::vector<double>
+&ProcessingResponse::getProbabilitySignalReference() const
+{
+    if (!haveProbabilitySignal())
+    {
+        throw std::runtime_error("Probability signal not set");
+    }
+    return *&pImpl->mProbabilitySignal;
+}
+
+bool ProcessingResponse::haveProbabilitySignal() const noexcept
+{
+    return pImpl->mHaveProbabilitySignal;
 }
 
 /// Message type

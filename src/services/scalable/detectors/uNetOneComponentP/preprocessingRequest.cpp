@@ -1,13 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.hpp"
-#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::PreprocessingRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::PreprocessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
+using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
 
 namespace
 {
@@ -142,17 +142,17 @@ void PreprocessingRequest::setVerticalNorthEastSignal(
     const std::vector<double> &north,
     const std::vector<double> &east)
 {
-    if (vertical.empty())
-    {
-        throw std::invalid_argument("Signal is empty");
-    }
     if (vertical.size() != north.size() || vertical.size() != east.size())
     {
-        throw std::invalid_argument("Inconsistent signal lengths");
+        throw std::invalid_argument("Signals sizes are inconsistent");
     }
-    pImpl->mVerticalSignal = std::move(vertical);
-    pImpl->mNorthSignal = std::move(north);
-    pImpl->mEastSignal = std::move(east);
+    if (vertical.empty())
+    {
+        throw std::invalid_argument("Signals are empty");
+    }
+    pImpl->mVerticalSignal = vertical;
+    pImpl->mNorthSignal = north;
+    pImpl->mEastSignal = east;
     pImpl->mHaveSignals = true;
 }
 
@@ -161,13 +161,13 @@ void PreprocessingRequest::setVerticalNorthEastSignal(
     std::vector<double> &&north,
     std::vector<double> &&east)
 {
-    if (vertical.empty())
-    {
-        throw std::invalid_argument("Signal is empty");
-    }
     if (vertical.size() != north.size() || vertical.size() != east.size())
     {
-        throw std::invalid_argument("Inconsistent signal lengths");
+        throw std::invalid_argument("Signals sizes are inconsistent");
+    }
+    if (vertical.empty())
+    {
+        throw std::invalid_argument("Signals are empty");
     }
     pImpl->mVerticalSignal = std::move(vertical);
     pImpl->mNorthSignal = std::move(north);

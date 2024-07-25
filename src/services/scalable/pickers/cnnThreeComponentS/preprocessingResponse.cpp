@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
 #include "urts/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::PreprocessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
-namespace MLModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 namespace
 {
@@ -62,7 +61,7 @@ public:
     std::vector<double> mVerticalSignal;
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     int64_t mIdentifier{0};
     PreprocessingResponse::ReturnCode mReturnCode;
     bool mHaveSignals{false};

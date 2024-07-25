@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
 #include "urts/services/scalable/pickers/cnnThreeComponentS/processingRequest.hpp"
+#include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::ProcessingRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
-namespace MLModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 namespace
 {
@@ -59,7 +58,7 @@ public:
     std::vector<double> mNorthSignal;
     std::vector<double> mEastSignal;
     int64_t mIdentifier{0};
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     bool mHaveSignals{false};
 };
 
@@ -111,7 +110,7 @@ ProcessingRequest::~ProcessingRequest() = default;
 /// Expected signal length
 int ProcessingRequest::getExpectedSignalLength() noexcept
 {
-    return MLModels::Inference::getExpectedSignalLength();
+    return InferenceRequest::getExpectedSignalLength();
 }
 
 /// Identifier
@@ -156,9 +155,9 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
     double expectedDuration
-        = (MLModels::Inference::getExpectedSignalLength() - 1)
+        = (InferenceRequest::getExpectedSignalLength() - 1)
          *expectedSamplingPeriod;
     double signalDuration = (vertical.size() - 1)/getSamplingRate();
     if (signalDuration < expectedDuration - expectedSamplingPeriod/2)
@@ -187,9 +186,9 @@ void ProcessingRequest::setVerticalNorthEastSignal(
     }
     /// Try to head off a problem.  Can still be tricked by setting the signal
     /// then the sampling rate.
-    auto expectedSamplingPeriod = 1.0/MLModels::Inference::getSamplingRate();
+    auto expectedSamplingPeriod = 1.0/InferenceRequest::getSamplingRate();
     double expectedDuration
-        = (MLModels::Inference::getExpectedSignalLength() - 1)
+        = (InferenceRequest::getExpectedSignalLength() - 1)
          *expectedSamplingPeriod;
     double signalDuration = (vertical.size() - 1)/getSamplingRate();
     if (signalDuration < expectedDuration - expectedSamplingPeriod/2)

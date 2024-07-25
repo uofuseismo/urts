@@ -1,14 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/pickers/cnnThreeComponentS/inference.hpp>
 #include "urts/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Pickers::CNNThreeComponentS::InferenceRequest"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Pickers::CNNThreeComponentS;
-namespace MLModels = UUSSMLModels::Pickers::CNNThreeComponentS;
 
 namespace
 {
@@ -107,13 +105,13 @@ InferenceRequest::~InferenceRequest() = default;
 /// Expected signal length
 int InferenceRequest::getExpectedSignalLength() noexcept
 {
-    return MLModels::Inference::getExpectedSignalLength();
+    return 600;
 }
 
 /// Sampling rate
 double InferenceRequest::getSamplingRate() noexcept
 {
-    return MLModels::Inference::getSamplingRate();
+    return 100;
 }
 
 /// Identifier

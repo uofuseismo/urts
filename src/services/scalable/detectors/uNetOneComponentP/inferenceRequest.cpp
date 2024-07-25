@@ -1,12 +1,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::InferenceRequest"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetOneComponentP::InferenceRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP;
+using namespace URTS::Services::Scalable::Detectors::UNetOneComponentP;
 
 namespace
 {
@@ -17,9 +17,10 @@ std::string toCBORObject(const InferenceRequest &message)
     obj["MessageType"] = message.getMessageType();
     obj["MessageVersion"] = message.getMessageVersion();
     obj["Identifier"] = message.getIdentifier();
-    obj["Threshold"] = message.getThreshold();
     if (!message.haveSignal()){throw std::runtime_error("Signal not set");}
-    obj["VerticalSignal"] = message.getVerticalSignal();
+    obj["VerticalSignal"] = message.getSignal();
+    obj["InferenceStrategy"]
+        = static_cast<int> (message.getInferenceStrategy());
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -34,10 +35,12 @@ InferenceRequest
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    result.setThreshold(obj["Threshold"].get<double> ());
     result.setIdentifier(obj["Identifier"].get<int64_t> ());
+    auto strategy
+        = static_cast<InferenceRequest::InferenceStrategy>
+          (obj["InferenceStrategy"].get<int> ());
     std::vector<double> vertical = obj["VerticalSignal"];
-    result.setVerticalSignal(std::move(vertical));
+    result.setSignal(std::move(vertical), strategy);
     return result;
 }
 
@@ -49,7 +52,8 @@ class InferenceRequest::RequestImpl
 public:
     std::vector<double> mVerticalSignal;
     int64_t mIdentifier{0};
-    double mThreshold{1./3.};
+    InferenceRequest::InferenceStrategy mInferenceStrategy{
+        InferenceRequest::InferenceStrategy::SlidingWindow};
     bool mHaveSignal{false};
 };
 
@@ -98,9 +102,9 @@ void InferenceRequest::clear() noexcept
 InferenceRequest::~InferenceRequest() = default;
 
 /// Minimum signal length
-int InferenceRequest::getExpectedSignalLength() noexcept
+int InferenceRequest::getMinimumSignalLength() noexcept
 {
-    return 400;
+    return 1008;
 }
 
 /// Sampling rate
@@ -121,62 +125,94 @@ int64_t InferenceRequest::getIdentifier() const noexcept
 }
 
 /// Set signals
-void InferenceRequest::setVerticalSignal(std::vector<double> &&vertical)
+void InferenceRequest::setSignal(
+    std::vector<double> &&vertical,
+    const InferenceStrategy strategy)
 {
-    if (static_cast<int> (vertical.size()) !=
-        InferenceRequest::getExpectedSignalLength())
+    if (vertical.empty())
     {
-        throw std::invalid_argument("Signal length should be: "
-            + std::to_string(InferenceRequest::getExpectedSignalLength()));
+        throw std::invalid_argument("Vertical signal is empty");
+    }
+    if (strategy == InferenceRequest::InferenceStrategy::SlidingWindow)
+    {
+        if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+        {
+            throw std::invalid_argument("Signals must have length at least: "
+                                    + std::to_string(getMinimumSignalLength()));
+        }
+    }
+    else
+    {
+        if (!isValidSignalLength(vertical.size()))
+        {
+            throw std::invalid_argument("Invalid signal length");
+        }
     }
     pImpl->mVerticalSignal = std::move(vertical);
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignal = true;
 }
 
-void InferenceRequest::setVerticalSignal(const std::vector<double> &vertical)
+/// Valid?
+bool InferenceRequest::isValidSignalLength(const int nSamples) noexcept
 {
-    if (static_cast<int> (vertical.size()) !=
-        InferenceRequest::getExpectedSignalLength())
+    if (nSamples < InferenceRequest::getMinimumSignalLength()){return false;}
+    if (nSamples%16 != 0){return false;}
+    return true;
+}
+
+
+void InferenceRequest::setSignal(
+    const std::vector<double> &vertical,
+    const InferenceStrategy strategy)
+{
+    if (vertical.empty())
     {
-        throw std::invalid_argument("Signal length should be: "
-            + std::to_string(InferenceRequest::getExpectedSignalLength()));
+        throw std::invalid_argument("Vertical signal is empty");
+    }
+    if (strategy == InferenceRequest::InferenceStrategy::SlidingWindow)
+    {
+        if (static_cast<int> (vertical.size()) < getMinimumSignalLength())
+        {
+            throw std::invalid_argument("Signals must have length at least: "
+                                    + std::to_string(getMinimumSignalLength()));
+        }
+    }
+    else
+    {
+        if (!isValidSignalLength(vertical.size()))
+        {
+            throw std::invalid_argument("Invalid signal length");
+        }
     }
     pImpl->mVerticalSignal = vertical;
+    pImpl->mInferenceStrategy = strategy;
     pImpl->mHaveSignal = true;
 }
 
-std::vector<double> InferenceRequest::getVerticalSignal() const
-{
-    if (!haveSignal()){throw std::runtime_error("Signal not set");}
-    return pImpl->mVerticalSignal;
-}
- 
-const std::vector<double>
-&InferenceRequest::getVerticalSignalReference() const
+std::vector<double> InferenceRequest::getSignal() const
 {
     if (!haveSignal()){throw std::runtime_error("Signal not set");}
     return pImpl->mVerticalSignal;
 }
 
-/// Have signal?
-bool InferenceRequest::haveSignal() const noexcept
+const std::vector<double>
+&InferenceRequest::getSignalReference() const
 {
+    if (!haveSignal()){throw std::runtime_error("Signal not set");}
+    return pImpl->mVerticalSignal;
+}
+
+bool InferenceRequest::haveSignal() const noexcept
+{   
     return pImpl->mHaveSignal;
 }
 
-/// Probability threshold
-void InferenceRequest::setThreshold(const double threshold)
+InferenceRequest::InferenceStrategy
+InferenceRequest::getInferenceStrategy() const
 {
-    if (threshold < 0 || threshold > 1)
-    {
-        throw std::invalid_argument("Threshold must be in range [0,1]");
-    }
-    pImpl->mThreshold = threshold;
-}
-
-double InferenceRequest::getThreshold() const noexcept
-{
-    return pImpl->mThreshold;
+    if (!haveSignal()){throw std::runtime_error("Signal not set");}
+    return pImpl->mInferenceStrategy;
 }
 
 /// Message type

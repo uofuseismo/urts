@@ -1,14 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
 #include "urts/services/scalable/detectors/uNetThreeComponentP/processingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
 
 #define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
 using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
-namespace MLModels = UUSSMLModels::Detectors::UNetThreeComponentP;
 
 namespace
 {
@@ -57,7 +56,7 @@ class ProcessingResponse::ResponseImpl
 {
 public:
     std::vector<double> mProbabilitySignal;
-    double mSamplingRate{MLModels::Inference::getSamplingRate()};
+    double mSamplingRate{InferenceRequest::getSamplingRate()};
     int64_t mIdentifier{0};
     ProcessingResponse::ReturnCode mReturnCode;
     bool mHaveProbabilitySignal{false};
