@@ -308,9 +308,12 @@ public:
                 initialPick.getLowerAndUpperUncertaintyBound());
         }
         // Query data
+/*
         try
         {
+*/
             queryPacketCache(result.getTime(), packetCacheRequestor);
+/*
         }
         catch (const std::exception &e)
         {
@@ -319,6 +322,7 @@ public:
             result.setOriginalChannels(initialPick.getOriginalChannels());
             return result; // Really just giving back what was sent
         }
+*/
         // Perform inference and update pick
         try
         {
