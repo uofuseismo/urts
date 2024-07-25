@@ -207,6 +207,8 @@ endif()
 set(MESSAGE_SRC ${MESSAGE_SRC}
     src/services/scalable/detectors/uNetOneComponentP/inferenceRequest.cpp
     src/services/scalable/detectors/uNetOneComponentP/inferenceResponse.cpp
+    src/services/scalable/detectors/uNetOneComponentP/preprocessingRequest.cpp
+    src/services/scalable/detectors/uNetOneComponentP/preprocessingResponse.cpp
     src/services/scalable/detectors/uNetOneComponentP/processingRequest.cpp
     src/services/scalable/detectors/uNetOneComponentP/processingResponse.cpp
     src/services/scalable/detectors/uNetOneComponentP/requestorOptions.cpp
@@ -255,6 +257,8 @@ set(CLIENT_SRC ${CLIENT_SRC}
 
 if (${BUILD_UUSS_MLMODELS})
     set(SERVER_SRC ${SERVER_SRC}
+        src/services/scalable/detectors/uNetOneComponentP/service.cpp
+        src/services/scalable/detectors/uNetOneComponentP/serviceOptions.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
         #src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp

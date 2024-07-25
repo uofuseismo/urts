@@ -1,13 +1,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
-#include "urts/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP/preprocessingResponse.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP/inferenceRequest.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetThreeComponentP::PreprocessingResponse"
+#define MESSAGE_TYPE "URTS::Services::Scalable::Detectors::UNetOneComponentP::PreprocessingResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP;
+using namespace URTS::Services::Scalable::Detectors::UNetOneComponentP;
 
 namespace
 {
@@ -20,10 +20,8 @@ std::string toCBORObject(const PreprocessingResponse &message)
     obj["Identifier"] = message.getIdentifier();
     obj["SamplingRate"] = message.getSamplingRate();
     obj["ReturnCode"] = static_cast<int> (message.getReturnCode());
-    if (!message.haveSignals()){throw std::runtime_error("Signals not set");}
-    obj["VerticalSignal"] = message.getVerticalSignal();
-    obj["NorthSignal"] = message.getNorthSignal();
-    obj["EastSignal"] = message.getEastSignal();
+    if (!message.haveSignal()){throw std::runtime_error("Signals not set");}
+    obj["VerticalSignal"] = message.getSignal();
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result;
@@ -45,11 +43,7 @@ PreprocessingResponse
          obj["ReturnCode"].get<int> ()
     ));
     std::vector<double> vertical = obj["VerticalSignal"];
-    std::vector<double> north = obj["NorthSignal"];
-    std::vector<double> east = obj["EastSignal"];
-    result.setVerticalNorthEastSignal(std::move(vertical),
-                                      std::move(north),
-                                      std::move(east));
+    result.setSignal(std::move(vertical));
     return result;
 }
 
@@ -59,12 +53,10 @@ class PreprocessingResponse::ResponseImpl
 {
 public:
     std::vector<double> mVerticalSignal;
-    std::vector<double> mNorthSignal;
-    std::vector<double> mEastSignal;
     double mSamplingRate{InferenceRequest::getSamplingRate()};  
     int64_t mIdentifier{0};
     PreprocessingResponse::ReturnCode mReturnCode;
-    bool mHaveSignals{false};
+    bool mHaveSignal{false};
     bool mHaveReturnCode{false};
 };
 
@@ -164,65 +156,35 @@ bool PreprocessingResponse::haveReturnCode() const noexcept
 }
 
 /// Set signals
-void PreprocessingResponse::setVerticalNorthEastSignal(
-    const std::vector<double> &vertical,
-    const std::vector<double> &north,
-    const std::vector<double> &east)
+void PreprocessingResponse::setSignal(const std::vector<double> &vertical)
 {
-    if (vertical.size() != north.size() || vertical.size() != east.size())
-    {
-        throw std::invalid_argument("Signals sizes are inconsistent");
-    }
     if (vertical.empty())
     {
-        throw std::invalid_argument("Signals are empty");
+        throw std::invalid_argument("Signal is empty");
     }
     pImpl->mVerticalSignal = vertical;
-    pImpl->mNorthSignal = north;
-    pImpl->mEastSignal = east;
-    pImpl->mHaveSignals = true;
+    pImpl->mHaveSignal = true;
 }
 
-void PreprocessingResponse::setVerticalNorthEastSignal(
-    std::vector<double> &&vertical,
-    std::vector<double> &&north,
-    std::vector<double> &&east)
+void PreprocessingResponse::setSignal(std::vector<double> &&vertical)
 {
-    if (vertical.size() != north.size() || vertical.size() != east.size())
-    {
-        throw std::invalid_argument("Signals sizes are inconsistent");
-    }
     if (vertical.empty())
     {
-        throw std::invalid_argument("Signals are empty");
+        throw std::invalid_argument("Signal is empty");
     }
     pImpl->mVerticalSignal = std::move(vertical);
-    pImpl->mNorthSignal = std::move(north);
-    pImpl->mEastSignal = std::move(east);
-    pImpl->mHaveSignals = true;
+    pImpl->mHaveSignal = true;
 }
 
-std::vector<double> PreprocessingResponse::getVerticalSignal() const
+std::vector<double> PreprocessingResponse::getSignal() const
 {
-    if (!haveSignals()){throw std::runtime_error("Signals not set");}
+    if (!haveSignal()){throw std::runtime_error("Signal not set");}
     return pImpl->mVerticalSignal;
 }
 
-std::vector<double> PreprocessingResponse::getNorthSignal() const
+bool PreprocessingResponse::haveSignal() const noexcept
 {
-    if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mNorthSignal;
-}
-
-std::vector<double> PreprocessingResponse::getEastSignal() const
-{
-    if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mEastSignal;
-}
-
-bool PreprocessingResponse::haveSignals() const noexcept
-{
-    return pImpl->mHaveSignals;
+    return pImpl->mHaveSignal;
 }
 
 /// Message type

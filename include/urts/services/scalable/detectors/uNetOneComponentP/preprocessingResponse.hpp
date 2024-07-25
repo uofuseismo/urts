@@ -1,11 +1,11 @@
-#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
-#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_THREE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
+#ifndef URTS_SERVICES_SCALABLE_DETECTORS_UNET_ONE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
+#define URTS_SERVICES_SCALABLE_DETECTORS_UNET_ONE_COMPONENT_P_PREPROCESSING_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include <umps/messageFormats/message.hpp>
-namespace URTS::Services::Scalable::Detectors::UNetThreeComponentP
+namespace URTS::Services::Scalable::Detectors::UNetOneComponentP
 {
-/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.hpp"
+/// @class PreprocessingResponse "preprocessingResponse.hpp" "urts/services/scalable/detectors/uNetOneComponentP/preprocessingResponse.hpp"
 /// @brief Response from a waveform snippet preprocessing request.
 /// @note Typically you would use an inference request which can preprocess
 ///       and apply the model as that is more efficient.
@@ -38,43 +38,21 @@ public:
     /// @name Processed Signals
     /// @{
 
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
+    /// @brief Sets the processed signals on the vertical channel.
     /// @param[in] verticalSignal  The signal on the vertical channel.
-    /// @param[in] northSignal     The signal on the north (1) channel.
-    /// @param[in] eastSignal      The signal on the east (2) channel.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
-    void setVerticalNorthEastSignal(const std::vector<double> &verticalSignal,
-                                    const std::vector<double> &northSignal,
-                                    const std::vector<double> &eastSignal);
-    /// @brief Sets the processed signals on the vertical, north, and east
-    ///        channels.
+    /// @throws std::invalid_argument if the vertical signal is empty.
+    void setSignal(const std::vector<double> &verticalSignal);
+    /// @brief Sets the processed signals on the vertical channel.
     /// @param[in,out] verticalSignal  The signal on the vertical channel.
     ///                                On exit, verticalSignal's behavior is
     ///                                undefined.
-    /// @param[in,out] northSignal     The signal on the north (1) channel.
-    ///                                On exit, northSignal's behavior is
-    ///                                undefined.
-    /// @param[in,out] eastSignal      The signal on the east (2) channel.
-    ///                                On exit, eastSignal's behavior is
-    ///                                undefined.
-    /// @throws std::invalid_argument the signals are not the same size
-    ///         or empty.
-    void setVerticalNorthEastSignal(std::vector<double> &&verticalSignal,
-                                    std::vector<double> &&northSignal,
-                                    std::vector<double> &&eastSignal);
+    /// @throws std::invalid_argument if the vertical signal is empty.
+    void setSignal(std::vector<double> &&verticalSignal);
     /// @result The vertical signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getVerticalSignal() const;
-    /// @result The north signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getNorthSignal() const;
-    /// @result The east signal.
-    /// @throws std::runtime_error if \c haveSignals() is false.
-    [[nodiscard]] std::vector<double> getEastSignal() const;
+    /// @throws std::runtime_error if \c haveSignal() is false.
+    [[nodiscard]] std::vector<double> getSignal() const;
     /// @result True indicates the signals were set.
-    [[nodiscard]] bool haveSignals() const noexcept;
+    [[nodiscard]] bool haveSignal() const noexcept;
     /// @}
 
     /// @name Return Code

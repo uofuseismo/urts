@@ -228,21 +228,21 @@ const std::vector<double>
 &InferenceRequest::getVerticalSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mVerticalSignal;
+    return *&pImpl->mVerticalSignal;
 }
 
 const std::vector<double> 
 &InferenceRequest::getNorthSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mNorthSignal;
+    return *&pImpl->mNorthSignal;
 }
  
 const std::vector<double>
 &InferenceRequest::getEastSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mEastSignal;
+    return *&pImpl->mEastSignal;
 }
 
 bool InferenceRequest::haveSignals() const noexcept

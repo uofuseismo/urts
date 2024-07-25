@@ -262,21 +262,21 @@ const std::vector<double>
 &ProcessingRequest::getVerticalSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mVerticalSignal;
+    return *&pImpl->mVerticalSignal;
 }
 
 const std::vector<double> 
 &ProcessingRequest::getNorthSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mNorthSignal;
+    return *&pImpl->mNorthSignal;
 }
  
 const std::vector<double>
 &ProcessingRequest::getEastSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mEastSignal;
+    return *&pImpl->mEastSignal;
 }
 
 bool ProcessingRequest::haveSignals() const noexcept

@@ -198,21 +198,21 @@ const std::vector<double>
 &PreprocessingRequest::getVerticalSignalReference() const
 {
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mVerticalSignal;
+    return *&pImpl->mVerticalSignal;
 }
 
 const std::vector<double>
 &PreprocessingRequest::getNorthSignalReference() const
 {   
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mNorthSignal;
+    return *&pImpl->mNorthSignal;
 }
 
 const std::vector<double>
 &PreprocessingRequest::getEastSignalReference() const
 {   
     if (!haveSignals()){throw std::runtime_error("Signals not set");}
-    return pImpl->mEastSignal;
+    return *&pImpl->mEastSignal;
 }
 
 bool PreprocessingRequest::haveSignals() const noexcept
