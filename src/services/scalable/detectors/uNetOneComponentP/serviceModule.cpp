@@ -187,7 +187,7 @@ struct ProgramOptions
     }
 //public:
     UNet::ServiceOptions mServiceOptions;
-    std::string mServiceName{"PDetector3C"};
+    std::string mServiceName{"PDetector1C"};
     std::string mHeartbeatBroadcastName{"Heartbeat"};
     std::string mModuleName{MODULE_NAME};
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
