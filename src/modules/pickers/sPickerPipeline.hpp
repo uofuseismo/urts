@@ -702,8 +702,15 @@ public:
         while (keepRunning())
         {
             bool isRetry{false};
-            auto gotPick = mPickProcessorQueue->wait_until_and_pop(
-                                &initialPick, timeOut);
+            bool gotPick{false};
+            auto firstPickInQueue = mPickProcessorQueue->try_pop();
+            if (firstPickInQueue)
+            {
+                initialPick = *firstPickInQueue;
+                gotPick = true;
+            }
+            //auto gotPick = mPickProcessorQueue->wait_until_and_pop(
+            //                    &initialPick, timeOut);
             // If I didn't get a pick try to go through my internal queue
             if (!gotPick && !mReprocessingQueue.empty())
             {
@@ -721,11 +728,16 @@ public:
                     mReprocessingQueue.pop_back();
                     gotPick = true;
                     isRetry = true;
-                    mLogger->info("Will reprocess old P pick for: "
+                    mLogger->info("Instance " + std::to_string(mInstance)
+                                + " will reprocess old S pick for: "
                                 + name + ".  Queue size is now: "
                                 + std::to_string(mReprocessingQueue.size()));
                 }
             }
+            else
+            {
+                if (!gotPick){std::this_thread::sleep_for(timeOut);}
+            }   
             if (gotPick)
             {
                 try
@@ -821,7 +833,8 @@ public:
                     mPickPublisherQueue->push(refinedPick); 
                     if (isRetry)
                     {   
-                        mLogger->info("Successfully reprocessed S pick");
+                        mLogger->info("Instance " + std::to_string(mInstance)
+                                    + " successfully reprocessed S pick");
                     }
                 }
                 catch (const std::exception &e)
@@ -829,12 +842,14 @@ public:
                     if (initialPick.mTries == 0)
                     {
                         mLogger->warn(std::string {e.what()}
-                          + "; will add S pick to reprocessing list");
+                          + + "; Instance " + std::to_string(mInstance)
+                          + " will add S pick to reprocessing list");
                     }
                     else
                     {
                         mLogger->warn(std::string {e.what()}
-                          + "; re-inserting into S reprocessing list");
+                          + "; Instance " + std::to_string(mInstance)
+                          + " reinserting into S reprocessing list");
                     }
                     try
                     {
