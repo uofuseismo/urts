@@ -521,6 +521,7 @@ if (${BUILD_UUSS_MLMODELS})
                                   src/modules/pickers/triggerWindow.cpp
                                   src/modules/pickers/thresholdDetectorOptions.cpp
                                   src/modules/pickers/thresholdDetector.cpp)
+   add_executable(uNetOneComponentPService src/services/scalable/detectors/uNetOneComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentPService src/services/scalable/detectors/uNetThreeComponentP/serviceModule.cpp)
    add_executable(uNetThreeComponentSService src/services/scalable/detectors/uNetThreeComponentS/serviceModule.cpp)
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
@@ -541,6 +542,10 @@ if (${BUILD_UUSS_MLMODELS})
    set_target_properties(thresholdPicker PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
+   set_target_properties(uNetOneComponentPService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO)
    set_target_properties(uNetThreeComponentPService PROPERTIES
                          CXX_STANDARD 20
@@ -574,6 +579,9 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(thresholdPicker
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
+   target_include_directories(uNetOneComponentPService
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
    target_include_directories(uNetThreeComponentPService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
@@ -600,6 +608,9 @@ if (${BUILD_UUSS_MLMODELS})
                                  Boost::program_options Threads::Threads)
    target_link_libraries(thresholdPicker
                          PRIVATE urts_server urts_client ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_link_libraries(uNetOneComponentPService
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
    target_link_libraries(uNetThreeComponentPService
                          PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
