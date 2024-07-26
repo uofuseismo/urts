@@ -445,7 +445,7 @@ public:
                         + std::to_string(oneComponentSensors.size())
                         + " 1C pipeplines among "
                         + std::to_string(nThreads) + " threads");
-            auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
+            auto jobsToThread = ::splitWork(oneComponentSensors.size(), nThreads);
             for (int i = 0; i < nThreads; ++i) 
             {
                 std::vector<URTS::Database::AQMS::ChannelData> sub1CSensorList;
