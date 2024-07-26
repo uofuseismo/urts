@@ -1,5 +1,5 @@
-#ifndef URTS_MODULES_THREE_COMPONENT_PROCESSING_PIPELINE_HPP
-#define URTS_MODULES_THREE_COMPONENT_PROCESSING_PIPELINE_HPP
+#ifndef URTS_MODULES_ONE_COMPONENT_PROCESSING_PIPELINE_HPP
+#define URTS_MODULES_ONE_COMPONENT_PROCESSING_PIPELINE_HPP
 #include <iostream>
 #include <iomanip>
 #include <mutex>
@@ -7,75 +7,39 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
+#include "urts/database/aqms/channelData.hpp"
 #include "urts/broadcasts/internal/dataPacket.hpp"
 #include "urts/broadcasts/internal/probabilityPacket.hpp"
 #include "urts/services/scalable/packetCache.hpp"
-#include "urts/services/scalable/detectors/uNetThreeComponentP.hpp"
-#include "urts/services/scalable/detectors/uNetThreeComponentS.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP.hpp"
 #include "programOptions.hpp"
 #include "getNow.hpp"
-#include "threeComponentChannelData.hpp"
+#include "threeComponentProcessingPipeline.hpp"
+//#include "oneComponentChannelData.hpp"
 namespace
 {
-void broadcast(const int instance,
-               const std::string &name,
-               const URTS::Broadcasts::Internal::
-                           ProbabilityPacket::ProbabilityPacket &packet,
-               URTS::Broadcasts::Internal::
-                                 ProbabilityPacket::Publisher &publisher,
-               std::shared_ptr<UMPS::Logging::ILog> &logger)
-{
-    try
-    {
-        if (logger != nullptr)
-        {
-            if (logger->getLevel() >= UMPS::Logging::Level::Debug)
-            {
-                logger->debug("Instance " + std::to_string(instance)
-                           + " broadcasting packet for " + name);
-            }
-        }
-        publisher.send(packet);
-    }
-    catch (const std::exception &e)
-    {
-        if (logger != nullptr)
-        {
-            logger->error("Instance " + std::to_string(instance)
-                        + " had problems broadcasting for " + name
-                        + ": "
-                        + std::string {e.what()});
-        }
-    }
-}
-
 
 std::unique_ptr<URTS::Services::Scalable::Detectors::
-                UNetThreeComponentP::ProcessingResponse>
-inference3C(const URTS::Services::Scalable::PacketCache::
-                        ThreeComponentWaveform &interpolator,
-            URTS::Services::Scalable::Detectors::UNetThreeComponentP::
+                UNetOneComponentP::ProcessingResponse>
+inference1C(const URTS::Services::Scalable::PacketCache::
+                        SingleComponentWaveform &interpolator,
+            URTS::Services::Scalable::Detectors::UNetOneComponentP::
                   Requestor &requestor,
-            URTS::Services::Scalable::Detectors::UNetThreeComponentP::
+            URTS::Services::Scalable::Detectors::UNetOneComponentP::
                   ProcessingRequest &request)
 {
-    const auto &vertical = interpolator.getVerticalSignalReference();
-    const auto &north    = interpolator.getNorthSignalReference();
-    const auto &east     = interpolator.getEastSignalReference();
+    const auto &vertical = interpolator.getSignalReference();
     auto slidingWindow
-        = URTS::Services::Scalable::Detectors::UNetThreeComponentP
+        = URTS::Services::Scalable::Detectors::UNetOneComponentP
               ::ProcessingRequest::InferenceStrategy::SlidingWindow;
-    request.setVerticalNorthEastSignal(vertical,
-                                       north,
-                                       east,
-                                       slidingWindow);
+    request.setSignal(vertical, slidingWindow);
     auto response = requestor.request(request);
     if (response == nullptr)
     {
         throw std::runtime_error("P request timed out");
     }
     auto success
-        = URTS::Services::Scalable::Detectors::UNetThreeComponentP
+        = URTS::Services::Scalable::Detectors::UNetOneComponentP
               ::ProcessingResponse::ReturnCode::Success;
     if (response->getReturnCode() != success)
     {
@@ -89,51 +53,12 @@ inference3C(const URTS::Services::Scalable::PacketCache::
     return response;
 }
 
-std::unique_ptr<URTS::Services::Scalable::Detectors::
-                UNetThreeComponentS::ProcessingResponse>
-inference3C(const URTS::Services::Scalable::PacketCache::
-                        ThreeComponentWaveform &interpolator,
-            URTS::Services::Scalable::Detectors::UNetThreeComponentS::
-                  Requestor &requestor,
-            URTS::Services::Scalable::Detectors::UNetThreeComponentS::
-                  ProcessingRequest &request)
-{
-    const auto &vertical = interpolator.getVerticalSignalReference();
-    const auto &north    = interpolator.getNorthSignalReference();
-    const auto &east     = interpolator.getEastSignalReference();
-    auto slidingWindow
-        = URTS::Services::Scalable::Detectors::UNetThreeComponentS
-              ::ProcessingRequest::InferenceStrategy::SlidingWindow;
-    request.setVerticalNorthEastSignal(vertical,
-                                       north,
-                                       east,
-                                       slidingWindow);
-    auto response = requestor.request(request);
-    if (response == nullptr)
-    {   
-        throw std::runtime_error("S request timed out");
-    }   
-    auto success
-        = URTS::Services::Scalable::Detectors::UNetThreeComponentS
-              ::ProcessingResponse::ReturnCode::Success;
-    if (response->getReturnCode() != success)
-    {
-        throw std::runtime_error("S inference request failed with "
-                               + std::to_string(response->getReturnCode()));
-    }   
-    if (!response->haveProbabilitySignal())
-    {
-        throw std::runtime_error("S probability signal not computed");
-    }   
-    return response;
-}
-
 std::vector<double>
 extractSignal(const bool changesSamplingRate,
               const int i0, const int i1,
               const std::vector<double> &pRef,
               const URTS::Services::Scalable::
-                          PacketCache::ThreeComponentWaveform &interpolator,
+                          PacketCache::SingleComponentWaveform &interpolator,
               std::shared_ptr<UMPS::Logging::ILog> &logger)
 {
     std::vector<double> pSignal(std::max(0, i1 - i0), 0);
@@ -177,7 +102,7 @@ extractSignal(const bool changesSamplingRate,
     return pSignal;
 } 
 
-class ThreeComponentProcessingItem
+class OneComponentProcessingItem
 {
 public:
     enum class State
@@ -188,8 +113,8 @@ public:
         Publish
     };
 public:
-    ThreeComponentProcessingItem(
-        const ::ThreeComponentChannelData &channelData,
+    OneComponentProcessingItem(
+        const URTS::Database::AQMS::ChannelData &channelData,
         const std::chrono::microseconds &detectorWindowDuration = std::chrono::microseconds {10080000},
         const std::chrono::seconds maximumSignalLatency = std::chrono::seconds {180},
         const int gapToleranceInSamples = 5,
@@ -203,17 +128,16 @@ public:
         mDetectorProbabilitySignalSamplingRate(detectorSamplingRate),
         mCenterWindowStart(centerWindowStart),
         mCenterWindowEnd(centerWindowEnd),
-        mState(ThreeComponentProcessingItem::State::Unknown)
+        mState(OneComponentProcessingItem::State::Unknown)
     {
         // Initialize the interpolator
-        auto samplingRate = mChannelData.getNominalSamplingRate();
+        auto samplingRate = mChannelData.getSamplingRate();
         mGapTolerance = std::chrono::microseconds
         {
             static_cast<int64_t> (std::round(std::max(0, gapToleranceInSamples)
                                             /samplingRate*1.e6))
         };
-        mInterpolator.setNominalSamplingRate(
-            mChannelData.getNominalSamplingRate());
+        mInterpolator.setNominalSamplingRate(samplingRate);
         mInterpolator.setGapTolerance(mGapTolerance);
 
         // Will the output probability signals have a different sampling rate?
@@ -233,25 +157,16 @@ public:
         // Extract some station naming information
         auto network = mChannelData.getNetwork();
         auto station = mChannelData.getStation();
-        auto verticalChannel = mChannelData.getVerticalChannel();
-        auto northChannel    = mChannelData.getNorthChannel();
-        auto eastChannel     = mChannelData.getEastChannel();
+        auto verticalChannel = mChannelData.getChannel();
         auto locationCode = mChannelData.getLocationCode();
         if (locationCode.empty() || locationCode == "  ")
         {
             locationCode = "--";
         }
-        std::vector<std::string> originalChannels{verticalChannel,
-                                                  northChannel,
-                                                  eastChannel};
-        std::string channelCode3C{verticalChannel, 0, 2}; 
-        channelCode3C.push_back('[');
-        channelCode3C.push_back(verticalChannel.back());
-        channelCode3C.push_back(northChannel.back());
-        channelCode3C.push_back(eastChannel.back());
-        channelCode3C.push_back(']');
+        std::vector<std::string> originalChannels{verticalChannel};
         mName = network + "." + station + "."
-              + channelCode3C + "." + locationCode;
+              + verticalChannel + "." + locationCode;
+        mHash = std::hash<std::string>{} (mName); 
 
         // Predefine a vertical/north/east request
         mVerticalRequest.setNetwork(network);
@@ -260,23 +175,9 @@ public:
         mVerticalRequest.setLocationCode(locationCode);
         mVerticalRequest.setIdentifier(0);
 
-        mNorthRequest.setNetwork(network);
-        mNorthRequest.setStation(station);
-        mNorthRequest.setChannel(northChannel);
-        mNorthRequest.setLocationCode(locationCode);
-        mNorthRequest.setIdentifier(1);
-
-        mEastRequest.setNetwork(network);
-        mEastRequest.setStation(station);
-        mEastRequest.setChannel(eastChannel);
-        mEastRequest.setLocationCode(locationCode);
-        mEastRequest.setIdentifier(2);
-
         // Predefine inference requests
         mPInferenceRequest.setSamplingRate(samplingRate);
         mPInferenceRequest.setIdentifier(1);
-        mSInferenceRequest.setSamplingRate(samplingRate);
-        mSInferenceRequest.setIdentifier(2);
 
         // Predefine probability packets
         std::string pChannel{verticalChannel, 0, 2};
@@ -289,28 +190,11 @@ public:
         mPProbabilityPacket.setOriginalChannels(originalChannels);
         mPProbabilityPacket.setPositiveClassName("P");
         mPProbabilityPacket.setNegativeClassName("Noise");
-        mPProbabilityPacket.setAlgorithm("UNetThreeComponentP");
-
-        std::string sChannel{verticalChannel, 0, 2};
-        sChannel.push_back('S');
-        mSProbabilityPacket.setNetwork(network);
-        mSProbabilityPacket.setStation(station);
-        mSProbabilityPacket.setChannel(sChannel);
-        mSProbabilityPacket.setLocationCode(locationCode);
-        mSProbabilityPacket.setSamplingRate(detectorSamplingRate);
-        mSProbabilityPacket.setOriginalChannels(originalChannels);
-        mSProbabilityPacket.setPositiveClassName("S");
-        mSProbabilityPacket.setNegativeClassName("Noise");
-        mSProbabilityPacket.setAlgorithm("UNetThreeComponentS");
+        mPProbabilityPacket.setAlgorithm("UNetOneComponentP");
 
         // Initialize timing
         updateLastProbabilityTimeToNow();
         mState = State::Query;
-    }
-    /// @result The hash.
-    [[nodiscard]] size_t getHash() const noexcept
-    {
-        return mChannelData.getHash();
     }
     /// @result Updates the last packet cache query time to now
     void updateLastQueryTimeToNow()
@@ -357,19 +241,13 @@ public:
         auto t1QueryMuSec = timeNow;
         auto t0Query = static_cast<double> (t0QueryMuSec.count()*1.e-6);
         auto t1Query = static_cast<double> (t1QueryMuSec.count()*1.e-6);
-        URTS::Services::Scalable::PacketCache::BulkDataRequest bulkRequest;
+        URTS::Services::Scalable::PacketCache::DataRequest dataRequest;
         try
         {
             // Create the individual requests from start time to infinity
             std::pair<double, double> queryTimes{t0Query, t1Query};
             mVerticalRequest.setQueryTimes(queryTimes);
-            mNorthRequest.setQueryTimes(queryTimes);
-            mEastRequest.setQueryTimes(queryTimes);
-
-            bulkRequest.setIdentifier(mRequestIdentifier);
-            bulkRequest.addDataRequest(mVerticalRequest);
-            bulkRequest.addDataRequest(mNorthRequest);
-            bulkRequest.addDataRequest(mEastRequest);
+            mVerticalRequest.setIdentifier(mRequestIdentifier);
         }
         catch (const std::exception &e)
         {
@@ -378,11 +256,11 @@ public:
                         + std::string{e.what()});
             return;
         }
-        std::unique_ptr<URTS::Services::Scalable::PacketCache::BulkDataResponse>
+        std::unique_ptr<URTS::Services::Scalable::PacketCache::DataResponse>
             reply{nullptr};
         try
         {
-            reply = requestor.request(bulkRequest);
+            reply = requestor.request(dataRequest);
         }
         catch (const std::exception &e)
         {
@@ -401,7 +279,7 @@ public:
             return;
         }
         if (reply->getReturnCode() !=
-            URTS::Services::Scalable::PacketCache::BulkDataResponse
+            URTS::Services::Scalable::PacketCache::DataResponse
                                                  ::ReturnCode::Success)
         {
             logger->warn("Instance " + std::to_string(mInstance)
@@ -411,49 +289,12 @@ public:
             return;
         }
         // Unpack the responses (need to divine vertical/north/east)
-        auto nResponses = reply->getNumberOfDataResponses();
-        if (nResponses != 3){return;} // Happens a lot b/c of latency
-        const auto dataResponsesPtr = reply->getDataResponsesPointer();
-        std::array<int, 3> indices{-1, -1, -1};
-        for (int i = 0; i < 3; ++i)
-        {
-            auto id = dataResponsesPtr[i].getIdentifier();
-            if (id == mVerticalRequest.getIdentifier())
-            {
-                indices[0] = i;
-            }
-            else if (id == mNorthRequest.getIdentifier())
-            {
-                indices[1] = i;
-            }
-            else if (id == mEastRequest.getIdentifier())
-            {
-                indices[2] = i;
-            }
-#ifndef NDEBUG
-            else
-            {
-                assert(false);
-            }
-#endif
-        }
-#ifndef NDEBUG
-        assert(indices[0] != -1 && indices[1] != -1 && indices[2] != -2);
-#endif
-        // Is there data?
-        if (dataResponsesPtr[indices[0]].getNumberOfPackets() < 1 ||
-            dataResponsesPtr[indices[1]].getNumberOfPackets() < 1 ||
-            dataResponsesPtr[indices[2]].getNumberOfPackets() < 1)
-        {
-            return;
-        }
-        // Set the three-component waveform (and interpolate).  This
+        if (reply->getNumberOfPackets() < 1){return;} // Leave in query mode
+        // Set the single-channel waveform (and interpolate).  This
         // also truncates the signal.
         try
         {
-            mInterpolator.set(dataResponsesPtr[indices[0]],
-                              dataResponsesPtr[indices[1]],
-                              dataResponsesPtr[indices[2]],
+            mInterpolator.set(*reply,
                               t0QueryMuSec,
                               t1QueryMuSec);
         }
@@ -533,15 +374,12 @@ public:
         return std::pair {i0, i1};
     }
     /// @brief Perform inference.
-    void performPAndSInference(
-        URTS::Services::Scalable::Detectors::UNetThreeComponentP::Requestor &pRequestor,
-        URTS::Services::Scalable::Detectors::UNetThreeComponentS::Requestor &sRequestor,
+    void performPInference(
+        URTS::Services::Scalable::Detectors::UNetOneComponentP::Requestor &pRequestor,
         std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         mInferencedP = false;
-        mInferencedS = false;
         mBroadcastP = false;
-        mBroadcastS = false;
         if (mState != State::Inference){return;}
         // Ensure the times will work out
         auto t0Signal = mInterpolator.getStartTime();
@@ -553,17 +391,17 @@ public:
 #endif
         // Perform the P and S inference
         std::unique_ptr<URTS::Services::Scalable::Detectors::
-                        UNetThreeComponentP::ProcessingResponse>
+                        UNetOneComponentP::ProcessingResponse>
             pResponse{nullptr};
-        int nPSamplesOut = 0;
+        int nSamplesOut = 0;
         try
         {
-            pResponse = ::inference3C(mInterpolator, 
+            pResponse = ::inference1C(mInterpolator, 
                                       pRequestor,
                                       mPInferenceRequest);
             mInferencedP = true;
-            nPSamplesOut = static_cast<int>
-                           (pResponse->getProbabilitySignalReference().size());
+            nSamplesOut = static_cast<int>
+                          (pResponse->getProbabilitySignalReference().size());
         }
         catch (const std::exception &e)
         {
@@ -573,44 +411,6 @@ public:
             pResponse = nullptr;
         } 
 
-        std::unique_ptr<URTS::Services::Scalable::Detectors::
-                        UNetThreeComponentS::ProcessingResponse>
-            sResponse{nullptr};
-        int nSSamplesOut = 0;
-        try
-        {
-            sResponse = ::inference3C(mInterpolator, 
-                                      sRequestor,
-                                      mSInferenceRequest);
-            mInferencedS = true;
-            nSSamplesOut = static_cast<int>
-                           (sResponse->getProbabilitySignalReference().size());
-        }
-        catch (const std::exception &e)
-        {
-            logger->error("S inference request failed on instance "
-                        + std::to_string(mInstance)
-                        + ".  Failed with " + std::string {e.what()});
-            sResponse = nullptr;
-        }
-        int nSamplesOut = 0;
-        if (mInferencedP && mInferencedS)
-        {
-#ifndef NDEBUG
-            assert(nPSamplesOut == nSSamplesOut);
-#else
-            mState = State::Query;
-            throw std::runtime_error(
-                 "P and S inference responses have result sizes on instance "
-               + std::to_string(instance));
-#endif
-            nSamplesOut = nPSamplesOut;
-        }
-        else
-        {
-            if (mInferencedP){nSamplesOut = nPSamplesOut;}
-            if (mInferencedS){nSamplesOut = nSSamplesOut;}
-        }
         if (nSamplesOut < 1)
         {
             mState = State::Query;
@@ -636,20 +436,6 @@ public:
                 mBroadcastP = true;
             }
         }
-        if (mInferencedS)
-        {
-            const auto &pRef = sResponse->getProbabilitySignalReference();
-            auto pSignal = ::extractSignal(mChangesSamplingRate,
-                                           i0, i1, pRef,
-                                           mInterpolator,
-                                           logger);
-            if (!pSignal.empty())
-            {
-                mSProbabilityPacket.setStartTime(t0Signal + i0*idtMuSec);
-                mSProbabilityPacket.setData(std::move(pSignal));
-                mBroadcastS = true;
-            }
-        }
         // At this point we are `successful.'  Sure, the broadcast could fail,
         // or no data was extracted, but the machine must move forward and
         // iterate at our last valid probability time.
@@ -659,7 +445,7 @@ public:
         mState = State::Publish;
     }
     /// @brief Broadcasts packets.
-    void broadcastPAndS(
+    void broadcastP(
         URTS::Broadcasts::Internal::ProbabilityPacket::Publisher &publisher,
         std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
@@ -668,11 +454,6 @@ public:
         if (mBroadcastP)
         {
             ::broadcast(mInstance, mName, mPProbabilityPacket,
-                        publisher, logger);
-        }
-        if (mBroadcastS)
-        {
-            ::broadcast(mInstance, mName, mSProbabilityPacket,
                         publisher, logger);
         }
 #ifndef NDEBUG
@@ -687,23 +468,23 @@ public:
 #endif
         mState = State::Query;
     }
+    [[nodiscard]] size_t getHash() const noexcept
+    {
+        return mHash;
+    }
 //private:
     /// Channel data
-    ::ThreeComponentChannelData mChannelData;
+    URTS::Database::AQMS::ChannelData mChannelData;
     /// Name of three-component data
     std::string mName;
     /// Utility for interpolating 3C waveforms
-    URTS::Services::Scalable::PacketCache::ThreeComponentWaveform mInterpolator;
+    URTS::Services::Scalable::PacketCache::SingleComponentWaveform mInterpolator;
     /// Basically, these are fully defined data requests which will be updated
     /// with the query times into a bulk data request
     URTS::Services::Scalable::PacketCache::DataRequest mVerticalRequest;
-    URTS::Services::Scalable::PacketCache::DataRequest mNorthRequest;
-    URTS::Services::Scalable::PacketCache::DataRequest mEastRequest;
     // Partially populated requests for the inference services
-    URTS::Services::Scalable::Detectors::UNetThreeComponentP::ProcessingRequest
+    URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingRequest
         mPInferenceRequest;
-    URTS::Services::Scalable::Detectors::UNetThreeComponentS::ProcessingRequest
-        mSInferenceRequest;
     // Partially defined data packet
     URTS::Broadcasts::Internal::ProbabilityPacket::ProbabilityPacket
         mPProbabilityPacket;
@@ -742,6 +523,8 @@ public:
 #endif
     // Helps us unpack bulk data requests.
     int64_t mRequestIdentifier{0};
+    // Hash to identify item
+    size_t mHash{0};
     // Detector sampling rate output signal
     double mDetectorProbabilitySignalSamplingRate{100};
     // Detector center window start index
@@ -759,13 +542,13 @@ public:
     bool mChangesSamplingRate{false};
 };
 
-class ThreeComponentProcessingPipeline
+class OneComponentProcessingPipeline
 {
 public:
-    ThreeComponentProcessingPipeline(
+    OneComponentProcessingPipeline(
         const int instance,
         const ::ProgramOptions &programOptions,
-        const std::vector<::ThreeComponentChannelData> &threeComponentSensors,
+        const std::vector<URTS::Database::AQMS::ChannelData> &oneComponentSensors,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mProgramOptions(programOptions),
         mContext(std::make_shared<UMPS::Messaging::Context> (1)),
@@ -789,63 +572,29 @@ public:
         mProbabilityPublisher->initialize(
             mProgramOptions.mProbabilityPacketPublisherOptions);
 
-        if (mProgramOptions.mRunP3CDetector)
+        if (mProgramOptions.mRunP1CDetector)
         {
             mLogger->debug("Instance " + std::to_string(mInstance)
-                         + " creating 3C P detector service requestor...");
-            m3CPInferenceRequestor
-                = std::make_unique<URTS::Services::Scalable::Detectors::UNetThreeComponentP::Requestor>
+                         + " creating 1C P detector service requestor...");
+            m1CPInferenceRequestor
+                = std::make_unique<URTS::Services::Scalable::Detectors::UNetOneComponentP::Requestor>
                   (mContext, mLogger);
-            m3CPInferenceRequestor->initialize(
-                mProgramOptions.mP3CDetectorRequestorOptions);
-        }
-        if (mProgramOptions.mRunS3CDetector)
-        {
-            mLogger->debug("Instance " + std::to_string(mInstance)
-                         + " creating 3C S detector service requestor...");
-            m3CSInferenceRequestor
-                = std::make_unique<URTS::Services::Scalable::Detectors::UNetThreeComponentS::Requestor>
-                  (mContext, mLogger);
-            m3CSInferenceRequestor->initialize(
-                mProgramOptions.mS3CDetectorRequestorOptions);
         }
 
-        // Determine if the P and S 3C inputs are the same.
-        P3CDetectorProperties p3CProperties;
-        S3CDetectorProperties s3CProperties;
-        mPS3CInputsAreEqual = (p3CProperties == s3CProperties);
-#ifndef NDEBUG
-        assert(mPS3CInputsAreEqual);
-#endif 
+        P1CDetectorProperties p1CProperties;
 
-        // We can recycle data queries 
-        if (mPS3CInputsAreEqual)
+        for (const auto &oneComponentSensor : oneComponentSensors)
         {
-            if (mProgramOptions.mRunP3CDetector || 
-                mProgramOptions.mRunS3CDetector)
-            {
-                for (const auto &threeComponentSensor : threeComponentSensors)
-                {
-                    ::ThreeComponentProcessingItem
-                        item(threeComponentSensor,
-                             p3CProperties.mDetectorWindowDuration,
-                             mProgramOptions.mMaximumSignalLatency,
-                             mProgramOptions.mGapTolerance,
-                             mProgramOptions.mDataQueryWaitPercentage,
-                             p3CProperties.mWindowStart,
-                             p3CProperties.mWindowEnd,
-                             p3CProperties.mSamplingRate);
-                    mPSItems.insert(std::pair{item.getHash(), item});
-                }
-            }
-        }
-        else
-        {
-#ifndef NDEBUG
-            assert(false);
-#else
-            throw std::runtime_error("Unequal inputs not programmed");
-#endif
+            ::OneComponentProcessingItem
+                item(oneComponentSensor,
+                     p1CProperties.mDetectorWindowDuration,
+                     mProgramOptions.mMaximumSignalLatency,
+                     mProgramOptions.mGapTolerance,
+                     mProgramOptions.mDataQueryWaitPercentage,
+                     p1CProperties.mWindowStart,
+                     p1CProperties.mWindowEnd,
+                     p1CProperties.mSamplingRate);
+            mPItems.insert(std::pair{item.getHash(), item});
         }
         mInitialized = true;
     }
@@ -878,51 +627,6 @@ public:
     {
         while (keepRunning())
         {
-            // Loop through the P and S processing items
-            for (auto &item : mPSItems)
-            {
-                // Query data
-                try
-                {
-                    item.second.queryPacketCache(*mPacketCacheRequestor,
-                                                 mLogger);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                    item.second.mState
-                       = ::ThreeComponentProcessingItem::State::Query;
-                    continue;
-                }
-                // Perform inference
-                try
-                {
-                     item.second.performPAndSInference(*m3CPInferenceRequestor,
-                                                       *m3CSInferenceRequestor,
-                                                       mLogger);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                    item.second.mState
-                       = ::ThreeComponentProcessingItem::State::Query;
-                    continue;
-                }
-                // Broadcast
-                try
-                {
-                    item.second.broadcastPAndS(*mProbabilityPublisher,
-                                               mLogger);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                    item.second.mState
-                       = ::ThreeComponentProcessingItem::State::Query;
-                    continue;
-                }
-            }
-/*
             // Loop through the P processing items
             for (auto &item : mPItems)
             {
@@ -936,28 +640,36 @@ public:
                 {
                     mLogger->error(e.what());
                     item.second.mState
-                       = ::ThreeComponentProcessingItem::State::Query;
+                       = ::OneComponentProcessingItem::State::Query;
                     continue;
                 }
-            }
-            // Loop through the S processing items
-            for (auto &item : mSItems)
-            {
-                // Query data
+                // Perform inference
                 try
                 {
-                    item.second.queryPacketCache(*mPacketCacheRequestor,
-                                                 mLogger);
+                     item.second.performPInference(*m1CPInferenceRequestor,
+                                                    mLogger);
                 }
                 catch (const std::exception &e)
                 {
                     mLogger->error(e.what());
                     item.second.mState
-                       = ::ThreeComponentProcessingItem::State::Query;
+                       = ::OneComponentProcessingItem::State::Query;
+                    continue;
+                }
+                // Broadcast
+                try
+                {
+                    item.second.broadcastP(*mProbabilityPublisher,
+                                           mLogger);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                    item.second.mState
+                       = ::OneComponentProcessingItem::State::Query;
                     continue;
                 }
             }
-*/
         }
     }
 //private:
@@ -972,18 +684,12 @@ public:
     std::unique_ptr<URTS::Services::Scalable::PacketCache::Requestor>
          mPacketCacheRequestor{nullptr};
     std::unique_ptr<URTS::Services::Scalable::Detectors::
-                          UNetThreeComponentP::Requestor>
-         m3CPInferenceRequestor{nullptr};
-    std::unique_ptr<URTS::Services::Scalable::Detectors::
-                          UNetThreeComponentS::Requestor>
-         m3CSInferenceRequestor{nullptr};
-    std::map<size_t, ::ThreeComponentProcessingItem> mPSItems;
-    std::map<size_t, ::ThreeComponentProcessingItem> mPItems;
-    std::map<size_t, ::ThreeComponentProcessingItem> mSItems;
+                          UNetOneComponentP::Requestor>
+         m1CPInferenceRequestor{nullptr};
+    std::map<size_t, ::OneComponentProcessingItem> mPItems;
     int mInstance{0};
     bool mInitialized{false};
     bool mKeepRunning{true}; 
-    bool mPS3CInputsAreEqual{true};
 };
 }
 #endif

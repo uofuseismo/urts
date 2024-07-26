@@ -68,11 +68,12 @@
 #include "programOptions.hpp"
 #include "splitWork.hpp"
 #include "threeComponentChannelData.hpp"
-#include "threeComponentDataItem.hpp"
-#include "oneComponentDataItem.hpp"
+//#include "threeComponentDataItem.hpp"
+//#include "oneComponentDataItem.hpp"
 #include "getNow.hpp"
 #include "threadSafeState.hpp"
 #include "threeComponentProcessingPipeline.hpp"
+#include "oneComponentProcessingPipeline.hpp"
 #include "private/threadSafeQueue.hpp"
 #include "private/threadSafeBoundedQueue.hpp"
 #include "private/isEmpty.hpp"
@@ -124,7 +125,7 @@ void makeOneAndThreeComponentStation(
     std::vector<UDatabase::AQMS::ChannelData> *oneComponentSensors,
     const std::vector<UDatabase::AQMS::ChannelData> &channels,
     std::shared_ptr<UMPS::Logging::ILog> logger,
-    const std::set<std::string> activeNetworks = std::set<std::string> {"UU", "WY", "PB", "US"},
+    const std::set<std::string> activeNetworks = std::set<std::string> {"UU", "WY", "US", "PB"},
     const std::set<double> validSamplingRates = std::set<double> {100})
 {
     // Custom structs
@@ -414,23 +415,54 @@ public:
         }
 
         // Send work out to processes
-        auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
-        for (int i = 0; i < nThreads; ++i)
+        if (mProgramOptions.mRunP3CDetector || mProgramOptions.mRunS3CDetector)
         {
-            std::vector<::ThreeComponentChannelData> sub3CSensorList;
-            for (int job = jobsToThread.at(i);
-                     job < jobsToThread.at(i+1); ++job)
+            mLogger->info("Partitioning "
+                        + std::to_string(threeComponentSensors.size())
+                        + " 3C pipeplines among "
+                        + std::to_string(nThreads) + " threads");
+            auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
+            for (int i = 0; i < nThreads; ++i)
             {
-                sub3CSensorList.push_back(threeComponentSensors[job]);
+                std::vector<::ThreeComponentChannelData> sub3CSensorList;
+                for (int job = jobsToThread.at(i);
+                         job < jobsToThread.at(i + 1);
+                         ++job)
+                {
+                    sub3CSensorList.push_back(threeComponentSensors.at(job));
+                }
+                m3CPipelines.push_back(std::make_unique<::ThreeComponentProcessingPipeline>
+                    (i,
+                     mProgramOptions,
+                     sub3CSensorList,
+                     mLogger));
+                std::this_thread::sleep_for (std::chrono::microseconds {250});
             }
-            mPipelines.push_back(std::make_unique<::ThreeComponentProcessingPipeline>
-                (i,
-                 mProgramOptions,
-                 sub3CSensorList,
-                 mLogger));
-            std::this_thread::sleep_for (std::chrono::microseconds {250});
-
         } 
+        if (mProgramOptions.mRunP1CDetector)
+        {
+            mLogger->info("Partitioning "
+                        + std::to_string(oneComponentSensors.size())
+                        + " 1C pipeplines among "
+                        + std::to_string(nThreads) + " threads");
+            auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
+            for (int i = 0; i < nThreads; ++i) 
+            {
+                std::vector<URTS::Database::AQMS::ChannelData> sub1CSensorList;
+                for (int job = jobsToThread.at(i);
+                         job < jobsToThread.at(i + 1);
+                         ++job)
+                {
+                    sub1CSensorList.push_back(oneComponentSensors.at(job));
+                }
+                m1CPipelines.push_back(std::make_unique<::OneComponentProcessingPipeline>
+                    (i,
+                     mProgramOptions,
+                     sub1CSensorList,
+                     mLogger));
+                std::this_thread::sleep_for (std::chrono::microseconds {250});
+           }
+        }
 
         // Instantiate the local command replier
         mLocalCommand
@@ -446,6 +478,7 @@ public:
         mLocalCommand->initialize(localServiceOptions);
         mInitialized = true;
     }
+/*
     Detector(
         const ProgramOptions programOptions,
         std::unique_ptr<URTS::Broadcasts::Internal::DataPacket::Publisher>
@@ -456,6 +489,8 @@ public:
             &&inference3CP,
         std::unique_ptr<UDetectors::UNetThreeComponentS::Requestor>
             &&inference3CS,
+        std::unique_ptr<UDetectors::UNetOneComponentP::Requestor>
+            &&inference1CP,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mProgramOptions(programOptions),
         mProbabilityPublisher(std::move(probabilityPublisher)),
@@ -544,6 +579,7 @@ public:
         mLocalCommand->initialize(localServiceOptions);
         mInitialized = true;
     }
+*/
     /// @brief Destructor
     ~Detector() override
     {
@@ -586,12 +622,19 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
-        for (auto &p : mPipelines){p->setRunning(true);}
+        for (auto &p : m3CPipelines)
+        {
+            p->setRunning(true);
+        }
+        for (auto &p : m1CPipelines)
+        {
+            p->setRunning(true);
+        }
         std::this_thread::sleep_for (std::chrono::milliseconds {250});
-        for (int it = 0; it < static_cast<int> (mPipelines.size()); ++it)
+        for (int it = 0; it < static_cast<int> (m3CPipelines.size()); ++it)
         {
             auto thread = std::thread(&::ThreeComponentProcessingPipeline::run,
-                                      &*mPipelines[it]);
+                                      &*m3CPipelines[it]);
             mPipelineThreads.push_back(std::move(thread));
         }
 /*
@@ -630,7 +673,8 @@ public:
     void stop() override
     {
         setRunning(false);
-        for (auto &p : mPipelines){p->setRunning(false);}
+        for (auto &p : m3CPipelines){p->setRunning(false);}
+        for (auto &p : m1CPipelines){p->setRunning(false);}
         for (auto &t : mPipelineThreads)
         {
             if (t.joinable()){t.join();}
@@ -741,6 +785,8 @@ public:
         return commandsResponse.clone();
     }
     /// @brief This thread manages the channel lists.
+    /// TODO: Dead
+/*
     void updateChannelLists()
     {
         // Figure out the 1c and 3c channel maps
@@ -787,61 +833,62 @@ public:
             throw std::runtime_error("Inputs are unequal");
 #endif
         }
-/*
-S3CDetectorProperties s3CProperties;
-            if (mRun3CPDetector)
-            {
-                for (const auto &threeComponentSensor : threeComponentSensors)
-                {
-                    ::ThreeComponentDataItem
-                        item(threeComponentSensor,
-                             detectorWindowDuration,
-                             mProgramOptions.mGapTolerance,
-                             waitPct,
-                             pCenterWindowStart,
-                             pCenterWindowEnd,
-                             pDetectorSamplingRate);
-                    m3CPDataRequestItems.push_back(std::move(item));
-                }
-            }
-            if (mRun3CSDetector)
-            {
-                for (const auto &threeComponentSensor : threeComponentSensors)
-                {
-                    ::ThreeComponentDatatem
-                        item(threeComponentSensor,
-                             detectorWindowDuration,
-                             mProgramOptions.mGapTolerance,
-                             waitPct,
-                             sCenterWindowStart,
-                             sCenterWindowEnd,
-                             sDetectorSamplingRate);
-                    m3CSDataRequestItems.push_back(std::move(item));
-                }
-            }
-        }
-*/
+//S3CDetectorProperties s3CProperties;
+//            if (mRun3CPDetector)
+//            {
+//                for (const auto &threeComponentSensor : threeComponentSensors)
+//                {
+//                    ::ThreeComponentDataItem
+//                        item(threeComponentSensor,
+//                             detectorWindowDuration,
+//                             mProgramOptions.mGapTolerance,
+//                             waitPct,
+//                             pCenterWindowStart,
+//                             pCenterWindowEnd,
+//                             pDetectorSamplingRate);
+//                    m3CPDataRequestItems.push_back(std::move(item));
+//                }
+//            }
+//            if (mRun3CSDetector)
+//            {
+//                for (const auto &threeComponentSensor : threeComponentSensors)
+//                {
+//                    ::ThreeComponentDatatem
+//                        item(threeComponentSensor,
+//                             detectorWindowDuration,
+//                             mProgramOptions.mGapTolerance,
+//                             waitPct,
+//                             sCenterWindowStart,
+//                             sCenterWindowEnd,
+//                             sDetectorSamplingRate);
+//                    m3CSDataRequestItems.push_back(std::move(item));
+//                }
+//            }
+//        }
         if (mRun1CPDetector)
         {
-            mLogger->warn("1c p detector not done");
-            P3CDetectorProperties p1CProperties;
-            for (const auto &oneComponentSensor : oneComponentSensors)
-            {
-                ::OneComponentDataItem
-                    item(oneComponentSensor,
-                         p1CProperties.mDetectorWindowDuration,
-                         mProgramOptions.mMaximumSignalLatency,
-                         mProgramOptions.mGapTolerance,
-                         mProgramOptions.mDataQueryWaitPercentage,
-                         p1CProperties.mWindowStart,
-                         p1CProperties.mWindowEnd,
-                         p1CProperties.mSamplingRate,
-                         mLogger);
-                m1CPDataItems.insert( std::pair{item.getHash(), item} );
-            }
+//            mLogger->warn("1c p detector is still in devleopement");
+//            P3CDetectorProperties p1CProperties;
+//            for (const auto &oneComponentSensor : oneComponentSensors)
+//            {
+//                ::OneComponentDataItem
+//                    item(oneComponentSensor,
+//                         p1CProperties.mDetectorWindowDuration,
+//                         mProgramOptions.mMaximumSignalLatency,
+//                         mProgramOptions.mGapTolerance,
+//                         mProgramOptions.mDataQueryWaitPercentage,
+//                         p1CProperties.mWindowStart,
+//                         p1CProperties.mWindowEnd,
+//                         p1CProperties.mSamplingRate,
+//                         mLogger);
+//                m1CPDataItems.insert( std::pair{item.getHash(), item} );
+//            }
         }
     }
+*/
     /// @brief This is the manager thread.  It basically monitors the pipeline.
+    /// TODO: Dead
+/*
     void createTasks()
     {
         updateChannelLists();
@@ -903,6 +950,7 @@ S3CDetectorProperties s3CProperties;
         } // Loop
     }
     /// @brief This queries signals from the packet cache.
+    /// TODO dead
     void queryWaveforms()
     {
         while (keepRunning())
@@ -930,6 +978,7 @@ S3CDetectorProperties s3CProperties;
         }
     }
     /// @brief Performs the P and S inferencing
+    /// TODO dead
     void performInference3CPS()
     {
         while (keepRunning())
@@ -965,6 +1014,7 @@ S3CDetectorProperties s3CProperties;
     } 
     /// @brief Stitch the waveforms together.
     /// @brief Inference engine for P 3C waveforms.
+    /// TODO dead
     void performInference3CP()
     {
         while (keepRunning())
@@ -992,6 +1042,7 @@ S3CDetectorProperties s3CProperties;
         }
     }
     /// @brief Inference engine for S 3C waveforms.
+    /// TODO dead
     void performInference3CS()
     {
         while (keepRunning())
@@ -1019,6 +1070,7 @@ S3CDetectorProperties s3CProperties;
         }
     }
     /// @brief Publishes probability packets.
+    /// TODO dead
     void publishProbabilityPackets()
     {
         while (keepRunning())
@@ -1046,11 +1098,12 @@ S3CDetectorProperties s3CProperties;
         }
         mLogger->debug("Probability publisher thread exiting...");
     }
-
+*/
 ///public: 
     mutable std::mutex mMutex;
     std::vector<std::thread> mPipelineThreads;
-    std::vector<std::unique_ptr<::ThreeComponentProcessingPipeline>> mPipelines;
+    std::vector<std::unique_ptr<::ThreeComponentProcessingPipeline>> m3CPipelines;
+    std::vector<std::unique_ptr<::OneComponentProcessingPipeline>> m1CPipelines;
     std::thread mPublisherThread;
     std::thread mInference3CPSThread;
     std::thread mInference3CPThread;
@@ -1079,10 +1132,10 @@ S3CDetectorProperties s3CProperties;
     ::ThreadSafeQueue<size_t> mPSBroadcastQueue;
     ::ThreadSafeQueue<URTS::Broadcasts::Internal::DataPacket::DataPacket>
         mProbabilityPacketToPublisherQueue;
-    std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
-    std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
-    std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
-    std::map<size_t, ::OneComponentDataItem>   m1CPDataItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m3CPSDataItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m3CPDataItems;
+    //std::map<size_t, ::ThreeComponentDataItem> m3CSDataItems;
+    //std::map<size_t, ::OneComponentDataItem>   m1CPDataItems;
     size_t mMaxInferenceItems{100};
     bool mPS3CInputsAreEqual{true};
     bool mRun3CPDetector{false};
@@ -1249,10 +1302,10 @@ int main(int argc, char *argv[])
             programOptions.mS3CDetectorRequestorOptions = requestOptions;
         }
 
-        namespace UNetP1C = UDetectors::UNetThreeComponentP;
+        namespace UNetP1C = UDetectors::UNetOneComponentP;
         if (programOptions.mRunP1CDetector)
         {
-            logger->error("1c p not done");
+            logger->error("1c p in dev");
 /*
             UNet1CP::RequestorOptions requestOptions;
             if (!programOptions.mP3CDetectorServiceAddress.empty())

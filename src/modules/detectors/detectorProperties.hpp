@@ -4,6 +4,7 @@
 #include <chrono>
 #include <uussmlmodels/detectors/uNetThreeComponentP/inference.hpp>
 #include <uussmlmodels/detectors/uNetThreeComponentS/inference.hpp>
+#include <uussmlmodels/detectors/uNetOneComponentP/inference.hpp>
 namespace
 {
 struct P3CDetectorProperties
@@ -20,6 +21,22 @@ struct P3CDetectorProperties
     int mExpectedLength{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getExpectedSignalLength()};
     int mWindowStart{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getCentralWindowStartEndIndex().first};
     int mWindowEnd{UUSSMLModels::Detectors::UNetThreeComponentP::Inference::getCentralWindowStartEndIndex().second}; 
+};
+
+struct P1CDetectorProperties
+{
+    P1CDetectorProperties()
+    {    
+        mDetectorWindowDuration
+            = std::chrono::microseconds {
+                static_cast<int64_t> (std::round(mExpectedLength/mSamplingRate*1.e6))
+              };
+    }    
+    std::chrono::microseconds mDetectorWindowDuration{10080000};
+    double mSamplingRate{UUSSMLModels::Detectors::UNetOneComponentP::Inference::getSamplingRate()};
+    int mExpectedLength{UUSSMLModels::Detectors::UNetOneComponentP::Inference::getExpectedSignalLength()};
+    int mWindowStart{UUSSMLModels::Detectors::UNetOneComponentP::Inference::getCentralWindowStartEndIndex().first};
+    int mWindowEnd{UUSSMLModels::Detectors::UNetOneComponentP::Inference::getCentralWindowStartEndIndex().second}; 
 };
 
 struct S3CDetectorProperties
