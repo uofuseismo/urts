@@ -8,6 +8,7 @@
 #include "urts/broadcasts/internal/probabilityPacket.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentP.hpp"
 #include "urts/services/scalable/detectors/uNetThreeComponentS.hpp"
+#include "urts/services/scalable/detectors/uNetOneComponentP.hpp"
 #include "urts/services/scalable/packetCache.hpp"
 #include "private/isEmpty.hpp"
 namespace
@@ -301,6 +302,8 @@ public:
          mP3CDetectorRequestorOptions;
     URTS::Services::Scalable::Detectors::UNetThreeComponentS::RequestorOptions
          mS3CDetectorRequestorOptions;
+    URTS::Services::Scalable::Detectors::UNetOneComponentP::RequestorOptions
+         mP1CDetectorRequestorOptions;
     URTS::Services::Scalable::PacketCache::RequestorOptions
         mPacketCacheRequestorOptions;
     URTS::Broadcasts::Internal::ProbabilityPacket::PublisherOptions

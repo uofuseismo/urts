@@ -374,7 +374,8 @@ public:
         mProgramOptions(programOptions),
         mLogger(logger)
     {
-        auto nThreads = programOptions.mThreads;
+        mModuleName = mProgramOptions.mModuleName;
+        auto nThreads = mProgramOptions.mThreads;
 
         // Make a database connection
         mLogger->debug("Connecting to AQMS database...");
@@ -1249,12 +1250,12 @@ int main(int argc, char *argv[])
         programOptions.mPacketCacheRequestorOptions = upcOptions;
 
         // Create a 3C P client
-        namespace UNetP = UDetectors::UNetThreeComponentP;
-        std::unique_ptr<UNetP::Requestor> inference3CPRequestor{nullptr};
+        namespace UNetP3C = UDetectors::UNetThreeComponentP;
+        //std::unique_ptr<UNetP3C::Requestor> inference3CPRequestor{nullptr};
         if (programOptions.mRunP3CDetector)
         {
             logger->debug("Initializing P 3C detector client...");
-            UNetP::RequestorOptions requestOptions;
+            UNetP3C::RequestorOptions requestOptions;
             if (!programOptions.mP3CDetectorServiceAddress.empty())
             {
                 requestOptions.setAddress(
@@ -1269,15 +1270,15 @@ int main(int argc, char *argv[])
             requestOptions.setZAPOptions(zapOptions);
             requestOptions.setReceiveTimeOut(
                 programOptions.mInferenceRequestReceiveTimeOut);
-            inference3CPRequestor
-                = std::make_unique<UNetP::Requestor> (clientContext, logger);
+            //inference3CPRequestor
+            //    = std::make_unique<UNetP3C::Requestor> (clientContext, logger);
 //            inference3CPRequestor->initialize(requestOptions);
             programOptions.mP3CDetectorRequestorOptions = requestOptions;
         }
 
         // Create a 3C S client
         namespace UNetS = UDetectors::UNetThreeComponentS;
-        std::unique_ptr<UNetS::Requestor> inference3CSRequestor{nullptr};
+        //std::unique_ptr<UNetS::Requestor> inference3CSRequestor{nullptr};
         if (programOptions.mRunS3CDetector)
         {
             logger->debug("Initializing S 3C detector client...");
@@ -1296,36 +1297,35 @@ int main(int argc, char *argv[])
             requestOptions.setZAPOptions(zapOptions);
             requestOptions.setReceiveTimeOut(
                 programOptions.mInferenceRequestReceiveTimeOut);
-            inference3CSRequestor
-                = std::make_unique<UNetS::Requestor> (clientContext, logger);
+            //inference3CSRequestor
+            //    = std::make_unique<UNetS::Requestor> (clientContext, logger);
 //            inference3CSRequestor->initialize(requestOptions);
             programOptions.mS3CDetectorRequestorOptions = requestOptions;
         }
 
         namespace UNetP1C = UDetectors::UNetOneComponentP;
+        //std::unique_ptr<UNetP1C::Requestor> inference1CPRequestor{nullptr};
         if (programOptions.mRunP1CDetector)
         {
             logger->error("1c p in dev");
-/*
-            UNet1CP::RequestorOptions requestOptions;
-            if (!programOptions.mP3CDetectorServiceAddress.empty())
+            UNetP1C::RequestorOptions requestOptions;
+            if (!programOptions.mP1CDetectorServiceAddress.empty())
             {
                 requestOptions.setAddress(
-                    programOptions.mP3CDetectorServiceAddress);
+                    programOptions.mP1CDetectorServiceAddress);
             }
             else
             {
                 requestOptions.setAddress(
                     uOperator->getProxyServiceFrontendDetails(
-                        programOptions.mP3CDetectorServiceName).getAddress());
+                        programOptions.mP1CDetectorServiceName).getAddress());
             }
             requestOptions.setZAPOptions(zapOptions);
             requestOptions.setReceiveTimeOut(
                 programOptions.mInferenceRequestReceiveTimeOut);
-            inference1CPRequestor
-                = std::make_unique<UNetP1C::Requestor> (clientContext, logger);
-            programOptions.mP3CDetectorRequestorOptions = requestOptions;
-*/
+            //inference1CPRequestor
+            //    = std::make_unique<UNetP1C::Requestor> (clientContext, logger);
+            programOptions.mP1CDetectorRequestorOptions = requestOptions;
         }
 
         // Create the detector
