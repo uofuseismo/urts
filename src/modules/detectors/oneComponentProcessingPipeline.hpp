@@ -570,14 +570,14 @@ public:
         mProbabilityPublisher->initialize(
             mProgramOptions.mProbabilityPacketPublisherOptions);
 
-        if (mProgramOptions.mRunP1CDetector)
-        {
-            mLogger->debug("Instance " + std::to_string(mInstance)
-                         + " creating 1C P detector service requestor...");
-            m1CPInferenceRequestor
-                = std::make_unique<URTS::Services::Scalable::Detectors::UNetOneComponentP::Requestor>
-                  (mContext, mLogger);
-        }
+        mLogger->debug("Instance " + std::to_string(mInstance)
+                     + " creating 1C P detector service requestor...");
+        m1CPInferenceRequestor
+            = std::make_unique<URTS::Services::Scalable::Detectors::UNetOneComponentP::Requestor>
+              (mContext, mLogger);
+        m1CPInferenceRequestor->initialize(
+            mProgramOptions.mP1CDetectorRequestorOptions);
+
 
         P1CDetectorProperties p1CProperties;
 
