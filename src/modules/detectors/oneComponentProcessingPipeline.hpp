@@ -241,7 +241,6 @@ public:
         auto t1QueryMuSec = timeNow;
         auto t0Query = static_cast<double> (t0QueryMuSec.count()*1.e-6);
         auto t1Query = static_cast<double> (t1QueryMuSec.count()*1.e-6);
-        URTS::Services::Scalable::PacketCache::DataRequest dataRequest;
         try
         {
             // Create the individual requests from start time to infinity
@@ -260,7 +259,7 @@ public:
             reply{nullptr};
         try
         {
-            reply = requestor.request(dataRequest);
+            reply = requestor.request(mVerticalRequest);
         }
         catch (const std::exception &e)
         {
@@ -479,8 +478,7 @@ public:
     std::string mName;
     /// Utility for interpolating 1C waveforms
     URTS::Services::Scalable::PacketCache::SingleComponentWaveform mInterpolator;
-    /// Basically, these are fully defined data requests which will be updated
-    /// with the query times into a bulk data request
+    /// Data requests for this SNCL which will be updated with query times
     URTS::Services::Scalable::PacketCache::DataRequest mVerticalRequest;
     // Partially populated requests for the inference services
     URTS::Services::Scalable::Detectors::UNetOneComponentP::ProcessingRequest
