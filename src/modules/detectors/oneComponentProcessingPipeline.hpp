@@ -475,9 +475,9 @@ public:
 //private:
     /// Channel data
     URTS::Database::AQMS::ChannelData mChannelData;
-    /// Name of three-component data
+    /// Name of single-channel data
     std::string mName;
-    /// Utility for interpolating 3C waveforms
+    /// Utility for interpolating 1C waveforms
     URTS::Services::Scalable::PacketCache::SingleComponentWaveform mInterpolator;
     /// Basically, these are fully defined data requests which will be updated
     /// with the query times into a bulk data request
