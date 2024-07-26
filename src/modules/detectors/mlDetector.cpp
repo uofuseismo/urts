@@ -415,15 +415,32 @@ public:
             mLogger->warn("No channels read from database");
         }
 
-        // Send work out to processes
+        // Divide work amongst threads
+        int n3CThreads = nThreads;
+        int n1CThreads = nThreads;
+        if (mProgramOptions.mRunP1CDetector &&
+            (mProgramOptions.mRunP3CDetector || mProgramOptions.mRunS3CDetector))
+        {
+            // In this case we have to share the total thread count
+            n3CThreads = std::max(1, nThreads/2);
+            n1CThreads = std::max(1, nThreads - n3CThreads);
+            if (n1CThreads + n3CThreads > nThreads)
+            {
+                mLogger->warn("Will use "
+                            + std::to_string(n3CThreads + n1CThreads)
+                            + " which exceeds the requested number of threads: "
+                            + std::to_string(nThreads));
+            }
+        }
+
         if (mProgramOptions.mRunP3CDetector || mProgramOptions.mRunS3CDetector)
         {
             mLogger->info("Partitioning "
                         + std::to_string(threeComponentSensors.size())
                         + " 3C pipeplines among "
-                        + std::to_string(nThreads) + " threads");
-            auto jobsToThread = ::splitWork(threeComponentSensors.size(), nThreads);
-            for (int i = 0; i < nThreads; ++i)
+                        + std::to_string(n3CThreads) + " threads");
+            auto jobsToThread = ::splitWork(threeComponentSensors.size(), n3CThreads);
+            for (int i = 0; i < n3CThreads; ++i)
             {
                 std::vector<::ThreeComponentChannelData> sub3CSensorList;
                 for (int job = jobsToThread.at(i);
@@ -445,9 +462,9 @@ public:
             mLogger->info("Partitioning "
                         + std::to_string(oneComponentSensors.size())
                         + " 1C pipeplines among "
-                        + std::to_string(nThreads) + " threads");
-            auto jobsToThread = ::splitWork(oneComponentSensors.size(), nThreads);
-            for (int i = 0; i < nThreads; ++i) 
+                        + std::to_string(n1CThreads) + " threads");
+            auto jobsToThread = ::splitWork(oneComponentSensors.size(), n1CThreads);
+            for (int i = 0; i < n1CThreads; ++i) 
             {
                 std::vector<URTS::Database::AQMS::ChannelData> sub1CSensorList;
                 for (int job = jobsToThread.at(i);
@@ -634,8 +651,18 @@ public:
         std::this_thread::sleep_for (std::chrono::milliseconds {250});
         for (int it = 0; it < static_cast<int> (m3CPipelines.size()); ++it)
         {
+            mLogger->debug("Starting 3C bulk pipeline on thread: " 
+                         + std::to_string(it));
             auto thread = std::thread(&::ThreeComponentProcessingPipeline::run,
                                       &*m3CPipelines[it]);
+            mPipelineThreads.push_back(std::move(thread));
+        }
+        for (int it = 0; it < static_cast<int> (m1CPipelines.size()); ++it) 
+        {
+            mLogger->debug("Starting 1C bulk pipeline on thread: " 
+                         + std::to_string(it));
+            auto thread = std::thread(&::OneComponentProcessingPipeline::run,
+                                      &*m1CPipelines[it]);
             mPipelineThreads.push_back(std::move(thread));
         }
 /*
@@ -680,13 +707,13 @@ public:
         {
             if (t.joinable()){t.join();}
         }
-        if (mPublisherThread.joinable()){mPublisherThread.join();}
-        if (mInference3CPSThread.joinable()){mInference3CPSThread.join();}
-        if (mInference3CPThread.joinable()){mInference3CPThread.join();}
-        if (mInference3CSThread.joinable()){mInference3CSThread.join();}
-        if (mInference1CPThread.joinable()){mInference1CPThread.join();}
-        if (mPacketCacheThread.joinable()){mPacketCacheThread.join();}
-        if (mTaskManagerThread.joinable()){mTaskManagerThread.join();}
+        //if (mPublisherThread.joinable()){mPublisherThread.join();}
+        //if (mInference3CPSThread.joinable()){mInference3CPSThread.join();}
+        //if (mInference3CPThread.joinable()){mInference3CPThread.join();}
+        //if (mInference3CSThread.joinable()){mInference3CSThread.join();}
+        //if (mInference1CPThread.joinable()){mInference1CPThread.join();}
+        //if (mPacketCacheThread.joinable()){mPacketCacheThread.join();}
+        //if (mTaskManagerThread.joinable()){mTaskManagerThread.join();}
         if (mLocalCommand != nullptr)
         {
             if (mLocalCommand->isRunning()){mLocalCommand->stop();}
@@ -1105,13 +1132,13 @@ public:
     std::vector<std::thread> mPipelineThreads;
     std::vector<std::unique_ptr<::ThreeComponentProcessingPipeline>> m3CPipelines;
     std::vector<std::unique_ptr<::OneComponentProcessingPipeline>> m1CPipelines;
-    std::thread mPublisherThread;
-    std::thread mInference3CPSThread;
-    std::thread mInference3CPThread;
-    std::thread mInference3CSThread;
-    std::thread mInference1CPThread;
-    std::thread mPacketCacheThread;
-    std::thread mTaskManagerThread;
+    //std::thread mPublisherThread;
+    //std::thread mInference3CPSThread;
+    //std::thread mInference3CPThread;
+    //std::thread mInference3CSThread;
+    //std::thread mInference1CPThread;
+    //std::thread mPacketCacheThread;
+    //std::thread mTaskManagerThread;
     std::string mModuleName{MODULE_NAME};
     ::ProgramOptions mProgramOptions;
     UDatabase::AQMS::ChannelDataTablePoller mChannelDataPoller;
@@ -1307,7 +1334,7 @@ int main(int argc, char *argv[])
         //std::unique_ptr<UNetP1C::Requestor> inference1CPRequestor{nullptr};
         if (programOptions.mRunP1CDetector)
         {
-            logger->error("1c p in dev");
+            logger->warn("1c p in dev");
             UNetP1C::RequestorOptions requestOptions;
             if (!programOptions.mP1CDetectorServiceAddress.empty())
             {
