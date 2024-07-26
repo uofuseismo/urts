@@ -281,10 +281,34 @@ public:
             URTS::Services::Scalable::PacketCache::DataResponse
                                                  ::ReturnCode::Success)
         {
-            logger->warn("Instance " + std::to_string(mInstance)
-                       + "'s request for " + mName
-                       + " failed with error code: "
-                       + std::to_string(reply->getReturnCode()));
+            // Typically the analog sites die for a long time and I don't
+            // really care to see the same error over and over
+            if (reply->getReturnCode() ==
+                URTS::Services::Scalable::PacketCache::DataResponse::NoSensor)
+            {
+                if (!mNoSensor)
+                {
+                    logger->warn("Instance " + std::to_string(mInstance)
+                               + "'s request for " + mName
+                               + " failed with error code: "
+                               + std::to_string(reply->getReturnCode()));
+                }
+                else
+                {
+                    logger->debug("Instance " + std::to_string(mInstance)
+                                + "'s request for " + mName
+                                + " failed with error code: "
+                                + std::to_string(reply->getReturnCode()));
+                }
+                mNoSensor = true;
+            }
+            else
+            {
+                logger->warn("Instance " + std::to_string(mInstance)
+                           + "'s request for " + mName
+                           + " failed with error code: "
+                           + std::to_string(reply->getReturnCode()));
+            }
             return;
         }
         // Unpack the responses (need to divine vertical/north/east)
@@ -538,6 +562,7 @@ public:
     bool mBroadcastP{false};
     bool mBroadcastS{false};
     bool mChangesSamplingRate{false};
+    bool mNoSensor{false};
 };
 
 class OneComponentProcessingPipeline
