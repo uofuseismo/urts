@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cmath>
+#include <random>
 #include <limits>
 #include <umps/authentication/zapOptions.hpp>
 #include "urts/services/scalable/packetCache/bulkDataRequest.hpp"
@@ -678,8 +679,11 @@ TEST(ServicesScalablePacketCache, Wiggins)
     packets.push_back(packets[0]);
     packets.push_back(packets[1]);
     // And change the order
-    std::srand(500582);
-    std::random_shuffle(packets.begin(), packets.end());
+    //std::srand(500582);
+    std::mt19937 generator{500812}; // std::random_device {}() };
+    //generator.seed(500582);
+    //std::random_shuffle(packets.begin(), packets.end());
+    std::shuffle(packets.begin(), packets.end(), generator);
     EXPECT_NO_THROW(interpolator.interpolate(packets));
     EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
     EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
@@ -727,7 +731,8 @@ TEST(ServicesScalablePacketCache, Wiggins)
         }
     }
     // Shuffle and repeat
-    std::random_shuffle(packets.begin(), packets.end());
+    //std::random_shuffle(packets.begin(), packets.end());
+    std::shuffle(packets.begin(), packets.end(), generator);
     EXPECT_NO_THROW(interpolator.interpolate(packets));
     yi = interpolator.getSignal();
     gapPtr = interpolator.getGapIndicatorPointer();
