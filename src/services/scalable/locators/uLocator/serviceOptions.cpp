@@ -9,12 +9,13 @@
 
 #define UTAH_DEFAULT_TIME_WINDOW 140
 #define YNP_DEFAULT_TIME_WINDOW 60
-#define UTAH_DEFAULT_SEARCH_DEPTH 4780
-#define YNP_DEFAULT_SEARCH_DEPTH 6600
+#define UTAH_INITIAL_SEARCH_DEPTH 4780
+#define YNP_INITIAL_SEARCH_DEPTH 6600
 #define UTAH_MAX_SEARCH_DEPTH 65000
 #define YNP_MAX_SEARCH_DEPTH 30000
 #define UTAH_HORIZONTAL_REFINEMENT 50000
 #define YNP_HORIZONTAL_REFINEMENT 35000
+#define UTM_ZONE 12
 
 using namespace URTS::Services::Scalable::Locators::ULocator;
 namespace UAuth = UMPS::Authentication;
@@ -38,11 +39,13 @@ public:
     double mDIRECTLocationTolerance{1000}; // Meters
     double mHorizontalRefinement{UTAH_HORIZONTAL_REFINEMENT};
     double mOriginTimeSearchWindow{UTAH_DEFAULT_TIME_WINDOW};
+    double mInitialSearchDepth{UTAH_INITIAL_SEARCH_DEPTH};
     int mDIRECTFunctionEvaluations{1200};
     int mPSOParticles{20}; // 15 for YNP
     int mPSOGenerations{140}; // 120 for YNP
     int mSendHighWaterMark{8192};
     int mReceiveHighWaterMark{4096};
+    int mUTMZone{12};
     ServiceOptions::Region mRegion{ServiceOptions::Region::Utah};
     ServiceOptions::Norm mNorm{ServiceOptions::Norm::Lp};
     bool mHaveRegion{false};
@@ -180,6 +183,22 @@ bool ServiceOptions::haveRegion() const noexcept
     return pImpl->mHaveRegion;
 }
 
+/// Sets the UTM Zone
+void ServiceOptions::setUTMZone(int zone)
+{
+    if (zone < 1 || zone > 60)
+    {
+        throw std::invalid_argument("UTM zone must be in range [1,60]");
+    }
+    pImpl->mUTMZone = zone;
+}
+
+std::optional<int> ServiceOptions::getUTMZone() const noexcept
+{
+    if (pImpl->mUTMZone > 0){return std::optional<int> (pImpl->mUTMZone);}
+    return std::nullopt;
+}
+
 /// Source specific 
 void ServiceOptions::setSourceSpecificCorrectionFile(
     const std::filesystem::path &fileName)
@@ -297,6 +316,26 @@ int ServiceOptions::getNumberOfGenerations() const noexcept
     return pImpl->mPSOGenerations;
 }
  
+/// Initial search depth
+void ServiceOptions::setInitialSearchDepth(double depth)
+{
+    if (depth <= -1000)
+    {
+        throw std::invalid_argument("depth <= -1000");
+    }   
+    if (depth >= 800000)
+    {
+        throw std::invalid_argument("depth >= 800,000");
+    }   
+    pImpl->mInitialSearchDepth = depth;
+}
+
+double ServiceOptions::getInitialSearchDepth() const noexcept
+{
+    return pImpl->mInitialSearchDepth;
+}
+
+/// Initial search depth
 void ServiceOptions::setMaximumSearchDepth(double depth)
 {
     if (depth <= -8600)
@@ -376,12 +415,16 @@ void ServiceOptions::parseInitializationFile(
     // Load the essentials
     ServiceOptions options;
     auto region = propertyTree.get<std::string> (section + ".region");
+    options.setUTMZone(UTM_ZONE);
+    auto utmZone = propertyTree.get<int> (section + ".utmZone", UTM_ZONE);
+    if (utmZone > 0 && utmZone < 61){options.setUTMZone(utmZone);}
     if (region == "utah" || region == "Utah")
     {
         options.setRegion(ServiceOptions::Region::Utah);
         options.setMaximumSearchDepth(UTAH_MAX_SEARCH_DEPTH);
         options.setOriginTimeSearchWindow(UTAH_DEFAULT_TIME_WINDOW);
         options.setHorizontalRefinement(UTAH_HORIZONTAL_REFINEMENT);
+        options.setInitialSearchDepth(UTAH_INITIAL_SEARCH_DEPTH);
     }
     else if (region == "YNP" || region == "ynp" || region == "Yellowstone")
     {
@@ -389,6 +432,7 @@ void ServiceOptions::parseInitializationFile(
         options.setMaximumSearchDepth(YNP_MAX_SEARCH_DEPTH);
         options.setOriginTimeSearchWindow(YNP_DEFAULT_TIME_WINDOW);
         options.setHorizontalRefinement(YNP_HORIZONTAL_REFINEMENT);
+        options.setInitialSearchDepth(YNP_INITIAL_SEARCH_DEPTH);
     }
     else
     {

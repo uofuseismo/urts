@@ -20,6 +20,7 @@ public:
     double mLatitude{0};
     double mLongitude{0};
     double mDepth{0};
+    MonitoringRegion mMonitoringRegion{MonitoringRegion::Unknown};
     bool mHaveTime{false};
     bool mHaveLatitude{false};
     bool mHaveLongitude{false};
@@ -193,3 +194,16 @@ const std::vector<Arrival> &Origin::getArrivalsReference() const noexcept
 {
     return *&pImpl->mArrivals;
 }
+
+/// Monitoring region
+/*
+void Origin::setMonitoringRegion(const MonitoringRegion region) noexcept
+{
+    pImpl->mMonitoringRegion = region;
+}
+
+Origin::MonitoringRegion Origin::getMonitoringRegion() const noexcept
+{
+    return pImpl->mMonitoringRegion;
+}
+*/

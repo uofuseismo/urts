@@ -7,34 +7,23 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <massociate/associator.hpp>
 #include <massociate/dbscan.hpp>
 #include <massociate/migrator.hpp>
 #include <massociate/optimizer.hpp>
 #include <massociate/particleSwarm.hpp>
+#include <massociate/dividedRectangles.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include <umps/logging/dailyFile.hpp>
 #include <umps/logging/standardOut.hpp>
+#include <umps/messaging/context.hpp>
 #include <umps/modules/process.hpp>
 #include <umps/modules/processManager.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
-#include <umps/proxyServices/command/moduleDetails.hpp>
-#include <umps/proxyServices/command/replier.hpp>
-#include <umps/proxyServices/command/replierOptions.hpp>
-#include <umps/proxyServices/command/replierProcess.hpp>
-#include <umps/services/command/availableCommandsRequest.hpp>
-#include <umps/services/command/availableCommandsResponse.hpp>
-#include <umps/services/command/commandRequest.hpp>
-#include <umps/services/command/commandResponse.hpp>
-#include <umps/services/command/service.hpp>
-#include <umps/services/command/serviceOptions.hpp>
-#include <umps/services/command/terminateRequest.hpp>
-#include <umps/services/command/terminateResponse.hpp>
-#include <umps/services/connectionInformation/details.hpp>
-#include <umps/services/connectionInformation/requestorOptions.hpp>
-#include <umps/services/connectionInformation/requestor.hpp>
-#include <umps/services/connectionInformation/socketDetails/dealer.hpp>
-#include <umps/services/connectionInformation/details.hpp>
+#include <umps/proxyServices/command.hpp>
+#include <umps/services/command.hpp>
+#include <umps/services/connectionInformation.hpp>
 #include <uLocator/travelTimeCalculatorMap.hpp>
 #include <uLocator/uussRayTracer.hpp>
 #include <uLocator/station.hpp>
@@ -45,10 +34,6 @@
 #include <uLocator/position/ynpRegion.hpp>
 #include "urts/services/scalable/associators/massociate/service.hpp"
 #include "urts/services/scalable/associators/massociate/serviceOptions.hpp"
-#include "urts/broadcasts/internal/pick/subscriberOptions.hpp"
-#include "urts/broadcasts/internal/pick/subscriber.hpp"
-#include "urts/broadcasts/internal/origin/publisherOptions.hpp"
-#include "urts/broadcasts/internal/origin/publisher.hpp"
 #include "urts/database/aqms/stationData.hpp"
 #include "urts/database/aqms/stationDataTable.hpp"
 #include "urts/database/connection/postgresql.hpp"
@@ -74,6 +59,60 @@ std::shared_ptr<UMPS::Logging::ILog>
 [[nodiscard]] std::string getInputOptions() noexcept;
 [[nodiscard]] std::shared_ptr<UDatabase::Connection::IConnection> 
     createAQMSDatabaseConnection(const ::ProgramOptions options);
+
+bool matches(const std::string &target, // blacklist NETWORK.STATION
+             const std::string &queryNetwork,
+             const std::string &queryStation)
+{
+    if (target.empty()){return false;}
+    std::vector<std::string> splitTarget;
+    boost::algorithm::split(splitTarget, target, boost::is_any_of(".")); 
+    if (splitTarget.empty()){return false;}
+    // Try to match the network
+    auto targetNetwork
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (splitTarget.at(0)));
+    auto otherNetwork
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (queryNetwork));
+    if (targetNetwork != queryNetwork){return false;} 
+    if (splitTarget.size() == 1){return true;} // Masking an entire network
+    // At this point the networks match
+    auto targetStation
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (splitTarget.at(1)));
+    auto otherStation 
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (queryStation));
+    if (targetStation.empty()){return false;}
+    if (otherStation.empty()){return false;}
+    if (targetStation[0] == '*'){return true;}
+    // We have a wild card
+    if (targetStation.find("*") != std::string::npos)
+    {
+        if (targetStation.back() == '*')
+        {
+            targetStation.pop_back();
+            if (targetStation.find(otherStation) == 0){return true;}
+        }
+    }
+    else
+    {
+        if (targetStation == otherStation){return true;} // Easy direct match
+    }
+    return false;
+}
+
+bool matches(const std::vector<std::string> &targets,
+             const std::string &queryNetwork,
+             const std::string &queryStation)
+{
+    for (const auto &target : targets)
+    {
+        if (::matches(target, queryNetwork, queryStation)){return true;}
+    }
+    return false;
+}
 
 /// @brief Defines the module options.
 struct ProgramOptions
@@ -342,6 +381,10 @@ struct ProgramOptions
               (section + ".numberOfParticles",
                mMAssociateServiceOptions.getNumberOfParticles());
         mMAssociateServiceOptions.setNumberOfParticles(nPSOParticles);
+        // KNN neighbors
+        mNeighborsInStationCluster
+            = propertyTree.get<int>
+              (section + ".neighborsInStationCluster");
         // Corrections files
         auto staticCorrectionFile
             = propertyTree.get<std::string>
@@ -359,26 +402,47 @@ struct ProgramOptions
             mMAssociateServiceOptions.setSourceSpecificCorrectionFile(
                sourceSpecificCorrectionFile);
         }
+
+        // Station masks
+        auto stationMask
+            = propertyTree.get<std::string> (section + ".stationMask", "");
+        if (!stationMask.empty())
+        {
+            std::vector<std::string> splitMask;
+            boost::algorithm::split(splitMask, stationMask, boost::is_any_of(",| "));
+            if (!splitMask.empty())
+            {
+                for (auto &item : splitMask)
+                {
+                    if (item.empty()){continue;}
+                    item = boost::algorithm::trim_copy<std::string>
+                           (boost::algorithm::to_upper_copy<std::string> (item));
+                    if (item.empty()){continue;}
+std::cout << item << std::endl;
+                    mStationMask.push_back(item);
+                }
+            }
+        }
+
     }
     std::string mModuleName{MODULE_NAME};
     std::string mServiceName{"MAssociate"};
-    std::string mPickBroadcastName{"Pick"};
-    std::string mOriginBroadcastName{"Origin"};
+    //std::string mPickBroadcastName{"Pick"};
+    //std::string mOriginBroadcastName{"Origin"};
     std::string mHeartbeatBroadcastName{"Heartbeat"}; // TODO do i need this?
     std::string mDatabaseAddress;
     std::string mDatabaseName;
     std::string mDatabaseReadOnlyUser;
     std::string mDatabaseReadOnlyPassword;
     std::filesystem::path mLogFileDirectory{"/var/log/urts"};
-    URTS::Broadcasts::Internal::Pick::SubscriberOptions mPickSubscriberOptions;
-    URTS::Broadcasts::Internal::Origin::PublisherOptions
-        mOriginPublisherOptions;
     UMASS::ServiceOptions mMAssociateServiceOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::chrono::seconds heartBeatInterval{30};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::Info};
+    std::vector<std::string> mStationMask;
     int mMinimumNumberOfArrivals{7};
     int mMinimumNumberOfPArrivals{4};
+    int mNeighborsInStationCluster{8};
     int mDatabasePort{5432};
     int mInstance{0};
 };
@@ -698,6 +762,17 @@ int main(int argc, char *argv[])
     for (const auto &aqmsStation : aqmsStations)
     {
         ULocator::Station station;
+        // Does this station mask one of stations to mask?
+        auto blackListed = ::matches(programOptions.mStationMask,
+                                     aqmsStation.getNetwork(),
+                                     aqmsStation.getStation());
+        if (blackListed)
+        {
+            logger->info(aqmsStation.getNetwork() + "."
+                       + aqmsStation.getStation()
+                       + " is blacklisted; skipping");
+            continue;
+        }
         if (isUtah)
         {
             station = ::createUtahStation(aqmsStation);
@@ -751,13 +826,27 @@ int main(int argc, char *argv[])
     {
         migrator->setDefaultSearchLocations(::createKnownYNPSearchLocations());
     }
-    migrator->setTravelTimeCalculatorMap(std::move(travelTimeCalculatorMap));
+    migrator->setTravelTimeCalculatorMap(
+        std::move(travelTimeCalculatorMap),
+        programOptions.mNeighborsInStationCluster);
     migrator->setGeographicRegion(*geographicRegion->clone());
+    migrator->setSignalType(MAssociate::IMigrator::SignalType::DoubleDifference);
     migrator->setPickSignalToMigrate(MASS::IMigrator::PickSignal::Boxcar);
+    //migrator->setSignalType(MAssociate::IMigrator::SignalType::Absolute);
+    //migrator->setPickSignalToMigrate(MASS::IMigrator::PickSignal::TruncatedGaussian);
     migrator->setMaximumEpicentralDistance(
         programOptions.mMAssociateServiceOptions
                       .getMaximumDistanceToAssociate());
     // Create the optimizer for the migrator
+/*
+    auto directOptimizer = std::make_unique<MAssociate::DividedRectangles> (logger);
+    directOptimizer->setDepth(6000);
+    directOptimizer->setNumberOfInitialObjectiveFunctionEvaluations(50);
+    directOptimizer->setNumberOfObjectiveFunctionEvaluations(100);
+    directOptimizer->setRefinement(50000);
+    directOptimizer->enableLocallyBias();
+    directOptimizer->setMigrator(std::move(migrator));
+*/
     auto psoOptimizer = std::make_unique<MAssociate::ParticleSwarm> (logger);
     auto searchDepthExtent
         = programOptions.mMAssociateServiceOptions.getExtentInDepth();
@@ -784,6 +873,7 @@ int main(int argc, char *argv[])
         associator->initialize(programOptions.mMinimumNumberOfArrivals,
                                programOptions.mMinimumNumberOfPArrivals);
         associator->setOptimizer(std::move(psoOptimizer));
+        //associator->setOptimizer(std::move(directOptimizer));
         associator->setClusterer(std::move(clusterer));
     }
     catch (const std::exception &e)
@@ -895,11 +985,10 @@ std::pair<std::string, int> parseCommandLineOptions(int argc, char *argv[])
     boost::program_options::options_description desc(
 R"""(
 This service allows a client to associate picks into an event.
-This is a scalable service so it is conceivable the user will have multiple
-instances running simultaneously so as to satisfy the overall application's
-performance needs.  Example usage:
+This is a scalable service so it is conceivable the application will have
+multiple instances running simultaneously.  Example usage:
 
-    massociateService --ini=massociateService.ini --instance=0
+    mAssociateService --ini=mAssociateService.ini --instance=0
 
 Allowed options)""");
     desc.add_options()

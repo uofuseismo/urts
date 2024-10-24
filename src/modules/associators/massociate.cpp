@@ -17,6 +17,10 @@
 #include <umps/modules/processManager.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcess.hpp>
 #include <umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp>
+#include <umps/proxyServices/command/moduleDetails.hpp>
+#include <umps/proxyServices/command/replier.hpp>
+#include <umps/proxyServices/command/replierOptions.hpp>
+#include <umps/proxyServices/command/replierProcess.hpp>
 #include <umps/services/command/availableCommandsRequest.hpp>
 #include <umps/services/command/availableCommandsResponse.hpp>
 #include <umps/services/command/commandRequest.hpp>
@@ -77,7 +81,8 @@ URTS::Broadcasts::Internal::Origin::Arrival fromArrival(const URTS::Services::Sc
     auto travelTime = arrival.getTravelTime();
     if (travelTime)
     {
-        result.setResidual(result.getTime().count() - (originTime + *travelTime));
+        result.setResidual(result.getTime().count()*1.e-6
+                         - (originTime + *travelTime));
     }
     return result;
 }
@@ -185,6 +190,16 @@ public:
         mProgramOptions(programOptions),
         mLogger(logger)
     {
+        mModuleName = mProgramOptions.mModuleName;
+        mIsUtah = mProgramOptions.mIsUtah;
+        if (mIsUtah)
+        {
+            mMonitoringRegion = URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion::Utah;
+        }
+        else
+        {
+            mMonitoringRegion = URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion::Yellowstone;
+        }
         // Create the pick subscriber 
         mPickSubscriber
             = std::make_unique<URTS::Broadcasts::Internal::Pick::Subscriber>
@@ -244,7 +259,6 @@ public:
                       std::placeholders::_3));
         mLocalCommand->initialize(localServiceOptions);
         mInitialized = true;
-
     }
     /// @brief Destructor
     ~Associator() override
@@ -266,6 +280,7 @@ public:
     /// @brief Starts the modules.
     void start() override
     {    
+        mLogger->debug("Entering start");
         stop();
         if (!isInitialized())
         {
@@ -324,11 +339,11 @@ public:
 // TODO fix this
 if (massPick.getPhaseHint() == URTS::Services::Scalable::Associators::MAssociate::Pick::PhaseHint::P)
 {
- massPick.setStandardError(0.1);
+ massPick.setStandardError(0.3);
 }
 else
 {
- massPick.setStandardError(0.2);
+ massPick.setStandardError(0.3);
 }
                     bool sendUtah{false};
                     bool sendYNP{false};
@@ -422,6 +437,7 @@ int64_t identifier{1};
                     originIdentifier = identifier;
                     identifier = identifier + 1;
                 }
+                origin.setMonitoringRegion(mMonitoringRegion);
                 auto arrivals = origin.getArrivals();
                 for (auto &arrival : arrivals)
                 {
@@ -491,7 +507,7 @@ int64_t identifier{1};
 #endif
         auto lastProcessingTime = std::chrono::duration_cast<std::chrono::microseconds> (
                  std::chrono::high_resolution_clock::now().time_since_epoch() );
-        mLogger->debug("Starting the associator...");
+        mLogger->debug("Thread starting the associator...");
         std::vector<URTS::Services::Scalable::Associators::MAssociate::Pick> picks;
         while (keepRunning())
         {
@@ -563,7 +579,7 @@ int64_t identifier{1};
             }
 
             // Time to make a request
-            if (now >= lastProcessingTime + pickLatency)
+            if (now >= lastProcessingTime + associationWindow)
             {
                 associationRequestIdentifier = associationRequestIdentifier + 1;
                 lastProcessingTime = now;
@@ -609,7 +625,9 @@ int64_t identifier{1};
                         else
                         {
                             std::string phaseHint{"P"};
-                            if (pick.getPhaseHint() == URTS::Services::Scalable::Associators::MAssociate::Pick::PhaseHint::S)
+                            if (pick.getPhaseHint() ==
+                                URTS::Services::Scalable::Associators::
+                                MAssociate::Pick::PhaseHint::S)
                             {
                                 phaseHint = "S";
                             }
@@ -618,7 +636,7 @@ int64_t identifier{1};
                                           + pick.getChannel() + "."
                                           + pick.getLocationCode() + "."
                                           + phaseHint;
-                            mLogger->debug("Skipping duplicate " + pickName);
+                            //mLogger->debug("Skipping duplicate " + pickName);
                         }
                     }
                 }
@@ -684,7 +702,7 @@ int64_t identifier{1};
                                     picks.erase(std::remove_if(picks.begin(), picks.end(),
                                                                [&](const auto &pick)
                                                                {
-                                                                   constexpr std::chrono::microseconds tol{1000000};
+                                                                   constexpr std::chrono::microseconds tolerance{1000000};
                                                                    std::string pickPhase{"P"};
                                                                    if (pick.getPhaseHint() == URTS::Services::Scalable::Associators::MAssociate::Pick::PhaseHint::S)
                                                                    {
@@ -700,7 +718,7 @@ int64_t identifier{1};
 
                                                                        if (arrival.getNetwork() == pick.getNetwork() &&
                                                                            arrival.getStation() == pick.getStation() &&
-                                                                           std::abs(arrival.getTime().count() - pick.getTime().count()) < tol.count() &&
+                                                                           std::abs(arrival.getTime().count() - pick.getTime().count()) < tolerance.count() &&
                                                                            arrivalPhase == pickPhase)
                                                                        {
                                                                            return true;
@@ -717,10 +735,12 @@ int64_t identifier{1};
                     {
                         mLogger->warn(e.what());
                     }
-                    
                 }
             }
-            std::this_thread::sleep_for(std::chrono::seconds {1});
+            else
+            {
+                std::this_thread::sleep_for(std::chrono::seconds {1});
+            }
         }
         mLogger->debug("Exiting the associator client");
     }
@@ -835,12 +855,12 @@ int64_t identifier{1};
     std::thread mOriginPublisherThread;
     std::thread mPickSubscriberThread;
     std::thread mAssociatorThread;
-    std::chrono::seconds mProcessingWindow{120};
-    std::chrono::seconds mPickLatency{60}; // Typically picks are 30 s late so this is conservative
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::atomic<bool> mKeepRunning{true};
     std::atomic<bool> mInitialized{false};
     size_t mMaximumNumberOfPicks{4096};
+    URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion
+       mMonitoringRegion{URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion::Unknown};
     bool mIsUtah{true}; 
 };
 
@@ -1003,7 +1023,7 @@ int main(int argc, char *argv[])
                                                    "ModuleRegistry",
                                                    nullptr, // Make new context
                                                    logger);
-        //processManager.insert(std::move(remoteReplierProcess));
+        processManager.insert(std::move(remoteReplierProcess));
 */
 
         processManager.insert(std::move(associatorProcess));

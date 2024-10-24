@@ -1,5 +1,7 @@
+#include <iostream>
 #include <vector>
 #include <string>
+#include <set>
 #include <nlohmann/json.hpp>
 #include "urts/broadcasts/internal/origin/origin.hpp"
 #include "urts/broadcasts/internal/origin/arrival.hpp"
@@ -25,7 +27,9 @@ nlohmann::json toJSONObject(const Origin &origin)
     obj["Time"] = static_cast<int64_t> (origin.getTime().count());
     obj["Identifier"] = origin.getIdentifier();
     obj["ReviewStatus"] = static_cast<int> (origin.getReviewStatus());
+    obj["MonitoringRegion"] = static_cast<int> (origin.getMonitoringRegion());
     obj["Algorithms"] = origin.getAlgorithms();
+    obj["PreviousIdentifiers"] = origin.getPreviousIdentifiers();
     const auto &arrivals = origin.getArrivalsReference();
     if (!arrivals.empty())
     {
@@ -96,9 +100,16 @@ Origin objectToOrigin(const nlohmann::json &obj)
         static_cast<Origin::ReviewStatus>
             (obj["ReviewStatus"].template get<int> ()) 
     );
+    origin.setMonitoringRegion(
+        static_cast<Origin::MonitoringRegion> 
+            (obj["MonitoringRegion"].template get<int> ())
+    );
     origin.setAlgorithms(
         (obj["Algorithms"].template get<std::vector<std::string>> ())
     ); 
+    origin.setPreviousIdentifiers(
+        (obj["PreviousIdentifiers"].template get<std::vector<int64_t>> ())
+    );
     if (obj.contains("Arrivals"))
     {
         std::vector<Arrival> arrivals;
@@ -190,12 +201,15 @@ class Origin::OriginImpl
 public:
     std::vector<Arrival> mArrivals;
     std::vector<std::string> mAlgorithms;
+    std::vector<int64_t> mPreviousIdentifiers;
     std::chrono::microseconds mTime{0};
     double mDepth{0};
     double mLatitude{0};
     double mLongitude{0};
     int64_t mIdentifier{0};
     Origin::ReviewStatus mReviewStatus{Origin::ReviewStatus::Automatic};
+    Origin::MonitoringRegion
+         mMonitoringRegion{Origin::MonitoringRegion::Unknown};
     bool mHaveDepth{false};
     bool mHaveIdentifier{false};
     bool mHaveLatitude{false};
@@ -335,7 +349,16 @@ void Origin::setIdentifier(const int64_t identifier) noexcept
     for (auto &arrivals : pImpl->mArrivals)
     {   
         arrivals.setIdentifier(identifier);
-    }   
+    }
+    // Purge any matching previous identifiers
+    if (!pImpl->mPreviousIdentifiers.empty())
+    {
+        pImpl->mPreviousIdentifiers.erase(
+            std::remove(pImpl->mPreviousIdentifiers.begin(),
+                        pImpl->mPreviousIdentifiers.end(),
+                        identifier),
+            pImpl->mPreviousIdentifiers.end());
+    }
 }
 
 int64_t Origin::getIdentifier() const
@@ -414,6 +437,17 @@ Origin::ReviewStatus Origin::getReviewStatus() const noexcept
     return pImpl->mReviewStatus;
 }
 
+/// Monitoring region
+void Origin::setMonitoringRegion(const MonitoringRegion region) noexcept
+{
+    pImpl->mMonitoringRegion = region;
+}
+
+Origin::MonitoringRegion Origin::getMonitoringRegion() const noexcept
+{
+    return pImpl->mMonitoringRegion;
+}
+
 /// Algorithms
 void Origin::setAlgorithms(const std::vector<std::string> &algorithms) noexcept
 {
@@ -480,6 +514,47 @@ void Origin::fromMessage(const char *messageIn, const size_t length)
     *this = ::fromCBORMessage(message, length);
 }
 
+/// Sets the previous origin identifiers
+void Origin::setPreviousIdentifiers(const std::vector<int64_t> &identifiersIn)
+{
+    // Not a lot to do
+    if (identifiersIn.empty())
+    {
+        pImpl->mPreviousIdentifiers.clear();
+        return;
+    } 
+    // Only save the unique identifiers
+    auto identifiers = identifiersIn;
+    std::sort(identifiers.begin(), identifiers.end());
+    auto identifiersLast
+         = std::unique(identifiers.begin(), identifiers.end());
+    identifiers.erase(identifiersLast, identifiers.end());
+
+    pImpl->mPreviousIdentifiers.clear();
+    pImpl->mPreviousIdentifiers.reserve(identifiers.size());
+    // Make sure we don't make the current identifier a previous identifier
+    if (haveIdentifier())
+    {
+        auto currentIdentifier = getIdentifier();
+        for (const auto &identifier : identifiers)
+        {
+            if (identifier != currentIdentifier)
+            {
+                pImpl->mPreviousIdentifiers.push_back(identifier);
+            } 
+        }
+    }
+    else
+    {
+        // Nothing to check to add them all
+        pImpl->mPreviousIdentifiers = identifiers;
+    }
+}
+
+std::vector<int64_t> Origin::getPreviousIdentifiers() const noexcept
+{
+    return pImpl->mPreviousIdentifiers;
+}
 
 /// Iterators
 Origin::iterator Origin::begin()

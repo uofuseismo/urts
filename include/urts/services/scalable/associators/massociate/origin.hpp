@@ -17,6 +17,14 @@ namespace URTS::Services::Scalable::Associators::MAssociate
 class Origin
 {
 public:
+    /// @brief The origin's monitoring region.
+    enum class MonitoringRegion : int8_t
+    {   
+        Unknown = 0,     /*!< The geographic region is unknown. */
+        Utah = 1,        /*!< This is a Utah event. */
+        Yellowstone = 2  /*!< This is a Yellowstone event. */
+    };  
+public:
     /// @name Constructors
     /// @{
 
@@ -90,6 +98,14 @@ public:
     [[nodiscard]] std::vector<Arrival> getArrivals() const noexcept;
     /// @result A reference to the arrivals.
     [[nodiscard]] const std::vector<Arrival> &getArrivalsReference() const noexcept;
+
+    /*
+    /// @brief Sets the monitoring region.
+    /// @param[in] region   The event's region.
+    void setMonitoringRegion(MonitoringRegion region) noexcept;
+    /// @result The monitoring region that produced this origin.
+    [[nodiscard]] MonitoringRegion getMonitoringRegion() const noexcept;
+    */
 
     /// @name Destructors
     /// @{

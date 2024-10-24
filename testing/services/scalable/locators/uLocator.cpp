@@ -315,6 +315,7 @@ TEST_CASE("URTS::Services::Scalable::Locators::uLocator", "[models]")
         serviceOptions.setOriginTimeSearchWindow(53);
         serviceOptions.setNumberOfParticles(83);
         serviceOptions.setNumberOfGenerations(12);
+        serviceOptions.setInitialSearchDepth(1200);
         serviceOptions.setMaximumSearchDepth(50000);
         serviceOptions.setHorizontalRefinement(62000);
         serviceOptions.setNumberOfFunctionEvaluations(932);
@@ -327,6 +328,8 @@ TEST_CASE("URTS::Services::Scalable::Locators::uLocator", "[models]")
             auto [norm, pNorm] = optionsCopy.getNorm();
             CHECK(norm == URTSLoc::ServiceOptions::Norm::Lp);
             CHECK_THAT(pNorm, Catch::Matchers::WithinRel(1.1, 1.e-6));
+            CHECK_THAT(optionsCopy.getInitialSearchDepth(),
+                       Catch::Matchers::WithinRel(1200, 1.e-4));
             CHECK_THAT(optionsCopy.getMaximumSearchDepth(),
                        Catch::Matchers::WithinRel(50000, 1.e-4));
             CHECK_THAT(optionsCopy.getHorizontalRefinement(),

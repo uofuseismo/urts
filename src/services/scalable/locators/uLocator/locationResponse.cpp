@@ -1,4 +1,3 @@
-#include <iostream>
 #include <nlohmann/json.hpp>
 #include "urts/services/scalable/locators/uLocator/locationResponse.hpp"
 #include "urts/services/scalable/locators/uLocator/origin.hpp"

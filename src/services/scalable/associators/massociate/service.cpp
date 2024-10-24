@@ -211,6 +211,16 @@ Origin fromEvent(const MASS::Event &event,
     origin.setTime(event.getOriginTime());
     const auto &eventArrivals = event.getArrivalsReference();
     origin.setArrivals(::fromArrivals(eventArrivals, logger));
+/*
+    if (isUtah)
+    {
+        origin.setMonitoringRegion(Origin::MonitoringRegion::Utah);
+    }
+    else
+    {
+        origin.setMonitoringRegion(Origin::MonitoringRegion::Yellowstone);
+    }
+*/
     return origin;
 }
 
@@ -329,6 +339,11 @@ public:
         mReplier
             = std::make_unique<UMPS::Messaging::RouterDealer::Reply>
               (responseContext, mLogger);
+    }
+    /// Destructor
+    ~ServiceImpl()
+    {   
+        stop();
     }
 /*
     void initialize(std::unique_ptr<ULocator::TravelTimeCalculatorMap> &&map)
@@ -777,7 +792,7 @@ void Service::start()
 /// Stop the service
 void Service::stop()
 {
-    pImpl->mLogger->debug("stopping MAssociator associator service");
+    pImpl->mLogger->debug("Stopping MAssociator associator service");
     pImpl->stop();
 }
 

@@ -48,6 +48,7 @@ public:
     [[nodiscard]] ReturnCode getReturnCode() const;
     /// @result True indicates the return code was set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
+    /// @}
 
     /// @name Properties
     /// @{

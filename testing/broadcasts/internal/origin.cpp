@@ -103,9 +103,14 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
     double latitude{42.2};
     double longitude{-111.9};
     double depth{6400};
+    std::vector<int64_t> previousIdentifiers{3923, 3, 2, 1, 3};
+    std::vector<int64_t> previousIdentifiersCorrect{1, 2, 3};
+   
     std::chrono::microseconds time{1717168659000000};
     std::vector<std::string> algorithms{"mAssociate"};
     Origin::ReviewStatus reviewStatus{Origin::ReviewStatus::Manual};
+    Origin::MonitoringRegion 
+        monitoringRegion{Origin::MonitoringRegion::Yellowstone};
 
     Arrival arrival1;
     arrival1.setNetwork("UU");
@@ -144,6 +149,8 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
     origin.setIdentifier(identifier);
     origin.setAlgorithms(algorithms);
     origin.setReviewStatus(reviewStatus);
+    origin.setMonitoringRegion(monitoringRegion);
+    origin.setPreviousIdentifiers(previousIdentifiers);
     REQUIRE_NOTHROW(origin.setArrivals(arrivals));
 
     REQUIRE(origin.getMessageType() == MESSAGE_TYPE);
@@ -154,6 +161,8 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
     REQUIRE(origin.getIdentifier() == identifier);
     REQUIRE(origin.getAlgorithms() == algorithms);
     REQUIRE(origin.getReviewStatus() == reviewStatus);
+    REQUIRE(origin.getMonitoringRegion() == monitoringRegion);
+    REQUIRE(origin.getPreviousIdentifiers() == previousIdentifiersCorrect); 
 
     SECTION("from message")
     {
@@ -168,6 +177,8 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
         REQUIRE(copy.getIdentifier() == identifier);
         REQUIRE(copy.getAlgorithms() == algorithms);
         REQUIRE(copy.getReviewStatus() == reviewStatus);
+        REQUIRE(copy.getMonitoringRegion() == monitoringRegion);
+        REQUIRE(copy.getPreviousIdentifiers() == previousIdentifiersCorrect);
 
         auto arrivalsBack = copy.getArrivals();
         REQUIRE(arrivalsBack.size() == arrivals.size());

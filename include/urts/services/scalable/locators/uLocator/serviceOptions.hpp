@@ -2,6 +2,7 @@
 #define URTS_SERVICES_SCALABLE_LOCATORS_ULOCATOR_SERVICE_OPTIONS_HPP
 #include <memory>
 #include <chrono>
+#include <optional>
 #include <filesystem>
 namespace UMPS::Authentication
 {
@@ -12,9 +13,9 @@ namespace URTS::Services::Scalable::Locators::ULocator
 /// @class ServiceOptions "serviceOptions.hpp" "urts/services/scalable/locators/uLocator/serviceOptions.hpp"
 /// @brief The options that define the backend uLocator event locator.
 ///        The location happens in two phases.  In the first phase, a crude
-///        optimization with the DIvided RECTangle algorithm is performed.
-///        This initial solution is then refined with
-///        Particle Swarm Optimization.
+///        optimization with the DIvided RECTangle algorithm is performed where
+///        the depth is fixed.  This initial solution is then refined with
+///        Particle Swarm Optimization where the depth is allowed to float.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ServiceOptions
 {
@@ -219,6 +220,15 @@ public:
     /// @result The number of epochs.
     [[nodiscard]] int getNumberOfGenerations() const noexcept;
 
+    /// @brief Sets the initial search depth in the DIRECT optimization.
+    /// @param[in] depth   The maximum search depth in meters w.r.t.
+    ///                    to sea-level.
+    /// @throws std::invalid_argument if
+    ///         depth < -1000 meters or depth > 800,000 meters.
+    void setInitialSearchDepth(double depth);
+    /// @result The initial depth for the DIRECT optimization.
+    [[nodiscard]] double getInitialSearchDepth() const noexcept;
+
     /// @brief Sets the maximum search depth.
     /// @param[in] depth   The maximum search depth in meters w.r.t.
     ///                    to sea-level.
@@ -227,6 +237,11 @@ public:
     void setMaximumSearchDepth(double extent);
     /// @result The extent in depth for searching in meters.
     [[nodiscard]] double getMaximumSearchDepth() const noexcept;
+
+    /// @brief Sets the UTM zone.
+    void setUTMZone(int zone);
+    /// @result The UTM zone.
+    [[nodiscard]] std::optional<int> getUTMZone() const noexcept;
     /// @}
 
     /// @name Destructors

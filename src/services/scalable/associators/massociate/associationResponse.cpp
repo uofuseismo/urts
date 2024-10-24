@@ -30,6 +30,8 @@ std::string toCBORObject(const AssociationResponse &message)
             originObject["Latitude"] = origin.getLatitude();
             originObject["Longitude"] = origin.getLongitude();
             originObject["Depth"] = origin.getDepth();
+            //originObject["MonitoringRegion"]
+            //    = static_cast<int> (origin.getMonitoringRegion());
             originObject["Time"]
                 = static_cast<int64_t> (origin.getTime().count());
             const auto &arrivals = origin.getArrivalsReference(); 
@@ -127,8 +129,13 @@ AssociationResponse
             origin.setTime(
                 std::chrono::microseconds
                 {
-                     originObject["Time"].template get<int64_t> ()
+                    originObject["Time"].template get<int64_t> ()
                 });
+            //origin.setMonitoringRegion(
+            //    static_cast<Origin::MonitoringRegion>
+            //    (
+            //        originObject["MonitoringRegion"].template get<int> ()
+            //    ));
             if (!originObject["Arrivals"].is_null())  
             {
                 std::vector<Arrival> arrivals;

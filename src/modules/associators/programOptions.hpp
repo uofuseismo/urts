@@ -11,6 +11,56 @@
 #include "private/isEmpty.hpp"
 namespace
 {
+/*
+bool matches(const std::string &target,
+             const std::string &queryNetwork,
+             const std::string &queryStation)
+{
+    if (target.empty()){return false;}
+    std::vector<std::string> splitTarget;
+    boost::algorithm::split(splitTarget, target, boost::is_any_of(".")); 
+    if (splitTarget.empty()){return false;}
+    // Try to match the network
+    auto targetNetwork
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (splitTarget.at(0)));
+    auto otherNetwork
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (queryNetwork));
+    if (targetNetwork != queryNetwork){return false;} 
+    if (splitTarget.size() == 1){return true;} // Masking an entire network
+    // At this point the networks match
+    auto targetStation
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (splitTarget.at(1)));
+    auto otherStation 
+        = boost::algorithm::trim_copy<std::string>
+          (boost::algorithm::to_upper_copy<std::string> (queryStation));
+    if (targetStation.empty()){return false;}
+    if (otherStation.empty()){return false;}
+    if (targetStation[0] == '*'){return true;}
+    if (targetStation.find("*") != std::string::npos)
+    {
+        if (targetStation.back() == '*')
+        {
+            targetStation.pop_back();
+        } 
+    }
+    return false;
+}
+
+bool matches(const std::vector<std::string> &targets,
+             const std::string &queryNetwork,
+             const std::string &queryStation)
+{
+    for (const auto &target : targets)
+    {
+        if (::matches(target, queryNetwork, queryStation)){return true;}
+    }
+    return false;
+}
+*/
+
 struct ProgramOptions
 {
 public:
@@ -195,16 +245,60 @@ public:
             = std::chrono::milliseconds {requestTimeOut};
 
 
-/*
-        // Signal latency
-        auto maximumSignalLatency
-            = propertyTree.get<int> ("MLDetector.maximumSignalLatency",
-                                     mMaximumSignalLatency.count());
-        if (maximumSignalLatency <= 0)
+        // Pick latency
+        auto pickLatency
+            = propertyTree.get<int> (section + ".pickLatency",
+                                     mPickLatency.count());
+        if (pickLatency < 0)
         {
-            throw std::runtime_error("Maximum signal latency must be positive");
+            throw std::runtime_error("Pick latency must be non-negative");
         }
-        mMaximumSignalLatency = std::chrono::seconds {maximumSignalLatency};
+        mPickLatency = std::chrono::seconds {pickLatency};
+        // Association window latency
+        auto associationWindow
+            = propertyTree.get<int> (section + ".associationWindow",
+                                     mAssociationWindowDuration.count());
+        if (associationWindow <= 0)
+        {
+            throw std::runtime_error("Association window must be positive");
+        }
+        mAssociationWindowDuration = std::chrono::seconds {associationWindow};
+        // Maximum moveout
+        auto maximumMoveout 
+            = propertyTree.get<int> (section + ".maximumMoveout",
+                                     mMaximumMoveout.count());
+        if (maximumMoveout <= 0)
+        {
+            throw std::runtime_error("Maximum moveout must be positive");
+        }
+        if (maximumMoveout >= associationWindow)
+        {
+           throw std::invalid_argument("Maximum moveout must be smaller than association window");
+        }
+        mMaximumMoveout = std::chrono::seconds {maximumMoveout};
+/*
+        // Station masks
+        auto stationMask
+            = propertyTree.get<std::string> (section + ".stationMask", "");
+        if (!stationMask.empty())
+        {
+            std::vector<std::string> splitMask;
+            boost::algorithm::split(splitMask, stationMask, boost::is_any_of(",| "));
+            if (!splitMask.empty())
+            {
+                for (auto &item : splitMask)
+                {
+                    if (item.empty()){continue;}
+                    item = boost::algorithm::trim_copy<std::string>
+                           (boost::algorithm::to_upper_copy<std::string> (item));
+                    if (item.empty()){continue;}
+std::cout << item << std::endl;
+                    mStationMask.push_back(item);
+                }
+            }
+        }
+*/
+/*
         // Figure out which algorithms are running
         mRunP3CDetector = propertyTree.get<bool> ("MLDetector.runP3CDetector",
                                                   mRunP3CDetector);
@@ -324,6 +418,7 @@ public:
          mOriginPublisherOptions;
     URTS::Services::Standalone::Incrementer::RequestorOptions
          mIncrementerRequestorOptions;
+    std::vector<std::string> mStationMask;
     double mDataQueryWaitPercentage{30};
     int mDatabasePort{5432};
     int mOriginHighWaterMark{0}; // Infinite
