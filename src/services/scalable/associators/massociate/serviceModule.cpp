@@ -389,7 +389,8 @@ struct ProgramOptions
         auto staticCorrectionFile
             = propertyTree.get<std::string>
               (section + ".staticCorrections", "");
-        if (!staticCorrectionFile.empty())
+        if (!staticCorrectionFile.empty() &&
+            std::filesystem::exists(staticCorrectionFile))
         {
             mMAssociateServiceOptions.setStaticCorrectionFile(
                staticCorrectionFile);
@@ -397,7 +398,8 @@ struct ProgramOptions
         auto sourceSpecificCorrectionFile
             = propertyTree.get<std::string>
               (section + ".sourceSpecificCorrections", ""); 
-        if (!sourceSpecificCorrectionFile.empty())
+        if (!sourceSpecificCorrectionFile.empty() &&
+            std::filesystem::exists(sourceSpecificCorrectionFile))
         {
             mMAssociateServiceOptions.setSourceSpecificCorrectionFile(
                sourceSpecificCorrectionFile);

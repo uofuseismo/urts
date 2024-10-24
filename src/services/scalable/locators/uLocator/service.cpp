@@ -733,6 +733,9 @@ Service::Service(std::shared_ptr<UMPS::Messaging::Context> &responseContext,
 {
 }
 
+/// Destructor
+Service::~Service() = default;
+
 /// Initialize
 void Service::initialize(
     const ServiceOptions &options,
@@ -740,7 +743,14 @@ void Service::initialize(
 {
     // Database connection
     pImpl->mAQMSConnection = nullptr;
-    if (connection != nullptr){pImpl->mAQMSConnection = connection;}
+    if (connection != nullptr)
+    {
+        pImpl->mAQMSConnection = connection;
+    }
+    else
+    {
+        throw std::runtime_error("AQMS database connection not defined");
+    }
     // Get the region
     if (options.getRegion() == ServiceOptions::Region::Utah)
     {
@@ -753,6 +763,84 @@ void Service::initialize(
         pImpl->mLogger->debug("Will initialize for YNP region");
         pImpl->mRegion = ULoc::Position::YNPRegion {}.clone();
         pImpl->mIsUtah = false;
+    }
+    // Create the travel time calculators for all the stations in the database
+    bool isUtah{true};
+    std::unique_ptr<ULoc::Position::IGeographicRegion>
+        geographicRegion{nullptr};
+    if (options.getRegion() == ULocator::ServiceOptions::Region::Utah)
+    {
+        isUtah = true;
+        geographicRegion = std::make_unique<ULoc::Position::UtahRegion> ();
+    }
+    else if (options.getRegion() == ServiceOptions::Region::YNP)
+    {
+        isUtah = false;
+        geographicRegion = std::make_unique<ULoc::Position::YNPRegion> (); 
+    }
+    else
+    {
+        throw std::runtime_error("Unhandled geographic region");
+    }
+    auto travelTimeCalculatorMap
+        = std::make_unique<ULoc::TravelTimeCalculatorMap> (); 
+
+    std::vector<URTS::Database::AQMS::StationData> aqmsStations;
+    try 
+    {
+        URTS::Database::AQMS::StationDataTable
+            stationDataTable{pImpl->mAQMSConnection, pImpl->mLogger}; 
+        stationDataTable.queryAll(); // Could be used historically in post-proc
+        aqmsStations = stationDataTable.getStationData();
+    }
+    catch (const std::exception &e) 
+    {
+        throw std::runtime_error("Failed to get stations because: "
+                               + std::string {e.what()});
+    }
+    for (const auto &aqmsStation : aqmsStations)
+    {
+        ULoc::Station station;
+        if (isUtah)
+        {
+            station = ::createUtahStation(aqmsStation);
+        }
+        else
+        {
+            station = ::createYNPStation(aqmsStation);
+        }
+        // Travel time calculator for each phase 
+        std::vector<std::string> phases{"P", "S"};
+        for (const auto &thisPhase : phases)
+        {
+            try
+            {
+                std::filesystem::path staticsFile;
+                if (std::filesystem::exists(options.getStaticCorrectionFile()))
+                {
+                    staticsFile = options.getStaticCorrectionFile();
+                }
+                std::filesystem::path ssscFile;
+                if (std::filesystem::exists(
+                    options.getSourceSpecificCorrectionFile()))
+                {
+                    ssscFile = options.getSourceSpecificCorrectionFile();
+                }
+                auto rayTracer = ::createTravelTimeCalculator(station,
+                                                              thisPhase,
+                                                              isUtah,
+                                                              staticsFile,
+                                                              ssscFile,
+                                                              pImpl->mLogger);
+                travelTimeCalculatorMap->insert(station, thisPhase,
+                                                std::move(rayTracer));
+            }
+            catch (const std::exception &e)
+            {
+                pImpl->mLogger->warn("Did not add calculator because "
+                                   + std::string {e.what()});
+            }
+        }
     }
     // Create the topogrpahy
     if (std::filesystem::exists(options.getTopographyFile()))
@@ -784,6 +872,7 @@ void Service::initialize(
         options.getOriginTimeSearchWindow());
     pImpl->mDIRECT->setLocationTolerance(1000); // TODO i don't think this works
     pImpl->mDIRECT->setOriginTimeTolerance(1); // TODO i don't think this works
+
     // Create the PSO optimizer
     pImpl->mPSO
         = std::make_unique<ULoc::Optimizers::Pagmo::ParticleSwarm>
