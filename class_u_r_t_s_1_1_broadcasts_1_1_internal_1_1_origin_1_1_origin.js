@@ -2,9 +2,14 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin =
 [
     [ "const_iterator", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a637b62ea1bda32dca93a71ea4f837f63", null ],
     [ "iterator", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a74e0580b498987d6bd6df5b06dd65836", null ],
+    [ "MonitoringRegion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2", [
+      [ "Unknown", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a88183b946cc5f0e8c96b2e66e1c74a7e", null ],
+      [ "Utah", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a6a382f5bfa3db109c81ec4adbf70ff26", null ],
+      [ "Yellowstone", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a5702641a382396a92985fd8020739b63", null ]
+    ] ],
     [ "ReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c", [
-      [ "Automatic", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca8ee645333ceb6f53aa51e17ca17cab04", null ],
-      [ "Manual", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca823ff4638d1d64aafb8df7664b5fcb34", null ]
+      [ "Automatic", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca086247a9b57fde6eefee2a0c4752242d", null ],
+      [ "Manual", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71cae1ba155a9f2e8c3be94020eef32a0301", null ]
     ] ],
     [ "Origin", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a8da9ca6a804efe9c09361dcfd93f6559", null ],
     [ "Origin", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#ae015f77a8db3ff20d235c7d0e9156e1d", null ],
@@ -30,6 +35,8 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin =
     [ "getLongitude", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#abda99c98962f787126723f944ccfb83d", null ],
     [ "getMessageType", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a01b92c2e2c749d9a71f258f3c6a5e38b", null ],
     [ "getMessageVersion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a87ee44be79fba1e565826e77acef6ef9", null ],
+    [ "getMonitoringRegion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a1367e4afb94a521c083e491c7d6640d8", null ],
+    [ "getPreviousIdentifiers", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a2ae18b389853398b495cc4dc17364b05", null ],
     [ "getReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a5474c09b58265c57b4040e9d37b7b6d6", null ],
     [ "getTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#ab19393e7e503c2a8850a0c8e1f567f79", null ],
     [ "haveDepth", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a54e28558f4048095ad137ac3ae80cbdf", null ],
@@ -46,6 +53,8 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin =
     [ "setIdentifier", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a9a53338972afbb788f4864094b982afc", null ],
     [ "setLatitude", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a93ba1ea68ac2219a896adc018e35a6c9", null ],
     [ "setLongitude", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#aea853ca711874d40465824b43fc5bd14", null ],
+    [ "setMonitoringRegion", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a181ed37735651b5f320c455bcf8f34ba", null ],
+    [ "setPreviousIdentifiers", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#af434b76e549a72779350b70102857169", null ],
     [ "setReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#ae809181b5028dc604fdde84909ef814d", null ],
     [ "setTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a4d778db231c0ed6d826f9dc74ef90bbe", null ],
     [ "toMessage", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a45fd1690788f57115795880f554ea42a", null ]

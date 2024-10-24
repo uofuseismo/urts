@@ -125,11 +125,17 @@ Collaboration diagram for URTS::Broadcasts::Internal::Origin::Origin:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a78cef4c968ae7da8e4620a94875cd71c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">ReviewStatus</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca8ee645333ceb6f53aa51e17ca17cab04">Automatic</a> = 0
-, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca823ff4638d1d64aafb8df7664b5fcb34">Manual</a> = 1
+<tr class="memitem:a78cef4c968ae7da8e4620a94875cd71c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">ReviewStatus</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71ca086247a9b57fde6eefee2a0c4752242d">Automatic</a> = 0
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71cae1ba155a9f2e8c3be94020eef32a0301">Manual</a> = 1
  }</td></tr>
-<tr class="memdesc:a78cef4c968ae7da8e4620a94875cd71c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the review status as either being purely automatic - i.e., there was no review, or the pick was manually reviewed, possibly edited, then published.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">More...</a><br /></td></tr>
+<tr class="memdesc:a78cef4c968ae7da8e4620a94875cd71c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The review status as either being purely automatic - i.e., there was no review, or the pick was manually reviewed, possibly edited, then published.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">More...</a><br /></td></tr>
 <tr class="separator:a78cef4c968ae7da8e4620a94875cd71c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a581e0f26646f45f4546adbca92cacfa2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">MonitoringRegion</a> : int8_t { <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> = 0
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a6a382f5bfa3db109c81ec4adbf70ff26">Utah</a> = 1
+, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2a5702641a382396a92985fd8020739b63">Yellowstone</a> = 2
+ }</td></tr>
+<tr class="memdesc:a581e0f26646f45f4546adbca92cacfa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The origin's monitoring region.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">More...</a><br /></td></tr>
+<tr class="separator:a581e0f26646f45f4546adbca92cacfa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74e0580b498987d6bd6df5b06dd65836"><td class="memItemLeft" align="right" valign="top"><a id="a74e0580b498987d6bd6df5b06dd65836"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = typename VectorType::iterator</td></tr>
 <tr class="separator:a74e0580b498987d6bd6df5b06dd65836"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,6 +199,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a1bc0a46f01c2e383f3906a5801f7e29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4858869516d6b26ee34088aa2dfa314d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a4858869516d6b26ee34088aa2dfa314d">getAlgorithms</a> () const noexcept</td></tr>
 <tr class="separator:a4858869516d6b26ee34088aa2dfa314d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af434b76e549a72779350b70102857169"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#af434b76e549a72779350b70102857169">setPreviousIdentifiers</a> (const std::vector&lt; int64_t &gt; &amp;identifiers)</td></tr>
+<tr class="memdesc:af434b76e549a72779350b70102857169"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the previous origin identifiers.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#af434b76e549a72779350b70102857169">More...</a><br /></td></tr>
+<tr class="separator:af434b76e549a72779350b70102857169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ae18b389853398b495cc4dc17364b05"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a2ae18b389853398b495cc4dc17364b05">getPreviousIdentifiers</a> () const noexcept</td></tr>
+<tr class="separator:a2ae18b389853398b495cc4dc17364b05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aca51d94618ce59ee83bd241e78abee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a4aca51d94618ce59ee83bd241e78abee">setArrivals</a> (std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html">Arrival</a> &gt; &amp;&amp;arrivals)</td></tr>
 <tr class="memdesc:a4aca51d94618ce59ee83bd241e78abee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the arrivals corresponding to this origin.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a4aca51d94618ce59ee83bd241e78abee">More...</a><br /></td></tr>
 <tr class="separator:a4aca51d94618ce59ee83bd241e78abee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -209,6 +220,11 @@ std::vector&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_
 <tr class="separator:ae809181b5028dc604fdde84909ef814d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5474c09b58265c57b4040e9d37b7b6d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">ReviewStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a5474c09b58265c57b4040e9d37b7b6d6">getReviewStatus</a> () const noexcept</td></tr>
 <tr class="separator:a5474c09b58265c57b4040e9d37b7b6d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a181ed37735651b5f320c455bcf8f34ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a181ed37735651b5f320c455bcf8f34ba">setMonitoringRegion</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">MonitoringRegion</a> region) noexcept</td></tr>
+<tr class="memdesc:a181ed37735651b5f320c455bcf8f34ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the monitoring region.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a181ed37735651b5f320c455bcf8f34ba">More...</a><br /></td></tr>
+<tr class="separator:a181ed37735651b5f320c455bcf8f34ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1367e4afb94a521c083e491c7d6640d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">MonitoringRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a1367e4afb94a521c083e491c7d6640d8">getMonitoringRegion</a> () const noexcept</td></tr>
+<tr class="separator:a1367e4afb94a521c083e491c7d6640d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Message Abstract Base Class Properties</div></td></tr>
 <tr class="memitem:a45fd1690788f57115795880f554ea42a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a45fd1690788f57115795880f554ea42a">toMessage</a> () const final</td></tr>
 <tr class="memdesc:a45fd1690788f57115795880f554ea42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the pick class to a string message.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a45fd1690788f57115795880f554ea42a">More...</a><br /></td></tr>
@@ -259,23 +275,63 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines an origin which is an event location built from arrivals. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a581e0f26646f45f4546adbca92cacfa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a581e0f26646f45f4546adbca92cacfa2">&#9670;&nbsp;</a></span>MonitoringRegion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion</a> : int8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The origin's monitoring region. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a581e0f26646f45f4546adbca92cacfa2a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"><p>The geographic region is unknown. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a581e0f26646f45f4546adbca92cacfa2a6a382f5bfa3db109c81ec4adbf70ff26"></a>Utah&#160;</td><td class="fielddoc"><p>This is a Utah event. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a581e0f26646f45f4546adbca92cacfa2a5702641a382396a92985fd8020739b63"></a>Yellowstone&#160;</td><td class="fielddoc"><p>This is a Yellowstone event. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="a78cef4c968ae7da8e4620a94875cd71c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a78cef4c968ae7da8e4620a94875cd71c">&#9670;&nbsp;</a></span>ReviewStatus</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">enum <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a78cef4c968ae7da8e4620a94875cd71c">URTS::Broadcasts::Internal::Origin::Origin::ReviewStatus</a> : int8_t</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Sets the review status as either being purely automatic - i.e., there was no review, or the pick was manually reviewed, possibly edited, then published. </p>
+<p>The review status as either being purely automatic - i.e., there was no review, or the pick was manually reviewed, possibly edited, then published. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a78cef4c968ae7da8e4620a94875cd71ca8ee645333ceb6f53aa51e17ca17cab04"></a>Automatic&#160;</td><td class="fielddoc"><p>This is an automatically generated origin. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a78cef4c968ae7da8e4620a94875cd71ca086247a9b57fde6eefee2a0c4752242d"></a>Automatic&#160;</td><td class="fielddoc"><p>This is an automatically generated origin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a78cef4c968ae7da8e4620a94875cd71ca823ff4638d1d64aafb8df7664b5fcb34"></a>Manual&#160;</td><td class="fielddoc"><p>This is origin was created or reviewed by a human. </p>
+<tr><td class="fieldname"><a id="a78cef4c968ae7da8e4620a94875cd71cae1ba155a9f2e8c3be94020eef32a0301"></a>Manual&#160;</td><td class="fielddoc"><p>This is origin was created or reviewed by a human. </p>
 </td></tr>
 </table>
 
@@ -823,6 +879,58 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a1367e4afb94a521c083e491c7d6640d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1367e4afb94a521c083e491c7d6640d8">&#9670;&nbsp;</a></span>getMonitoringRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">MonitoringRegion</a> URTS::Broadcasts::Internal::Origin::Origin::getMonitoringRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The monitoring region that produced this origin. </dd></dl>
+
+</div>
+</div>
+<a id="a2ae18b389853398b495cc4dc17364b05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ae18b389853398b495cc4dc17364b05">&#9670;&nbsp;</a></span>getPreviousIdentifiers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int64_t&gt; URTS::Broadcasts::Internal::Origin::Origin::getPreviousIdentifiers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The origin identifiers set by previous algorithms. </dd></dl>
+
+</div>
+</div>
 <a id="a5474c09b58265c57b4040e9d37b7b6d6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5474c09b58265c57b4040e9d37b7b6d6">&#9670;&nbsp;</a></span>getReviewStatus()</h2>
 
@@ -1244,6 +1352,67 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a181ed37735651b5f320c455bcf8f34ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a181ed37735651b5f320c455bcf8f34ba">&#9670;&nbsp;</a></span>setMonitoringRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Origin::Origin::setMonitoringRegion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2">MonitoringRegion</a>&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the monitoring region. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">region</td><td>The event's region. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af434b76e549a72779350b70102857169"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af434b76e549a72779350b70102857169">&#9670;&nbsp;</a></span>setPreviousIdentifiers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Origin::Origin::setPreviousIdentifiers </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>identifiers</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the previous origin identifiers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">identifiers</td><td>The origin identifiers generated by previous algorithms. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This helps when origins are relocated by subsequent algorithms. Additionally, this will purge duplicate identifiers. </dd></dl>
+
+</div>
+</div>
 <a id="ae809181b5028dc604fdde84909ef814d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae809181b5028dc604fdde84909ef814d">&#9670;&nbsp;</a></span>setReviewStatus()</h2>
 
@@ -1356,7 +1525,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Origin</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html">Origin</a></li>
-    <li class="footer">Generated on Fri Jul 26 2024 17:30:32 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Oct 24 2024 16:12:48 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

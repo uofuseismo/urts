@@ -138,6 +138,18 @@ var annotated_dup =
               [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_first_motion_classifiers_1_1_c_n_n_one_component_p_1_1_service_options" ]
             ] ]
           ] ],
+          [ "Locators", null, [
+            [ "ULocator", null, [
+              [ "Arrival", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_arrival.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_arrival" ],
+              [ "LocationRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_location_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_location_request" ],
+              [ "LocationResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_location_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_location_response" ],
+              [ "Origin", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_origin.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_origin" ],
+              [ "Requestor", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_requestor.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_requestor" ],
+              [ "RequestorOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_requestor_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_requestor_options" ],
+              [ "Service", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_service.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_service" ],
+              [ "ServiceOptions", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_service_options.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_locators_1_1_u_locator_1_1_service_options" ]
+            ] ]
+          ] ],
           [ "PacketCache", null, [
             [ "BulkDataRequest", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_request" ],
             [ "BulkDataResponse", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_response.html", "class_u_r_t_s_1_1_services_1_1_scalable_1_1_packet_cache_1_1_bulk_data_response" ],

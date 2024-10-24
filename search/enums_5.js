@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['querymode_1254',['QueryMode',['../class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table_poller.html#ab19e3a49a3a9f83221905517cab17bd1',1,'URTS::Database::AQMS::ChannelDataTablePoller']]]
+  ['monitoringregion_1333',['MonitoringRegion',['../class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_origin.html#a581e0f26646f45f4546adbca92cacfa2',1,'URTS::Broadcasts::Internal::Origin::Origin::MonitoringRegion()'],['../class_u_r_t_s_1_1_services_1_1_scalable_1_1_associators_1_1_m_associate_1_1_origin.html#a4d4b34f23bca097939ce9761ade2cec9',1,'URTS::Services::Scalable::Associators::MAssociate::Origin::MonitoringRegion()']]]
 ];
