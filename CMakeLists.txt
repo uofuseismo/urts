@@ -32,6 +32,7 @@ find_package(Threads REQUIRED)
 find_package(Time REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Catch2 3)
+find_package(SQLite3)
 # Optional
 #set(FindMiniSEED_DIR  ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
 #set(FindEarthworm_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
@@ -85,10 +86,10 @@ set(MESSAGE_SRC
     src/broadcasts/internal/pick/pick.cpp
     src/broadcasts/internal/origin/arrival.cpp
     src/broadcasts/internal/origin/origin.cpp
-    src/services/standalone/incrementer/incrementRequest.cpp
-    src/services/standalone/incrementer/incrementResponse.cpp
-    src/services/standalone/incrementer/itemsRequest.cpp
-    src/services/standalone/incrementer/itemsResponse.cpp
+    #src/services/standalone/incrementer/incrementRequest.cpp
+    #src/services/standalone/incrementer/incrementResponse.cpp
+    #src/services/standalone/incrementer/itemsRequest.cpp
+    #src/services/standalone/incrementer/itemsResponse.cpp
     src/services/scalable/packetCache/bulkDataRequest.cpp
     src/services/scalable/packetCache/bulkDataResponse.cpp
     src/services/scalable/packetCache/dataRequest.cpp
@@ -113,8 +114,8 @@ set(CLIENT_SRC
     src/broadcasts/internal/pick/subscriber.cpp
     src/broadcasts/internal/pick/subscriberOptions.cpp
     src/broadcasts/internal/pick/uncertaintyBound.cpp
-    src/services/standalone/incrementer/requestor.cpp
-    src/services/standalone/incrementer/requestorOptions.cpp
+    #src/services/standalone/incrementer/requestor.cpp
+    #src/services/standalone/incrementer/requestorOptions.cpp
     src/services/scalable/packetCache/singleComponentWaveform.cpp
     src/services/scalable/packetCache/threeComponentWaveform.cpp
     src/services/scalable/packetCache/requestor.cpp
@@ -155,13 +156,9 @@ set(SERVER_SRC
     src/database/aqms/stationDataTable.cpp
     src/database/connection/postgresql.cpp
     src/observerPattern/subject.cpp
-    src/services/standalone/incrementer/counter.cpp
-    #src/services/standalone/incrementer/incrementRequest.cpp
-    #src/services/standalone/incrementer/incrementResponse.cpp
-    #src/services/standalone/incrementer/itemsRequest.cpp
-    #src/services/standalone/incrementer/itemsResponse.cpp
-    src/services/standalone/incrementer/service.cpp
-    src/services/standalone/incrementer/serviceOptions.cpp
+    #src/services/standalone/incrementer/counter.cpp
+    #src/services/standalone/incrementer/service.cpp
+    #src/services/standalone/incrementer/serviceOptions.cpp
     #src/services/standalone/incrementer/requestor.cpp
     #src/services/standalone/incrementer/requestorOptions.cpp
     #src/services/scalable/packetCache/bulkDataRequest.cpp
@@ -180,6 +177,20 @@ set(SERVER_SRC
     #src/services/scalable/packetCache/requestorOptions.cpp
     #src/services/scalable/packetCache/wigginsInterpolator.cpp
     )
+if (${SQLite3_FOUND})
+   set(MESSAGE_SRC ${MESSAGE_SRC}
+       src/services/standalone/incrementer/incrementRequest.cpp
+       src/services/standalone/incrementer/incrementResponse.cpp
+       src/services/standalone/incrementer/itemsRequest.cpp
+       src/services/standalone/incrementer/itemsResponse.cpp)
+   set(CLIENT_SRC ${CLIENT_SRC}
+       src/services/standalone/incrementer/requestor.cpp
+       src/services/standalone/incrementer/requestorOptions.cpp)
+   set(SERVER_SRC ${SERVER_SRC}
+       src/services/standalone/incrementer/counter.cpp
+       src/services/standalone/incrementer/service.cpp
+       src/services/standalone/incrementer/serviceOptions.cpp)
+endif()
 if (${uLocator_FOUND})
    set(MESSAGE_SRC ${MESSAGE_SRC}
        src/services/scalable/travelTimes/stationRequest.cpp
@@ -189,19 +200,40 @@ if (${uLocator_FOUND})
        src/services/scalable/associators/massociate/arrival.cpp
        src/services/scalable/associators/massociate/origin.cpp
        src/services/scalable/associators/massociate/pick.cpp
+       #src/services/scalable/associators/phaseLink/associationRequest.cpp
+       #src/services/scalable/associators/phaseLink/associationResponse.cpp
+       #src/services/scalable/associators/phaseLink/arrival.cpp
+       #src/services/scalable/associators/phaseLink/origin.cpp
+       #src/services/scalable/associators/phaseLink/pick.cpp
+       src/services/scalable/locators/uLocator/arrival.cpp
+       src/services/scalable/locators/uLocator/locationRequest.cpp
+       src/services/scalable/locators/uLocator/locationResponse.cpp
+       src/services/scalable/locators/uLocator/origin.cpp
       )
    set(SERVER_SRC ${SERVER_SRC}
        src/services/scalable/travelTimes/service.cpp
        src/services/scalable/travelTimes/serviceOptions.cpp 
+       src/services/scalable/locators/uLocator/service.cpp
+       src/services/scalable/locators/uLocator/serviceOptions.cpp
       )
+   set(CLIENT_SRC ${CLIENT_SRC}
+       src/services/scalable/locators/uLocator/requestor.cpp
+       src/services/scalable/locators/uLocator/requestorOptions.cpp)
    if (${MAssociate_FOUND})
       set(SERVER_SRC ${SERVER_SRC}
           src/services/scalable/associators/massociate/service.cpp
           src/services/scalable/associators/massociate/serviceOptions.cpp)
       set(CLIENT_SRC ${CLIENT_SRC}
-          src/services/scalable/associators/massociate/requestorOptions.cpp
           src/services/scalable/associators/massociate/requestor.cpp
+          src/services/scalable/associators/massociate/requestorOptions.cpp
          )
+   endif()
+   if (${UUSSMLModels_FOUND})
+      set(SERVER_SRC ${SERVER_SRC})
+      set(CLIENT_SRC ${CLIENT_SRC}
+          #src/services/scalable/associators/phaseLink/requestor.cpp
+          #src/services/scalable/associators/phaseLink/requestorOptions.cpp
+          )
    endif()
 endif()
 set(MESSAGE_SRC ${MESSAGE_SRC}
@@ -357,11 +389,11 @@ target_include_directories(urts_server
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                                    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
                            PUBLIC ${UMPS_INCLUDE_DIR}
-                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR} ${uLocator_INCLUDE_DIR} ${MAssociate_INCLUDE_DIR}
+                           PRIVATE SOCI::soci_postgresql ${PostgreSQL_INCLUDE_DIRS} ${Time_INCLUDE_DIR} ${uLocator_INCLUDE_DIR} ${MAssociate_INCLUDE_DIR} ${SQLite3_INCLUDE_DIRS}
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/urts>)
 target_link_libraries(urts_server
                       PRIVATE urts_client ${UMPS_LIBRARY} ${Time_LIBRARY}
-                              SOCI::soci_postgresql Boost::date_time Threads::Threads ${uLocator_LIBRARY} ${MAssociate_LIBRARY})
+                              SOCI::soci_postgresql Boost::date_time Threads::Threads ${uLocator_LIBRARY} ${MAssociate_LIBRARY} ${SQLite3_LIBRARIES})
 if (${BUILD_MSEED})
    target_include_directories(urts_server PRIVATE BEFORE ${MINISEED_INCLUDE_DIR})
    target_link_libraries(urts_server PRIVATE ${MINISEED_LIBRARY})
@@ -390,7 +422,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(GTEST_TEST_SRC
     testing/main.cpp
     #testing/database/aqms.cpp
-    testing/broadcasts/internal/dataPacket.cpp
+    #testing/broadcasts/internal/dataPacket.cpp
     #testing/broadcasts/internal/pick.cpp
     testing/broadcasts/internal/probabilityPacket.cpp
     testing/services/standalone/incrementer.cpp
@@ -430,12 +462,14 @@ add_test(NAME unitTests
 
 set(CATCH_TEST_SRC
     testing/database/aqms.cpp
+    testing/broadcasts/internal/dataPacket.cpp
     testing/broadcasts/internal/origin.cpp
     testing/broadcasts/internal/pick.cpp
     testing/services/scalable/detectors/uNetOneComponentP.cpp)
 if (${MAssociate_FOUND} AND ${uLocator_FOUND})
    set(CATCH_TEST_SRC ${CATCH_TEST_SRC}
        testing/services/scalable/associators/massociate.cpp   
+       testing/services/scalable/locators/uLocator.cpp
       )
 endif()
 add_executable(catchTests ${CATCH_TEST_SRC})
@@ -513,7 +547,8 @@ if (${BUILD_SEEDLINK})
 endif()
 
 if (${BUILD_UUSS_MLMODELS})
-   #add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
+   add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
+   add_executable(originsToDatabase src/modules/locators/originsToDatabase.cpp)
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(mlPickRegressor src/modules/pickers/mlPicker.cpp)
   #                               src/modules/pickers/triggerWindow.cpp
@@ -529,10 +564,8 @@ if (${BUILD_UUSS_MLMODELS})
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
    add_executable(sPickRegressorService src/services/scalable/pickers/cnnThreeComponentS/serviceModule.cpp)
    add_executable(firstMotionClassifierService src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceModule.cpp)
-   #set_target_properties(picksToDatabase PROPERTIES
-   #                      CXX_STANDARD 20
-   #                      CXX_STANDARD_REQUIRED YES
-   #                      CXX_EXTENSIONS NO)
+   set_target_properties(picksToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+   set_target_properties(originsToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -569,9 +602,12 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
-   #target_include_directories(picksToDatabase
-   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-   #                           PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
+   target_include_directories(picksToDatabase
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
+   target_include_directories(originsToDatabase
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                              PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql) 
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
@@ -599,9 +635,12 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
-   #target_link_libraries(picksToDatabase
-   #                      PRIVATE urts_server urts_client ${UMPS_LIBRARY}
-   #                              Boost::program_options Threads::Threads SOCI::soci_postgresql)
+   target_link_libraries(picksToDatabase
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads SOCI::soci_postgresql)
+   target_link_libraries(originsToDatabase
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
+                                 Boost::program_options Threads::Threads SOCI::soci_postgresql)
    target_link_libraries(mlDetector
                          PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)
@@ -663,6 +702,21 @@ if (${MAssociate_FOUND})
                               PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
                                       ${UMPS_INCLUDE_DIR})
    set(URTS_MODULES ${URTS_MODULES} mAssociateService mAssociator)
+endif()
+
+if (${uLocator_FOUND})
+   add_executable(uLocatorService src/services/scalable/locators/uLocator/serviceModule.cpp)
+   set_target_properties(uLocatorService PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   target_link_libraries(uLocatorService
+                         PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${uLocator_LIBRARY}
+                                 Boost::program_options Threads::Threads)
+   target_include_directories(uLocatorService
+                              PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                                      ${UMPS_INCLUDE_DIR} ${uLocator_INCLUDE_DIR})
+
 endif()
 
 ##########################################################################################

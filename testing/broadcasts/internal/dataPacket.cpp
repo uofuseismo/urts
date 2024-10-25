@@ -4,17 +4,16 @@
 #include <vector>
 #include <chrono>
 #include <limits>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include <umps/authentication/zapOptions.hpp>
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
 #include "urts/broadcasts/internal/dataPacket/subscriberOptions.hpp"
 #include "urts/broadcasts/internal/dataPacket/publisherOptions.hpp"
-#include <gtest/gtest.h>
-namespace
-{
 
 using namespace URTS::Broadcasts::Internal::DataPacket;
 
-TEST(BroadcastsInternalDataPacket, DataPacket)
+TEST_CASE("URTS::Broadcasts::Internal::DataPacket", "[DataPacket]")
 {
     const std::string messageType{"URTS::Broadcasts::Internal::DataPacket::DataPacket"};
     const std::string network{"UU"};
@@ -34,53 +33,56 @@ TEST(BroadcastsInternalDataPacket, DataPacket)
     dataPacket.setChannel(channel);
     dataPacket.setLocationCode(locationCode);
     dataPacket.setStartTime(startTime);
-    EXPECT_NO_THROW(dataPacket.setSamplingRate(samplingRate));
-    EXPECT_NO_THROW(dataPacket.setData(timeSeries));
+    REQUIRE_NOTHROW(dataPacket.setSamplingRate(samplingRate));
+    REQUIRE_NOTHROW(dataPacket.setData(timeSeries));
 
     DataPacket packetCopy(dataPacket);
     // Verify 
-    EXPECT_EQ(packetCopy.getMessageType(), messageType);
-    EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
-    EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
-    EXPECT_EQ(packetCopy.getNetwork(), network);
-    EXPECT_EQ(packetCopy.getStation(), station);
-    EXPECT_EQ(packetCopy.getChannel(), channel);
-    EXPECT_EQ(packetCopy.getLocationCode(), locationCode);
-    EXPECT_EQ(packetCopy.getNumberOfSamples(),
-              static_cast<int> (timeSeries.size()));
-    EXPECT_EQ(packetCopy.getEndTime(), endTimeMuS);
+    CHECK(packetCopy.getMessageType() == messageType);
+    CHECK(packetCopy.getStartTime() == startTimeMuS);
+    CHECK(std::abs(packetCopy.getSamplingRate() - samplingRate) < tol);
+    CHECK(packetCopy.getNetwork() == network);
+    CHECK(packetCopy.getStation() == station);
+    CHECK(packetCopy.getChannel() == channel);
+    CHECK(packetCopy.getLocationCode() == locationCode);
+    CHECK(packetCopy.getNumberOfSamples() ==
+          static_cast<int> (timeSeries.size()));
+    CHECK(packetCopy.getEndTime() == endTimeMuS);
     auto traceBack = packetCopy.getData();
-    EXPECT_EQ(traceBack.size(), timeSeries.size());
+    REQUIRE(traceBack.size() == timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
     {
         auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
-        EXPECT_NEAR(res, 0, tol);
+        CHECK(std::abs(res) < tol);
     }
 
+    SECTION("From Message")
+    {
     auto traceMessage = packetCopy.toMessage();
     packetCopy.clear();
-    EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
-    EXPECT_NO_THROW(packetCopy.fromMessage(traceMessage));
-    EXPECT_EQ(packetCopy.getMessageType(), messageType);
-    EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
-    EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
-    EXPECT_EQ(packetCopy.getNetwork(), network);
-    EXPECT_EQ(packetCopy.getStation(), station);
-    EXPECT_EQ(packetCopy.getChannel(), channel);
-    EXPECT_EQ(packetCopy.getLocationCode(), locationCode);
-    EXPECT_EQ(packetCopy.getNumberOfSamples(),
-              static_cast<int> (timeSeries.size()));
-    EXPECT_EQ(packetCopy.getEndTime(), endTimeMuS);
+    CHECK(packetCopy.getNumberOfSamples() == 0);
+    REQUIRE_NOTHROW(packetCopy.fromMessage(traceMessage));
+    CHECK(packetCopy.getMessageType() == messageType);
+    CHECK(packetCopy.getStartTime() == startTimeMuS);
+    CHECK(std::abs(packetCopy.getSamplingRate() - samplingRate) < tol);
+    CHECK(packetCopy.getNetwork() == network);
+    CHECK(packetCopy.getStation() == station);
+    CHECK(packetCopy.getChannel() == channel);
+    CHECK(packetCopy.getLocationCode() == locationCode);
+    CHECK(packetCopy.getNumberOfSamples() ==
+          static_cast<int> (timeSeries.size()));
+    CHECK(packetCopy.getEndTime() == endTimeMuS);
     traceBack = packetCopy.getData();
-    EXPECT_EQ(traceBack.size(), timeSeries.size());
+    REQUIRE(traceBack.size() == timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
     {
         auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
-        EXPECT_NEAR(res, 0, tol);
+        CHECK(std::abs(res) < tol);
+    }
     }
 }
 
-TEST(BroadcastsInternalDataPacket, SubscriberOptions)
+TEST_CASE("URTS::Broadcasts::Internal::DataPacket", "[SubscriberOptions]")
 {
     const std::string address{"tcp://127.0.0.1:5550"};
     const int recvHWM{106};
@@ -89,27 +91,30 @@ TEST(BroadcastsInternalDataPacket, SubscriberOptions)
     zapOptions.setStrawhouseClient();
 
     SubscriberOptions options;
-    EXPECT_NO_THROW(options.setAddress(address));
-    EXPECT_NO_THROW(options.setHighWaterMark(recvHWM));
-    EXPECT_NO_THROW(options.setTimeOut(recvTimeOut));
-    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    REQUIRE_NOTHROW(options.setAddress(address));
+    REQUIRE_NOTHROW(options.setHighWaterMark(recvHWM));
+    REQUIRE_NOTHROW(options.setTimeOut(recvTimeOut));
+    REQUIRE_NOTHROW(options.setZAPOptions(zapOptions));
 
     SubscriberOptions copy(options);
-    EXPECT_EQ(options.getAddress(), address);
-    EXPECT_EQ(options.getHighWaterMark(), recvHWM);
-    EXPECT_EQ(options.getTimeOut(), recvTimeOut);
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              zapOptions.getSecurityLevel());    
+    CHECK(options.getAddress() == address);
+    CHECK(options.getHighWaterMark() == recvHWM);
+    CHECK(options.getTimeOut() == recvTimeOut);
+    CHECK(options.getZAPOptions().getSecurityLevel() ==
+          zapOptions.getSecurityLevel());    
 
+    SECTION("clear")
+    {
     options.clear();
-    EXPECT_FALSE(options.haveAddress());
-    EXPECT_EQ(options.getHighWaterMark(), 8192);
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds {10});
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UMPS::Authentication::SecurityLevel::Grasslands);
+    REQUIRE_FALSE(options.haveAddress());
+    CHECK(options.getHighWaterMark() == 8192);
+    CHECK(options.getTimeOut() == std::chrono::milliseconds {10});
+    CHECK(options.getZAPOptions().getSecurityLevel() ==
+          UMPS::Authentication::SecurityLevel::Grasslands);
+    }
 }
 
-TEST(BroadcastsInternalDataPacket, PublisherOptions)
+TEST_CASE("URTS::Broadcasts::Internal::DataPacket", "[PublisherOptions]")
 {
     PublisherOptions options;
     const std::string address{"tcp://127.0.0.1:8080"};
@@ -118,24 +123,25 @@ TEST(BroadcastsInternalDataPacket, PublisherOptions)
     UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
 
-    EXPECT_NO_THROW(options.setAddress(address));
-    EXPECT_NO_THROW(options.setHighWaterMark(sendHWM));
-    EXPECT_NO_THROW(options.setTimeOut(sendTimeOut));
-    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    REQUIRE_NOTHROW(options.setAddress(address));
+    REQUIRE_NOTHROW(options.setHighWaterMark(sendHWM));
+    REQUIRE_NOTHROW(options.setTimeOut(sendTimeOut));
+    REQUIRE_NOTHROW(options.setZAPOptions(zapOptions));
 
     PublisherOptions copy(options);
-    EXPECT_EQ(options.getAddress(), address);
-    EXPECT_EQ(options.getHighWaterMark(), sendHWM);
-    EXPECT_EQ(options.getTimeOut(), sendTimeOut);
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              zapOptions.getSecurityLevel());    
+    CHECK(options.getAddress() == address);
+    CHECK(options.getHighWaterMark() == sendHWM);
+    CHECK(options.getTimeOut() == sendTimeOut);
+    CHECK(options.getZAPOptions().getSecurityLevel() ==
+          zapOptions.getSecurityLevel());    
 
     options.clear();
-    EXPECT_FALSE(options.haveAddress());
-    EXPECT_EQ(options.getHighWaterMark(), 8192);
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds {1000});
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UMPS::Authentication::SecurityLevel::Grasslands);
-}
-
+    SECTION("clear")
+    {
+    REQUIRE_FALSE(options.haveAddress());
+    CHECK(options.getHighWaterMark() == 8192);
+    CHECK(options.getTimeOut() == std::chrono::milliseconds {1000});
+    CHECK(options.getZAPOptions().getSecurityLevel() ==
+          UMPS::Authentication::SecurityLevel::Grasslands);
+    }
 }
