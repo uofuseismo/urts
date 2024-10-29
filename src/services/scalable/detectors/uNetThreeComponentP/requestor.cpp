@@ -131,6 +131,10 @@ std::unique_ptr<InferenceResponse>
 Requestor::request(const InferenceRequest &request)
 {
     auto message = pImpl->mRequestor->request(request);
+    if (message == nullptr)
+    {
+        throw std::runtime_error("Inference response is NULL");
+    }
     if (message->getMessageType() == pImpl->mFailureMessage.getMessageType())
     {   
         auto failureMessage = UMF::static_unique_pointer_cast<UMF::Failure>
