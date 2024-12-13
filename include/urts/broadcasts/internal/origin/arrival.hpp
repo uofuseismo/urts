@@ -192,6 +192,13 @@ public:
     /// @result The lower and upper uncertainty bounds on the arrival time.
     [[nodiscard]] std::optional<std::pair<Pick::UncertaintyBound, Pick::UncertaintyBound>> getLowerAndUpperUncertaintyBound() const;
 
+    /// @brief Sets the signal to noise ratio
+    ///        (20*log10( RMS(signal)/RMS(noise) )).
+    /// @param[in] signalToNoiseRatio   The signal to noise ratio in decibels.
+    void setSignalToNoiseRatio(double signalToNoiseRatio) noexcept;
+    /// @result The signal to noise ratio in decibels.
+    [[nodiscard]] std::optional<double> getSignalToNoiseRatio() const noexcept;
+
     /// @brief Since interactive algorithms allow for human revision we denote
     ///        a status flag as either human reviewed or automatic.
     /// @param[in] status  The review status of the pick.

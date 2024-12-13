@@ -59,6 +59,8 @@ nlohmann::json toJSONObject(const Origin &origin)
              }
              auto residual = arrival.getResidual();
              if (residual){arrivalObject["Residual"] = *residual;}
+             auto snr = arrival.getSignalToNoiseRatio();
+             if (snr){arrivalObject["SignalToNoiseRatio"] = *snr;}
              auto uncertainty = arrival.getLowerAndUpperUncertaintyBound();
              if (uncertainty)
              {
@@ -154,6 +156,11 @@ Origin objectToOrigin(const nlohmann::json &obj)
             {
                 arrival.setResidual(
                    arrivalObject["Residual"].template get<double> ());
+            }
+            if (arrivalObject.contains("SignalToNoiseRatio"))
+            {
+                arrival.setSignalToNoiseRatio(
+                   arrivalObject["SignalToNoiseRatio"].template get<double> ());
             }
             if (arrivalObject.contains("Uncertainty"))
             {

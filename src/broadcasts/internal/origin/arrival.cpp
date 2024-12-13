@@ -151,6 +151,7 @@ public:
         mUncertaintyBounds;
     std::chrono::microseconds mTime{0};
     double mResidual{0};
+    double mSignalToNoiseRatio{0};
     uint64_t mIdentifier{0};
     uint64_t mOriginIdentifier{0};
     Arrival::Phase mPhase;
@@ -162,6 +163,7 @@ public:
     bool mHaveIdentifier{false};
     bool mHaveResidual{false};
     bool mHaveOriginIdentifier{false};
+    bool mHaveSignalToNoiseRatio{false};
 };
 
 /// Constructor
@@ -420,6 +422,19 @@ void Arrival::setResidual(double residual) noexcept
 std::optional<double> Arrival::getResidual() const noexcept
 {
     if (pImpl->mHaveResidual){return pImpl->mResidual;}
+    return std::nullopt;
+}
+
+/// SNR
+void Arrival::setSignalToNoiseRatio(const double snr) noexcept
+{
+    pImpl->mSignalToNoiseRatio = snr;
+    pImpl->mHaveSignalToNoiseRatio = true;
+}
+
+std::optional<double> Arrival::getSignalToNoiseRatio() const noexcept
+{
+    if (pImpl->mHaveSignalToNoiseRatio){return pImpl->mSignalToNoiseRatio;}
     return std::nullopt;
 }
 

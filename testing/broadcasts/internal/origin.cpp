@@ -48,6 +48,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Arrival", "[arrival]")
     URTS::Broadcasts::Internal::Pick::UncertaintyBound lowerBound, upperBound;
     const std::chrono::microseconds perturbationLow{-1500};
     const std::chrono::microseconds perturbationHigh{1500};
+    const double snr{12};
     REQUIRE_NOTHROW(lowerBound.setPercentile(5));
     lowerBound.setPerturbation(perturbationLow);
     REQUIRE_NOTHROW(upperBound.setPercentile(95));
@@ -65,6 +66,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Arrival", "[arrival]")
     arrival.setProcessingAlgorithms(std::vector<std::string> {"A", "B"});
     arrival.setFirstMotion(Arrival::FirstMotion::Up);
     arrival.setReviewStatus(Arrival::ReviewStatus::Manual);
+    arrival.setSignalToNoiseRatio(snr);
     arrival.setLowerAndUpperUncertaintyBound(std::pair {lowerBound, upperBound});
  
     REQUIRE(arrival.getIdentifier() == 2312);
@@ -82,6 +84,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Arrival", "[arrival]")
     REQUIRE(channelsBack.at(1) == "HNP");
     REQUIRE(arrival.getFirstMotion() == Arrival::FirstMotion::Up);
     REQUIRE(arrival.getReviewStatus() == Arrival::ReviewStatus::Manual);
+    REQUIRE(std::abs(*arrival.getSignalToNoiseRatio() - snr) < 1.e-14);
     auto bounds = arrival.getLowerAndUpperUncertaintyBound();
     REQUIRE(std::abs(bounds->first.getPercentile() - 5) < 1.e-10);
     REQUIRE(std::abs(bounds->second.getPercentile() - 95) < 1.e-10);
@@ -124,6 +127,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
     arrival1.setReviewStatus(Arrival::ReviewStatus::Automatic);
     arrival1.setOriginIdentifier(identifier);
     arrival1.setResidual(-0.01);
+    arrival1.setSignalToNoiseRatio(11);
  
     Arrival arrival2;
     arrival2.setNetwork("UU");
@@ -139,6 +143,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
         std::vector<std::string> {"HHZ", "HHN", "HHE"});
     arrival2.setOriginIdentifier(identifier);
     arrival2.setResidual(0.01);
+    arrival2.setSignalToNoiseRatio(10);
     std::vector<Arrival> arrivals{arrival1, arrival2};
  
     Origin origin;
@@ -205,6 +210,8 @@ TEST_CASE("URTS::Broadcasts::Internal::Origin", "[origin]")
                     arrivals[i].getOriginalChannels());
             REQUIRE(std::abs(*arrivalsBack[i].getResidual()
                            - *arrivals[i].getResidual()) < 1.e-10);
+            REQUIRE(std::abs(*arrivalsBack[i].getSignalToNoiseRatio()
+                           - *arrivals[i].getSignalToNoiseRatio()) < 1.e-10);
         }
     }
 }
