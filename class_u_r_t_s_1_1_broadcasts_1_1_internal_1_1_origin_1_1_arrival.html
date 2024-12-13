@@ -226,6 +226,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a9664bb45b617a156ce80dfae017d517c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8995bd908a7bc0f06b85d7fbeefd9b7f"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::pair&lt; <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_uncertainty_bound.html">Pick::UncertaintyBound</a>, <a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_uncertainty_bound.html">Pick::UncertaintyBound</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a8995bd908a7bc0f06b85d7fbeefd9b7f">getLowerAndUpperUncertaintyBound</a> () const</td></tr>
 <tr class="separator:a8995bd908a7bc0f06b85d7fbeefd9b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad943867d16a04694c12fa62ebfebd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a9ad943867d16a04694c12fa62ebfebd2">setSignalToNoiseRatio</a> (double signalToNoiseRatio) noexcept</td></tr>
+<tr class="memdesc:a9ad943867d16a04694c12fa62ebfebd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signal to noise ratio (20*log10( RMS(signal)/RMS(noise) )).  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a9ad943867d16a04694c12fa62ebfebd2">More...</a><br /></td></tr>
+<tr class="separator:a9ad943867d16a04694c12fa62ebfebd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada8c5a0be65d673cd9d2990107dcbae6"><td class="memItemLeft" align="right" valign="top">std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ada8c5a0be65d673cd9d2990107dcbae6">getSignalToNoiseRatio</a> () const noexcept</td></tr>
+<tr class="separator:ada8c5a0be65d673cd9d2990107dcbae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb67bdda5acaec6634159f7e8b0a9d2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#afb67bdda5acaec6634159f7e8b0a9d2e">setReviewStatus</a> (<a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a8858f3aee67b80314a7ead902b2321af">ReviewStatus</a> status) noexcept</td></tr>
 <tr class="memdesc:afb67bdda5acaec6634159f7e8b0a9d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Since interactive algorithms allow for human revision we denote a status flag as either human reviewed or automatic.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#afb67bdda5acaec6634159f7e8b0a9d2e">More...</a><br /></td></tr>
 <tr class="separator:afb67bdda5acaec6634159f7e8b0a9d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -697,6 +702,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The review status. By default this is automatic. </dd></dl>
+
+</div>
+</div>
+<a id="ada8c5a0be65d673cd9d2990107dcbae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada8c5a0be65d673cd9d2990107dcbae6">&#9670;&nbsp;</a></span>getSignalToNoiseRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;double&gt; URTS::Broadcasts::Internal::Origin::Arrival::getSignalToNoiseRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The signal to noise ratio in decibels. </dd></dl>
 
 </div>
 </div>
@@ -1319,6 +1350,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a9ad943867d16a04694c12fa62ebfebd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad943867d16a04694c12fa62ebfebd2">&#9670;&nbsp;</a></span>setSignalToNoiseRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Origin::Arrival::setSignalToNoiseRatio </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>signalToNoiseRatio</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the signal to noise ratio (20*log10( RMS(signal)/RMS(noise) )). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">signalToNoiseRatio</td><td>The signal to noise ratio in decibels. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a572f38133334df77369c82d9c59b3c2b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a572f38133334df77369c82d9c59b3c2b">&#9670;&nbsp;</a></span>setStation()</h2>
 
@@ -1429,7 +1494,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Origin</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html">Arrival</a></li>
-    <li class="footer">Generated on Fri Dec 13 2024 18:06:50 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Dec 13 2024 18:19:25 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

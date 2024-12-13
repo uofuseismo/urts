@@ -30,6 +30,7 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival =
     [ "getProcessingAlgorithms", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a2541e75d5edd9256c8b303a9796eb9fa", null ],
     [ "getResidual", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a92b44e44088526120347db0a5ce09442", null ],
     [ "getReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ab554e03cf81070c7c8bf3a1d46b889b4", null ],
+    [ "getSignalToNoiseRatio", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ada8c5a0be65d673cd9d2990107dcbae6", null ],
     [ "getStation", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a6a6da303862232403ccf3f38e675c09a", null ],
     [ "getTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a8ea3511c33fe2dad1d09989f0e1fa948", null ],
     [ "haveChannel", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ac5a597cc9ccc66ab6194a869f398c481", null ],
@@ -53,6 +54,7 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival =
     [ "setProcessingAlgorithms", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ad768df01fd17df243d796cf92b216e61", null ],
     [ "setResidual", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ab9547bf2c714ade9c1f47f30ebbfa520", null ],
     [ "setReviewStatus", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#afb67bdda5acaec6634159f7e8b0a9d2e", null ],
+    [ "setSignalToNoiseRatio", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a9ad943867d16a04694c12fa62ebfebd2", null ],
     [ "setStation", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a572f38133334df77369c82d9c59b3c2b", null ],
     [ "setTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#ac4e4403e6146daaeb4de8389565c1482", null ],
     [ "setTime", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_origin_1_1_arrival.html#a164cbd8ff63d9f3789b436900cc32523", null ]
