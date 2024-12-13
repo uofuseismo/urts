@@ -47,6 +47,10 @@ nlohmann::json toJSONObject(const Pick &pick)
     {
         obj["UncertaintyBounds"] = nullptr;
     }
+    if (pick.haveSignalToNoiseRatio())
+    {
+        obj["SignalToNoiseRatio"] = pick.getSignalToNoiseRatio();
+    }
     // Original channels
     auto originalChannels = pick.getOriginalChannels();
     if (!originalChannels.empty())
@@ -99,6 +103,11 @@ Pick objectToPick(const nlohmann::json &obj)
         {
             pick.setOriginalChannels(originalChannels);
         }
+    }
+    if (!obj["SignalToNoiseRatio"].is_null())
+    {
+        auto snr = obj["SignalToNoiseRatio"].get<double> ();
+        pick.setSignalToNoiseRatio(snr);
     }
     pick.setFirstMotion(
         static_cast<Pick::FirstMotion> (obj["FirstMotion"].get<int> ()));
@@ -157,12 +166,14 @@ public:
     std::string mAlgorithm{"unspecified"};
     std::pair<UncertaintyBound, UncertaintyBound> mUncertaintyBounds;
     std::chrono::microseconds mTime{0};
+    double mSignalToNoiseRatio{0};
     uint64_t mIdentifier{0};
     Pick::FirstMotion mFirstMotion{Pick::FirstMotion::Unknown};
     Pick::ReviewStatus mReviewStatus{Pick::ReviewStatus::Automatic};
     bool mHaveUncertaintyBounds{false};
     bool mHaveTime{false};
     bool mHaveIdentifier{false};
+    bool mHaveSignalToNoiseRatio{false};
 };
 
 /// C'tor
@@ -406,6 +417,27 @@ Pick::getLowerAndUpperUncertaintyBound() const
 bool Pick::haveLowerAndUpperUncertaintyBound() const noexcept
 {
     return pImpl->mHaveUncertaintyBounds;
+}
+
+/// SNR
+void Pick::setSignalToNoiseRatio(const double snr) noexcept
+{
+    pImpl->mSignalToNoiseRatio = snr;
+    pImpl->mHaveSignalToNoiseRatio = true;
+}
+
+double Pick::getSignalToNoiseRatio() const
+{
+    if (!haveSignalToNoiseRatio())
+    {
+         throw std::runtime_error("Signal to noise ratio not set");
+    }
+    return pImpl->mSignalToNoiseRatio;
+}
+
+bool Pick::haveSignalToNoiseRatio() const noexcept
+{
+    return pImpl->mHaveSignalToNoiseRatio;
 }
 
 /// Original packets
