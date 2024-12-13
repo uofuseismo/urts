@@ -51,6 +51,10 @@ nlohmann::json toJSONObject(const Pick &pick)
     {
         obj["SignalToNoiseRatio"] = pick.getSignalToNoiseRatio();
     }
+    else
+    {
+        obj["SignalToNoiseRatio"] = nullptr;
+    }
     // Original channels
     auto originalChannels = pick.getOriginalChannels();
     if (!originalChannels.empty())
@@ -104,10 +108,13 @@ Pick objectToPick(const nlohmann::json &obj)
             pick.setOriginalChannels(originalChannels);
         }
     }
-    if (!obj["SignalToNoiseRatio"].is_null())
+    if (obj.contains("SignalToNoiseRatio"))
     {
-        auto snr = obj["SignalToNoiseRatio"].get<double> ();
-        pick.setSignalToNoiseRatio(snr);
+        if (!obj["SignalToNoiseRatio"].is_null())
+        {
+            auto snr = obj["SignalToNoiseRatio"].get<double> ();
+            pick.setSignalToNoiseRatio(snr);
+        }
     }
     pick.setFirstMotion(
         static_cast<Pick::FirstMotion> (obj["FirstMotion"].get<int> ()));
