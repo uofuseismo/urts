@@ -1,5 +1,8 @@
 var NAVTREEINDEX12 =
 {
+"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a2a1c095a191460b3f6c59dbcc0e78941":[3,0,0,3,0,5,0,0,3],
+"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a2e08ed648b62cbb5ce91c3870eb4fdad":[3,0,0,3,0,5,0,0,16],
+"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a5dbd0a132945c8d3d433df002ec2c5d7":[3,0,0,3,0,5,0,0,8],
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a684a596b00e01059314450ae211c2aac":[3,0,0,3,0,5,0,0,0],
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a79bbc2622e23efe2a2fc6937b7f2a829":[3,0,0,3,0,5,0,0,11],
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_one_component_p_1_1_inference_request.html#a94515e3906438c435c2db126d23de9ce":[3,0,0,3,0,5,0,0,19],
@@ -246,8 +249,5 @@ var NAVTREEINDEX12 =
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#abc27af61754745f653baaccd3ec5a155":[3,0,0,3,0,5,1,0,0],
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#abf61f21b2537141a30078761c4e23aa6":[3,0,0,3,0,5,1,0,14],
 "class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#ac1601b2d38cc4834354a9054aabe671f":[3,0,0,3,0,5,1,0,3],
-"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#ad164eed5034fd14a50a0c68726e4c21a":[3,0,0,3,0,5,1,0,18],
-"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#adccad0b5e44620c9517f51162b0cfdcc":[3,0,0,3,0,5,1,0,7],
-"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#aea2c01a3ec3508772009cbb4b2d79e85":[3,0,0,3,0,5,1,0,12],
-"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#aedfcebb9d70c3a16cfc41dc2a87cee38":[3,0,0,3,0,5,1,0,8]
+"class_u_r_t_s_1_1_services_1_1_scalable_1_1_pickers_1_1_c_n_n_three_component_s_1_1_inference_request.html#ad164eed5034fd14a50a0c68726e4c21a":[3,0,0,3,0,5,1,0,18]
 };

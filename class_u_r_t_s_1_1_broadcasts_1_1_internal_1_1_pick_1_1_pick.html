@@ -239,6 +239,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a90dacd49c1a33800f8659ab12dd5e416"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42dcc16e0a151211e4b430a3e5c07c10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a161c76904144af6df88dfc60fd578926">ReviewStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a42dcc16e0a151211e4b430a3e5c07c10">getReviewStatus</a> () const noexcept</td></tr>
 <tr class="separator:a42dcc16e0a151211e4b430a3e5c07c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a609d0472cdc4afdd907eedc07819457c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a609d0472cdc4afdd907eedc07819457c">setSignalToNoiseRatio</a> (double signalToNoiseRatio) noexcept</td></tr>
+<tr class="memdesc:a609d0472cdc4afdd907eedc07819457c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signal to noise ratio (20*log10( RMS(signal)/RMS(noise) )).  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#a609d0472cdc4afdd907eedc07819457c">More...</a><br /></td></tr>
+<tr class="separator:a609d0472cdc4afdd907eedc07819457c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab00bc3292ee15737963b0a3730ac27ea"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab00bc3292ee15737963b0a3730ac27ea">getSignalToNoiseRatio</a> () const</td></tr>
+<tr class="separator:ab00bc3292ee15737963b0a3730ac27ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6a3b4874b6f6a902d146dc4cbf58be3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ae6a3b4874b6f6a902d146dc4cbf58be3">haveSignalToNoiseRatio</a> () const noexcept</td></tr>
+<tr class="separator:ae6a3b4874b6f6a902d146dc4cbf58be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Message Abstract Base Class Properties</div></td></tr>
 <tr class="memitem:ab4677b018b4ab3a97f1e0819a928e1e3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab4677b018b4ab3a97f1e0819a928e1e3">toMessage</a> () const final</td></tr>
 <tr class="memdesc:ab4677b018b4ab3a97f1e0819a928e1e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the pick class to a string message.  <a href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ab4677b018b4ab3a97f1e0819a928e1e3">More...</a><br /></td></tr>
@@ -828,6 +835,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="ab00bc3292ee15737963b0a3730ac27ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab00bc3292ee15737963b0a3730ac27ea">&#9670;&nbsp;</a></span>getSignalToNoiseRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double URTS::Broadcasts::Internal::Pick::Pick::getSignalToNoiseRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The signal to noise ratio in decibels. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html#ae6a3b4874b6f6a902d146dc4cbf58be3">haveSignalToNoiseRatio()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a8b6c99201382010a8f1578fc759ecfba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8b6c99201382010a8f1578fc759ecfba">&#9670;&nbsp;</a></span>getStation()</h2>
 
@@ -1003,6 +1034,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>True indicates that the network was set. </dd></dl>
+
+</div>
+</div>
+<a id="ae6a3b4874b6f6a902d146dc4cbf58be3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6a3b4874b6f6a902d146dc4cbf58be3">&#9670;&nbsp;</a></span>haveSignalToNoiseRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool URTS::Broadcasts::Internal::Pick::Pick::haveSignalToNoiseRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True indicates the signal to noise ratio was set. </dd></dl>
 
 </div>
 </div>
@@ -1447,6 +1504,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a609d0472cdc4afdd907eedc07819457c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a609d0472cdc4afdd907eedc07819457c">&#9670;&nbsp;</a></span>setSignalToNoiseRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void URTS::Broadcasts::Internal::Pick::Pick::setSignalToNoiseRatio </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>signalToNoiseRatio</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the signal to noise ratio (20*log10( RMS(signal)/RMS(noise) )). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">signalToNoiseRatio</td><td>The signal to noise ratio in decibels. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aa22240f2095d92688078f175a9007534"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa22240f2095d92688078f175a9007534">&#9670;&nbsp;</a></span>setStation()</h2>
 
@@ -1592,7 +1683,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>URTS</b></li><li class="navelem"><b>Broadcasts</b></li><li class="navelem"><b>Internal</b></li><li class="navelem"><b>Pick</b></li><li class="navelem"><a class="el" href="class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_pick.html">Pick</a></li>
-    <li class="footer">Generated on Tue Oct 29 2024 20:23:21 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Dec 13 2024 18:06:50 for URTS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
