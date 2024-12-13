@@ -143,8 +143,8 @@ double computeSNR(const double pickCorrection,
     // Tabulate the noise and signal windows
     double noiseWindowEnd = relativePickTime - preWindowDuration.count()*1.e-6;   
     double noiseWindowStart = noiseWindowEnd - noiseWindowDuration.count()*1.e-6;
-    auto signalWindowStart = relativePickTime - preWindowDuration.count();
-    auto signalWindowEnd = signalWindowStart + signalWindowDuration.count();
+    auto signalWindowStart = relativePickTime - preWindowDuration.count()*1.e-6;
+    auto signalWindowEnd = signalWindowStart + signalWindowDuration.count()*1.e-6;
     // Convert times to indices
     auto iNoiseWindowStart
         = std::max(0, static_cast<int> (std::round(noiseWindowStart/samplingPeriod)));
@@ -567,7 +567,7 @@ public:
                                                     std::chrono::microseconds {2000000}, // Center time
                                                     std::chrono::microseconds {250000}, // Prewindow duration
                                                     std::chrono::microseconds {1000000}, // Noise window duration
-                                                    std::chrono::microseconds {150000}, // Signal window duration
+                                                    std::chrono::microseconds {1500000}, // Signal window duration
                                                     0.01); // Sampling period
                             pick->setSignalToNoiseRatio(snr);
                         }
