@@ -2,6 +2,7 @@
 #define URTS_MODULES_PICKERS_S_PICKER_PIPELINE_HPP
 #include <vector>
 #include <array>
+#include <numeric>
 #include <atomic>
 #include <cmath>
 #include <string>
@@ -116,6 +117,105 @@ void centerAndCut(
     eastSignal->resize(i1 - i0, 0);   
     std::copy(signalReference.data() + i0, signalReference.data() + i1,
               eastSignal->data());
+}
+
+/// Compute RMS with the DC shift of the signal removed (this is basically
+/// the variance just the signal normalization would be n - 1 instead of n).
+/// The big difference here between this and the vertical-only is I 
+/// I look at squared contributions from the north/east channel.
+[[nodiscard]]
+double rmsNoMeanVector(const std::vector<double> &xSignal,
+                       const std::vector<double> &ySignal,
+                       int i1, int i2)
+{
+    if (xSignal.size() != ySignal.size())
+    {
+        throw std::invalid_argument("x signal size != y signal size");
+    }
+    auto windowSize = std::max(1, i2 - i1); 
+    double xSignalMean
+        = std::accumulate(xSignal.begin() + i1, xSignal.begin() + i2, 0.0);
+    xSignalMean = xSignalMean/windowSize;
+    double ySignalMean
+        = std::accumulate(ySignal.begin() + i1, ySignal.begin() + i2, 0.0);
+    ySignalMean = ySignalMean/windowSize;
+
+    auto nSamples = static_cast<int> (xSignal.size());
+    double rmsSignal{0};
+    for (int i = std::max(0, i1); i < std::min(nSamples, i2); ++i) 
+    {    
+        auto residualX = xSignal[i] - xSignalMean;
+        auto residualY = ySignal[i] - ySignalMean;
+        // Now look at the euclidean^2 length of the demeaned samples
+        rmsSignal = rmsSignal
+                  + residualX*residualX
+                  + residualY*residualY;
+    }
+    rmsSignal = std::sqrt(rmsSignal/windowSize);
+    return rmsSignal;
+}
+
+/// 600 sample window at 100 Hz
+[[nodiscard]]
+double computeSNR(const double pickCorrection,
+                  const std::vector<double> &northSignal,
+                  const std::vector<double> &eastSignal,
+                  const std::chrono::microseconds &centerTime = std::chrono::microseconds {3000000}, // 3 s
+                  const std::chrono::microseconds &preWindowDuration = std::chrono::microseconds {500000}, // 0.5 s
+                  const std::chrono::microseconds &noiseWindowDuration = std::chrono::microseconds {1500000}, // 1.5 s
+                  const std::chrono::microseconds &signalWindowDuration = std::chrono::microseconds {2000000}, // 2 s
+                  const double samplingPeriod = 0.01)
+{
+    if (northSignal.size() != eastSignal.size())
+    {
+        throw std::invalid_argument("Inconsistent signal sizes in computeSNR");
+    }
+    auto nSamples = static_cast<int> (eastSignal.size());
+    // Center pick so it's however many seconds into the signal
+    auto relativePickTime = centerTime.count()*1.e-6 
+                          + pickCorrection;
+    // Tabulate the noise and signal windows
+    double noiseWindowEnd = relativePickTime - preWindowDuration.count()*1.e-6;   
+    double noiseWindowStart = noiseWindowEnd - noiseWindowDuration.count()*1.e-6;
+    auto signalWindowStart = relativePickTime - preWindowDuration.count()*1.e-6;
+    auto signalWindowEnd = signalWindowStart + signalWindowDuration.count()*1.e-6;
+    // Convert times to indices
+    auto iNoiseWindowStart
+        = std::max(0, static_cast<int> (std::round(noiseWindowStart/samplingPeriod)));
+    auto iNoiseWindowEnd
+        = std::min(nSamples,
+                   static_cast<int> (std::round(noiseWindowEnd/samplingPeriod) + 1)); 
+
+    auto iSignalWindowStart
+        = std::max(0, static_cast<int> (std::round(signalWindowStart/samplingPeriod)));
+    auto iSignalWindowEnd
+        = std::min(nSamples,
+                   static_cast<int> (std::round(signalWindowEnd/samplingPeriod) + 1)); 
+
+    // If we aren't going to break anything then compute the RMS and SNR.
+    // Additionally, since we're going to compare with other picks we should
+    // remove the DC shift.
+    if (iNoiseWindowStart >= 0 && iNoiseWindowEnd <= nSamples &&
+        iNoiseWindowStart < iNoiseWindowEnd &&
+        iSignalWindowStart >= 0 && iSignalWindowEnd <= nSamples &&
+        iSignalWindowStart < iSignalWindowEnd)
+    {    
+        auto rmsNoise = ::rmsNoMeanVector(northSignal, eastSignal,
+                                          iNoiseWindowStart,
+                                          iNoiseWindowEnd);
+        auto rmsSignal = ::rmsNoMeanVector(northSignal, eastSignal,
+                                           iSignalWindowStart,
+                                           iSignalWindowEnd);
+        if (rmsNoise > 0 && rmsSignal > 0) 
+        {
+            return 20*std::log10(rmsSignal/rmsNoise);
+        }
+        throw std::runtime_error("Potential dead signal");
+    }    
+    else 
+    {    
+        throw std::runtime_error("Could not compute SNR");
+    }    
 }
 
 struct S3CPickerProperties
@@ -517,6 +617,23 @@ public:
                     pick->setLowerAndUpperUncertaintyBound(
                          mPick.getLowerAndUpperUncertaintyBound());
                     pick->setProcessingAlgorithms(algorithms);
+                    try  
+                    {    
+                        auto snr = ::computeSNR(pickCorrection.count()*1.e-6,
+                                                mPickRequest.getNorthSignalReference(),
+                                                mPickRequest.getEastSignalReference(),
+                                                std::chrono::microseconds {3000000}, // Center time (3s)
+                                                std::chrono::microseconds {500000}, // Prewindow duration (0.5 s)
+                                                std::chrono::microseconds {1000000}, // Noise window duration (1 s)
+                                                std::chrono::microseconds {2000000}, // Signal window duration (2 s)
+                                                0.01); // Sampling period
+                        pick->setSignalToNoiseRatio(snr);
+                    }    
+                    catch (const std::exception &e)
+                    {
+                        logger->warn("Failed to compute S SNR because "
+                                   + std::string {e.what()});
+                    }
                 }
                 else
                 {

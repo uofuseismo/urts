@@ -133,7 +133,7 @@ double computeSNR(const double pickCorrection,
                   const std::chrono::microseconds &centerTime = std::chrono::microseconds {2000000},
                   const std::chrono::microseconds &preWindowDuration = std::chrono::microseconds {250000},
                   const std::chrono::microseconds &noiseWindowDuration = std::chrono::microseconds {1000000},
-                  const std::chrono::microseconds &signalWindowDuration = std::chrono::microseconds {150000},
+                  const std::chrono::microseconds &signalWindowDuration = std::chrono::microseconds {1500000},
                   const double samplingPeriod = 0.01)
 {
     auto nSamples = static_cast<int> (verticalSignal.size());
