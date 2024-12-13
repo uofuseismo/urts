@@ -46,7 +46,8 @@ TEST_CASE("URTS::Broadcasts::Internal::Pick", "[pick]")
     const std::string locationCode{"01"};
     const std::string phaseHint{"P"};
     const std::vector<std::string> algorithms{"thresholdPick", "mlPicker"};
-    const double time = 500;
+    const double time{500};
+    const double snr{13};
     const std::chrono::microseconds timeRef{static_cast<int64_t> (time*1.e6)};
     const Pick::FirstMotion fm{Pick::FirstMotion::Up};
     const Pick::ReviewStatus reviewStatus{Pick::ReviewStatus::Manual};
@@ -73,6 +74,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Pick", "[pick]")
     REQUIRE_NOTHROW(pick.setLowerAndUpperUncertaintyBound(
                     std::pair {lowerBoundRef, upperBoundRef}));
     pick.setFirstMotion(fm);
+    pick.setSignalToNoiseRatio(snr);
     pick.setReviewStatus(reviewStatus);
     pick.setPhaseHint(phaseHint);
     pick.setProcessingAlgorithms(algorithms);
@@ -93,6 +95,7 @@ TEST_CASE("URTS::Broadcasts::Internal::Pick", "[pick]")
         REQUIRE(copy.getFirstMotion() == fm);
         REQUIRE(copy.getReviewStatus() == reviewStatus);
         REQUIRE(copy.getPhaseHint() == phaseHint);
+        REQUIRE(std::abs(copy.getSignalToNoiseRatio() - snr) < 1.e-14);
         auto algorithmsBack = copy.getProcessingAlgorithms();
         REQUIRE(algorithms.size() == algorithmsBack.size());
         for (int i = 0; i < static_cast<int> (algorithms.size()); ++i)

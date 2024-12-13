@@ -45,7 +45,7 @@ public:
     Origin(const Origin &origin);
     /// @brief Move constructor.
     /// @param[in,out] origin  The origin from which to initialize this class.
-    ///                       On exit, origin's behavior is undefined.
+    ///                        On exit, origin's behavior is undefined.
     Origin(Origin &&origin) noexcept;
     /// @}
 

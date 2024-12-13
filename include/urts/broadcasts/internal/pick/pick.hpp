@@ -196,6 +196,16 @@ public:
     void setReviewStatus(ReviewStatus status) noexcept;
     /// @result The review status.  By default this is automatic.
     [[nodiscard]] ReviewStatus getReviewStatus() const noexcept;
+
+    /// @brief Sets the signal to noise ratio
+    ///        (20*log10( RMS(signal)/RMS(noise) )).
+    /// @param[in] signalToNoiseRatio   The signal to noise ratio in decibels.
+    void setSignalToNoiseRatio(double signalToNoiseRatio) noexcept;
+    /// @result The signal to noise ratio in decibels.
+    /// @throws std::runtime_error if \c haveSignalToNoiseRatio() is false.
+    [[nodiscard]] double getSignalToNoiseRatio() const;
+    /// @result True indicates the signal to noise ratio was set.
+    [[nodiscard]] bool haveSignalToNoiseRatio() const noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties

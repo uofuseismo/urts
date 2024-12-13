@@ -2,6 +2,7 @@
 #define URTS_MODULES_PICKERS_P_PICKER_PIPELINE_HPP
 #include <vector>
 #include <atomic>
+#include <numeric>
 #include <cmath>
 #include <string>
 #include <uussmlmodels/pickers/cnnOneComponentP/inference.hpp>
@@ -103,6 +104,83 @@ centerAndCut(
               result.data());
     //std::cout << "nsamples p: " << i1 - i0 << " " << result.size() << std::endl;
     return result;
+}
+
+/// Compute RMS with the DC shift of the signal removed (this is basically
+/// the variance just the signal normalization would be n - 1 instead of n)
+[[nodiscard]]
+double rmsNoMean(const std::vector<double> &signal, int i1, int i2)
+{
+    auto windowSize = std::max(1, i2 - i1);
+    double signalMean
+        = std::accumulate(signal.begin() + i1, signal.begin() + i2, 0.0);
+    signalMean = signalMean/windowSize;
+    auto nSamples = static_cast<int> (signal.size());
+    double rmsSignal{0};
+    for (int i = std::max(0, i1); i < std::min(nSamples, i2); ++i)
+    {
+        auto residual = signal[i] - signalMean;
+        rmsSignal = rmsSignal + residual*residual;
+    } 
+    rmsSignal = std::sqrt(rmsSignal/windowSize);
+    return rmsSignal;
+}
+
+/// 400 sample window at 100 Hz
+[[nodiscard]]
+double computeSNR(const double pickCorrection,
+                  const std::vector<double> &verticalSignal,
+                  const std::chrono::microseconds &centerTime = std::chrono::microseconds {2000000},
+                  const std::chrono::microseconds &preWindowDuration = std::chrono::microseconds {250000},
+                  const std::chrono::microseconds &noiseWindowDuration = std::chrono::microseconds {1000000},
+                  const std::chrono::microseconds &signalWindowDuration = std::chrono::microseconds {150000},
+                  const double samplingPeriod = 0.01)
+{
+    auto nSamples = static_cast<int> (verticalSignal.size());
+    // Center pick so it's however many seconds into the signal
+    auto relativePickTime = centerTime.count()*1.e-6 
+                          + pickCorrection;
+    // Tabulate the noise and signal windows
+    double noiseWindowEnd = relativePickTime - preWindowDuration.count()*1.e-6;   
+    double noiseWindowStart = noiseWindowEnd - noiseWindowDuration.count()*1.e-6;
+    auto signalWindowStart = relativePickTime - preWindowDuration.count();
+    auto signalWindowEnd = signalWindowStart + signalWindowDuration.count();
+    // Convert times to indices
+    auto iNoiseWindowStart
+        = std::max(0, static_cast<int> (std::round(noiseWindowStart/samplingPeriod)));
+    auto iNoiseWindowEnd
+        = std::min(nSamples,
+                   static_cast<int> (std::round(noiseWindowEnd/samplingPeriod) + 1));
+
+    auto iSignalWindowStart
+        = std::max(0, static_cast<int> (std::round(signalWindowStart/samplingPeriod)));
+    auto iSignalWindowEnd
+        = std::min(nSamples,
+                   static_cast<int> (std::round(signalWindowEnd/samplingPeriod) + 1)); 
+    // If we aren't going to break anything then compute the RMS and SNR.
+    // Additionally, since we're going to compare with other picks we should
+    // remove the DC shift.
+    if (iNoiseWindowStart >= 0 && iNoiseWindowEnd <= nSamples &&
+        iNoiseWindowStart < iNoiseWindowEnd &&
+        iSignalWindowStart >= 0 && iSignalWindowEnd <= nSamples &&
+        iSignalWindowStart < iSignalWindowEnd)
+    {
+        auto rmsNoise = ::rmsNoMean(verticalSignal,
+                                    iNoiseWindowStart,
+                                    iNoiseWindowEnd);
+        auto rmsSignal = ::rmsNoMean(verticalSignal,
+                                     iSignalWindowStart,
+                                     iSignalWindowEnd);
+        if (rmsNoise > 0 && rmsSignal > 0)
+        {
+            return 20*std::log10(rmsSignal/rmsNoise);
+        }
+        throw std::runtime_error("Potential dead signal");
+    }
+    else
+    {
+        throw std::runtime_error("Could not compute SNR");
+    }    
 }
 
 struct P1CPickerProperties
@@ -448,8 +526,7 @@ public:
                                       pick->getTime(),
                                       std::chrono::microseconds {-2000000},
                                       std::chrono::microseconds {+1990000});
-                mPickRequest.setVerticalSignal(
-                    std::move(verticalSignal));
+                mPickRequest.setVerticalSignal(std::move(verticalSignal));
                 mPickRequest.setIdentifier(mRequestIdentifier);
                 computePick = true;
             }
@@ -483,6 +560,22 @@ public:
                         // TODO uncertainties
                         pick->setLowerAndUpperUncertaintyBound(
                              mPick.getLowerAndUpperUncertaintyBound());
+                        try
+                        {
+                            auto snr = ::computeSNR(pickCorrection.count()*1.e-6,
+                                                    mPickRequest.getVerticalSignalReference(),
+                                                    std::chrono::microseconds {2000000}, // Center time
+                                                    std::chrono::microseconds {250000}, // Prewindow duration
+                                                    std::chrono::microseconds {1000000}, // Noise window duration
+                                                    std::chrono::microseconds {150000}, // Signal window duration
+                                                    0.01); // Sampling period
+                            pick->setSignalToNoiseRatio(snr);
+                        }
+                        catch (const std::exception &e)
+                        {
+                            logger->warn("Failed to compute P SNR because "
+                                       + std::string {e.what()});
+                        }
                     }
                     else
                     {
@@ -507,8 +600,7 @@ public:
                                       pick->getTime(),
                                       std::chrono::microseconds {-2000000},
                                       std::chrono::microseconds {+1990000});
-                mFirstMotionRequest.setVerticalSignal(
-                    std::move(verticalSignal));
+                mFirstMotionRequest.setVerticalSignal(std::move(verticalSignal));
                 mFirstMotionRequest.setIdentifier(mRequestIdentifier);
                 computeFirstMotion = true;
             }
