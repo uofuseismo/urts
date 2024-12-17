@@ -315,7 +315,7 @@ void ServiceOptions::parseInitializationFile(
     if (region == "utah" || region == "Utah")
     {
         options.setRegion(ServiceOptions::Region::Utah);
-        options.setExtentInDepth(std::pair {-17000, 22000});
+        options.setExtentInDepth(std::pair {-1700, 22000});
         options.setDBSCANEpsilon(0.25);
     }
     else if (region == "YNP" || region == "ynp" || region == "Yellowstone")
