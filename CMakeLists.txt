@@ -228,13 +228,13 @@ if (${uLocator_FOUND})
           src/services/scalable/associators/massociate/requestorOptions.cpp
          )
    endif()
-   if (${UUSSMLModels_FOUND})
-      set(SERVER_SRC ${SERVER_SRC})
-      set(CLIENT_SRC ${CLIENT_SRC}
-          #src/services/scalable/associators/phaseLink/requestor.cpp
-          #src/services/scalable/associators/phaseLink/requestorOptions.cpp
-          )
-   endif()
+   #if (${UUSSMLModels_FOUND})
+   #   set(SERVER_SRC ${SERVER_SRC})
+   #   set(CLIENT_SRC ${CLIENT_SRC}
+   #       #src/services/scalable/associators/phaseLink/requestor.cpp
+   #       #src/services/scalable/associators/phaseLink/requestorOptions.cpp
+   #       )
+   #endif()
 endif()
 set(MESSAGE_SRC ${MESSAGE_SRC}
     src/services/scalable/detectors/uNetOneComponentP/inferenceRequest.cpp
@@ -292,54 +292,14 @@ if (${BUILD_UUSS_MLMODELS})
     set(SERVER_SRC ${SERVER_SRC}
         src/services/scalable/detectors/uNetOneComponentP/service.cpp
         src/services/scalable/detectors/uNetOneComponentP/serviceOptions.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/inferenceRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/inferenceResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/preprocessingRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/preprocessingResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/processingRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/processingResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/requestor.cpp
-        #src/services/scalable/detectors/uNetThreeComponentP/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentP/service.cpp
         src/services/scalable/detectors/uNetThreeComponentP/serviceOptions.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/inferenceRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/inferenceResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/preprocessingRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/preprocessingResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/processingRequest.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/processingResponse.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/requestor.cpp
-        #src/services/scalable/detectors/uNetThreeComponentS/requestorOptions.cpp
         src/services/scalable/detectors/uNetThreeComponentS/service.cpp
         src/services/scalable/detectors/uNetThreeComponentS/serviceOptions.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceRequest.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/inferenceResponse.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingRequest.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/preprocessingResponse.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingRequest.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/processingResponse.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestor.cpp
-        #src/services/scalable/firstMotionClassifiers/cnnOneComponentP/requestorOptions.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/service.cpp
         src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceOptions.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/inferenceRequest.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/inferenceResponse.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/preprocessingRequest.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/preprocessingResponse.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/processingRequest.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/processingResponse.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/requestor.cpp
-        #src/services/scalable/pickers/cnnOneComponentP/requestorOptions.cpp
         src/services/scalable/pickers/cnnOneComponentP/service.cpp
         src/services/scalable/pickers/cnnOneComponentP/serviceOptions.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/inferenceRequest.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/inferenceResponse.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/preprocessingRequest.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/preprocessingResponse.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/processingRequest.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/processingResponse.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/requestor.cpp
-        #src/services/scalable/pickers/cnnThreeComponentS/requestorOptions.cpp
         src/services/scalable/pickers/cnnThreeComponentS/service.cpp
         src/services/scalable/pickers/cnnThreeComponentS/serviceOptions.cpp
         )
@@ -355,18 +315,18 @@ if (${BUILD_SEEDLINK})
        src/broadcasts/external/seedlink/clientOptions.cpp
        src/broadcasts/external/seedlink/streamSelector.cpp)
 endif()
-if (${BUILD_UI})
-   set(UI_SRC
-       ui/qurts.cpp
-       ui/mainWindow.cpp ui/mainWindow.hpp
-       ui/waveformViewer/mainWindow.cpp #ui/waveformViewer/mainWindow.hpp 
-       #ui/uOperatorOptions.cpp 
-       ui/aqmsDatabaseOptionsDialog.cpp
-       ui/uOperatorOptionsDialog.cpp
-       ui/waveformViewer/channelSelectorDialog.cpp
-       ui/waveformViewer/channelListModel.cpp
-       ui/topics.cpp)
-endif()
+#if (${BUILD_UI})
+#   set(UI_SRC
+#       ui/qurts.cpp
+#       ui/mainWindow.cpp ui/mainWindow.hpp
+#       ui/waveformViewer/mainWindow.cpp #ui/waveformViewer/mainWindow.hpp 
+#       #ui/uOperatorOptions.cpp 
+#       ui/aqmsDatabaseOptionsDialog.cpp
+#       ui/uOperatorOptionsDialog.cpp
+#       ui/waveformViewer/channelSelectorDialog.cpp
+#       ui/waveformViewer/channelListModel.cpp
+#       ui/topics.cpp)
+#endif()
 
 add_library(urts_client ${VERSION_SRC} ${CLIENT_SRC} ${MESSAGE_SRC})
 set_target_properties(urts_client PROPERTIES
@@ -547,8 +507,8 @@ if (${BUILD_SEEDLINK})
 endif()
 
 if (${BUILD_UUSS_MLMODELS})
-   add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
-   add_executable(originsToDatabase src/modules/locators/originsToDatabase.cpp)
+   #add_executable(picksToDatabase src/modules/pickers/picksToDatabase.cpp)
+   #add_executable(originsToDatabase src/modules/locators/originsToDatabase.cpp)
    add_executable(mlDetector src/modules/detectors/mlDetector.cpp)
    add_executable(mlPickRegressor src/modules/pickers/mlPicker.cpp)
   #                               src/modules/pickers/triggerWindow.cpp
@@ -564,8 +524,8 @@ if (${BUILD_UUSS_MLMODELS})
    add_executable(pPickRegressorService src/services/scalable/pickers/cnnOneComponentP/serviceModule.cpp)
    add_executable(sPickRegressorService src/services/scalable/pickers/cnnThreeComponentS/serviceModule.cpp)
    add_executable(firstMotionClassifierService src/services/scalable/firstMotionClassifiers/cnnOneComponentP/serviceModule.cpp)
-   set_target_properties(picksToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
-   set_target_properties(originsToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+   #set_target_properties(picksToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+   #set_target_properties(originsToDatabase PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
    set_target_properties(mlDetector PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
@@ -602,12 +562,12 @@ if (${BUILD_UUSS_MLMODELS})
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES
                          CXX_EXTENSIONS NO)
-   target_include_directories(picksToDatabase
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
-   target_include_directories(originsToDatabase
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                              PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql) 
+   #target_include_directories(picksToDatabase
+   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+   #                           PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql)
+   #target_include_directories(originsToDatabase
+   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+   #                           PRIVATE ${UMPS_INCLUDE_DIR} ${PostgreSQL_INCLUDE_DIRS} Boost::program_options SOCI::soci_postgresql) 
    target_include_directories(mlDetector
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
@@ -716,7 +676,19 @@ if (${uLocator_FOUND})
    target_include_directories(uLocatorService
                               PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
                                       ${UMPS_INCLUDE_DIR} ${uLocator_INCLUDE_DIR})
-
+   add_executable(uLocate src/modules/locators/ulocator.cpp)
+   set_target_properties(uLocate PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO
+                         OUTPUT_NAME "uLocator")
+   target_link_libraries(uLocate
+                         PRIVATE urts_client
+                                 ${UMPS_LIBRARY} Boost::program_options Threads::Threads)
+   target_include_directories(uLocate
+                              PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src
+                                      ${UMPS_INCLUDE_DIR})
+   set(URTS_MODULES ${URTS_MODULES} uLocatorService uLocate)
 endif()
 
 ##########################################################################################
@@ -749,6 +721,7 @@ endif()
 ##########################################################################################
 if (${WRAP_PYTHON})
    message("Will build Python bindings")
+   find_package(Python COMPONENTS Interpreter Development)
    find_package(pybind11 REQUIRED)
    add_library(urtspy MODULE
                python/urtspy.cpp

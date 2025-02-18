@@ -88,12 +88,13 @@ Event::Event() :
 {
 }
 
+/// Copy constructor
 Event::Event(const Event &event)
 {
     *this = event;
 }
 
-/// Move construtor
+/// Move constructor
 Event::Event(Event &&event) noexcept
 {
     *this = std::move(event);
