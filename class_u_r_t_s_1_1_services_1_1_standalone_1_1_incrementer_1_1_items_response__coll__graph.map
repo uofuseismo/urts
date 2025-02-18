@@ -1,4 +1,5 @@
 <map id="URTS::Services::Standalone::Incrementer::ItemsResponse" name="URTS::Services::Standalone::Incrementer::ItemsResponse">
-<area shape="rect" id="node1" title="This is a response to an items request." alt="" coords="5,95,223,136"/>
-<area shape="rect" id="node2" title=" " alt="" coords="25,5,203,47"/>
+<area shape="rect" id="Node000001" title="This is a response to an items request." alt="" coords="5,93,223,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="25,5,203,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,59,117,93,111,93,111,59"/>
 </map>

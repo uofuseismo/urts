@@ -18,10 +18,9 @@ var class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_select
     [ "getSelector", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a36e4038f726d70326444296bcf016b35", null ],
     [ "getStation", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#ae0c9596701cb8d771c7a69a85edae90f", null ],
     [ "haveNetwork", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a5eff491424e8d0b364a5e75a745939e3", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a02e7ff54074b101ec5b2b0132fb8eb25", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#ac88300a2d18995ef752ada0301e6fecc", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a088bea9e40c1f989562c3791b3115012", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a19159fb8e25fcee4d290b1724bc0e970", null ],
     [ "setNetwork", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a5ea08351b28257d86926221016d39203", null ],
     [ "setSelector", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#a3c899ca46f7f419a083ff321c39e76c3", null ],
-    [ "setStation", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#ad4a843995f49a437cd01fdf5ec14d567", null ],
-    [ "pImpl", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#af896df5a0546714ac283591a641d4973", null ]
+    [ "setStation", "class_u_r_t_s_1_1_broadcasts_1_1_external_1_1_s_e_e_d_link_1_1_stream_selector.html#ad4a843995f49a437cd01fdf5ec14d567", null ]
 ];

@@ -14,8 +14,8 @@ var class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer =
     [ "~DataPacketSanitizer", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a33e4595213d206a19181629df9c77ae1", null ],
     [ "allow", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#ab7fed90602970c6daa32bfaa86019394", null ],
     [ "clear", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a6981bb69fac78c2e2c04433ac53f1027", null ],
-    [ "getBadChannels", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a3fa629c45d3686f2ad0819432b4849c5", null ],
+    [ "getBadChannels", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a1584dbb82f177c383bc95fc11333fd73", null ],
     [ "initialize", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aba9424a5b9a905a2a103102c2bf407d5", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aa8f47040e47aa785c34e30d32b73008c", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aaf5273d4b5732ed35f063b69cc0b8514", null ]
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#a4fa1facfe5461a95bb756ca174f78e1d", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer.html#aab61bd3b3f0ad3c4bba48ca5c5e4747a", null ]
 ];

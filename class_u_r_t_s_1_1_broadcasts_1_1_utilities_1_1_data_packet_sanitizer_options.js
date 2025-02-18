@@ -9,8 +9,8 @@ var class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options
     [ "getMaximumFutureTime", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a23177b8743c6b59972259a883f349fcf", null ],
     [ "getMaximumLatency", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#affe24b3b1ef895b8aeda01ad84f38ddb", null ],
     [ "logBadData", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#adcf7fd95ed934dfe463e84cacce8bbad", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#ad30ba81a2d5fc2c2258cb445f5f66832", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#adc6c7d7505a6516e66220341d8efc024", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#aa49db1c15ba4ad789cfe8c0fac78118d", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#ace7b68ba63d2be959b7e4788ac171ef6", null ],
     [ "setBadDataLoggingInterval", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a60d7484700840185b3e528b8f3308c83", null ],
     [ "setMaximumFutureTime", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a91698242794a27519b6440e81798ef0e", null ],
     [ "setMaximumLatency", "class_u_r_t_s_1_1_broadcasts_1_1_utilities_1_1_data_packet_sanitizer_options.html#a4f03e4705cbfdcb58abc9bebaec21dd0", null ]

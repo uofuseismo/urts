@@ -21,14 +21,13 @@ var class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data =
     [ "haveNetwork", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a7c12e748e73500c2b1cd02dbad7d3f01", null ],
     [ "haveOnOffDate", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a19e1cbd1fd82ac168aaa1aae533ad0bc", null ],
     [ "haveStation", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a0ce849d3010b10791b2af9aae6d6a9cc", null ],
-    [ "operator=", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#af159863fc57df05e6a5380facc90434e", null ],
-    [ "operator=", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a588ceec9e6d128196f0cabb2f74813b1", null ],
+    [ "operator=", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a4d50a09d38465125f506c0d16188a9be", null ],
+    [ "operator=", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a21f35fcdf6cfb61051a9b2c53a3dc13e", null ],
     [ "setDescription", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a613516c4c2290e9fb60ed107db434e8e", null ],
     [ "setElevation", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#adbdf5f6f5234888c69e0bfce46d234db", null ],
     [ "setLatitude", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a22293f102fff5c873656885bfdd5cb48", null ],
     [ "setLoadDate", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a68028d9b6b933eed6ebc0c8801c9ee57", null ],
     [ "setLongitude", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a1ed3db6484499bb09c111c7514b200d7", null ],
     [ "setNetwork", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#a937512692e54d8e3dc0ac0691394d0d7", null ],
-    [ "setOnOffDate", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#abd141d46493c01f385d4b325e18171d5", null ],
     [ "setStation", "class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data.html#ac6652dcd2cc800bd0412b1ccf29f4924", null ]
 ];

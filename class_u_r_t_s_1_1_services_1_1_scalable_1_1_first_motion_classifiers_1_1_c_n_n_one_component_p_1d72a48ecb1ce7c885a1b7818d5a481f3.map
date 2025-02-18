@@ -1,4 +1,5 @@
 <map id="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest" name="URTS::Services::Scalable::FirstMotionClassifiers::CNNOneComponentP::PreprocessingRequest">
-<area shape="rect" id="node1" title="Requests a waveform snippet be preprocessed. It is assumed that the P pick be at the center of this w..." alt="" coords="5,95,272,165"/>
-<area shape="rect" id="node2" title=" " alt="" coords="49,5,228,47"/>
+<area shape="rect" id="Node000001" title="Requests a waveform snippet be preprocessed. It is assumed that the P pick be at the center of this w..." alt="" coords="5,93,272,163"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="49,5,228,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,59,141,93,136,93,136,59"/>
 </map>

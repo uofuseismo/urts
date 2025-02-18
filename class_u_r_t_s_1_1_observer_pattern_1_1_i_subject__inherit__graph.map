@@ -1,5 +1,7 @@
 <map id="URTS::ObserverPattern::ISubject" name="URTS::ObserverPattern::ISubject">
-<area shape="rect" id="node1" title="Abstract base class for subjects. Typically, subjects will be (data) models which widgets (observers)..." alt="" coords="106,5,275,47"/>
-<area shape="rect" id="node2" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html" title="A container for working with the channel_data table." alt="" coords="5,95,179,136"/>
-<area shape="rect" id="node3" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html" title="A container for working with the station_data table." alt="" coords="203,95,376,136"/>
+<area shape="rect" id="Node000001" title="Abstract base class for subjects. Typically, subjects will be (data) models which widgets (observers)..." alt="" coords="106,5,275,45"/>
+<area shape="rect" id="Node000002" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_channel_data_table.html" title="A container for working with the channel_data table." alt="" coords="5,93,179,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,56,116,95,112,91,157,52"/>
+<area shape="rect" id="Node000003" href="$class_u_r_t_s_1_1_database_1_1_a_q_m_s_1_1_station_data_table.html" title="A container for working with the station_data table." alt="" coords="203,93,376,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="224,52,269,91,266,95,221,56"/>
 </map>

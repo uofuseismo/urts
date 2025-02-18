@@ -1,4 +1,5 @@
 <map id="URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingResponse" name="URTS::Services::Scalable::Pickers::CNNOneComponentP::PreprocessingResponse">
-<area shape="rect" id="node1" title="Response from a waveform snippet preprocessing request." alt="" coords="5,95,228,151"/>
-<area shape="rect" id="node2" title=" " alt="" coords="27,5,206,47"/>
+<area shape="rect" id="Node000001" title="Response from a waveform snippet preprocessing request." alt="" coords="5,93,228,148"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="27,5,206,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,59,119,93,114,93,114,59"/>
 </map>

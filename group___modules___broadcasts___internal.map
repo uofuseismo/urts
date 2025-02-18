@@ -1,5 +1,5 @@
 <map id="Internal Broadcasts" name="Internal Broadcasts">
-<area shape="rect" id="node1" href="$group___modules___broadcasts___internal___data_packet.html" title=" " alt="" coords="344,5,443,31"/>
-<area shape="rect" id="node2" href="$group___modules___broadcasts.html" title="Broadcasts are publisher&#45;subscriber messaging patterns. In this case there are producer(s) that creat..." alt="" coords="5,5,100,31"/>
-<area shape="rect" id="node3" title="These are modules for broadcasting common data types used by URTS." alt="" coords="148,5,296,31"/>
+<area shape="rect" id="Node000002" href="$group___modules___broadcasts.html" title="Broadcasts are publisher&#45;subscriber messaging patterns. In this case there are producer(s) that creat..." alt="" coords="5,5,100,31"/>
+<area shape="rect" id="Node000001" title="These are modules for broadcasting common data types used by URTS." alt="" coords="148,5,296,31"/>
+<area shape="rect" id="Node000003" href="$group___modules___broadcasts___internal___data_packet.html" title=" " alt="" coords="344,5,443,31"/>
 </map>

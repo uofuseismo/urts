@@ -1,4 +1,5 @@
 <map id="URTS::Broadcasts::Internal::ProbabilityPacket::ProbabilityPacket" name="URTS::Broadcasts::Internal::ProbabilityPacket::ProbabilityPacket">
-<area shape="rect" id="node1" title="Defines a probability packet." alt="" coords="5,95,225,151"/>
-<area shape="rect" id="node2" title=" " alt="" coords="26,5,205,47"/>
+<area shape="rect" id="Node000001" title="Defines a probability packet." alt="" coords="5,93,225,148"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="26,5,205,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,59,118,93,113,93,113,59"/>
 </map>

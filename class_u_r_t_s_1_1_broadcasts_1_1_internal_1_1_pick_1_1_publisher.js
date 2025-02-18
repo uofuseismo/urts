@@ -9,7 +9,6 @@ var class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher =
     [ "Publisher", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#adb06b231fffbb896aab796e49826365c", null ],
     [ "initialize", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#ac82791dafbf58fa8c8af1fad346ce307", null ],
     [ "isInitialized", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#a8d517f096898af5a0cf350545e924a5a", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#a0ee3f6f43303566753860f4e6b8d1ffe", null ],
-    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#a30005fe705a10a993f3a878cb1ca6f9a", null ],
+    [ "operator=", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#acd10e7d3ea16262419daa50da9278656", null ],
     [ "send", "class_u_r_t_s_1_1_broadcasts_1_1_internal_1_1_pick_1_1_publisher.html#a544f4c0a45771d1a5adc66f6863ee425", null ]
 ];

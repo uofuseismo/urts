@@ -1,4 +1,5 @@
 <map id="URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;" name="URTS::Broadcasts::External::Earthworm::TraceBuf2&lt; T &gt;">
-<area shape="rect" id="node1" title="Defines an Earthworm tracebuf2 message format." alt="" coords="5,95,216,136"/>
-<area shape="rect" id="node2" title=" " alt="" coords="21,5,200,47"/>
+<area shape="rect" id="Node000001" title="Defines an Earthworm tracebuf2 message format." alt="" coords="5,93,216,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="21,5,200,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,59,113,93,108,93,108,59"/>
 </map>

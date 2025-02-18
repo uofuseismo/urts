@@ -1,4 +1,5 @@
 <map id="URTS::Services::Scalable::Associators::MAssociate::AssociationResponse" name="URTS::Services::Scalable::Associators::MAssociate::AssociationResponse">
-<area shape="rect" id="node1" title="The response to an association request." alt="" coords="5,95,193,151"/>
-<area shape="rect" id="node2" title=" " alt="" coords="10,5,189,47"/>
+<area shape="rect" id="Node000001" title="The response to an association request." alt="" coords="5,93,193,148"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="10,5,189,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,59,102,93,97,93,97,59"/>
 </map>

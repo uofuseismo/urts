@@ -3,7 +3,6 @@ var class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l =
     [ "PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a64a16cd57f4a0b03fd46c9dc9e67deae", null ],
     [ "PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a59e023739ba3b80509367d5063fec303", null ],
     [ "~PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8453a2bb7552aebd600f33c01427215a", null ],
-    [ "PostgreSQL", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a86f53a07f55776b544d4f9452cdf3793", null ],
     [ "connect", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a92a2c2fd9736552e68050061366feaf7", null ],
     [ "disconnect", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a20b59fcf917540032316c1ed32543ce0", null ],
     [ "getAddress", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#af514d6ed8dc74a983e7938a84e67d99b", null ],
@@ -19,13 +18,11 @@ var class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l =
     [ "havePassword", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a1cebbbb61734897b0f45fca885613a8c", null ],
     [ "haveUser", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a557565725b3c3d7e73f5d8abd0a423b3", null ],
     [ "isConnected", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a8f17d166fdef83b284232bc38b4ca1c9", null ],
-    [ "operator=", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a14d0a35eed5d68ecec572c616fec9a77", null ],
-    [ "operator=", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#af75f5dceb4a14e58d5d9725e3fd10910", null ],
+    [ "operator=", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3609191374736b67dba46b42c232d5cb", null ],
     [ "parseInitializationFile", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a3754171f8ab8a5a2f6fecf3c67276011", null ],
     [ "setAddress", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#af9a2f8a4c623f9b63c92081362b411a7", null ],
     [ "setApplication", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#acf9fdccee0d1ea2176cc2d27471a8b0d", null ],
     [ "setDatabaseName", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a7d288d773fc3c42e14ea415b8e2dbdbe", null ],
     [ "setPassword", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#a9fe97ca284e9e7d75f410e62496ceee3", null ],
-    [ "setPort", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#ab22dbeff1102c2023c9d701ec445b5d4", null ],
-    [ "setUser", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#ab4e6b5a45d5e89b6371b663303f94079", null ]
+    [ "setPort", "class_u_r_t_s_1_1_database_1_1_connection_1_1_postgre_s_q_l.html#ab22dbeff1102c2023c9d701ec445b5d4", null ]
 ];
