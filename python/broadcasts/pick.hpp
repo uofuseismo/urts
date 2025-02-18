@@ -86,6 +86,8 @@ public:
     [[nodiscard]] URTS::Broadcasts::Internal::Pick::Pick::FirstMotion getFirstMotion() const noexcept;
     void setProcessingAlgorithms(const std::vector<std::string> &algorithms);
     [[nodiscard]] std::vector<std::string> getProcessingAlgorithms() const;
+    void setSignalToNoiseRatio(double snr) noexcept;
+    [[nodiscard]] double getSignalToNoiseRatio() const;
     void setLowerAndUpperUncertaintyBound(const std::pair<UncertaintyBound, UncertaintyBound> &bounds);
     [[nodiscard]] std::pair<UncertaintyBound, UncertaintyBound> getLowerAndUpperUncertaintyBound() const;
     void setReviewStatus(URTS::Broadcasts::Internal::Pick::Pick::ReviewStatus status) noexcept;

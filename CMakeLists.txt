@@ -595,12 +595,12 @@ if (${BUILD_UUSS_MLMODELS})
    target_include_directories(firstMotionClassifierService
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                               PRIVATE ${UMPS_INCLUDE_DIR} Boost::program_options)
-   target_link_libraries(picksToDatabase
-                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
-                                 Boost::program_options Threads::Threads SOCI::soci_postgresql)
-   target_link_libraries(originsToDatabase
-                         PRIVATE urts_server urts_client ${UMPS_LIBRARY}
-                                 Boost::program_options Threads::Threads SOCI::soci_postgresql)
+   #target_link_libraries(picksToDatabase
+   #                      PRIVATE urts_server urts_client ${UMPS_LIBRARY}
+   #                              Boost::program_options Threads::Threads SOCI::soci_postgresql)
+   #target_link_libraries(originsToDatabase
+   #                      PRIVATE urts_server urts_client ${UMPS_LIBRARY}
+   #                              Boost::program_options Threads::Threads SOCI::soci_postgresql)
    target_link_libraries(mlDetector
                          PRIVATE urts_server urts_client ${UMPS_LIBRARY} ${UUSSMLModels_LIBRARY}
                                  Boost::program_options Threads::Threads)

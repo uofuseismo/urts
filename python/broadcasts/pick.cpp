@@ -320,6 +320,16 @@ Pick::getLowerAndUpperUncertaintyBound() const
                       ::UncertaintyBound {bounds.second}};
 }
 
+void Pick::setSignalToNoiseRatio(const double snr) noexcept
+{
+    pImpl->setSignalToNoiseRatio(snr);
+}
+
+double Pick::getSignalToNoiseRatio() const
+{
+    return pImpl->getSignalToNoiseRatio();
+}
+
 /*
 /// Data
 void DataPacket::setData(
@@ -656,6 +666,8 @@ Optional Properties:
     processing_algorithms
         The processing algorithms used to make this pick.
     lower_and_upper_uncertainty_bound : UncertaintyBound 
+    signal_to_noise_ratio : float
+        The signal to noise ratio in decibels.
         
 Read-Only Properties:
     message_type : str
@@ -715,6 +727,9 @@ Read-Only Properties:
     pick.def_property("identifier",
                       &Pick::getIdentifier,
                       &Pick::setIdentifier);
+    pick.def_property("signal_to_noise_ratio",
+                      &Pick::getSignalToNoiseRatio,
+                      &Pick::setSignalToNoiseRatio);
     pick.def_property_readonly("message_type",
                                &Pick::getMessageType);
 
