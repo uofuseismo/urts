@@ -6,7 +6,7 @@
 #include <cstring>
 #include <queue>
 #include <umps/logging/standardOut.hpp>
-#include </usr/local/include/libmseed.h>
+#include <libmseed.h>
 #include <libslink.h>
 #include <slplatform.h>
 #include "urts/broadcasts/external/seedlink/client.hpp"
@@ -481,7 +481,7 @@ void Client::initialize(const ClientOptions &options)
         else
         {
             pImpl->mLogger->error("Could not connect to server");
-            throw std::runtime_error("Failed to connected");
+            throw std::runtime_error("Failed to connect");
         }
     }
     // All-good
