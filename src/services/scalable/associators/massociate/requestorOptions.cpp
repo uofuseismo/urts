@@ -15,7 +15,7 @@ public:
     int mSendHighWaterMark{2048};
     int mReceiveHighWaterMark{0}; // Infinite
     std::chrono::milliseconds mSendTimeOut{0};
-    std::chrono::milliseconds mReceiveTimeOut{60000};
+    std::chrono::milliseconds mReceiveTimeOut{80000};
 };
 
 /// Constructor

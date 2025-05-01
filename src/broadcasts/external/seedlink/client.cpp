@@ -9,10 +9,14 @@
 #include <libmseed.h>
 #include <libslink.h>
 #include <slplatform.h>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "urts/broadcasts/external/seedlink/client.hpp"
 #include "urts/broadcasts/external/seedlink/clientOptions.hpp"
 #include "urts/broadcasts/external/seedlink/streamSelector.hpp"
 #include "urts/broadcasts/internal/dataPacket/dataPacket.hpp"
+#include "urts/version.hpp"
 
 using namespace URTS::Broadcasts::External::SEEDLink;
 namespace UDataPacket = URTS::Broadcasts::Internal::DataPacket;
@@ -23,7 +27,7 @@ namespace
 [[nodiscard]]
 UDataPacket::DataPacket
     miniSEEDToDataPacket(char *msRecord,
-                         const int seedLinkRecordSize = 512)
+                         const int seedLinkRecordSize)
 {
     UDataPacket::DataPacket dataPacket;
     constexpr int8_t verbose{0};
@@ -203,11 +207,15 @@ public:
         }
         setRunning(true);
         mLogger->debug("Starting the SEEDLink polling thread...");
+#if LIBSLINK_VERSION_MAJOR >= 4
+        mSEEDLinkConnection->terminate = 0;
+#endif
         mSEEDLinkReaderThread = std::thread(&ClientImpl::scrapePackets,
                                             this);
     }
     /// Gets the latest packets from the SEEDLink server and puts them in the
     /// internal queue for shipping off to the data broadcast.
+#if LIBSLINK_VERSION_MAJOR < 4
     void scrapePackets()
     {
         // Reset the queue
@@ -275,6 +283,98 @@ public:
         }
         mLogger->debug("Thread leaving SEEDLink polling loop");
     }
+#else
+    void scrapePackets()
+    {   
+        // Reset the queue
+        clearQueue();
+        // Recover state
+        if (mUseStateFile)
+        {
+            if (!sl_recoverstate(mSEEDLinkConnection, mStateFile.c_str()))
+            {
+                 mLogger->warn("Failed to recover state");
+            }
+        }
+        // Now start scraping
+        const SLpacketinfo *seedLinkPacketInfo{nullptr};
+        std::array<char, SL_RECV_BUFFER_SIZE> seedLinkBuffer;
+        const auto seedLinkBufferSize
+            = static_cast<uint32_t> (seedLinkBuffer.size());
+        int updateStateFile{1};
+        while (keepRunning())
+        {
+            // Block until a packet is received.  Alternatively, an external
+            // thread can terminate the broadcast.  In this case we will quit.
+            auto returnValue = sl_collect(mSEEDLinkConnection,
+                                          &seedLinkPacketInfo,
+                                          seedLinkBuffer.data(),
+                                          seedLinkBufferSize);
+            // Deal with packet
+            // Deal with packet
+            if (returnValue == SLPACKET)
+            {
+                // I really only care about data packets
+                if (seedLinkPacketInfo->payloadformat == SLPAYLOAD_MSEED2 ||
+                    seedLinkPacketInfo->payloadformat == SLPAYLOAD_MSEED3)
+                {
+                    //auto sequenceNumber = sl_sequence(seedLinkPacket);
+                    auto payloadLength = seedLinkPacketInfo->payloadlength;
+                    try
+                    {
+                        auto packet
+                            = ::miniSEEDToDataPacket(seedLinkBuffer.data(),
+                                                     payloadLength);
+                        addPacket(std::move(packet));
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->error("Skipping packet.  Unpacking failed with: "
+                                     + std::string(e.what()));
+                    }
+                    if (mUseStateFile)
+                    {
+                        if (updateStateFile > mStateFileUpdateInterval)
+                        {
+                            sl_savestate(mSEEDLinkConnection,
+                                         mStateFile.c_str());
+                            updateStateFile = 0;
+                        }
+                        updateStateFile = updateStateFile + 1;
+                    }
+                }
+            }
+            else if (returnValue == SLTOOLARGE)
+            {
+                mLogger->warn("Pyaload length "
+                            + std::to_string(seedLinkPacketInfo->payloadlength)
+                            + " exceeds " + std::to_string(seedLinkBufferSize)
+                            + "; skipping");
+                continue;
+            }
+            else if (returnValue == SLNOPACKET)
+            {
+                //mLogger->debug("No data from sl_collect");
+                constexpr std::chrono::milliseconds timeToSleep{10};
+                std::this_thread::sleep_for(timeToSleep);
+                continue;
+            }
+            else if (returnValue == SLTERMINATE)
+            {
+                mLogger->info("SEEDLink terminate request received");
+                if (keepRunning()){setRunning(false);}
+                break;
+            }
+            else
+            {
+                mLogger->warn("Unhandled SEEDLink return value: "
+                            + std::to_string(returnValue));
+                continue;
+            }
+        }
+        mLogger->debug("Thread leaving SEEDLink polling loop");
+    }               
+#endif
     /// Update the queue
     void addPacket(UDataPacket::DataPacket &&dataPacket)
     {
@@ -392,7 +492,12 @@ void Client::initialize(const ClientOptions &options)
     pImpl->clearQueue(); // Release queue
     pImpl->mInitialized = false;
     // Create a new instance
+#if LIBSLINK_VERSION_MAJOR < 4
     pImpl->mSEEDLinkConnection = sl_newslcd();
+#else
+    pImpl->mSEEDLinkConnection
+        = sl_initslcd("broadcastSEEDLink", URTS::Version::getVersion().c_str());
+#endif
     // Set the connection string
     auto address = options.getAddress();
     auto port = options.getPort();
@@ -408,30 +513,43 @@ void Client::initialize(const ClientOptions &options)
         pImpl->mStateFileUpdateInterval = options.getStateFileUpdateInterval();
         pImpl->mUseStateFile = true;
     }
+#if LIBSLINK_VERSION_MAJOR < 4
+    constexpr int sequenceNumber{-1}; // Start at next data
+#else
+    constexpr uint64_t sequenceNumber{SL_UNSETSEQUENCE}; // Start at next data
+#endif
     // Queue size
     pImpl->mMaximumQueueSize
         = static_cast<size_t> (options.getMaximumInternalQueueSize());
     // If there are selectors then try to use them
-    constexpr int sequenceNumber{-1}; // Start at next data
     const char *timeStamp{nullptr};
     auto streamSelectors = options.getStreamSelectors();
     for (const auto &selector : streamSelectors)
     {
         try
         {
+            auto streamSelector = selector.getSelector();
             auto network = selector.getNetwork();
             auto station = selector.getStation();
-            auto streamSelector = selector.getSelector();
             pImpl->mLogger->info("Adding: "
-                                + network + " "
-                                + station + " "
+                                + network + " " 
+                                + station + " " 
                                 + streamSelector);
+ #if LIBSLINK_VERSION_MAJOR < 4
             auto returnCode = sl_addstream(pImpl->mSEEDLinkConnection,
                                            network.c_str(),
                                            station.c_str(),
                                            streamSelector.c_str(),
                                            sequenceNumber,
                                            timeStamp);
+#else
+            auto stationID = network + "_" + station;
+            auto returnCode = sl_add_stream(pImpl->mSEEDLinkConnection,
+                                            stationID.c_str(),
+                                            streamSelector.c_str(),
+                                            sequenceNumber,
+                                            timeStamp);
+#endif
             if (returnCode != 0)
             {
                 throw std::runtime_error("Failed to add selector: " 
@@ -450,8 +568,15 @@ void Client::initialize(const ClientOptions &options)
     if (pImpl->mSEEDLinkConnection->streams == nullptr)
     {
         const char *selectors{nullptr};
+#if LIBSLINK_VERSION_MAJOR < 4
         auto returnCode = sl_setuniparams(pImpl->mSEEDLinkConnection,
                                           selectors, sequenceNumber, timeStamp);
+#else
+        auto returnCode = sl_set_allstation_params(pImpl->mSEEDLinkConnection,
+                                                   selectors,
+                                                   sequenceNumber,
+                                                   timeStamp);
+#endif
         if (returnCode != 0)
         {
             pImpl->mLogger->error("Could not set SEEDLink uni-station mode");
@@ -460,12 +585,46 @@ void Client::initialize(const ClientOptions &options)
         }
     }
     // Time out and reconnect delay
+#if LIBSLINK_VERSION_MAJOR < 4
     auto networkTimeOut
         = static_cast<int> (options.getNetworkTimeOut().count());
     pImpl->mSEEDLinkConnection->netto = networkTimeOut;
     auto reconnectDelay
         = static_cast<int> (options.getNetworkReconnectDelay().count());
     pImpl->mSEEDLinkConnection->netdly = reconnectDelay;
+#else
+    // Preferentially do not block so our thread can check for other
+    // commands.
+    constexpr bool nonBlock{true};
+    if (sl_set_blockingmode(pImpl->mSEEDLinkConnection, nonBlock) != 0)
+    {
+        pImpl->mLogger->warn("Failed to set non-blocking mode");
+    }
+#ifndef NDEBUG
+    assert(pImpl->mSEEDLinkConnection->noblock == 1);
+#endif
+    constexpr bool closeConnection{false};
+    if (sl_set_dialupmode(pImpl->mSEEDLinkConnection, closeConnection) != 0)
+    {
+        pImpl->mLogger->warn("Failed to set keep-alive connection");
+    }
+#ifndef NDEBUG
+    assert(pImpl->mSEEDLinkConnection->dialup == 0);
+#endif
+    // Time out and reconnect delay
+    auto networkTimeOut
+        = static_cast<int> (options.getNetworkTimeOut().count());
+    if (sl_set_idletimeout(pImpl->mSEEDLinkConnection, networkTimeOut) != 0)
+    {
+        pImpl->mLogger->warn("Failed to set idle connection time");
+    }
+    auto reconnectDelay
+        = static_cast<int> (options.getNetworkReconnectDelay().count());
+    if (sl_set_reconnectdelay(pImpl->mSEEDLinkConnection, reconnectDelay) != 0)
+    {
+        pImpl->mLogger->warn("Failed to set reconnect delay");
+    }
+#endif
     // Check this worked
     std::string slSite(256, '\0');
     std::string slServerID(256, '\0');
