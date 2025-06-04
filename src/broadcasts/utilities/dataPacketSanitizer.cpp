@@ -69,7 +69,7 @@ public:
             throw std::runtime_error("Inconsistent sampling rates for: " + name);
             return false;
         }
-        auto dStartTime = (rhs.startTime.count() - startTime.count());
+        auto dStartTime = std::abs(rhs.startTime.count() - startTime.count());
         if (samplingRate < 105)
         {
             return (dStartTime < std::chrono::microseconds {15000}.count());
